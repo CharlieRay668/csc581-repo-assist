@@ -1,8 +1,3 @@
-"""
-Repo Ingestion - Simple implementation
-Walks a repository and generates JSON context (files + chunks).
-"""
-
 import os
 import json
 import hashlib
@@ -44,7 +39,7 @@ class RepoIngestion:
         Initialize the ingestion configuration.
         
         Args:
-            chunk_max_lines: Maximum lines per chunk
+            chunk_max_lines: Maximum lines per chunk, I don't know if we really want to do chunks tbh
             chunk_min_lines: Minimum lines for chunking (smaller files = 1 chunk)
             chunk_overlap_lines: Number of overlapping lines between chunks
             ignore_dirs: Set of directory names to ignore
