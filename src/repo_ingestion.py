@@ -1,8 +1,8 @@
 import os
 import json
 import hashlib
+import requests
 from pathlib import Path
-from typing import List, Dict, Any, Optional
 
 
 # Default configuration
@@ -29,11 +29,11 @@ class RepoIngestion:
     
     def __init__(
         self,
-        chunk_max_lines: int = DEFAULT_CHUNK_MAX_LINES,
-        chunk_min_lines: int = DEFAULT_CHUNK_MIN_LINES,
-        chunk_overlap_lines: int = DEFAULT_CHUNK_OVERLAP_LINES,
-        ignore_dirs: Optional[set] = None,
-        ignore_extensions: Optional[set] = None
+        chunk_max_lines=DEFAULT_CHUNK_MAX_LINES,
+        chunk_min_lines=DEFAULT_CHUNK_MIN_LINES,
+        chunk_overlap_lines=DEFAULT_CHUNK_OVERLAP_LINES,
+        ignore_dirs=None,
+        ignore_extensions=None
     ):
         """
         Initialize the ingestion configuration.
@@ -54,9 +54,9 @@ class RepoIngestion:
     
     def ingest_repository(
         self,
-        repo_path: str,
-        output_path: Optional[str] = None
-    ) -> Dict[str, Any]:
+        repo_path,
+        output_path=None
+    ):
         """
         Main entry point: ingest a repository and return structured JSON context.
         
@@ -116,7 +116,7 @@ class RepoIngestion:
         
         return result
     
-    def _walk_repo(self, repo_path: Path) -> List[Path]:
+    def _walk_repo(self, repo_path):
         """Walk repository and return list of file paths to process."""
         files = []
         
@@ -139,7 +139,7 @@ class RepoIngestion:
         
         return files
     
-    def _create_file_record(self, file_path: Path, repo_root: Path) -> Dict[str, Any]:
+    def _create_file_record(self, file_path, repo_root):
         """Create metadata record for a file."""
         relative_path = file_path.relative_to(repo_root)
         
@@ -173,10 +173,10 @@ class RepoIngestion:
     
     def _chunk_file(
         self,
-        file_path: Path,
-        repo_root: Path,
-        chunk_id_start: int
-    ) -> List[Dict[str, Any]]:
+        file_path,
+        repo_root,
+        chunk_id_start
+    ):
         """
         Chunk a file into line-based segments.
         
@@ -233,7 +233,7 @@ class RepoIngestion:
         
         return chunks
     
-    def get_chunk_by_id(self, chunk_id: str) -> Optional[Dict[str, Any]]:
+    def get_chunk_by_id(self, chunk_id):
         """Helper: retrieve a specific chunk by ID from ingested context."""
         if self.context is None:
             return None
@@ -242,7 +242,7 @@ class RepoIngestion:
                 return chunk
         return None
     
-    def get_file_by_path(self, file_path: str) -> Optional[Dict[str, Any]]:
+    def get_file_by_path(self, file_path):
         """Helper: retrieve a specific file by path from ingested context."""
         if self.context is None:
             return None
@@ -251,7 +251,7 @@ class RepoIngestion:
                 return file_record
         return None
     
-    def search_chunks(self, query: str, max_results: int = 10) -> List[Dict[str, Any]]:
+    def search_chunks(self, query, max_results=10):
         """
         Simple text search over chunks.
         Returns chunks containing the query string (case-insensitive).
@@ -269,3 +269,198 @@ class RepoIngestion:
                     break
         
         return results
+    
+    def ingest_github_issues(
+        self,
+        owner,
+        repo,
+        state='all',
+        max_issues=100,
+        github_token=None
+    ):
+        """
+        Fetch and ingest GitHub issues for the repository.
+        
+        Args:
+            owner: Repository owner (e.g., 'hack4impact-calpoly')
+            repo: Repository name (e.g., 'prfc-connect')
+            state: Issue state filter ('open', 'closed', 'all')
+            max_issues: Maximum number of issues to fetch
+            github_token: (Optional)
+        Returns:
+            List of issue records
+        """
+        if github_token is None:
+            github_token = os.environ.get('GITHUB_TOKEN')
+        
+        headers = {}
+        if github_token:
+            headers['Authorization'] = f'token {github_token}'
+        
+        issues = []
+        page = 1
+        per_page = min(100, max_issues)
+        
+        while len(issues) < max_issues:
+            url = f'https://api.github.com/repos/{owner}/{repo}/issues'
+            params = {
+                'state': state,
+                'page': page,
+                'per_page': per_page,
+                'sort': 'updated',
+                'direction': 'desc'
+            }
+            
+            try:
+                response = requests.get(url, headers=headers, params=params, timeout=10)
+                response.raise_for_status()
+                batch = response.json()
+                
+                if not batch:
+                    break
+                
+                # Filter out pull requests (they show up in issues endpoint)
+                for item in batch:
+                    if 'pull_request' not in item:
+                        issues.append({
+                            'id': item['id'],
+                            'number': item['number'],
+                            'title': item['title'],
+                            'body': item.get('body', ''),
+                            'state': item['state'],
+                            'labels': [label['name'] for label in item.get('labels', [])],
+                            'created_at': item['created_at'],
+                            'updated_at': item['updated_at'],
+                            'url': item['html_url'],
+                            'user': item['user']['login'] if item.get('user') else None
+                        })
+                        
+                        if len(issues) >= max_issues:
+                            break
+                
+                page += 1
+                
+            except Exception as e:
+                print(f"Warning: Failed to fetch issues: {e}")
+                break
+        
+        # Store in context
+        if self.context is None:
+            self.context = {}
+        self.context['issues'] = issues
+        self.context['total_issues'] = len(issues)
+        
+        return issues
+    
+    def ingest_github_prs(
+        self,
+        owner,
+        repo,
+        state='all',
+        max_prs=100,
+        github_token=None
+    ):
+        """
+        Fetch and ingest GitHub pull requests for the repository.
+        
+        Args:
+            owner: Repository owner (e.g., 'hack4impact-calpoly')
+            repo: Repository name (e.g., 'prfc-connect')
+            state: PR state filter ('open', 'closed', 'all')
+            max_prs: Maximum number of PRs to fetch
+            github_token: (Optional)
+        Returns:
+            List of PR records
+        """
+        if github_token is None:
+            github_token = os.environ.get('GITHUB_TOKEN')
+        
+        headers = {}
+        if github_token:
+            headers['Authorization'] = f'token {github_token}'
+        
+        prs = []
+        page = 1
+        per_page = min(100, max_prs)
+        
+        while len(prs) < max_prs:
+            url = f'https://api.github.com/repos/{owner}/{repo}/pulls'
+            params = {
+                'state': state,
+                'page': page,
+                'per_page': per_page,
+                'sort': 'updated',
+                'direction': 'desc'
+            }
+            
+            try:
+                response = requests.get(url, headers=headers, params=params, timeout=10)
+                response.raise_for_status()
+                batch = response.json()
+                
+                if not batch:
+                    break
+                
+                for item in batch:
+                    prs.append({
+                        'id': item['id'],
+                        'number': item['number'],
+                        'title': item['title'],
+                        'body': item.get('body', ''),
+                        'state': item['state'],
+                        'labels': [label['name'] for label in item.get('labels', [])],
+                        'created_at': item['created_at'],
+                        'updated_at': item['updated_at'],
+                        'merged_at': item.get('merged_at'),
+                        'url': item['html_url'],
+                        'user': item['user']['login'] if item.get('user') else None,
+                        'base_branch': item['base']['ref'],
+                        'head_branch': item['head']['ref']
+                    })
+                    
+                    if len(prs) >= max_prs:
+                        break
+                
+                page += 1
+                
+            except Exception as e:
+                print(f"Warning: Failed to fetch PRs: {e}")
+                break
+        
+        # Store in context
+        if self.context is None:
+            self.context = {}
+        self.context['pull_requests'] = prs
+        self.context['total_prs'] = len(prs)
+        
+        return prs
+    
+    def get_issues(self, state=None, label=None):
+        """Get filtered issues from context."""
+        if self.context is None or 'issues' not in self.context:
+            return []
+        
+        issues = self.context['issues']
+        
+        if state:
+            issues = [i for i in issues if i['state'] == state]
+        
+        if label:
+            issues = [i for i in issues if label in i['labels']]
+        
+        return issues
+    
+    def get_prs(self, state=None, label=None):
+        """Get filtered PRs from context."""
+        if self.context is None or 'pull_requests' not in self.context:
+            return []
+        
+        prs = self.context['pull_requests']
+        
+        if state:
+            prs = [p for p in prs if p['state'] == state]
+        
+        if label:
+            prs = [p for p in prs if label in p['labels']]
+        
+        return prs
