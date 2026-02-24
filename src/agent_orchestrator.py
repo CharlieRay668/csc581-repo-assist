@@ -142,6 +142,9 @@ class AgentOrchestrator:
                         for fc in function_calls
                     ]
 
+                if text_parts:
+                    final_text = "\n".join(text_parts)
+
                 contents.append(response.candidates[0].content)
                 response_parts = []
 
@@ -175,8 +178,18 @@ class AgentOrchestrator:
                     print("[Orchestrator] Final answer received.")
                 break
 
-        if not final_text:
-            for part in response.candidates[0].content.parts:
+        if not final_text.strip():
+            contents.append(types.Content(
+                role="user",
+                parts=[types.Part(text="Please provide your final answer based on the evidence gathered.")],
+            ))
+            fallback = self.client.models.generate_content(
+                model=self.model,
+                contents=contents,
+                config=types.GenerateContentConfig(temperature=0.2),
+            )
+            time.sleep(1)
+            for part in fallback.candidates[0].content.parts:
                 if part.text:
                     final_text += part.text
 
@@ -416,6 +429,17 @@ General guidelines:
                         description="Get repository statistics.",
                         parameters={"type": "object", "properties": {}},
                     ),
+                    types.FunctionDeclaration(
+                        name="list_files",
+                        description="List all files in the repository. Use this first to understand the project structure before searching or opening files.",
+                        parameters={
+                            "type": "object",
+                            "properties": {
+                                "path_prefix": {"type": "string", "description": "Only list files under this directory (e.g. 'src/')"},
+                                "extensions": {"type": "array", "items": {"type": "string"}, "description": "Filter by file extensions (e.g. ['.ts', '.py'])"},
+                            },
+                        },
+                    ),
                 ]
             )
         ]
@@ -427,7 +451,7 @@ General guidelines:
                     function_declarations=[
                         decl
                         for decl in self._tools[0].function_declarations
-                        if decl.name not in ("get_issues", "get_pull_requests")
+                        if decl.name not in ("get_issues", "get_pull_requests")  # list_files always available
                     ]
                 )
             ]
@@ -468,6 +492,13 @@ General guidelines:
 
             elif tool_name == "get_repo_stats":
                 return self.gateway.stats()
+
+            elif tool_name == "list_files":
+                files = self.gateway.list_files(
+                    path_prefix=args.get("path_prefix"),
+                    extensions=args.get("extensions"),
+                )
+                return {"files": files, "count": len(files)}
 
             else:
                 return {"error": f"Unknown tool: {tool_name}"}

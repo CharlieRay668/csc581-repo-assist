@@ -5,3 +5,4 @@ habitat-for-humanity/
 __pycache__/
 *.pyc
 *.pyo
+.DS_Store

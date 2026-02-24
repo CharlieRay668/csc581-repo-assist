@@ -223,6 +223,30 @@ class ToolGateway:
         
         return combined[:limit]
     
+    def list_files(self, path_prefix=None, extensions=None):
+        """
+        List all files in the indexed repository, optionally filtered.
+
+        Args:
+            path_prefix: Only return files under this path prefix (e.g. 'src/')
+            extensions: List of extensions to filter by (e.g. ['.ts', '.tsx'])
+
+        Returns:
+            List of file path strings
+        """
+        if self.ingestion is None or self.ingestion.context is None:
+            return []
+
+        files = [f['path'] for f in self.ingestion.context.get('files', [])]
+
+        if path_prefix:
+            files = [f for f in files if f.startswith(path_prefix)]
+
+        if extensions:
+            files = [f for f in files if any(f.endswith(ext) for ext in extensions)]
+
+        return sorted(files)
+
     def get_file_by_chunk_id(self, chunk_id):
         """Get the full file content for a given chunk ID."""
         if self.ingestion is None:
