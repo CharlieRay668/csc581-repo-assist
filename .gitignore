@@ -1,3 +1,4 @@
 docs/
 hack4impact-repos/
 .env
+__pycache__/
