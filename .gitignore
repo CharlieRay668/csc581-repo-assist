@@ -1,4 +1,8 @@
 docs/
 hack4impact-repos/
+habitat-for-humanity/
 .env
 __pycache__/
+*.pyc
+*.pyo
+.DS_Store
