@@ -78,12 +78,16 @@ MODE_INSTRUCTIONS = {
 
 class AgentOrchestrator:
 
-    def __init__(self, gateway: ToolGateway, session: Optional[SessionManager] = None,
-                 api_key: Optional[str] = None, model: str = "gemini-2.5-flash"):
+    def __init__(
+                    self, 
+                    gateway: ToolGateway, 
+                    session: Optional[SessionManager] = None,
+                    api_key: Optional[str] = None, 
+                    model: str = "gemini-2.5-flash"
+                ):
         self.gateway = gateway
         self.session = session
         self.model = model
-
         api_key = api_key or os.environ.get("GEMINI_API_KEY")
         if not api_key:
             raise ValueError("GEMINI_API_KEY environment variable or api_key parameter required")

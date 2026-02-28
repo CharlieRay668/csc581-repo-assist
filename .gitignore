@@ -1,5 +1,6 @@
 docs/
 hack4impact-repos/
+h4i_repos/
 habitat-for-humanity/
 .env
 __pycache__/

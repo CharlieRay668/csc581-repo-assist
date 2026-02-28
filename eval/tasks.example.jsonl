@@ -1,0 +1,2 @@
+{"task_id":"T001","split":"canary","difficulty":"easy","question":"Where is session creation handled?","expected_type":"locate"}
+{"task_id":"T002","split":"heldout","difficulty":"medium","question":"Summarize how tool calls are executed and errors handled.","expected_type":"explain"}

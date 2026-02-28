@@ -1,0 +1,78 @@
+{
+  "name": "repo-assist-eval-v1",
+  "description": "Evaluation configuration for response quality, grounding, retrieval, task success, and system performance.",
+  "dataset": {
+    "held_out_size": 100,
+    "canary_size": 20,
+    "strata": [
+      {"name": "easy", "count": 40},
+      {"name": "medium", "count": 40},
+      {"name": "hard", "count": 20}
+    ]
+  },
+  "rubric": {
+    "criteria": [
+      {
+        "name": "correctness",
+        "scale": [0, 1, 2],
+        "instructions": "0=incorrect or major omissions, 1=partially correct, 2=fully correct and complete."
+      },
+      {
+        "name": "grounding",
+        "scale": [0, 1, 2],
+        "instructions": "0=unsupported claims, 1=some support, 2=all key claims supported by cited evidence."
+      },
+      {
+        "name": "relevance",
+        "scale": [0, 1, 2],
+        "instructions": "0=off-target, 1=partially addresses intent, 2=directly answers user intent."
+      },
+      {
+        "name": "clarity",
+        "scale": [0, 1, 2],
+        "instructions": "0=confusing, 1=understandable but noisy, 2=clear and actionable."
+      }
+    ],
+    "critical_error_definition": "Hallucination, unsafe guidance, or wrong final conclusion.",
+    "pass_rule": {
+      "min_total_score": 6,
+      "critical_error_must_be_false": true
+    },
+    "rater_instructions": [
+      "Read the prompt, model response, and cited evidence only.",
+      "Score each criterion independently.",
+      "Set critical_error=true for hallucination, unsafe guidance, or wrong conclusion.",
+      "Write a one-line rationale per criterion."
+    ],
+    "double_rate_fraction": 0.3
+  },
+  "metrics": {
+    "grounding": [
+      "citation_precision",
+      "substring_overlap_mean",
+      "source_coverage"
+    ],
+    "retrieval": {
+      "k_values": [3, 5, 10],
+      "metrics": ["precision", "recall", "ndcg"]
+    },
+    "task_success": {
+      "pass_at_k": [1, 3, 5],
+      "include": ["success_rate", "exact_match_rate", "unit_test_pass_rate"]
+    },
+    "performance": [
+      "latency_ms",
+      "throughput_tasks_per_min",
+      "cost_usd",
+      "completion_time_s"
+    ]
+  },
+  "reporting": {
+    "require_bootstrap_ci": true,
+    "bootstrap_samples": 1000,
+    "regression_policy": {
+      "quality_drop_absolute": 0.03,
+      "latency_increase_absolute_ms": 300
+    }
+  }
+}

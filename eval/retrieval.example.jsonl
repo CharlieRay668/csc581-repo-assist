@@ -1,0 +1,2 @@
+{"task_id":"T001","ranked_ids":["src/cli.py","src/session_manager.py","README.md"],"relevant_ids":["src/cli.py","src/session_manager.py"],"relevance_grades":{"src/cli.py":3,"src/session_manager.py":2}}
+{"task_id":"T002","ranked_ids":["src/repo_agent.py","src/agent_orchestrator.py","src/tool_gateway.py","README.md"],"relevant_ids":["src/agent_orchestrator.py","src/tool_gateway.py"],"relevance_grades":{"src/agent_orchestrator.py":3,"src/tool_gateway.py":2}}

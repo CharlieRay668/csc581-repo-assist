@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "spec_name": "repo-assist-eval-v1",
+    "n_ratings": 3,
+    "n_results": 2,
+    "n_retrieval": 2
+  },
+  "quality": {
+    "rubric_mean_total": 6.5,
+    "pass_rate": 1.0,
+    "critical_error_rate": 0.0,
+    "by_criterion": {
+      "correctness": {
+        "mean": 1.6666666666666667,
+        "count": 3
+      },
+      "grounding": {
+        "mean": 1.3333333333333333,
+        "count": 3
+      },
+      "relevance": {
+        "mean": 2.0,
+        "count": 3
+      },
+      "clarity": {
+        "mean": 1.6666666666666667,
+        "count": 3
+      }
+    },
+    "rubric_mean_total_ci": {
+      "mean": 6.5,
+      "ci_low": 6,
+      "ci_high": 7
+    },
+    "pass_rate_ci": {
+      "mean": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0
+    }
+  },
+  "grounding": {
+    "citation_precision": 0.7142857142857143,
+    "substring_overlap_mean": 0.745,
+    "source_coverage": 0.6666666666666666
+  },
+  "retrieval": {
+    "p@3": 0.6666666666666666,
+    "r@3": 1.0,
+    "ndcg@3": 0.8326576230214703,
+    "p@5": 0.5833333333333333,
+    "r@5": 1.0,
+    "ndcg@5": 0.8326576230214703,
+    "p@10": 0.5833333333333333,
+    "r@10": 1.0,
+    "ndcg@10": 0.8326576230214703
+  },
+  "task_success": {
+    "success_rate": 0.5,
+    "exact_match_rate": 0.5,
+    "unit_test_pass_rate": 0.75,
+    "pass@1": 0.5,
+    "pass@3": 1.0,
+    "pass@5": 1.0
+  },
+  "performance": {
+    "latency_ms": {
+      "mean": 1230.0,
+      "p50": 1230.0,
+      "p90": 1558.0,
+      "p99": 1631.8
+    },
+    "throughput_tasks_per_min": {
+      "mean": 35.0
+    },
+    "cost_usd": {
+      "mean": 0.018500000000000003,
+      "total": 0.037000000000000005
+    },
+    "completion_time_s": {
+      "mean": 1.9500000000000002,
+      "p90": 2.5500000000000003
+    }
+  },
+  "agreement": {
+    "n_overlap_tasks": 1,
+    "cohen_kappa_pass_fail": 1.0,
+    "weighted_kappa_total_score": 1.0
+  }
+}
