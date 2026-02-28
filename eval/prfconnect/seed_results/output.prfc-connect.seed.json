@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "spec_name": "repo-assist-eval-v1",
+    "n_ratings": 100,
+    "n_results": 100,
+    "n_retrieval": 100
+  },
+  "quality": {
+    "rubric_mean_total": 6.6,
+    "pass_rate": 0.8,
+    "critical_error_rate": 0.0,
+    "by_criterion": {
+      "correctness": {
+        "mean": 1.8,
+        "count": 100
+      },
+      "grounding": {
+        "mean": 1.4,
+        "count": 100
+      },
+      "relevance": {
+        "mean": 2.0,
+        "count": 100
+      },
+      "clarity": {
+        "mean": 1.4,
+        "count": 100
+      }
+    },
+    "rubric_mean_total_ci": {
+      "mean": 6.6,
+      "ci_low": 6.35,
+      "ci_high": 6.85
+    },
+    "pass_rate_ci": {
+      "mean": 0.8,
+      "ci_low": 0.72,
+      "ci_high": 0.88
+    }
+  },
+  "grounding": {
+    "citation_precision": 0.7916666666666666,
+    "substring_overlap_mean": 0.78,
+    "source_coverage": 0.7222222222222222
+  },
+  "retrieval": {
+    "p@3": 0.6566666666666666,
+    "r@3": 0.8702142857142857,
+    "ndcg@3": 1.0,
+    "p@5": 0.488,
+    "r@5": 0.9428571428571428,
+    "ndcg@5": 1.0,
+    "p@10": 0.39752777777777776,
+    "r@10": 1.0,
+    "ndcg@10": 1.0
+  },
+  "task_success": {
+    "success_rate": 0.8,
+    "exact_match_rate": 0.4,
+    "unit_test_pass_rate": 0.85,
+    "pass@1": 0.4,
+    "pass@3": 1.0,
+    "pass@5": 1.0
+  },
+  "performance": {
+    "latency_ms": {
+      "mean": 1450.0,
+      "p50": 1550.0,
+      "p90": 2450.0,
+      "p99": 2450.0
+    },
+    "throughput_tasks_per_min": {
+      "mean": 40.0
+    },
+    "cost_usd": {
+      "mean": 0.019,
+      "total": 1.9000000000000001
+    },
+    "completion_time_s": {
+      "mean": 2.2199999999999998,
+      "p90": 4.1
+    }
+  },
+  "agreement": {
+    "note": "No exactly-two-rater overlaps found."
+  }
+}

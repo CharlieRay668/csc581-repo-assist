@@ -1,23 +1,57 @@
 # Evaluation Files
 
-This directory contains a minimal evaluation framework for pipeline validation.
+This directory contains the evaluation framework and PRFC Connect held-out datasets/results.
 
-## Files
+## Structure
 
-- `eval_spec.json`: rubric, sampling, metric configuration, and reporting rules.
-- `tasks.example.jsonl`: task metadata template.
-- `ratings.example.jsonl`: human/LLM-judge rubric labels template.
-- `run_results.example.jsonl`: task outcomes + performance + grounding template.
-- `retrieval.example.jsonl`: retrieval ranking template.
+- `eval_spec.json`: rubric, metric config, reporting rules.
+- `prfconnect/tasks.prfc-connect.heldout.jsonl`: 100-task held-out set.
+- `prfconnect/answers.prfc-connect.heldout.jsonl`: answer key / expected files and validation hints.
+- `prfconnect/seed_results/`: synthetic baseline artifacts.
+- `prfconnect/real_results/`: artifacts generated from real agent outputs.
 
-## Run
+## 1) Run Seed Evaluation
 
 ```bash
-python -m src.eval_runner \
+python3 -m src.eval_runner \
   --spec eval/eval_spec.json \
-  --ratings eval/ratings.example.jsonl \
-  --results eval/run_results.example.jsonl \
-  --retrieval eval/retrieval.example.jsonl \
-  --output eval/report.json
+  --ratings eval/prfconnect/seed_results/ratings.prfc-connect.heldout.seed.jsonl \
+  --results eval/prfconnect/seed_results/run_results.prfc-connect.heldout.seed.jsonl \
+  --retrieval eval/prfconnect/seed_results/retrieval.prfc-connect.heldout.seed.jsonl \
+  --output eval/prfconnect/seed_results/output.prfc-connect.seed.json
 ```
 
+## 2) Generate Real Agent Outputs (Batch)
+
+```bash
+python3 -m src.run_task_batch \
+  --repo-path /Users/jasonjelincic/Coding/CSC581/csc581-repo-assist/h4i_repos/prfc-connect \
+  --tasks eval/prfconnect/tasks.prfc-connect.heldout.jsonl \
+  --output eval/prfconnect/real_results/agent_outputs.prfc-connect.heldout.jsonl \
+  --default-scope files-only \
+  --default-mode explain
+```
+
+## 3) Convert Agent Outputs to Eval Artifacts
+
+```bash
+python3 -m src.generate_eval_artifacts \
+  --tasks eval/prfconnect/tasks.prfc-connect.heldout.jsonl \
+  --answers eval/prfconnect/answers.prfc-connect.heldout.jsonl \
+  --agent-outputs eval/prfconnect/real_results/agent_outputs.prfc-connect.heldout.jsonl \
+  --ratings-out eval/prfconnect/real_results/ratings.prfc-connect.heldout.auto.jsonl \
+  --retrieval-out eval/prfconnect/real_results/retrieval.prfc-connect.heldout.auto.jsonl \
+  --run-results-out eval/prfconnect/real_results/run_results.prfc-connect.heldout.auto.jsonl \
+  --rater-id auto_rater_prfc_v1
+```
+
+## 4) Run Evaluation on Real Results
+
+```bash
+python3 -m src.eval_runner \
+  --spec eval/eval_spec.json \
+  --ratings eval/prfconnect/real_results/ratings.prfc-connect.heldout.auto.jsonl \
+  --results eval/prfconnect/real_results/run_results.prfc-connect.heldout.auto.jsonl \
+  --retrieval eval/prfconnect/real_results/retrieval.prfc-connect.heldout.auto.jsonl \
+  --output eval/prfconnect/real_results/output.prfc-connect.auto.json
+```
