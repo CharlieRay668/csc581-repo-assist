@@ -26,7 +26,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--tasks", required=True, help="Path to task file (.jsonl or .json)")
     parser.add_argument("--output", required=True, help="Output JSONL path for model responses")
 
-    parser.add_argument("--model", default="gemini-2.5-flash", help="Model name")
+    parser.add_argument("--model", default="gemini-2.5-flash", help="Default model name")
+    parser.add_argument(
+        "--model-map",
+        default=None,
+        help='JSON string mapping modes to model names, e.g. \'{"explain":"gemini-2.5-flash","locate":"gemini-2.5-flash"}\'')
     parser.add_argument("--default-mode", choices=["explain", "locate", "suggest", "patch"], default="explain")
     parser.add_argument("--default-scope", choices=["files-only", "include-pr"], default="include-pr")
     parser.add_argument("--max-turns", type=int, default=10, help="Max orchestrator turns per task")
@@ -133,11 +137,17 @@ def main() -> None:
             verbose=args.verbose,
         )
 
+    model_map = None
+    if args.model_map:
+        import json as _json
+        model_map = _json.loads(args.model_map)
+
     try:
         orchestrator = AgentOrchestrator(
             gateway=gateway,
             session=session_mgr,
             model=args.model,
+            model_map=model_map,
         )
     except Exception as exc:
         print(f"Error creating orchestrator: {exc}", file=sys.stderr)
@@ -196,6 +206,16 @@ def main() -> None:
                     "patch_diff": result.final_response.patch_diff,
                     "next_actions": result.final_response.next_actions,
                     "tool_call_count": len(result.executed_tool_calls),
+                    "tool_calls": [
+                        {
+                            "tool_name": tc.tool_name,
+                            "args": tc.args,
+                            "result": tc.result,
+                            "error": tc.error,
+                        }
+                        for tc in result.executed_tool_calls
+                    ],
+                    "raw_turns": result.raw_turns,
                     "latency_ms": elapsed_ms,
                     "started_at": started_at,
                     "finished_at": utc_now(),

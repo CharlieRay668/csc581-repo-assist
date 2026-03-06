@@ -50,6 +50,7 @@ class OrchestratorResult:
     executed_tool_calls: list[ExecutedToolCall]
     consolidated_evidence: list[Citation]
     final_response: FinalResponse
+    raw_turns: list[dict] = field(default_factory=list)
 
 
 MODES = ("explain", "locate", "suggest", "patch")
@@ -76,6 +77,24 @@ MODE_INSTRUCTIONS = {
 }
 
 
+# Default model map: each mode routes to a specialist model.
+# Override with model_map param or use a single model for all modes.
+DEFAULT_MODEL_MAP: dict[str, str] = {
+    "explain": "gemini-2.5-flash",
+    "locate":  "gemini-2.5-flash",
+    "suggest": "gemini-2.5-flash",
+    "patch":   "gemini-2.5-flash",
+}
+
+# Intent keywords used by _classify_intent for auto-routing
+_INTENT_KEYWORDS: dict[str, list[str]] = {
+    "patch":   ["fix", "patch", "change", "modify", "update", "refactor", "diff", "edit"],
+    "locate":  ["where", "find", "locate", "which file", "what file", "defined", "implemented"],
+    "suggest": ["suggest", "improve", "recommend", "next step", "should", "todo", "how to"],
+    "explain": ["explain", "what", "how", "why", "describe", "walk through", "overview"],
+}
+
+
 class AgentOrchestrator:
 
     def __init__(
@@ -83,23 +102,45 @@ class AgentOrchestrator:
                     gateway: ToolGateway, 
                     session: Optional[SessionManager] = None,
                     api_key: Optional[str] = None, 
-                    model: str = "gemini-2.5-flash"
+                    model: str = "gemini-2.5-flash",
+                    model_map: Optional[dict[str, str]] = None,
                 ):
         self.gateway = gateway
         self.session = session
         self.model = model
+        self.model_map = model_map if model_map is not None else {m: model for m in MODES}
         api_key = api_key or os.environ.get("GEMINI_API_KEY")
         if not api_key:
             raise ValueError("GEMINI_API_KEY environment variable or api_key parameter required")
         self.client = genai.Client(api_key=api_key)
         self._tools = self._define_tools()
 
+    @staticmethod
+    def _classify_intent(query: str) -> str:
+        """Auto-detect mode from query text using keyword heuristics."""
+        q = query.lower()
+        scores = {mode: 0 for mode in MODES}
+        for mode, keywords in _INTENT_KEYWORDS.items():
+            for kw in keywords:
+                if kw in q:
+                    scores[mode] += 1
+        best = max(scores, key=scores.get)  # type: ignore[arg-type]
+        return best if scores[best] > 0 else "explain"
+
     def run(self, query: str, mode: str = "explain", scope: str = "include-pr",
             max_turns: int = 10, verbose: bool = False) -> OrchestratorResult:
+        if mode == "auto":
+            mode = self._classify_intent(query)
+            if verbose:
+                print(f"[Router] Auto-classified mode: {mode}")
         if mode not in MODES:
             raise ValueError(f"mode must be one of {MODES}")
         if scope not in SCOPES:
             raise ValueError(f"scope must be one of {SCOPES}")
+
+        active_model = self.model_map.get(mode, self.model)
+        if verbose:
+            print(f"[Router] Using model {active_model} for mode {mode}")
 
         system_prompt = self._build_system_prompt(mode, scope)
         contents = [
@@ -122,7 +163,7 @@ class AgentOrchestrator:
             tools = self._tools_for_scope(scope)
 
             response = self.client.models.generate_content(
-                model=self.model,
+                model=active_model,
                 contents=contents,
                 config=types.GenerateContentConfig(tools=tools, temperature=0.2),
             )
@@ -188,7 +229,7 @@ class AgentOrchestrator:
                 parts=[types.Part(text="Please provide your final answer based on the evidence gathered.")],
             ))
             fallback = self.client.models.generate_content(
-                model=self.model,
+                model=active_model,
                 contents=contents,
                 config=types.GenerateContentConfig(temperature=0.2),
             )
@@ -215,6 +256,7 @@ class AgentOrchestrator:
             executed_tool_calls=executed_calls,
             consolidated_evidence=evidence,
             final_response=final_response,
+            raw_turns=self._serialize_contents(contents),
         )
 
     def _consolidate_evidence(self, executed: list[ExecutedToolCall]) -> list[Citation]:
@@ -336,6 +378,25 @@ class AgentOrchestrator:
         ]
         cleaned = text[: match.start()] + text[match.end():]
         return [a for a in actions if a], cleaned.strip()
+
+    @staticmethod
+    def _serialize_contents(contents: list) -> list[dict]:
+        """Serialize the Gemini contents list into plain dicts for trajectory export."""
+        turns = []
+        for content in contents:
+            role = getattr(content, "role", "unknown")
+            parts_out = []
+            for part in getattr(content, "parts", []):
+                if getattr(part, "function_call", None):
+                    fc = part.function_call
+                    parts_out.append({"type": "function_call", "name": fc.name, "args": dict(fc.args)})
+                elif getattr(part, "function_response", None):
+                    fr = part.function_response
+                    parts_out.append({"type": "function_response", "name": fr.name, "response": fr.response})
+                elif getattr(part, "text", None):
+                    parts_out.append({"type": "text", "text": part.text})
+            turns.append({"role": role, "parts": parts_out})
+        return turns
 
     def _build_system_prompt(self, mode: str, scope: str) -> str:
         stats = self.gateway.stats()
