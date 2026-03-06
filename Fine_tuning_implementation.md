@@ -79,7 +79,7 @@ The system extends beyond a single-model agent into a **multi-agent specialist a
                                 │                              │
                                 │  • File walking & chunking   │
                                 │  • GitHub API integration    │
-                                │  • TF-IDF semantic search    │
+                                │  • Substring search          │
                                 └──────────────────────────────┘
 ```
 
@@ -120,9 +120,10 @@ Task/Answer Pairs (JSONL)
 
 Walks a repository directory and produces a searchable in-memory index.
 
-- **Chunking:** Files split into chunks of 10–40 lines with 5-line overlap
+- **Chunking:** Files split into fixed-size segments of up to 40 lines with 5-line overlap between consecutive chunks. Files under 10 lines are kept as a single chunk.
 - **Filtering:** Ignores `node_modules`, `.git`, binary files, lock files, etc.
-- **Search:** TF-IDF based semantic search over chunks
+- **Fingerprinting:** Each file is hashed using truncated SHA-256 (16 hex chars) for change detection metadata.
+- **Search:** Case-insensitive substring matching over chunks (not TF-IDF or embedding-based). Results are returned in file-walk order, without relevance ranking.
 - **GitHub integration:** Fetches issues and PRs via GitHub REST API
 
 ### 3.2 Tool Gateway (`src/tool_gateway.py`)
@@ -678,7 +679,7 @@ export TINKER_API_KEY="..."   # for training only
 |---|---|---|
 | `src/agent_orchestrator.py` | 573 | ReAct agent loop, mode routing, trajectory serialization |
 | `src/tool_gateway.py` | 279 | Tool interface wrapping repo ingestion |
-| `src/repo_ingestion.py` | 467 | File walking, chunking, TF-IDF search, GitHub API |
+| `src/repo_ingestion.py` | 467 | File walking, chunking, substring search, GitHub API |
 | `src/session_manager.py` | 127 | Session persistence and query history |
 | `src/cli.py` | — | Interactive CLI entry point |
 | `src/run_task_batch.py` | 258 | Batch runner for evaluation / trajectory generation |
