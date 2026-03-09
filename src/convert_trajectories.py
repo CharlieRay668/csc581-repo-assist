@@ -124,7 +124,9 @@ def convert_row(row: dict) -> dict | None:
         messages.extend(convert_raw_turns(raw_turns))
     else:
         messages.extend(convert_from_tool_calls(row))
-        messages.append({"role": "assistant", "content": answer})
+
+    # Always append the final answer so the conversation ends with role=assistant
+    messages.append({"role": "assistant", "content": answer})
 
     return {
         "task_id": row.get("task_id"),

@@ -1,0 +1,34 @@
+Loaded 100 conversations from training_data/conversations.jsonl
+Prepared 100 training examples (0 skipped)
+  [Step 10] loss=0.5637
+  [Step 20] loss=0.5162
+Epoch 1/7 — avg_loss=0.8427 (25 batches)
+  Saved checkpoint: sft-epoch-1
+  [Step 30] loss=0.6435
+  [Step 40] loss=0.5150
+  [Step 50] loss=0.8448
+Epoch 2/7 — avg_loss=0.5946 (25 batches)
+  Saved checkpoint: sft-epoch-2
+  [Step 60] loss=0.3639
+  [Step 70] loss=0.3577
+Epoch 3/7 — avg_loss=0.4754 (25 batches)
+  Saved checkpoint: sft-epoch-3
+  [Step 80] loss=0.4143
+  [Step 90] loss=0.2875
+  [Step 100] loss=0.4279
+Epoch 4/7 — avg_loss=0.3351 (25 batches)
+  Saved checkpoint: sft-epoch-4
+  [Step 110] loss=0.1736
+  [Step 120] loss=0.1538
+Epoch 5/7 — avg_loss=0.1953 (25 batches)
+  Saved checkpoint: sft-epoch-5
+  [Step 130] loss=0.2767
+  [Step 140] loss=0.1504
+  [Step 150] loss=0.1855
+Epoch 6/7 — avg_loss=0.1916 (25 batches)
+  Saved checkpoint: sft-epoch-6
+  [Step 160] loss=0.2088
+  [Step 170] loss=0.1091
+Epoch 7/7 — avg_loss=0.1836 (25 batches)
+  Saved checkpoint: sft-epoch-7
+SFT training complete.

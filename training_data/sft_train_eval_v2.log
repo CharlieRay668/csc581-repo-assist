@@ -1,0 +1,61 @@
+Loaded 100 conversations from training_data/conversations.jsonl
+Prepared 100 training examples (0 skipped)
+  [Step 10] loss=0.5637
+  [Step 20] loss=0.5183
+Epoch 1/7 — avg_loss=0.8449 (25 batches)
+  Saved checkpoint: sft-epoch-1 → tinker://38b4be07-1ac0-5d16-81f6-73c8918aca6e:train:0/weights/sft-epoch-1
+  [Step 30] loss=0.6385
+  [Step 40] loss=0.5213
+  [Step 50] loss=0.8496
+Epoch 2/7 — avg_loss=0.5978 (25 batches)
+  Saved checkpoint: sft-epoch-2 → tinker://38b4be07-1ac0-5d16-81f6-73c8918aca6e:train:0/weights/sft-epoch-2
+  [Step 60] loss=0.3697
+  [Step 70] loss=0.3604
+Epoch 3/7 — avg_loss=0.4802 (25 batches)
+  Saved checkpoint: sft-epoch-3 → tinker://38b4be07-1ac0-5d16-81f6-73c8918aca6e:train:0/weights/sft-epoch-3
+  [Step 80] loss=0.4202
+  [Step 90] loss=0.2924
+  [Step 100] loss=0.4354
+Epoch 4/7 — avg_loss=0.3367 (25 batches)
+  Saved checkpoint: sft-epoch-4 → tinker://38b4be07-1ac0-5d16-81f6-73c8918aca6e:train:0/weights/sft-epoch-4
+  [Step 110] loss=0.1794
+  [Step 120] loss=0.1476
+Epoch 5/7 — avg_loss=0.1902 (25 batches)
+  Saved checkpoint: sft-epoch-5 → tinker://38b4be07-1ac0-5d16-81f6-73c8918aca6e:train:0/weights/sft-epoch-5
+  [Step 130] loss=0.2990
+  [Step 140] loss=0.1561
+  [Step 150] loss=0.1959
+Epoch 6/7 — avg_loss=0.1923 (25 batches)
+  Saved checkpoint: sft-epoch-6 → tinker://38b4be07-1ac0-5d16-81f6-73c8918aca6e:train:0/weights/sft-epoch-6
+  [Step 160] loss=0.1847
+  [Step 170] loss=0.1074
+Epoch 7/7 — avg_loss=0.1859 (25 batches)
+  Saved checkpoint: sft-epoch-7 → tinker://38b4be07-1ac0-5d16-81f6-73c8918aca6e:train:0/weights/sft-epoch-7
+SFT training complete.
+Final checkpoint path: tinker://38b4be07-1ac0-5d16-81f6-73c8918aca6e:train:0/weights/sft-epoch-7
+
+============================================================
+POST-TRAINING EVALUATION
+============================================================
+Loaded 100 eval tasks
+Creating sampling client from trained weights...
+Sampling client ready.
+  [1/100] PRFC-E001 (locate)... ok (0 words, 7065ms)
+  [2/100] PRFC-E002 (locate)... ok (0 words, 6961ms)
+  [3/100] PRFC-E003 (locate)... ok (0 words, 8345ms)
+  [4/100] PRFC-E004 (locate)... ok (0 words, 9204ms)
+  [5/100] PRFC-E005 (locate)... ok (0 words, 7639ms)
+  [6/100] PRFC-E006 (locate)... ok (0 words, 8601ms)
+  [7/100] PRFC-E007 (locate)... ok (0 words, 8389ms)
+  [8/100] PRFC-E008 (locate)... ok (0 words, 9325ms)
+  [9/100] PRFC-E009 (locate)... ok (0 words, 6938ms)
+  [10/100] PRFC-E010 (locate)... ok (0 words, 7598ms)
+  [11/100] PRFC-E011 (locate)... ok (0 words, 6965ms)
+  [12/100] PRFC-E012 (locate)... ok (0 words, 6957ms)
+  [13/100] PRFC-E013 (locate)... ok (0 words, 7737ms)
+  [14/100] PRFC-E014 (locate)... ok (0 words, 7213ms)
+  [15/100] PRFC-E015 (locate)... ok (0 words, 8452ms)
+  [16/100] PRFC-E016 (locate)... ok (0 words, 7737ms)
+  [17/100] PRFC-E017 (locate)... ok (0 words, 10751ms)
+  [18/100] PRFC-E018 (locate)... ok (0 words, 7642ms)
+  [19/100] PRFC-E019 (locate)... _run_sft.sh: line 19:  6866 Terminated: 15          python -m src.training.sft_train --data training_data/conversations.jsonl --model Qwen/Qwen3-8B --epochs 7 --lr 1e-4 --batch-size 4 --lora-rank 32 --eval-tasks eval/prfconnect/tasks.prfc-connect.heldout.jsonl --eval-answers eval/prfconnect/answers.prfc-connect.heldout.jsonl --eval-spec eval/eval_spec.json --eval-output-dir eval/prfconnect/sft_results --eval-baseline eval/prfconnect/real_results/output.prfc-connect.auto.json

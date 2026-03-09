@@ -1,0 +1,152 @@
+Checkpoint: tinker://38b4be07-1ac0-5d16-81f6-73c8918aca6e:train:0/weights/sft-epoch-7
+Loaded 100 tasks from eval/prfconnect/tasks.prfc-connect.heldout.jsonl
+Connecting to Tinker...
+Loading checkpoint into training client...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Tokenizer loaded (Qwen/Qwen3-8B)
+Creating sampling client from loaded weights...
+Sampling client ready.
+  [1/100] PRFC-E001 (locate)... ok (3 words, 6488ms)
+  [2/100] PRFC-E002 (locate)... ok (3 words, 6347ms)
+  [3/100] PRFC-E003 (locate)... ok (14 words, 6962ms)
+  [4/100] PRFC-E004 (locate)... ok (32 words, 7797ms)
+  [5/100] PRFC-E005 (locate)... ok (18 words, 7001ms)
+  [6/100] PRFC-E006 (locate)... ok (23 words, 7726ms)
+  [7/100] PRFC-E007 (locate)... ok (22 words, 7697ms)
+  [8/100] PRFC-E008 (locate)... ok (72 words, 11247ms)
+  [9/100] PRFC-E009 (locate)... ok (17 words, 7065ms)
+  [10/100] PRFC-E010 (locate)... ok (92 words, 12389ms)
+  [11/100] PRFC-E011 (locate)... ok (31 words, 7164ms)
+  [12/100] PRFC-E012 (locate)... ok (49 words, 7781ms)
+  [13/100] PRFC-E013 (locate)... ok (3 words, 6380ms)
+  [14/100] PRFC-E014 (locate)... ok (21 words, 7134ms)
+  [15/100] PRFC-E015 (locate)... ok (3 words, 6401ms)
+  [16/100] PRFC-E016 (locate)... ok (43 words, 8422ms)
+  [17/100] PRFC-E017 (locate)... ok (29 words, 7658ms)
+  [18/100] PRFC-E018 (locate)... ok (15 words, 7209ms)
+  [19/100] PRFC-E019 (locate)... ok (18 words, 7781ms)
+  [20/100] PRFC-E020 (locate)... ok (19 words, 7064ms)
+  [21/100] PRFC-E021 (locate)... ok (11 words, 7065ms)
+  [22/100] PRFC-E022 (locate)... ok (32 words, 7782ms)
+  [23/100] PRFC-E023 (locate)... ok (22 words, 7062ms)
+  [24/100] PRFC-E024 (locate)... ok (3 words, 6432ms)
+  [25/100] PRFC-E025 (locate)... ok (55 words, 8620ms)
+  [26/100] PRFC-E026 (locate)... ok (44 words, 8498ms)
+  [27/100] PRFC-E027 (locate)... ok (31 words, 6998ms)
+  [28/100] PRFC-E028 (locate)... ok (89 words, 9280ms)
+  [29/100] PRFC-E029 (locate)... ok (26 words, 7071ms)
+  [30/100] PRFC-E030 (locate)... ok (10 words, 7026ms)
+  [31/100] PRFC-E031 (locate)... ok (36 words, 7635ms)
+  [32/100] PRFC-E032 (locate)... ok (18 words, 7709ms)
+  [33/100] PRFC-E033 (locate)... ok (16 words, 7004ms)
+  [34/100] PRFC-E034 (locate)... ok (148 words, 13724ms)
+  [35/100] PRFC-E035 (locate)... ok (67 words, 8455ms)
+  [36/100] PRFC-E036 (locate)... ok (23 words, 7719ms)
+  [37/100] PRFC-E037 (locate)... ok (33 words, 7671ms)
+  [38/100] PRFC-E038 (locate)... ok (11 words, 7174ms)
+  [39/100] PRFC-E039 (locate)... ok (16 words, 6985ms)
+  [40/100] PRFC-E040 (locate)... ok (26 words, 6939ms)
+  [41/100] PRFC-M001 (explain)... ok (810 words, 39834ms)
+  [42/100] PRFC-M002 (explain)... ok (660 words, 29798ms)
+  [43/100] PRFC-M003 (explain)... ok (574 words, 29694ms)
+  [44/100] PRFC-M004 (explain)... ok (420 words, 25702ms)
+  [45/100] PRFC-M005 (explain)... ok (925 words, 39878ms)
+  [46/100] PRFC-M006 (explain)... ok (785 words, 35788ms)
+  [47/100] PRFC-M007 (explain)... ok (756 words, 35947ms)
+  [48/100] PRFC-M008 (explain)... ok (757 words, 701789ms)
+  [49/100] PRFC-M009 (explain)... ok (864 words, 40104ms)
+  [50/100] PRFC-M010 (explain)... ok (844 words, 44151ms)
+  [51/100] PRFC-M011 (explain)... ok (481 words, 24869ms)
+  [52/100] PRFC-M012 (explain)... ok (1079 words, 46174ms)
+  [53/100] PRFC-M013 (explain)... ok (669 words, 35942ms)
+  [54/100] PRFC-M014 (explain)... ok (729 words, 37304ms)
+  [55/100] PRFC-M015 (explain)... ok (915 words, 62224ms)
+  [56/100] PRFC-M016 (explain)... ok (892 words, 40124ms)
+  [57/100] PRFC-M017 (explain)... ok (777 words, 36286ms)
+  [58/100] PRFC-M018 (explain)... ok (646 words, 36019ms)
+  [59/100] PRFC-M019 (explain)... ok (1205 words, 44011ms)
+  [60/100] PRFC-M020 (explain)... ok (834 words, 43858ms)
+  [61/100] PRFC-M021 (explain)... ok (715 words, 29861ms)
+  [62/100] PRFC-M022 (explain)... ok (764 words, 38066ms)
+  [63/100] PRFC-M023 (explain)... ok (784 words, 29848ms)
+  [64/100] PRFC-M024 (explain)... ok (605 words, 32360ms)
+  [65/100] PRFC-M025 (explain)... ok (685 words, 38094ms)
+  [66/100] PRFC-M026 (explain)... ok (816 words, 44037ms)
+  [67/100] PRFC-M027 (explain)... ok (1059 words, 42487ms)
+  [68/100] PRFC-M028 (explain)... ok (1095 words, 46726ms)
+  [69/100] PRFC-M029 (explain)... ok (853 words, 43077ms)
+  [70/100] PRFC-M030 (explain)... ok (932 words, 46250ms)
+  [71/100] PRFC-M031 (explain)... ok (427 words, 28054ms)
+  [72/100] PRFC-M032 (explain)... ok (588 words, 36077ms)
+  [73/100] PRFC-M033 (explain)... ok (430 words, 56119ms)
+  [74/100] PRFC-M034 (explain)... ok (807 words, 46793ms)
+  [75/100] PRFC-M035 (explain)... ok (975 words, 46059ms)
+  [76/100] PRFC-M036 (explain)... ok (584 words, 29919ms)
+  [77/100] PRFC-M037 (explain)... ok (715 words, 35918ms)
+  [78/100] PRFC-M038 (explain)... ok (566 words, 51757ms)
+  [79/100] PRFC-M039 (explain)... ok (458 words, 23572ms)
+  [80/100] PRFC-M040 (explain)... ok (839 words, 43887ms)
+  [81/100] PRFC-H001 (suggest)... ok (510 words, 27723ms)
+  [82/100] PRFC-H002 (suggest)... ok (699 words, 36057ms)
+  [83/100] PRFC-H003 (suggest)... ok (739 words, 42092ms)
+  [84/100] PRFC-H004 (suggest)... ok (1108 words, 45983ms)
+  [85/100] PRFC-H005 (suggest)... ok (949 words, 40465ms)
+  [86/100] PRFC-H006 (suggest)... ok (794 words, 40948ms)
+  [87/100] PRFC-H007 (suggest)... ok (840 words, 38519ms)
+  [88/100] PRFC-H008 (suggest)... ok (814 words, 42013ms)
+  [89/100] PRFC-H009 (suggest)... ok (1174 words, 45960ms)
+  [90/100] PRFC-H010 (suggest)... ok (1123 words, 46060ms)
+  [91/100] PRFC-H011 (suggest)... ok (859 words, 38319ms)
+  [92/100] PRFC-H012 (suggest)... ok (514 words, 25959ms)
+  [93/100] PRFC-H013 (suggest)... ok (870 words, 38038ms)
+  [94/100] PRFC-H014 (suggest)... ok (451 words, 27824ms)
+  [95/100] PRFC-H015 (suggest)... ok (1085 words, 48544ms)
+  [96/100] PRFC-H016 (suggest)... ok (576 words, 47900ms)
+  [97/100] PRFC-H017 (suggest)... ok (414 words, 47839ms)
+  [98/100] PRFC-H018 (suggest)... ok (968 words, 37987ms)
+  [99/100] PRFC-H019 (suggest)... ok (574 words, 50278ms)
+  [100/100] PRFC-H020 (suggest)... ok (870 words, 37714ms)
+
+Agent outputs: eval/prfconnect/sft_results/agent_outputs.sft.jsonl
+Generating eval artifacts...
+{
+  "tasks_total": 100,
+  "matched_agent_outputs": 100,
+  "missing_agent_outputs": 0,
+  "ratings_out": "eval/prfconnect/sft_results/ratings.sft.jsonl",
+  "retrieval_out": "eval/prfconnect/sft_results/retrieval.sft.jsonl",
+  "run_results_out": "eval/prfconnect/sft_results/run_results.sft.jsonl",
+  "difficulty_counts": {
+    "easy": 40,
+    "medium": 40,
+    "hard": 20
+  }
+}
+Computing scorecard...
+
+Scorecard: eval/prfconnect/sft_results/output.sft.json
+
+============================================================
+SFT MODEL EVALUATION RESULTS
+============================================================
+  Pass rate:        0.05
+  Rubric mean:      3.76
+  Critical errors:  0.36
+    correctness: 0.1
+    grounding: 0.78
+    relevance: 1.52
+    clarity: 1.36
+  Success rate:     0.05
+  Exact match:      0.04
+  P@3:              0.035
+  R@3:              0.035
+  nDCG@3:           0.03787154602990972
+
+  Δ vs Baseline (Gemini):
+    quality.pass_rate: -0.5200
+    quality.rubric_mean_total: -2.0800
+    task_success.success_rate: -0.4000
+    retrieval.p@3: -0.3133
+    retrieval.r@3: -0.4928
+    retrieval.ndcg@3: -0.4564
+============================================================
