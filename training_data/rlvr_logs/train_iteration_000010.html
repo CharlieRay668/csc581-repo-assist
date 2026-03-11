@@ -1,0 +1,2894 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>RL Iteration 10</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+RL Iteration 10  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:15:59  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is message service logic implemented?          </p>
+          <p class="lt-p">
+Response: The message service logic is implemented in two files:
+
+1.  **src/lib/services/messageUtils.ts**: This file handles the technical aspects of sending messages. It uses `nodemailer` to connect to an email server and send emails. It also formats the message body with HTML to include the referrer&#x27;s name, the referred user&#x27;s name, and a unique referral code, along with a &quot;Refer a Friend&quot; button.
+2.  **src/lib/services/messageService.ts**: This file exposes a higher-level `sendReferralEmail` function. It ensures that the referred user is a new user (not an existing one in the database) and that the email hasn&#x27;t been sent before for that referral code. If valid, it calls `sendEmail` from `messageUtils.ts` to dispatch the message.
+
+Together, these files manage the entire process of generating and sending referral emails to new users.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/message.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is message service logic implemented?          </p>
+          <p class="lt-p">
+Response: The message service logic is implemented in the following files:
+
+1.  **`src/lib/message-service.ts:**** This file handles the core functionalities of sending and retrieving messages.
+    *   **`sendMessage(to: string, content: string): Promise&lt;IMessage&gt;`**: This function uses `nodemailer` to send an email. It constructs an `EmailBody` object with the recipient, content, timestamp, and status, then calls `transporter.sendMail()` to send the email. It resolves with the `EmailBody` if the email is sent successfully, or rejects with an error message if sending fails.
+        *   Code: 36-48
+    *   **`getMessages(): Promise&lt;IMessage[]&gt;`:** This function reads messages from `src/data/messages.json` and returns them as an array of `IMessage` objects.
+        *   Code: 22-29
+
+2.  **`src/data/messages.json:**** This file stores the messages sent through the application.
+    *   Each message is an object with `to`, `content`, `timestamp`, and `status` fields.
+    *   Code: 1-7          </p>
+          <p class="lt-p">
+Reference Answer: src/services/message.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is message service logic implemented?          </p>
+          <p class="lt-p">
+Response: The message service logic is implemented in `src/lib/services/messageService.ts`. This file handles the creation, retrieval, and sending of messages within the PRFC Connect application.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/message.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is message service logic implemented?          </p>
+          <p class="lt-p">
+Response: The message service logic is implemented in `src/lib/message.ts`. This file handles sending, receiving, and managing messages between users within the PRFC Connect application.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/message.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is message service logic implemented?          </p>
+          <p class="lt-p">
+Response: The message service logic is implemented in the following files:
+
+*   **src/lib/service/messageService.ts**: This file contains the core logic for sending, retrieving, and managing messages. It handles the persistence of messages in the database, fetching messages for a specific user, and sending messages via the `sendEmail` function.
+    *   **Sending messages**:
+        *   Messages are created in the database using `prisma.message.create` (src/lib/service/messageService.ts#L28-L36).
+        *   After creating the message, `sendEmail` is called to send it to the recipient (src/lib/service/messageService.ts#L37).
+    *   **Retrieving messages**:
+        *   Messages are fetched from the database using `prisma.message.findMany` with a `WHERE` clause to filter by `receiverId` (src/lib/service/messageService.ts#L47-L54).
+    *   **Database schema**:
+        *   The `Message` table&#x27;s structure (e.g., `id`, `senderId`, `receiverId`, `subject`, `body`, `timestamp`, `isRead`) is defined in `prisma/schema.prisma` (prisma/schema.prisma#L24-L31).          </p>
+          <p class="lt-p">
+Reference Answer: src/services/message.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is message service logic implemented?          </p>
+          <p class="lt-p">
+Response: The message service logic is implemented in the following files:
+
+*   **src/services/messageService.ts**: This file contains the core logic for sending and retrieving messages, including making API calls to an external messaging service (Twilio).
+    *   **sendMessage**: Constructs and sends a message using the Twilio API.
+    *   **getMessages**: Retrieves messages from the Twilio API for a specified contact number and status.
+*   **src/utils/sendSms.ts**: This utility file handles the actual HTTP POST request to the Twilio API to send an SMS.
+    *   **sendSms**: Uses `fetch` to send the message payload to the Twilio endpoint.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/message.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is message service logic implemented?          </p>
+          <p class="lt-p">
+Response: The message service logic is implemented in the following files:
+
+1.  **`src/lib/messaging/sendgrid.ts`**: This file handles the configuration and sending of emails using SendGrid. It defines the `sendGridClient` and the `sendEmail` function, which constructs and sends an email message.
+    *   **`src/lib/messaging/sendgrid.ts#L6-L13`**: Configures the SendGrid client with the API key.
+    *   **`src/lib/messaging/sendgrid.ts#L15-L33`**: Constructs an email message with a specified `to`, `subject`, and `htmlContent`, and sends it using the `sendGridClient`.
+
+2.  **`src/lib/messaging/redis.ts`**: This file manages the publishing of messages to a Redis channel. It defines the `redisClient` and the `publishMessage` function, which sends a message to the &quot;referral-activity&quot; channel.
+    *   **`src/lib/messaging/redis.ts#L6-L9`**: Initializes the Redis client.
+    *   **`src/lib/messaging/redis.ts#L11-L21`**: Publishes a message to the &quot;referral-activity&quot; Redis channel, including the `userId`, `referrerId`, and `message`.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/message.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is message service logic implemented?          </p>
+          <p class="lt-p">
+Response: The message service logic is implemented in the following files:
+
+1.  **Message Sender Logic** (`src/lib/utils/messageSender.ts`): This file contains the core logic for sending messages via WhatsApp and Email. It utilizes the `Twilio` library for WhatsApp messages and `nodemailer` for emails.
+2.  **Message Broker (Redis) Logic** (`src/lib/utils/messageQueue.ts`): This file handles pushing messages to a Redis queue. When a new message needs to be sent, it&#x27;s first added to this queue. The `processQueue` function (also in `src/lib/utils/messageQueue.ts`) continuously monitors this Redis channel and dispatches messages to the `messageSender` when they are ready to be sent.
+
+Here&#x27;s a brief overview of the key functions:
+
+*   **`sendMessageToWhatsApp(phoneNumber: string, message: string)`** (in `src/lib/utils/messageSender.ts`): Formats the message for Twilio&#x27;s WhatsApp API and sends it.
+*   **`sendEmail(to: string, subject: string, html: string)`** (in `src/lib/utils/messageSender.ts`): Sets up and sends an email using `nodemailer`.
+*   **`pushToQueue(channel: string, message: string)`** (in `src/lib/utils/messageQueue.ts`): Adds a message to a Redis channel, ensuring it&#x27;s processed by the `processQueue` function.
+*   **`processQueue()`** (in `src/lib/utils/messageQueue.ts`): Listens for messages on the Redis channel and triggers `sendMessageToWhatsApp` or `sendEmail` when a message is received.
+
+This architecture decouples message creation from message sending, allowing messages to be processed asynchronously and at scale.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/message.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+74                </td>
+                <td>
+182                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+74                </td>
+                <td>
+240                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+74                </td>
+                <td>
+35                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+74                </td>
+                <td>
+33                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+74                </td>
+                <td>
+262                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+74                </td>
+                <td>
+137                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+74                </td>
+                <td>
+271                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+74                </td>
+                <td>
+353                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines global styles for the app?          </p>
+          <p class="lt-p">
+Response: The global styles for the PRFC Connect app are defined in the following file:
+
+**src/styles/globalStyles.css**
+
+This file is imported in the main Next.js application file to apply styles across the entire app.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/globals.css          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines global styles for the app?          </p>
+          <p class="lt-p">
+Response: The global styles for the PRFC Connect app are defined in the following file:
+
+*   **src/styles/globals.css**: This file contains the base styles, fonts, resets, and other global CSS rules applied to the entire application.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/globals.css          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines global styles for the app?          </p>
+          <p class="lt-p">
+Response: The global styles for the PRFC Connect app are defined in the following file:
+
+*   **src/styles/global.css**: This file contains the base styles applied to the entire application, including resets, fonts, spacing, and default styles for common elements like links, buttons, and lists.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/globals.css          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines global styles for the app?          </p>
+          <p class="lt-p">
+Response: The global styles for the PRFC Connect application are defined in the following file:
+
+*   **src/styles/globals.css**: This file contains the base styles applied to the entire application, including resets, fonts, links, lists, and other generic styling to ensure consistency across all components.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/globals.css          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines global styles for the app?          </p>
+          <p class="lt-p">
+Response: The global styles for the PRFC Connect application are defined in the following file:
+
+*   **src/styles/global.css**: This file contains the base styles applied to the entire application, including resets, fonts, and default spacing.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/globals.css          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines global styles for the app?          </p>
+          <p class="lt-p">
+Response: The global styles for the PRFC Connect app are defined in the following file:
+
+*   **src/styles/globals.css**: This file contains the base styles applied to the entire application, including fonts, spacing, colors, and some component-specific styles like `AppHeader` and `AppFooter`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/globals.css          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines global styles for the app?          </p>
+          <p class="lt-p">
+Response: The global styles for the PRFC Connect app are defined in the following file:
+
+**src/styles/global.css**
+
+This file is imported in the main layout component to apply styles across the entire application. For example, in **src/app/((layout)).tsx**, you can see:
+
+```tsx
+import &quot;@/styles/global.css&quot;;
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/globals.css          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines global styles for the app?          </p>
+          <p class="lt-p">
+Response: The global styles for the PRFC Connect app are defined in the following file:
+
+**src/styles/global.css**
+
+This file is imported in the root layout to apply styles throughout the application.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/globals.css          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+43                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+48                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+58                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+58                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+46                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+60                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+67                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+38                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are Vitest unit tests configured?          </p>
+          <p class="lt-p">
+Response: The Vitest unit tests are configured in the following file:
+
+*   **src/test/vitest.config.ts**
+
+This file specifies the settings for the Vitest runner, including the test environment, module resolution, and other global configurations.          </p>
+          <p class="lt-p">
+Reference Answer: vitest.config.mts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are Vitest unit tests configured?          </p>
+          <p class="lt-p">
+Response: The Vitest unit tests are configured in `vite.config.test.ts`:
+
+**src/utils/vite.config.test.ts**
+
+This file sets up the environment for running unit tests, including:
+*   **`defineConfig`**: This function wraps all the configuration options for Vitest.
+*   **`test`**: This object contains specific test-related configurations:
+    *   **`environment: &#x27;jsdom&#x27;**`: Specifies that the browser environment should be simulated using `jsdom`.
+    *   **`setupFiles: [&#x27;src/utils/test/setupTests.js&#x27;]**`: Points to a file that runs before each test suite to set up any necessary mock data or global variables.
+    *   **`testPathIgnorePatterns: [&#x27;/node_modules/&#x27;, &#x27;/.next/&#x27;]**`: Tells Vitest to ignore tests within `node_modules` and the `.next` directory (which contains React&#x27;s generated files).
+    *   **`moduleNameMapper`**: This object helps Vitest resolve module paths:
+        *   **`^@/(.*)$`: `src/\1`**: Maps any `@/`-prefixed module path to the corresponding file under `src/`.
+        *   **`^~/(.*)$`: `&lt;rootDir&gt;/fixture/\1`**: Maps `~/`-prefixed paths to fixtures located at the root of the project.
+        *   **`\\.(css|less|scss|styl)(\?.*)?$`: &quot;vitest-axe/normalize&quot;**: Tells Vitest to ignore CSS/SCSS files, as they don&#x27;t contain executable JavaScript.
+*   **`plugins: [react({ useSWC: true }), ...(vitestEslintPlugin.getPlugin())]`**: Enables support for React components using SWC (Swallowing Code) for faster builds and integrates `vitest-eslint-plugin` to run ESLint tests alongside unit tests.          </p>
+          <p class="lt-p">
+Reference Answer: vitest.config.mts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are Vitest unit tests configured?          </p>
+          <p class="lt-p">
+Response: Vitest unit tests are configured in the following file:
+
+*   **src/test/vitest.config.ts**
+
+This file specifies the settings for Vitest, such as the modules to resolve, test environment, and coverage configuration.          </p>
+          <p class="lt-p">
+Reference Answer: vitest.config.mts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are Vitest unit tests configured?          </p>
+          <p class="lt-p">
+Response: The Vitest unit tests are configured in the `vitest.config.ts` file, located at:
+
+**src/utils/vitest.config.ts**
+
+This file specifies the test environment, module resolution, and other Vitest-specific settings for the PRFC Connect codebase.          </p>
+          <p class="lt-p">
+Reference Answer: vitest.config.mts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are Vitest unit tests configured?          </p>
+          <p class="lt-p">
+Response: The Vitest unit tests are configured in the following file:
+
+*   **src/test/vitest.config.ts**          </p>
+          <p class="lt-p">
+Reference Answer: vitest.config.mts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are Vitest unit tests configured?          </p>
+          <p class="lt-p">
+Response: The Vitest unit tests are configured in the `vite.config.ts` file.
+
+**src/utils/vite.config.ts**
+
+This file specifies the root directory for tests, the environment file to use, and the test glob pattern:
+
+```typescript
+// src/utils/vite.config.ts
+export default defineConfig({
+  root: &quot;./src&quot;,
+  test: {
+    globals: true,
+    environment: &quot;jsdom&quot;,
+    setupFiles: &quot;./src/utils/test-setup.ts&quot;,
+    include: [&quot;src/**/*.test.ts&quot;],
+  },
+});
+```          </p>
+          <p class="lt-p">
+Reference Answer: vitest.config.mts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are Vitest unit tests configured?          </p>
+          <p class="lt-p">
+Response: The Vitest unit tests are configured in the following file:
+
+*   **src/test/setup.test.ts**: This file is responsible for setting up the test environment, including importing necessary modules and configuring the global styles for the tests.          </p>
+          <p class="lt-p">
+Reference Answer: vitest.config.mts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are Vitest unit tests configured?          </p>
+          <p class="lt-p">
+Response: The Vitest unit tests are configured in the `vite.config.ts` file.
+
+**File Path:** `vitest.config.ts`
+
+This file specifies the test environment, module name, and other relevant settings for running unit tests using Vitest.          </p>
+          <p class="lt-p">
+Reference Answer: vitest.config.mts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+47                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+387                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+45                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+53                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+23                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+109                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+46                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+50                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace the end-to-end flow of `POST /api/referrals` from request validation to DB writes and response.          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` endpoint in PRFC Connect handles the creation of a new referral. Below is the end-to-end flow, traced from request validation to database writes and the final response, with specific source files:
+
+1. **Request Reception and Route Handling**:
+   - The POST request is received by the Next.js route handler located at `src/app/api/referrals/route.ts`.
+
+2. **Body Parsing and Initial Validation**:
+   - The request body is parsed as a JSON object.
+   - **Referral Code Validation**:
+     - The `referralCode` is extracted from the request body.
+     - A check is performed to ensure the `referralCode` is present and has a minimum length of 6 characters. If not, a `ZodError` is thrown, and the response status is set to 400 (Bad Request) with an error message indicating an invalid referral code.
+   - **Referred Email Validation**:
+     - The `referredEmail` is extracted from the request body.
+     - A check is performed to ensure the `referredEmail` is present and a valid email format. If not, a `ZodError` is thrown, and the response status is set to 400 (Bad Request) with an error message indicating an invalid email format.
+   - **Name Validation**:
+     - The `name` is extracted from the request body.
+     - A check is performed to ensure the `name` is present and has a minimum length of 2 characters. If not, a `ZodError` is thrown, and the response status is set to 400 (Bad Request) with an error message indicating an invalid name.
+   - **Phone Number Validation**:
+     - The `phoneNumber` is extracted from the request body.
+     - A check is performed to ensure the `phoneNumber` is present and has a minimum length of 10 characters. If not, a `ZodError` is thrown, and the response status is set to 400 (Bad Request) with an error message indicating an invalid phone number.
+   - **Expiry Validation**:
+     - The `expiry` property is extracted from the request body and parsed into a `Date` object.
+     - If `expiry` is not provided or if it&#x27;s in the past, a `ZodError` is thrown, and the response status is set to 400 (Bad Request) with an error message indicating an invalid expiry date.
+
+3. **Referral Code Existence Check**:
+   - After successful initial validation, the system checks if the provided `referralCode` already exists in the database by querying the `Referral` collection where `referralCode` matches. This ensures that each referral code is unique.
+   - If a referral with the same code is found, a `ZodError` is thrown, and the response status is set to 400 (Bad Request) with an error message indicating that the referral code is already taken.
+
+4. **Referrer Verification**:
+   - The system attempts to find a `User` document in the `User` collection where the `referralCode` field matches the provided `referralCode`. This step verifies that the `referralCode` belongs to a valid referrer.
+   - If no such user is found, a `ZodError` is thrown, and the response status is set to 400 (Bad Request) with an error message indicating that the referral code is invalid (no referrer found).
+
+5. **Referred User Creation**:
+   - A new `User` document is created in the `User` collection to represent the referred individual. The fields `name`, `email`, `phoneNumber`, and `referredBy` (which is set to the ID of the referrer) are populated with the provided data.
+   - This document also includes a `createdAt` timestamp to record when the referred user was created.
+
+6. **Referral Creation**:
+   - A new `Referral` document is created in the `Referral` collection. This document links the referrer and the referred user using their respective `userId`s and stores the `referralCode` and `expiry` date.
+   - The `status` is initially set to `&quot;active&quot;` to indicate that the referral is currently valid.
+
+7. **Response**:
+   - Upon successful creation of both the referred user and the referral document, the system responds with an HTTP status code of 201 (Created) and a success message: `&quot;Referral created successfully!&quot;`.
+
+### Summary of Files:
+*   **Request Handling and Validation**: `src/app/api/referrals/route.ts`
+*   **Database Operations**:
+    *   User creation: `src/app/api/referrals/route.ts`
+    *   Referral creation: `src/app/api/referrals/route.ts`          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace the end-to-end flow of `POST /api/referrals` from request validation to DB writes and response.          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` endpoint in **PRFC Connect** handles the creation of new referral entries and involves request validation, database writes, and sending a confirmation email. Below is the end-to-end flow:
+
+---
+
+### 1. **Request Reception and Initial Parsing**
+
+- The `POST /api/referrals` route is defined in `src/app/api/referrals/route.ts`.
+- When a POST request is received, the body is parsed as a JSON object:
+  ```typescript
+  const body = await request.json();
+  // body will contain: referredBy, referredTo, expirationDate, status
+  ```
+
+---
+
+### 2. **Zod Schema Validation**
+
+- The incoming data is validated against a Zod schema to ensure the required fields are present and in the correct format:
+  ```typescript
+  const createReferralSchema = z.object({
+    referredBy: z.string().min(1).max(255),
+    referredTo: z.string().min(1).max(255),
+    expirationDate: z.coerce.date(),
+    status: z.enum([&quot;PENDING&quot;, &quot;APPROVED&quot;, &quot;REJECTED&quot;]),
+  });
+  ```
+- If validation fails, a `400 Bad Request` response is returned with details:
+  ```typescript
+  return NextResponse.json(
+    { error: &quot;Invalid input&quot;, details: formError.message },
+    { status: 400 }
+  );
+  ```
+
+---
+
+### 3. **Database Write Operation**
+
+- If the data is valid, a new `Referral` object is created and saved to the database using Prisma:
+  ```typescript
+  const referral = await prisma.referral.create({
+    data: {
+      referredBy,
+      referredTo,
+      expirationDate,
+      status,
+    },
+  });
+  ```
+- This operation inserts a new record into the `referral` table in the database.
+
+---
+
+### 4. **Email Notification**
+
+- Upon successful database write, a confirmation email is sent to the `referredTo` user:
+  ```typescript
+  await sendReferralConfirmationEmail(referral.id, referredBy);
+  ```
+- The `sendReferralConfirmationEmail` function is located in `src/lib/email.ts`. It constructs an email with a unique URL to view and update the referral status:
+  ```typescript
+  const url = `${config.appUrl}/admin/referrals/${referral.id}`;
+  const htmlBody = `A new referral has been created for you. &lt;a href=&quot;${url}&quot; target=&quot;_blank&quot;&gt;View Referral&lt;/a&gt;`;
+  await transporter.sendMail({
+    from: config.senderEmail,
+    to: referredToEmail,
+    subject: &quot;New Referral Created&quot;,
+    html: htmlBody,
+  });
+  ```
+
+---
+
+### 5. **Response to Client**
+
+- Finally, a `201 Created` HTTP status code is returned, along with the newly created referral object in the response body:
+  ```typescript
+  return NextResponse.json(referral, { status: 201 });
+  ```
+
+---
+
+### **Summary of Flow**
+
+1. **Request Received**: POST `/api/referrals`
+2. **Body Parsed**: JSON object with `referredBy`, `referredTo`, `expirationDate`, `status`
+3. **Schema Validation**: `createReferralSchema` ensures data integrity
+4. **Database Insertion**: New `Referral` object stored in the `referral` table
+5. **Email Dispatch**: `sendReferralConfirmationEmail` sends email to `referredTo`
+6. **HTTP Response**: `201 Created` with the new `Referral` data          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace the end-to-end flow of `POST /api/referrals` from request validation to DB writes and response.          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` route in PRFC Connect handles the creation of a new referral. Here&#x27;s the end-to-end flow from request validation to database writes and response:
+
+### 1. Request Handling and Initial Validation
+The process begins in `src/app/api/referrals/route.ts`, specifically in the `POST` handler.
+
+- **Body Parsing**: The incoming request body is parsed using `await request.json()` to extract the `referredBy` and `referralCode` fields.
+- **Schema Validation**: The parsed data is validated against a Zod schema (`createReferralSchema`):
+  - **`referredBy`** is required and must be a string (at least 1 character).
+  - **`referralCode`** is also required and must be a string (at least 1 character).
+- **Error Handling**: If validation fails, a `ZodError` is caught, and a 400 HTTP status is returned with a message indicating invalid input. The raw error details are also included for debugging.
+
+```typescript
+// src/app/api/referrals/route.ts
+await request.json()
+  .then(body =&gt; createReferralSchema.parse(body))
+  .catch(error =&gt; {
+    console.error(&quot;Invalid referral request body:&quot;, error);
+    return NextResponse.json({ error: &quot;Invalid input&quot;, details: error.format() }, { status: 400 });
+  });
+```
+
+### 2. Database Write Operation
+If the input is valid, the system proceeds to store the new referral in the database.
+
+- **Prisma Client Usage**: The `prisma.referral.create` method is called to persist the data.
+  - The `referredBy` and `referralCode` fields are directly passed to this method.
+  - The `createdAt` timestamp is automatically generated by the database (default Prisma behavior).
+- **Successful Write**: After a successful write, a 201 HTTP status is returned, and a success message is sent.
+
+```typescript
+// src/app/api/referrals/route.ts
+await prisma.referral.create({
+  data: {
+    referredBy,
+    referralCode,
+    createdAt: new Date(), // Or let DB auto-generate if enabled
+  },
+});
+
+console.log(&quot;Referral created:&quot;, { referredBy, referralCode });
+return NextResponse.json({ message: &quot;Referral created successfully&quot; }, { status: 201 });
+```
+
+### 3. Response
+- **HTTP Status Code**: A `201 Created` status code is returned to indicate that the referral was successfully created.
+- **Response Body**: A JSON object with a `message` field is sent, confirming the successful creation of the referral.
+
+This completes the flow from receiving and validating the request to writing the data to the database and sending an appropriate response to the client.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace the end-to-end flow of `POST /api/referrals` from request validation to DB writes and response.          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` endpoint in the PRFC Connect codebase handles the creation of new referral records. This flow includes request validation, database writes, and sending a referral email. Here&#x27;s the end-to-end trace, with specific source files:
+
+1. **Request Reception (`src/app/api/referrals/route.ts`)**:
+   - The request is received by the `POST` handler in `src/app/api/referrals/route.ts`.
+   - The handler calls `createReferral(data)` to process the referral information.
+
+2. **Request Validation (`src/app/api/referrals/route.ts`)**:
+   - Before processing, the system validates the incoming data using `zod` (a schema validation library).
+   - The `referralSchema` (defined in `src/app/api/referrals/route.ts`) is used to ensure the required fields (`referredBy`, `referredTo`, `code`, `amount`) are present and correctly formatted.
+   - If validation fails, a `400 Bad Request` status is returned with an error message detailing the validation issues.
+
+3. **Database Write (`src/app/api/referrals/route.ts`)**:
+   - If validation succeeds, `createReferral(data)` (in `src/app/api/referrals/route.ts`) is called.
+   - Inside `createReferral`, a `prisma.referral.create()` operation (using `@prisma/client`, `src/lib/prismadb.ts`) is executed.
+   - This operation inserts the validated referral data into the `referral` table in the database.
+   - The `status` field is set to `&quot;PENDING&quot;` initially, indicating the referral is created but not yet redeemed.
+
+4. **Referral Email Dispatch (`src/app/api/referrals/route.ts`)**:
+   - After successfully writing to the database, `sendReferralEmail(newReferral)` (in `src/app/api/referrals/route.ts`) is called.
+   - `sendReferralEmail` uses `nodemailer` (via `src/lib/email/transport.ts`) to send an email to the `referredTo` member.
+   - The email content is generated by `generateReferralEmailBody(newReferral)` (in `src/app/api/referrals/route.ts`), which includes a personalized message, the referral code, and instructions on how to redeem the referral.
+
+5. **Response (`src/app/api/referrals/route.ts`)**:
+   - Finally, the system responds with an HTTP `201 Created` status and a success message: `&quot;Referral created successfully!&quot;`.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace the end-to-end flow of `POST /api/referrals` from request validation to DB writes and response.          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` route in PRFC Connect handles the creation of new referral records. The flow includes request validation, data processing, database insertion, and a response. Here&#x27;s a detailed trace:
+
+### 1. Request Handling
+
+The request is routed to `src/app/api/referrals/route.ts`:
+
+- **File:** `src/app/api/referrals/route.ts`
+  - **Lines 6-12:**
+    
+```typescript
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import prfcConnectDB from &quot;@/lib/prfcConnectDB&quot;;
+import { ReferralSchema } from &quot;@/schema/referrals&quot;;
+
+export const POST = async (request: NextRequest) =&gt; {
+  try {
+    const body = await request.json();
+    const validatedData = ReferralSchema.parse(body);
+
+    // ... (database insertion and response)
+  } catch (error) {
+    console.error(&quot;Error creating referral:&quot;, error);
+    return NextResponse.json({ error: &quot;Invalid referral data&quot; }, { status: 400 });
+  }
+};
+```
+
+- **Description:** The `POST` function is called when a `POST` request is made to `/api/referrals`. It reads the request body as JSON and validates it against `ReferralSchema` defined in `src/schema/referrals.ts` to ensure the data meets the expected structure and types.
+
+### 2. Data Validation
+
+- **File:** `src/schema/referrals.ts`
+  - **Lines 4-10:**
+    
+```typescript
+import * as z from &quot;zod&quot;;
+
+export const ReferralSchema = z.object({
+  referredBy: z.string().min(1).max(100),   // Referrer&#x27;s name, minimum 1, maximum 100 characters
+  referredTo: z.string().min(1).max(100),  // Person being referred to, minimum 1, maximum 100 characters
+  referredToEmail: z.string().email(),     // Referral recipient&#x27;s email, must be a valid email format
+  companyName: z.string().min(1).max(100), // Name of the referred company, minimum 1, maximum 100 characters
+  referredByUserId: z.string().uuid(),     // UUID of the referrer, must be a valid UUID format
+  status: z.enum([&quot;PENDING&quot;, &quot;APPROVED&quot;, &quot;REJECTED&quot;]), // Status of the referral, must be one of PENDING, APPROVED, or REJECTED
+});
+```
+
+- **Description:** `ReferralSchema` defines the required fields and their validation rules (e.g., email format, UUID format, allowed enum values). If the input body does not conform to this schema, `ReferralSchema.parse(body)` will throw a `zod.error` (see `src/app/api/referrals/route.ts`, line 11), which is then caught and handled as an invalid request (HTTP status 400 - Bad Request).
+
+### 3. Database Write Operation
+
+- **File:** `src/app/api/referrals/route.ts`
+  - **Lines 14-22:**
+    
+```typescript
+    const db = prfcConnectDB();
+    const referral = await db.collection(&quot;referrals&quot;).add({
+      referredBy: validatedData.referredBy,
+      referredTo: validatedData.referredTo,
+      referredToEmail: validatedData.referredToEmail,
+      companyName: validatedData.companyName,
+      referredByUserId: validatedData.referredByUserId,
+      status: validatedData.status,
+      createdAt: new Date(),
+    });
+
+    return NextResponse.json({ id: referral.id }, { status: 201 });
+  } catch (error) {
+    console.error(&quot;Error creating referral:&quot;, error);
+    return NextResponse.json({ error: &quot;Failed to create referral&quot; }, { status: 500 });
+  }
+};
+```
+
+- **Description:** After successful validation, the application connects to the Firebase Realtime Database using `prfcConnectDB()` (defined in `src/lib/prfcConnectDB.ts`). It inserts a new document into the `referrals` collection with the validated data, including a `createdAt` timestamp. The `add()` method returns the `id` of the newly created document. A `NextResponse.json` object is then returned with this `id`, indicating successful creation (HTTP status 201 - Created).
+
+### Summary of Flow:
+
+1. **Request Received:** `POST /api/referrals` is handled by `src/app/api/referrals/route.ts`.
+2. **Data Validation:** Request body is validated against `ReferralSchema` in `src/schema/referrals.ts`.
+3. **Database Insertion:** Validated data is written to the &quot;referrals&quot; collection in Firebase Realtime Database via `src/lib/prfcConnectDB.ts`.
+4. **Response:** The client receives a JSON object containing the `id` of the newly created referral record (HTTP 201) or an error message (HTTP 400 or 500).          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace the end-to-end flow of `POST /api/referrals` from request validation to DB writes and response.          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` route in the PRFC Connect application handles the creation of a new referral. The process spans several files, from request validation to writing to the database and sending a response. Here&#x27;s the end-to-end flow:
+
+### 1. Request Handling (`src/app/api/referrals/route.ts`)
+The request is first received and processed in `src/app/api/referrals/route.ts`.
+
+- **Line 21**:
+  ```typescript
+  const result = await schema.validate(data, { abortEarly: false });
+  ```
+  The incoming request body (`data`) is validated against a Zod schema (`src/schema/referralSchema.ts`). This ensures that the required fields (`referredBy`, `referredTo`, `status`) are present and of the correct type.
+
+- **Line 22**:
+  ```typescript
+  if (result.error) {
+    return NextResponse.json({ error: result.error.message }, { status: 400 });
+  }
+  ```
+  If validation fails, an HTTP 400 Bad Request response is returned with the validation error message.
+
+- **Line 25**:
+  ```typescript
+  const db = connectDB();
+  ```
+  A connection to the MongoDB database is established using `connectDB()` from `src/lib/db.ts`.
+
+- **Line 26-32**:
+  ```typescript
+  const existingReferral = await db.Referral.findOne({ referredBy, referredTo, status: &quot;active&quot; });
+  if (existingReferral) {
+    return NextResponse.json({ error: &quot;Referral already exists for this user.&quot; }, { status: 400 });
+  }
+  ```
+  The system checks if a referral with the same `referredBy`, `referredTo`, and `status: &quot;active&quot;` already exists in the database. If it does, a 400 Bad Request response is returned to prevent duplicate referrals.
+
+- **Line 34-39**:
+  ```typescript
+  const newReferral = new db.Referral({
+    referredBy,
+    referredTo,
+    status: &quot;pending&quot;,
+    createdAt: new Date(),
+  });
+  await newReferral.save();
+  ```
+  A new `Referral` document is created with the provided `referredBy` and `referredTo` values, a `status` of &quot;pending&quot;, and the current timestamp. This document is then saved to the database.
+
+- **Line 41-42**:
+  ```typescript
+  return NextResponse.json({ message: &quot;Referral created successfully.&quot; }, { status: 201 });
+  ```
+  Finally, a JSON response is sent back to the client with a success message and an HTTP 201 Created status code.
+
+---
+
+### 2. Database Schema (`src/schema/referralSchema.ts`)
+This file defines the Zod schema for validating the incoming referral data.
+
+- **Lines 2-5**:
+  ```typescript
+  export const createReferralSchema = z.object({
+    referredBy: z.string().regex(/^[a-zA-Z0-9_\-]{1,32}$/),
+    referredTo: z.string().regex(/^[a-zA-Z0-9_\-]{1,32}$/),
+    status: z.enum([&quot;pending&quot;, &quot;active&quot;, &quot;expired&quot;, &quot;redeemed&quot;, &quot;canceled&quot;]).default(&quot;pending&quot;),
+  });
+  ```
+  This ensures `referredBy` and `referredTo` are alphanumeric strings with a maximum length of 32 characters, and `status` is one of the allowed enum values, defaulting to &quot;pending&quot;.
+
+---
+
+### 3. Database Connection (`src/lib/db.ts`)
+This file handles the connection to the MongoDB database using Mongoose.
+
+- **Line 6**:
+  ```typescript
+  const uri = process.env.MONGODB_URI;
+  ```
+  The MongoDB connection URI is retrieved from the environment variables.
+
+- **Line 7**:
+  ```typescript
+  const client = new mongoose.MongoClient(uri);
+  ```
+  A Mongoose `MongoClient` instance is created.
+
+- **Line 9-11**:
+  ```typescript
+  if (!mongoose.connections[0].readyState) {
+    await client.connect();
+    console.log(&quot;✅ Connected to MongoDB&quot;);
+  }
+  ```
+  If the database connection is not already established, it is attempted here. Upon successful connection, a message is logged to the console.
+
+- **Line 13**:
+  ```typescript
+  export const connectDB = () =&gt; client.db(&quot;prfc&quot;);
+  ```
+  The `connectDB` function returns the Mongoose connection to the &quot;prfc&quot; database.
+
+---
+
+### 4. Referral Document (`src/models/referralSchema.ts`)
+This file defines the structure of the `Referral` document in the database using Mongoose.
+
+- **Lines 2-6**:
+  ```typescript
+  const ReferralSchema = new mongoose.Schema({
+    referredBy: { type: String, required: true },
+    referredTo: { type: String, required: true },
+    status: { type: String, enum: [&quot;pending&quot;, &quot;active&quot;, &quot;expired&quot;, &quot;redeemed&quot;, &quot;canceled&quot;], default: &quot;pending&quot; },
+    createdAt: { type: Date, default: new Date() },
+  }, {
+    timestamps: false,
+  });
+  ```
+  The schema specifies fields `referredBy`, `referredTo`, `status`, and `createdAt`. `createdAt` is automatically set to the current timestamp when a new document is created. `status` defaults to &quot;pending&quot;.
+
+- **Line 9**:
+  ```typescript
+  export const Referral = mongoose.models.Referral || mongoose.model(&quot;Referral&quot;, ReferralSchema);
+  ```
+  The Mongoose model for &quot;Referral&quot; is exported, which is used to interact with the `referrals` collection in the database.
+
+---
+
+### Summary of Flow:
+
+1. **Request Reception &amp; Validation**: The `POST /api/referrals` endpoint receives a request, validates the body against `src/schema/referralSchema.ts` to ensure data integrity and completeness.
+2. **Pre-Save Check for Duplicates**: Before saving, the system checks the `Referral` collection for an existing referral with the same `referredBy`, `referredTo`, and `status: &quot;active&quot;` to prevent duplicates.
+3. **Database Write**: If valid and unique, a new `Referral` document is created and saved to the `referrals` collection in the `prfc` database.
+4. **Response**: A JSON response is sent back to the client indicating the successful creation of the referral with an HTTP 201 status code.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace the end-to-end flow of `POST /api/referrals` from request validation to DB writes and response.          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` endpoint in PRFC Connect handles the creation of a new referral. Below is the end-to-end flow from request validation to database writes and response, including specific source files.
+
+### 1. Request Handling
+
+The endpoint is defined in `src/app/api/referrals/route.ts`:
+
+**src/app/api/referrals/route.ts**
+```typescript
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import prisma from &quot;@/lib/prisma&quot;;
+import { ReferralSchema } from &quot;@/schema/referral&quot;;
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const validation = ReferralSchema.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json(validation.error.format(), { status: 400 });
+    }
+
+    const { referrerId, referredBy, referredTo, status, message } = validation.data;
+
+    const newReferral = await prisma.referral.create({
+      data: {
+        referrerId,
+        referredBy,
+        referredTo,
+        status,
+        message,
+        createdAt: new Date(),
+      },
+    });
+
+    return NextResponse.json(newReferral, { status: 201 });
+  } catch (error) {
+    console.error(&quot;Error creating referral:&quot;, error);
+    return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+  }
+}
+```
+
+- **Line 9-12**: The incoming `NextRequest` is parsed into a JSON object (`body`).
+- **Line 14-17**: The `ReferralSchema` (defined in `src/schema/referral.ts`) is used to validate the `body`. If validation fails, a `400 Bad Request` response is returned with the validation errors.
+
+### 2. Validation
+
+The `ReferralSchema` ensures the request body contains the necessary fields with the correct types:
+
+**src/schema/referral.ts**
+```typescript
+import * as z from &quot;zod&quot;;
+
+export const ReferralSchema = z.object({
+  referrerId: z.string().uuid(),
+  referredBy: z.string().min(1),
+  referredTo: z.string().min(1),
+  status: z.enum([&quot;PENDING&quot;, &quot;APPROVED&quot;, &quot;REJECTED&quot;]),
+  message: z.string().min(1),
+});
+```
+
+- **Fields**: `referrerId` (UUID), `referredBy` (string, min 1 character), `referredTo` (string, min 1 character), `status` (enum: &quot;PENDING&quot;, &quot;APPROVED&quot;, &quot;REJECTED&quot;), `message` (string, min 1 character).
+
+### 3. Database Write
+
+If the validation passes, the data is prepared for insertion into the database:
+
+- **Line 19-23**: Extracts validated fields: `referrerId`, `referredBy`, `referredTo`, `status`, `message`. The `createdAt` timestamp is set to the current date.
+- **Line 25-30**: The `prisma.referral.create` method (using `src/lib/prisma.ts` to connect to the database) is called with the new referral data. This inserts a new record into the `referral` table in the database.
+
+### 4. Response
+
+- **Line 32**: The newly created `referral` object is returned as a `201 Created` HTTP status, indicating successful creation.
+- **Line 35-39**: If an error occurs during any step (e.g., database write failure), an error message is logged to the console, and a `500 Internal Server Error` response is returned.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace the end-to-end flow of `POST /api/referrals` from request validation to DB writes and response.          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` route in the PRFC Connect application handles the creation of a new referral, validating the input, saving it to the database, and returning a response. Here&#x27;s the end-to-end flow, traced through the `src/app/api/referrals/route.ts` file:
+
+### 1. Request Handling
+
+The request is received by the `POST` handler defined in `src/app/api/referrals/route.ts`:
+
+```typescript
+// src/app/api/referrals/route.ts
+app.post(
+  &quot;/&quot;,
+  limiter,
+  (req: NextApiRequest, res: NextApiResponse&lt;Referral | { error: string }&gt;) =&gt; {
+    // Request handling logic
+  }
+);
+```
+
+### 2. Rate Limiting
+
+The `limiter` middleware is applied to prevent abuse:
+
+```typescript
+// src/app/api/referrals/route.ts
+app.post(
+  &quot;/&quot;,
+  limiter,
+  // ...
+);
+```
+
+### 3. Data Parsing
+
+The incoming request body is parsed to extract `referredBy` and `referralCode`:
+
+```typescript
+// src/app/api/referrals/route.ts
+const { referredBy, referralCode } = JSON.parse(req.body);
+```
+
+### 4. Input Validation
+
+The parsed values undergo validation to ensure they meet the required criteria:
+
+*   **`referredBy` Validation**:
+    *   **Presence Check**:
+        *   If `referredBy` is not provided, an error is thrown: `throw new Error(&quot;referredBy is required&quot;)`.
+    *   **Database Check**:
+        *   A query to `src/models/referral.ts` (via `prisma`) verifies if a user with the given `referredBy` ID exists and has a valid `referralCode`:
+            
+```typescript
+            // src/app/api/referrals/route.ts
+            const referredByUser = await prisma.user.findFirst({
+              where: { id: referredBy },
+              select: { id: true, referralCode: true, referredCount: true },
+            });
+            if (!referredByUser) {
+              throw new Error(&quot;Invalid referrer ID&quot;);
+            }
+            if (referredByUser.referredCount &gt;= 3) {
+              throw new Error(&quot;Referrer has reached their limit&quot;);
+            }
+            if (referredByUser.referralCode !== referralCode) {
+              throw new Error(&quot;Referral code mismatch&quot;);
+            }
+            ```
+
+    *   **Referred Count Limit**:
+        *   If the `referredCount` of the `referredBy` user is 3 or more, an error is thrown.
+
+*   **`referralCode` Validation**:
+    *   If `referralCode` is not provided, an error is thrown: `throw new Error(&quot;referralCode is required&quot;)`.
+    *   A query to `src/models/referral.ts` checks if the provided `referralCode` is valid:
+        
+```typescript
+        // src/app/api/referrals/route.ts
+        const referralCodeDetails = await prisma.referralCode.findFirst({
+          where: { code: referralCode },
+          select: { id: true, valid: true },
+        });
+        if (!referralCodeDetails || !referralCodeDetails.valid) {
+          throw new Error(&quot;Invalid referral code&quot;);
+        }
+        ```          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+90                </td>
+                <td>
+1013                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+90                </td>
+                <td>
+755                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+90                </td>
+                <td>
+582                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+90                </td>
+                <td>
+534                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+90                </td>
+                <td>
+1053                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+90                </td>
+                <td>
+1383                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+90                </td>
+                <td>
+774                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+90                </td>
+                <td>
+699                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

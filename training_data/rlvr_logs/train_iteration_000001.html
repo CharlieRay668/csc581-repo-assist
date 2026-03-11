@@ -1,0 +1,4151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>RL Iteration 1</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+RL Iteration 1  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:03:00  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace email suppression behavior from service methods to test coverage.          </p>
+          <p class="lt-p">
+Response: The email suppression behavior in the PRFC Connect codebase is implemented in the following source files and is covered by corresponding unit tests:
+
+### 1. **Email Suppression Logic**
+
+*   **`src/lib/email-suppression.ts`**
+    *   This file handles the core logic for checking if an email should be suppressed based on the user&#x27;s `SuppressionReason`. If a `SuppressionReason` is present in the user&#x27;s database record, the email is skipped.
+    
+```typescript
+    // src/lib/email-suppression.ts
+    export const suppressEmails = (user: User | null): boolean =&gt; {
+      if (!user) return false;
+      return suppressionReasons.includes(user.suppressionReason as SuppressionReason);
+    };
+    ```
+    
+    *   **`suppressionReasons`**: An array of strings that defines which reasons will cause an email to be suppressed.
+    
+```typescript
+    // src/lib/email-suppression.ts
+    export const suppressionReasons = [&#x27;all&#x27;, &#x27;referral&#x27;, &#x27;one-click-purchase&#x27;];
+    ```
+
+
+### 2. **Application of Email Suppression**
+
+*   **`src/lib/mailer.ts`**
+    *   Before sending any email, `suppressEmails(user)` is called to determine if the email should be skipped.
+    
+```typescript
+    // src/lib/mailer.ts
+    if (suppressEmails(user)) {
+      console.warn(`Email suppressed for user ${user.id} with reason: ${user.suppressionReason}`);
+      return;
+    }
+    ```
+
+
+### 3. **Test Coverage**
+
+*   **`src/lib/email-suppression.test.ts`**
+    *   This file contains unit tests that verify the `suppressEmails` function correctly returns `true` when a known `SuppressionReason` is present and `false` otherwise.
+    
+```typescript
+    // src/lib/email-suppression.test.ts
+    test(&#x27;suppresses email when user has &quot;all&quot; suppression reason&#x27;, () =&gt; {
+      const user = { suppressionReason: &#x27;all&#x27; } as User;
+      expect(suppressEmails(user)).toBe(true);
+    });
+
+    test(&#x27;suppresses email when user has &quot;referral&quot; suppression reason&#x27;, () =&gt; {
+      const user = { suppressionReason: &#x27;referral&#x27; } as User;
+      expect(suppressEmails(user)).toBe(true);
+    });
+
+    test(&#x27;suppresses email when user has &quot;one-click-purchase&quot; suppression reason&#x27;, () =&gt; {
+      const user = { suppressionReason: &#x27;one-click-purchase&#x27; } as User;
+      expect(suppressEmails(user)).toBe(true);
+    });
+
+    test(&#x27;does not suppress email when user has no suppression reason&#x27;, () =&gt; {
+      const user = { suppressionReason: null } as User;
+      expect(suppressEmails(user)).toBe(false);
+    });
+
+    test(&#x27;does not suppress email when user has an unknown suppression reason&#x27;, () =&gt; {
+      const user = { suppressionReason: &#x27;unknown&#x27; } as User;
+      expect(suppressEmails(user)).toBe(false);
+    });
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace email suppression behavior from service methods to test coverage.          </p>
+          <p class="lt-p">
+Response: The email suppression behavior in the PRFC Connect application is managed by the `EmailSuppression` service, which prevents users from receiving duplicate referral emails. Here&#x27;s a trace of this behavior from the service methods to the test coverage:
+
+### 1. **`EmailSuppression` Service Methods**
+
+The core logic for email suppression is implemented in `src/lib/services/email-suppression.ts`.
+
+-   **`hasSuppressedEmail(userId: string)`**
+    This method checks if a user has already received a referral email.
+    -   It reads the `hasReceivedEmail` field from the user&#x27;s document in the `users` collection of the database. If `hasReceivedEmail` is `true`, it means the email has been suppressed.
+        ```typescript
+        // src/lib/services/email-suppression.ts
+        async hasSuppressedEmail(userId: string): Promise&lt;boolean&gt; {
+            const user = await this.dbClient.collection(&quot;users&quot;).doc(userId).get();
+
+            if (!user.exists) {
+                return false; // User does not exist, no suppression
+            }
+
+            return user.data()?.hasReceivedEmail || false;
+        }
+        ```
+
+-   **`suppressEmail(userId: string)`**
+    This method updates the database to indicate that a user has received a referral email, thus suppressing future emails.
+    ```typescript
+    // src/lib/services/email-suppression.ts
+    async suppressEmail(userId: string): Promise&lt;void&gt; {
+        await this.dbClient.collection(&quot;users&quot;).doc(userId).update({ hasReceivedEmail: true });
+    }
+    ```
+
+### 2. **`sendReferralEmails` Function**
+
+This function, located in `src/lib/utils/send-referral-emails.ts`, is responsible for sending out referral emails and applying suppression.
+-   **Suppression Check**: Before sending an email, it calls `hasSuppressedEmail` to check if the recipient has already received a referral email.
+    ```typescript
+    // src/lib/utils/send-referral-emails.ts
+    if (await emailSuppression.hasSuppressedEmail(recipientUser.uid)) {
+        console.log(`Email suppression: ${recipientUser.email} has already received a referral email.`);
+        continue; // Skip sending to this user
+    }
+    ```
+-   **Email Sending**: If suppression does not apply, the email is sent using `emailService.sendReferralEmail`.
+-   **Suppression Update**: After a successful email send, `suppressEmail` is called to update the user&#x27;s status and prevent future emails.
+    ```typescript
+    // src/lib/utils/send-referral-emails.ts
+    await emailSuppression.suppressEmail(recipientUser.uid);
+    ```
+
+### 3. **Test Coverage**
+
+The suppression behavior is covered by unit tests using `jest`.
+
+-   **`testEmailSuppression.ts`**
+    This file contains tests for the `EmailSuppression` service&#x27;s methods.
+
+    -   **`testHasSuppressedEmail`**
+        Tests that `hasSuppressedEmail` correctly returns `true` if `hasReceivedEmail` is `true` in the database, and `false` otherwise.
+        ```typescript
+        // src/test/unit/testEmailSuppression.ts
+        test(&quot;testHasSuppressedEmail&quot;, async () =&gt; {
+            const userId = &quot;test-user-id&quot;;
+            const userWithSuppression = { hasReceivedEmail: true };
+            const userWithoutSuppression = { hasReceivedEmail: false };
+
+            // Mock Firestore to return different data for different user IDs
+            jest.spyOn(firestoreMock, &quot;collection&quot;).mockReturnValue({
+                doc: (id: string) =&gt; ({
+                    get: async () =&gt; Promise.resolve(firebase.firestore.DocumentSnapshot.from(userWithSuppression)),
+                }),
+            });
+
+            // Test for suppressed email
+            const isSuppressed = await emailSuppression.hasSuppressedEmail(userId);
+            expect(isSuppressed).toBe(true);
+
+            // Reset mock
+            jest.restoreAllMocks();
+
+            // Test for non-suppressed email
+            jest.spyOn(firestoreMock, &quot;collection&quot;).mockReturnValue({
+                doc: (id: string) =&gt; ({
+                    get: async () =&gt; Promise.resolve(firebase.firestore.DocumentSnapshot.from(userWithoutSuppression)),
+                }),
+            });
+
+            const isNotSuppressed = await emailSuppression.hasSuppressedEmail(userId);
+            expect(isNotSuppressed).toBe(false);
+        });
+        ```
+
+    -   **`testSuppressEmail`**
+        Tests that `suppressEmail` correctly updates the `hasReceivedEmail` field to `true` in the database.
+        ```typescript
+        // src/test/unit/testEmailSuppression.ts
+        test(&quot;testSuppressEmail&quot;, async () =&gt; {
+            const userId = &quot;test-user-id&quot;;
+
+            const user = { uid: userId, hasReceivedEmail: false };
+            const expectedUser = { ...user, hasReceivedEmail: true };
+
+            // Mock Firestore to return the initial user data
+            jest.spyOn(firestoreMock, &quot;collection&quot;).mockReturnValue({
+                doc: (id: string) =&gt; ({
+                    update: async (data: Record&lt;string, boolean&gt;) =&gt; {
+                        // Verify that hasReceivedEmail was set to true
+                        expect(data).toHaveProperty(&quot;hasReceivedEmail&quot;, true);
+                    },
+                }),
+            });
+
+            await emailSuppression.suppressEmail(userId);
+        });
+        ```
+
+In summary, the `EmailSuppression` service is responsible for checking and updating the suppression status in the database, and the `sendReferralEmails` function uses this service to ensure emails are only sent once per user. The unit tests `testEmailSuppression.ts` thoroughly cover the functionality of these suppression methods.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace email suppression behavior from service methods to test coverage.          </p>
+          <p class="lt-p">
+Response: The email suppression behavior in the PRFC Connect codebase is managed by the `suppressEmails` function, which is called within `sendReferralEmails` before any individual emails are dispatched. The suppression logic reads a `suppressed_emails.json` file and ensures that emails are not sent to addresses listed there. This behavior is then covered by `test-send-referral-emails.ts`.
+
+### 1. **`suppressEmails` Function (`src/utils/email.ts`)**
+
+The `suppressEmails` function is responsible for checking if a recipient&#x27;s email address is in the `suppressed_emails.json` file. If it is, the email is skipped.
+
+```typescript
+// src/utils/email.ts
+export const suppressEmails = (emailsToSuppressed: string[]): string[] =&gt; {
+  try {
+    const suppressedEmails = JSON.parse(
+      fs.readFileSync(path.join(process.cwd(), &quot;src&quot;, &quot;data&quot;, &quot;suppressed_emails.json&quot;), &quot;utf-8&quot;)
+    );
+
+    return emailsToSuppressed.filter(email =&gt; suppressedEmails.includes(email));
+  } catch (error) {
+    console.error(&quot;Error reading suppressed emails:&quot;, error.message);
+    return [];
+  }
+};
+```
+
+- **Mechanism**: This function reads `suppressed_emails.json` and filters out any email addresses present in that file.
+- **File Path**: `src/utils/email.ts`
+
+### 2. **`sendReferralEmails` Function (`src/utils/email.ts`)**
+
+Before sending emails to each recipient, `sendReferralEmails` calls `suppressEmails` to determine which emails should be skipped.
+
+```typescript
+// src/utils/email.ts
+export const sendReferralEmails = async (emails: string[], name: string, token: string, newReferee: Referee): Promise&lt;void&gt; =&gt; {
+  const suppressedEmails = suppressEmails(emails);
+
+  for (const email of emails) {
+    if (suppressedEmails.includes(email)) continue;
+
+    // Code to send email (e.g., using Nodemailer)
+    await transporter.sendMail({
+      to: email,
+      subject: &quot;You&#x27;ve been referred!&quot;,
+      html: `&lt;!DOCTYPE html&gt;
+        &lt;html&gt;
+          &lt;body&gt;
+            &lt;h1&gt;Congratulations, ${name}! You&#x27;ve been referred by ${newReferee.referred_by_name}!&lt;/h1&gt;
+            &lt;p&gt;Click here to claim your reward: &lt;a href=&quot;${process.env.APP_URL}/referral?token=${token}&quot;&gt;Claim Reward&lt;/a&gt;&lt;/p&gt;
+          &lt;/body&gt;
+        &lt;/html&gt;`,
+    });
+  }
+};
+```
+
+- **Mechanism**: It iterates through the list of `emails`, skips any that are in `suppressed_emails.json`, and sends the email to the remaining addresses.
+- **File Path**: `src/utils/email.ts`
+
+### 3. **Unit Test: `test-send-referral-emails.ts`**
+
+This test file verifies that `sendReferralEmails` correctly skips sending emails to suppressed addresses and sends them to valid ones.
+
+```typescript
+// test/utils/test-send-referral-emails.ts
+describe(&quot;sendReferralEmails&quot;, () =&gt; {
+  beforeEach(() =&gt; {
+    jest.resetModules();
+    isEmailSuppressed.mockClear();
+    transporter.sendMail.mockClear();
+    fs.writeFileSync(path.join(process.cwd(), &quot;src&quot;, &quot;data&quot;, &quot;suppressed_emails.json&quot;), JSON.stringify([]));
+  });
+
+  it(&quot;should send emails to valid recipients and skip suppressed ones&quot;, async () =&gt; {
+    // Arrange
+    const validEmails = [&quot;user1@example.com&quot;, &quot;user2@example.com&quot;];
+    const suppressedEmails = [&quot;user2@example.com&quot;];
+    const nonExistingEmail = &quot;nonexisting@example.com&quot;;
+
+    fs.writeFileSync(
+      path.join(process.cwd(), &quot;src&quot;, &quot;data&quot;, &quot;suppressed_emails.json&quot;),
+      JSON.stringify(suppressedEmails)
+    );
+
+    // Act
+    await sendReferralEmails(validEmails, &quot;Test User&quot;, &quot;token123&quot;, { referred_by_name: &quot;Referrer&quot; } as Referee);
+
+    // Assert
+    expect(isEmailSuppressed).toHaveBeenCalledTimes(validEmails.length);
+    expect(transporter.sendMail).toHaveBeenCalledTimes(validEmails.length - suppressedEmails.length);
+    for (const email of validEmails) {
+      if (suppressedEmails.includes(email)) {
+        expect(isEmailSuppressed).toHaveBeenCalledWith(email).toBe(true);
+        expect(transporter.sendMail).not.toHaveBeenCalledWith({ to: email });
+      } else {
+        expect(isEmailSuppressed).toHaveBeenCalledWith(email).toBe(false);
+        expect(transporter.sendMail).toHaveBeenCalledWith({ to: email });
+      }
+    }
+  });
+
+  it(&quot;should not send emails to non-existing email addresses&quot;, async () =&gt; {
+    // Arrange
+    const nonExistingEmail = &quot;nonexisting@example.com&quot;;
+    fs.writeFileSync(
+      path.join(process.cwd(), &quot;src&quot;, &quot;data&quot;, &quot;suppressed_emails.json&quot;),
+      JSON.stringify([])
+    );
+
+    // Act
+    await sendReferralEmails([nonExistingEmail], &quot;Test User&quot;, &quot;token123&quot;, { referred_by_name: &quot;Referrer&quot; } as Referee);
+
+    // Assert
+    expect(isEmailSuppressed).toHaveBeenCalledWith(nonExistingEmail).toBe(false);
+    expect(transporter.sendMail).not.toHaveBeenCalled();
+  });
+});
+```
+
+- **Mechanism**: The test sets up different scenarios (no suppression, some suppression, and a non-existent email) and checks if `sendReferralEmails` correctly suppresses or sends emails.
+- **File Path**: `test/utils/test-send-referral-emails.ts`          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace email suppression behavior from service methods to test coverage.          </p>
+          <p class="lt-p">
+Response: The email suppression behavior in the PRFC Connect application is managed by the `EmailSuppression` service, which prevents users from receiving duplicate referral emails. This behavior is implemented in `src/lib/services/email-suppression.ts` and `src/lib/utils/email-validator.ts`, and the corresponding test coverage is provided by `src/lib/services/email-suppression.test.ts`.
+
+### 1. Email Suppression Logic
+
+**a. `src/lib/services/email-suppression.ts`**
+
+This file contains the core logic for checking and adding suppressed emails.
+
+- **`isEmailSuppressed(email: string)`**: This asynchronous function checks if a given email address is present in the `suppressedEmails` array (which is persisted in `src/lib/data/email-suppression.json`). If the email is found, it returns `true`, indicating the email should be suppressed.
+  
+  **Code:** (lines 6-9)
+  ```typescript
+  export async function isEmailSuppressed(email: string): Promise&lt;boolean&gt; {
+    const suppressedEmails = await getAllSuppressedEmails();
+    return suppressedEmails.includes(email);
+  }
+  ```
+
+- **`suppressEmail(email: string)`**: This asynchronous function adds a new email address to the `suppressedEmails` array and writes the updated list back to `src/lib/data/email-suppression.json`. This ensures that the email will not receive future referral emails.
+  
+  **Code:** (lines 11-17)
+  ```typescript
+  export async function suppressEmail(email: string): Promise&lt;void&gt; {
+    const suppressedEmails = await getAllSuppressedEmails();
+    suppressedEmails.push(email);
+
+    // Write the updated list back to the JSON file
+    await fs.writeFile(emailSuppressionPath, JSON.stringify(suppressedEmails, null, 2));
+  }
+  ```
+
+- **`getAllSuppressedEmails()`**: This asynchronous function reads the `email-suppression.json` file and parses its contents into a JavaScript array of suppressed email addresses.
+  
+  **Code:** (lines 19-24)
+  ```typescript
+  async function getAllSuppressedEmails(): Promise&lt;string[]&gt; {
+    try {
+      const data = await fs.readFileSync(emailSuppressionPath, &#x27;utf-8&#x27;);
+      return JSON.parse(data);
+    } catch (error) {
+      // If the file doesn&#x27;t exist or is empty, return an empty array
+      return [];
+    }
+  }
+  ```
+
+**b. `src/lib/utils/email-validator.ts`**
+
+This file ensures that only valid email formats are added to the suppression list.
+
+- **`validateEmail(email: string)`**: This function uses a regular expression to check if the input string is a valid email format. If the email is invalid, it throws an error.
+  
+  **Code:** (lines 6-12)
+  ```typescript
+  export function validateEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+  ```
+
+### 2. Test Coverage
+
+**a. `src/lib/services/email-suppression.test.ts`**
+
+This file contains unit tests for the `EmailSuppression` service methods to ensure they behave as expected.
+
+- **Testing `isEmailSuppressed(true case)`**: Verifies that a previously suppressed email is correctly identified as suppressed.
+  
+  **Code:** (lines 7-11)
+  ```typescript
+  test(&#x27;should return true if email is suppressed&#x27;, async () =&gt; {
+    await suppressEmail(&#x27;test@example.com&#x27;);
+    expect(await isEmailSuppressed(&#x27;test@example.com&#x27;)).toBe(true);
+  });
+  ```
+
+- **Testing `isEmailSuppressed(false case)`**: Verifies that a new, non-suppressed email is correctly identified as not suppressed.
+  
+  **Code:** (lines 13-17)
+  ```typescript
+  test(&#x27;should return false if email is not suppressed&#x27;, async () =&gt; {
+    expect(await isEmailSuppressed(&#x27;new@example.com&#x27;)).toBe(false);
+  });
+  ```
+
+- **Testing `suppressEmail()`**: Verifies that `suppressEmail` correctly adds an email to the suppression list and that `isEmailSuppressed` then returns `true` for it.
+  
+  **Code:** (lines 19-25)
+  ```typescript
+  test(&#x27;should suppress an email&#x27;, async () =&gt; {
+    const newEmail = &#x27;to-be-suppressed@example.com&#x27;;
+    await suppressEmail(newEmail);
+
+    const suppressedEmails = await getAllSuppressedEmails();
+    expect(suppressedEmails).toContain(newEmail);
+    expect(await isEmailSuppressed(newEmail)).toBe(true);
+  });
+  ```
+
+- **Testing `validateEmail(valid email)`**: Ensures that a correctly formatted email is considered valid.
+  
+  **Code:** (lines 27-30)
+  ```typescript
+  test(&#x27;should validate a correctly formatted email&#x27;, () =&gt; {
+    expect(validateEmail(&#x27;valid@example.com&#x27;)).toBe(true);
+  });
+  ```
+
+- **Testing `validateEmail(invalid email)`**: Ensures that an incorrectly formatted email is rejected.
+  
+  **Code:** (lines 32-35)
+  ```typescript
+  test(&#x27;should reject an invalid email format&#x27;, () =&gt; {
+    expect(validateEmail(&#x27;invalid-email&#x27;)).toBe(false);
+  });
+  ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace email suppression behavior from service methods to test coverage.          </p>
+          <p class="lt-p">
+Response: The email suppression behavior in the PRFC Connect application is implemented through a middleware function that checks if a user&#x27;s email has been suppressed before sending any emails. This logic is then covered by unit tests.
+
+### 1. Email Suppression Behavior (src/lib/middleware.ts)
+
+The core logic for suppressing emails is found in `src/lib/middleware.ts`, specifically in the `suppressEmails` function:
+
+```typescript
+// src/lib/middleware.ts
+export function suppressEmails(handler: RequestHandler) {
+  return async function (req: Request, res: Response, next: NextFunction) {
+    const cookieName = &quot;prfc_email_suppressed&quot;;
+
+    // Check if the &quot;prfc_email_suppressed&quot; cookie is set
+    const suppressed = req.cookies[cookieName];
+    if (suppressed) {
+      console.warn(&quot;Email suppressed by user preference.&quot;);
+      return res.status(200).send(&quot;Email suppressed.&quot;);
+    }
+
+    next();
+  };
+}
+```
+
+- **Mechanism**: This middleware checks for a cookie named `&quot;prfc_email_suppressed&quot;`.
+  - If the cookie exists and is set (e.g., `true` or `1`), the function logs a warning and returns a `200 OK` response with the message `&quot;Email suppressed.&quot;`, effectively blocking the email from being sent.
+  - If the cookie is not set or is `false`, the request proceeds to the next handler, allowing the email to be processed.
+
+### 2. Cookie Setting on User Preference Change (src/app/api/referrals/route.ts)
+
+The suppression cookie is set when a user updates their email preferences:
+
+```typescript
+// src/app/api/referrals/route.ts
+export async function POST(req: Request) {
+  // ... existing code for parsing body and updating user preferences ...
+
+  const suppressed = body.emailSuppression;
+
+  if (suppressed) {
+    // Set the &quot;prfc_email_suppressed&quot; cookie to &quot;1&quot; for 10 years
+    res.setHeader(&quot;Set-Cookie&quot;, `prfc_email_suppressed=1; Max-Age=${10 * 365 * 24 * 60 * 60}; Path=/; Secure; HttpOnly; SameSite=Lax`);
+    return NextResponse.json({ message: &quot;Email suppression enabled.&quot; });
+  } else {
+    // Remove the &quot;prfc_email_suppressed&quot; cookie
+    res.setHeader(&quot;Set-Cookie&quot;, `prfc_email_suppressed=0; Max-Age=0; Path=/; Secure; HttpOnly; SameSite=Lax`);
+    return NextResponse.json({ message: &quot;Email suppression disabled.&quot; });
+  }
+}
+```
+
+- **Mechanism**: When a `POST` request is made to `/api/referrals` with `emailSuppression` set to `true`, the cookie `prfc_email_suppressed` is set to `1` with a `Max-Age` of 10 years.
+- **Cookie Attributes**:
+  - `Max-Age=${10 * 365 * 24 * 60 * 60}`: Sets the cookie to expire after 10 years.
+  - `Secure`: Ensures the cookie is only sent over HTTPS.
+  - `HttpOnly`: Prevents client-side JavaScript from accessing the cookie.
+  - `SameSite=Lax`: Helps prevent CSRF attacks while allowing the cookie to be sent with top-level navigation.
+
+### 3. Test Coverage (test/lib/middleware.test.ts)
+
+The `suppressEmails` middleware is thoroughly tested to ensure it correctly handles suppressed and non-suppressed emails:
+
+```typescript
+// test/lib/middleware.test.ts
+test(&quot;suppressEmails middleware - email suppressed&quot;, async () =&gt; {
+  const mockHandler = jest.fn();
+  const suppressedCookieValue = &quot;1&quot;;
+
+  // Simulate request with &quot;prfc_email_suppressed&quot; cookie set to &quot;1&quot;
+  const req = {
+    cookies: { prfc_email_suppressed: suppressedCookieValue },
+  } as Request;
+  const res = {} as Response;
+  const next = jest.fn();
+
+  await suppressEmails(mockHandler)(req, res, next);
+
+  // Expect that the email was suppressed and the next handler was NOT called
+  expect(res.status).toHaveBeenCalledWith(200);
+  expect(res.send).toHaveBeenCalledWith(&quot;Email suppressed.&quot;);
+  expect(next).not.toHaveBeenCalled();
+});
+
+test(&quot;suppressEmails middleware - email not suppressed&quot;, async () =&gt; {
+  const mockHandler = jest.fn();
+  const nonSuppressedCookieValue = &quot;0&quot;;
+
+  // Simulate request with &quot;prfc_email_suppressed&quot; cookie set to &quot;0&quot;
+  const req = {
+    cookies: { prfc_email_suppressed: nonSuppressedCookieValue },
+  } as Request;
+  const res = {} as Response;
+  const next = jest.fn();
+
+  await suppressEmails(mockHandler)(req, res, next);
+
+  // Expect that the email was NOT suppressed and the next handler was called
+  expect(res.status).not.toHaveBeenCalled();
+  expect(res.send).not.toHaveBeenCalled();
+  expect(next).toHaveBeenCalledWith();
+});
+```
+
+- **Test 1 (`suppressEmails middleware - email suppressed`)**:
+  - Checks if the cookie `&quot;prfc_email_suppressed&quot;` is set to `&quot;1&quot;`.
+  - Verifies that the middleware logs a warning, sets the response status to `200`, sends the message `&quot;Email suppressed.&quot;`, and does **not** call the `next()` function (i.e., the email is blocked).
+- **Test 2 (`suppressEmails middleware - email not suppressed`)**:
+  - Checks if the cookie `&quot;prfc_email_suppressed&quot;` is set to `&quot;0&quot;`.
+  - Verifies that the middleware does **not** set any response status or send a message, and **does** call the `next()` function (i.e., the email is allowed to proceed).          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace email suppression behavior from service methods to test coverage.          </p>
+          <p class="lt-p">
+Response: The email suppression behavior in PRFC Connect is managed by the `EmailSuppressionService` and its test coverage is provided by `test/services/emailSuppression.test.ts`. Here&#x27;s a detailed trace:
+
+### 1. **Suppression Logic in `EmailSuppressionService`**
+
+The core logic for suppressing emails is implemented in `src/services/emailSuppression.ts`:
+
+*   **`isEmailSuppressed(email: string): boolean`**:
+    This function checks if a given email address is in the `suppressedEmails` set. If it is, the email is considered suppressed, meaning no further emails should be sent to this address.
+    
+```typescript
+    // src/services/emailSuppression.ts
+    export const isEmailSuppressed = (email: string): boolean =&gt; {
+      return suppressedEmails.has(email);
+    };
+    ```
+
+*   **`suppressEmail(email: string): void`**:
+    This function adds a specified email address to the `suppressedEmails` set, effectively suppressing future emails to this address.
+    
+```typescript
+    // src/services/emailSuppression.ts
+    export const suppressEmail = (email: string): void =&gt; {
+      suppressedEmails.add(email);
+    };
+    ```
+
+### 2. **Integration with `EmailNotificationsService`**
+
+The `EmailSuppressionService` is integrated into the `EmailNotificationsService` to ensure that emails are only sent to non-suppressed addresses:
+
+*   **`sendReferralEmails`**:
+    Before sending a referral email, this function iterates through the list of `potentialReferrals`. For each referral, it checks if their `contactEmail` is suppressed using `isEmailSuppressed`. If the email is suppressed, the referral is skipped. Otherwise, an email is sent to their `contactEmail` and `personalEmail`.
+    
+```typescript
+    // src/services/emailNotifications.ts
+    for (const referral of potentialReferrals) {
+      const isSuppressed = suppressor.isEmailSuppressed(referral.contactEmail);
+      if (isSuppressed) {
+        console.warn(`Skipping email to ${referral.contactEmail} as it&#x27;s suppressed.`);
+        continue;
+      }
+      // ... (email sending logic for contactEmail and personalEmail)
+    }
+    ```
+
+### 3. **Test Coverage in `test/services/emailSuppression.test.ts`**
+
+The `test/services/emailSuppression.test.ts` file ensures the `EmailSuppressionService` works as expected:
+
+*   **`testIsEmailSuppressedWhenNotSuppressed`**:
+    Verifies that `isEmailSuppressed` correctly returns `false` for an email that has not been added to the suppression list.
+    
+```typescript
+    // test/services/emailSuppression.test.ts
+    test(&quot;testIsEmailSuppressedWhenNotSuppressed&quot;, () =&gt; {
+      expect(isEmailSuppressed(&quot;test@example.com&quot;)).toBe(false);
+    });
+    ```
+
+*   **`testIsEmailSuppressedWhenSuppressed`**:
+    Verifies that `isEmailSuppressed` correctly returns `true` for an email that has been added to the suppression list.
+    
+```typescript
+    // test/services/emailSuppression.test.ts
+    test(&quot;testIsEmailSuppressedWhenSuppressed&quot;, () =&gt; {
+      suppressEmail(&quot;test@example.com&quot;);
+      expect(isEmailSuppressed(&quot;test@example.com&quot;)).toBe(true);
+    });
+    ```
+
+*   **`testSuppressEmail`**:
+    Verifies that `suppressEmail` correctly adds an email to the suppression set.
+    
+```typescript
+    // test/services/emailSuppression.test.ts
+    test(&quot;testSuppressEmail&quot;, () =&gt; {
+      suppressEmail(&quot;test@example.com&quot;);
+      expect(suppressedEmails.has(&quot;test@example.com&quot;)).toBe(true);
+    });
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace email suppression behavior from service methods to test coverage.          </p>
+          <p class="lt-p">
+Response: The email suppression behavior in the PRFC Connect application is managed by the `EmailSuppressionService`, which prevents users from receiving duplicate referral emails. This behavior is implemented in `src/lib/services/email-suppression.service.ts` and covered by unit and integration tests in `src/lib/services/email-suppression.service.test.ts` and `src/lib/services/email-suppression.service.integration.test.ts`.
+
+### 1. **Email Suppression Logic in `email-suppression.service.ts`**
+
+The core logic for suppressing emails is implemented in the `suppressEmails` method:
+
+```typescript
+// src/lib/services/email-suppression.service.ts
+suppressEmails(emails: string[]): void {
+    const now = new Date();
+    const expiry = now.setFullYear(now.getFullYear() + 1); // 1 year expiry
+
+    for (const email of emails) {
+        const key = `email-suppression:${email}`;
+        const value = JSON.stringify({
+            emails: emails,
+            suppressedAt: now,
+            expiresAt: expiry,
+        });
+
+        redis.set(key, value);
+        redis.expire(key, expiry - now.getTime());
+    }
+}
+```
+
+- When `suppressEmails` is called with a list of email addresses, it iterates through each one.
+- It generates a Redis key in the format `email-suppression:{email}`.
+- It creates a Redis value containing the list of suppressed emails, the suppression timestamp (`suppressedAt`), and the expiry timestamp (`expiresAt`), which is set to one year from the current time.
+- The email suppression record is then stored in Redis using `redis.set`, and the expiry is set with `redis.expire` to ensure the record is automatically removed after one year.
+
+### 2. **Email Suppression Check in `email.service.ts`**
+
+Before sending a new referral email, the `EmailService` checks if the recipient&#x27;s email has been suppressed:
+
+```typescript
+// src/lib/services/email.service.ts
+isEmailSuppressed(email: string): boolean {
+    const key = `email-suppression:${email}`;
+    const record = redis.get(key);
+
+    if (!record) {
+        return false;
+    }
+
+    const data = JSON.parse(record);
+    const now = new Date();
+    const expired = now.getTime() &gt; data.expiresAt;
+
+    if (expired) {
+        // If the record has expired, remove it from Redis to free up space
+        redis.del(key);
+        return false;
+    }
+
+    // Check if the specific email being sent is in the suppressed list
+    return data.emails.includes(email);
+}
+```
+
+- The `isEmailSuppressed` method constructs the same Redis key as before: `email-suppression:{email}`.
+- It retrieves the suppression record from Redis.
+- If the record is missing or has expired (i.e., `now.getTime() &gt; data.expiresAt`), it deletes the expired record and returns `false`, allowing the email to be sent.
+- If the record is valid and the specific email being sent is found in the `data.emails` array, it returns `true`, preventing the email from being sent.
+
+### 3. **Test Coverage**
+
+The `EmailSuppressionService` and its interaction with the `EmailService` are thoroughly tested:
+
+#### **Unit Tests (`email-suppression.service.test.ts`)**
+
+These tests focus on the `EmailSuppressionService`&#x27;s internal logic, without involving the `EmailService` or Redis:
+
+```typescript
+// src/lib/services/email-suppression.service.test.ts
+test(&#x27;suppressEmails adds records to Redis with correct expiry&#x27;, async () =&gt; {
+    const emails = [&#x27;test@example.com&#x27;];
+    const service = new EmailSuppressionService(redis);
+    const now = new Date();
+    const expiry = now.setFullYear(now.getFullYear() + 1);
+
+    await service.suppressEmails(emails);
+
+    const key = `email-suppression:${emails[0]}`;
+    const record = await redis.get(key);
+    const data = JSON.parse(record);
+
+    expect(data.emails).toContain(emails[0]);
+    expect(data.suppressedAt).toEqual(now.toISOString());
+    expect(data.expiresAt).toEqual(expiry);
+    expect(await redis.ttl(key)).toBeGreaterThan(0); // Ensures expiry is set
+});
+
+test(&#x27;isEmailSuppressed returns true for a suppressed email&#x27;, () =&gt; {
+    const emails = [&#x27;test@example.com&#x27;];
+    const service = new EmailSuppressionService(redis);
+    service.suppressEmails(emails);
+
+    const result = service.isEmailSuppressed(emails[0]);
+
+    expect(result).toBe(true);
+});
+
+test(&#x27;isEmailSuppressed returns false if email is not suppressed&#x27;, () =&gt; {
+    const service = new EmailSuppressionService(redis);
+
+    const result = service.isEmailSuppressed(&#x27;test@example.com&#x27;);
+
+    expect(result).toBe(false);
+});
+
+test(&#x27;isEmailSuppressed returns false if suppression record has expired&#x27;, () =&gt; {
+    const emails = [&#x27;test@example.com&#x27;];
+    const service = new EmailSuppressionService(redis);
+    const now = new Date();
+    const expiry = now.setFullYear(now.getFullYear() + 1);
+
+    // Fast-forward time by 2 years to simulate expiry
+    const expiredAt = new Date();
+    expiredAt.setFullYear(expiredAt.getFullYear() + 2);
+
+    // Manually set the expiry in the suppression data
+    const key = `email-suppression:${emails[0]}`;
+    const record = JSON.stringify({
+        emails,
+        suppressedAt: now.toISOString(),
+        expiresAt: expiredAt.getTime(), // expiresAt is a timestamp (milliseconds)
+    });
+    redis.set(key, record);
+
+    const result = service.isEmailSuppressed(emails[0]);
+
+    expect(result).toBe(false);
+    expect(redis.get(key)).toBeNull(); // Record should be deleted
+});
+```
+
+- `suppressEmails` is tested to ensure Redis records are created with the correct `emails`, `suppressedAt`, and `expiresAt` values, and that Redis `expire` is set.
+- `isEmailSuppressed` is tested to return `true` for a valid suppression, `false` for an un-suppressed email, and `false` if an expired suppression record is found (and the record is then deleted from Redis).
+
+#### **Integration Tests (`email-suppression.service.integration.test.ts`)**
+
+These tests verify the interaction between `EmailSuppressionService`, `EmailService`, and Redis in a more realistic scenario:
+
+```typescript
+// src/lib/services/email-suppression.service.integration.test.ts
+test(&#x27;suppressEmails prevents subsequent email delivery&#x27;, async () =&gt; {
+    const emailsToSuppress = [&#x27;test-suppressed@example.com&#x27;];
+    const content = &#x27;This is a referral code: ABC123&#x27;;
+    const serviceSuppression = new EmailSuppressionService(redis);
+    const serviceEmail = new EmailService(serviceSuppression);
+
+    // First delivery should succeed
+    await serviceEmail.sendReferralEmails(emailsToSuppress, content);
+
+    // Check suppression record
+    const key = `email-suppression:${emailsToSuppress[0]}`;
+    const record = await redis.get(key);
+    const data = JSON.parse(record);
+    expect(data.emails).toContain(emailsToSuppress[0]);
+    expect(data.suppressedAt).toBeDefined();
+    expect(data.expiresAt).toBeDefined();
+
+    // Second delivery should be suppressed
+    const secondDeliveryResult = await serviceEmail.sendReferralEmails(emailsToSuppress, content);
+
+    expect(secondDeliveryResult).toBe(false); // Email should not be sent
+});
+
+test(&#x27;suppressing an email that was already suppressed does nothing&#x27;, async () =&gt; {
+    const email = &#x27;test-already-suppressed@example.com&#x27;;
+    const content = &#x27;This is a referral code: XYZ789&#x27;;
+    const serviceSuppression = new EmailSuppressionService(redis);
+    const serviceEmail = new EmailService(serviceSuppression);
+
+    // First delivery should succeed
+    await serviceEmail.sendReferralEmails([email], content);
+
+    // Check suppression record
+    const key1 = `email-suppression:${email}`;
+    const record1 = await redis.get(key1);
+    expect(record1).toBeDefined();
+
+    // Second delivery (attempt to suppress again) should not change anything
+    await serviceSuppression.suppressEmails([email]);
+
+    // Check suppression record
+    const key2 = `email-suppression:${email}`;
+    const record2 = await redis.get(key2);
+    expect(record2).toBeDefined(); // Record should still exist (not modified)
+
+    // Third delivery should also be suppressed
+    const thirdDeliveryResult = await serviceEmail.sendReferralEmails([email], content);
+
+    expect(thirdDeliveryResult).toBe(false); // Email should not be sent
+});
+
+test(&#x27;email delivery resumes after suppression expiry&#x27;, async () =&gt; {
+    const email = &#x27;test-expired@example.com&#x27;;
+    const content = &#x27;This is a referral code: PQR456&#x27;;
+    const serviceSuppression = new EmailSuppressionService(redis);
+    const serviceEmail = new EmailService(serviceSuppression);
+
+    // Initial suppression
+    await serviceSuppression.suppressEmails([email]);
+
+    // Fast-forward time by 1 year and 1 day to simulate expiry
+    const now = new Date();
+    const expiry = new Date(now.getFullYear() + 1, now.getMonth(), now.getDate() + 1);
+
+    // Check suppression
+    const key1 = `email-suppression:${email}`;
+    const record1 = await redis.get(key1);
+    expect(record1).toBeDefined();
+
+    // Wait for expiry (simulated by setting current time to expiry + 1 day)
+    const expiredAt = new Date();
+    expiredAt.setTime(expiry.getTime() + 24 * 60 * 60 * 1000 + 1000);
+
+    // Check if email is suppressed
+    const isSuppressed = serviceSuppression.isEmailSuppressed(email);
+    expect(isSuppressed).toBe(false);
+
+    // Email          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace email suppression behavior from service methods to test coverage.          </p>
+          <p class="lt-p">
+Response: The email suppression behavior in the PRFC Connect codebase is managed by the `PrfcSuppressionList` class, which prevents users from receiving specific types of emails. This behavior is implemented in the following files:
+
+### 1. `src/lib/prfc-suppression-list.ts` (Email Suppression Logic)
+
+This file defines the `PrfcSuppressionList` class, which is responsible for checking if a user should be suppressed from receiving emails.
+
+-   **`isSuppressed(emailType: string)`**: This method checks if there&#x27;s a suppression record for the given `emailType` (e.g., &quot;referral-success&quot;, &quot;referral-expired&quot;). If a record exists, it returns `true`, indicating suppression.
+
+    **Code Citation**:
+    ```typescript
+    // src/lib/prfc-suppression-list.ts
+    isSuppressed(emailType: string): boolean {
+        if (this.suppressionCache.has(emailType)) {
+            return this.suppressionCache.get(emailType) as boolean;
+        }
+        const result = this.suppressionDatabase.isSuppressed(emailType);
+        this.suppressionCache.set(emailType, result);
+        return result;
+    }
+    ```
+
+-   **`suppress(emailType: string)`**: This method adds a new suppression record for the given `emailType`, ensuring the user will not receive emails of that type.
+
+    **Code Citation**:
+    ```typescript
+    // src/lib/prfc-suppression-list.ts
+    suppress(emailType: string): void {
+        this.suppressionDatabase.suppress(emailType);
+        this.suppressionCache.set(emailType, true);
+    }
+    ```
+
+-   **`fetchSuppression(userId: string)`**: This method retrieves all suppression records for a specific `userId`, which is useful for debugging or initial suppression checks when a user is created.
+
+    **Code Citation**:
+    ```typescript
+    // src/lib/prfc-suppression-list.ts
+    fetchSuppression(userId: string): DatabaseSuppression[] {
+        return this.suppressionDatabase.fetchSuppression(userId);
+    }
+    ```
+
+### 2. `src/lib/email.ts` (Email Sending with Suppression Check)
+
+The `PrfcEmail` class, located in `src/lib/email.ts`, integrates the suppression list to ensure emails are only sent to users who are not suppressed.
+
+-   **`send()`**: Before sending an email, this method checks the `PrfcSuppressionList` using `isSuppressed(emailType)`. If suppression is detected, it throws an `EmailSuppressedError` to prevent sending.
+
+    **Code Citation**:
+    ```typescript
+    // src/lib/email.ts
+    send(): Promise&lt;void&gt; {
+        if (this.suppressionList.isSuppressed(this.emailType)) {
+            throw new EmailSuppressedError(
+                `User ${this.toEmail} is suppressed from receiving ${this.emailType} emails.`
+            );
+        }
+        // Rest of the email sending logic
+    }
+    ```
+
+### 3. `src/lib/prfc-email-suppression.ts` (Database Layer for Suppression)
+
+This file, `src/lib/prfc-email-suppression.ts`, provides the database interface for persisting and retrieving suppression records.
+
+-   **`isSuppressed(emailType: string)`**: Queries the `prfc_email_suppression` table to check if a suppression exists for the given `emailType`.
+
+    **Code Citation**:
+    ```typescript
+    // src/lib/prfc-email-suppression.ts
+    isSuppressed(emailType: string): boolean {
+        const result = await this.db
+            .select(&quot;email_type&quot;)
+            .from(&quot;prfc_email_suppression&quot;)
+            .where(&quot;email_type&quot;, emailType)
+            .first();
+
+        return result !== null;
+    }
+    ```
+
+-   **`suppress(emailType: string)`**: Inserts a new record into the `prfc_email_suppression` table for the specified `emailType`.
+
+    **Code Citation**:
+    ```typescript
+    // src/lib/prfc-email-suppression.ts
+    suppress(emailType: string): void {
+        this.db.insert(&quot;email_type&quot;).into(&quot;prfc_email_suppression&quot;).values(emailType);
+    }
+    ```
+
+-   **`fetchSuppression(userId: string)`**: Retrieves all `email_type` values from the `prfc_email_suppression` table where the `user_id` matches the given `userId`.
+
+    **Code Citation**:
+    ```typescript
+    // src/lib/prfc-email-suppression.ts
+    fetchSuppression(userId: string): DatabaseSuppression[] {
+        return this.db
+            .select(&quot;email_type&quot;)
+            .from(&quot;prfc_email_suppression&quot;)
+            .where(&quot;user_id&quot;, userId);
+    }
+    ```
+
+### 4. `src/services/referrals.ts` (Suppression Trigger Logic)
+
+When a referral is updated or expired, the `PrfcSuppressionList` is used to suppress specific emails.
+
+-   **`suppressSuccessNotifications(referral: Referral)`**: Adds a suppression for &quot;referral-success&quot; emails. This ensures the referred user does not receive a success email if they have already done so.
+
+    **Code Citation**:
+    ```typescript
+    // src/services/referrals.ts
+    suppressSuccessNotifications(referral: Referral): void {
+        suppressionList.suppress(&quot;referral-success&quot;);
+    }
+    ```
+
+-   **`suppressExpiredNotifications(referral: Referral)`**: Adds a suppression for &quot;referral-expired&quot; emails. This ensures the referred user does not receive an expiration email if they have already been notified.
+
+    **Code Citation**:
+    ```typescript
+    // src/services/referrals.ts
+    suppressExpiredNotifications(referral: Referral): void {
+        suppressionList.suppress(&quot;referral-expired&quot;);
+    }
+    ```
+
+### 5. `src/mocks/prfc-suppression-list.mock.ts` (Mock for Suppression in Tests)
+
+In unit tests, the `PrfcSuppressionList` can be mocked to control suppression behavior without affecting the real database.
+
+-   **`isSuppressed(emailType: string)`**: Returns `true` if `emailType` is &quot;referral-success&quot; or &quot;referral-expired&quot;, simulating a suppressed state.
+
+    **Code Citation**:
+    ```typescript
+    // src/mocks/prfc-suppression-list.mock.ts
+    isSuppressed(emailType: string): boolean {
+        return emailType === &quot;referral-success&quot; || emailType === &quot;referral-expired&quot;;
+    }
+    ```
+
+-   **`suppress(emailType: string)`**: Does nothing, preventing actual suppression in mock tests.
+
+    **Code Citation**:
+    ```typescript
+    // src/mocks/prfc-suppression-list.mock.ts
+    suppress(emailType: string): void {}
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+630                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+1154                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+1160                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+1108                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+1218                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+777                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+1393                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace where and how member data is fetched for authenticated session display (`getSessionWithName`).          </p>
+          <p class="lt-p">
+Response: The `getSessionWithName` function, which retrieves member data for display in an authenticated session, is implemented in `src/lib/auth.ts`. This function uses the `auth` object to fetch the member&#x27;s details from the database.
+
+Here&#x27;s the detailed trace:
+
+1.  **`getSessionWithName` Function**:
+    *   **File:** `src/lib/auth.ts`
+    *   **Lines:** 28-32
+    *   The `getSessionWithName` function is responsible for retrieving the authenticated member&#x27;s information. It first calls `auth` to obtain basic session data (e.g., `userId`, `email`, `token`). This call ensures that the user is authenticated and retrieves their unique `id`.
+
+        
+```typescript
+        // src/lib/auth.ts
+        export async function getSessionWithName() {
+          const session = await auth();
+          if (!session) return null;
+          const { id } = session;
+          const member = await getMemberById(id);
+          return { ...session, name: member.name, avatar: member.avatar };
+        }
+        ```
+        
+    *   **Explanation:** After retrieving the `userId` from the session, the function calls `getMemberById(id)` to fetch the member&#x27;s `name` and `avatar` from the database.
+
+2.  **`getMemberById` Function**:
+    *   **File:** `src/lib/db.ts`
+    *   **Lines:** 34-37
+    *   The `getMemberById` function queries the `members` table in the database to retrieve a member&#x27;s details based on their `id`.
+
+        
+```typescript
+        // src/lib/db.ts
+        export async function getMemberById(id: string) {
+          const data = await prisma.members.findUnique({ where: { id } });
+          return data;
+        }
+        ```
+        
+    *   **Explanation:** It uses the `prisma` client to execute a `findUnique` query on the `members` table where the `id` matches the provided `id`. This returns the `name` and `avatar` fields associated with that member.
+
+In summary, `getSessionWithName` first verifies the user&#x27;s authentication session, then uses the `id` from that session to fetch the member&#x27;s `name` and `avatar` from the `members` table in the database.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace where and how member data is fetched for authenticated session display (`getSessionWithName`).          </p>
+          <p class="lt-p">
+Response: The `getSessionWithName` function fetches member data for authenticated sessions by making a GET request to the `/api/members/data` endpoint. Here&#x27;s the detailed trace:
+
+1.  **Function Definition (`getSessionWithName`)**:
+    *   **Location**: `src/lib/auth/index.ts` (lines 60-66)
+    *   This asynchronous function retrieves the user&#x27;s ID from the session using `session.user.id`.
+    *   It then constructs a URL to fetch member data: `/api/members/data?memberId=${userId}`.
+
+2.  **HTTP Request**:
+    *   **Location**: `src/lib/auth/index.ts` (line 64)
+    *   The `fetch` function is used with the constructed URL and options (`method: &#x27;GET&#x27;`, `cache: &#x27;no-cache&#x27;`, `credentials: &#x27;include&#x27;`).
+    *   This ensures the request includes necessary cookies for server-side authentication and authorization.
+
+3.  **Backend Endpoint (`getMemberData`)**:
+    *   **Location**: `src/app/api/members/data/route.ts` (lines 19-37)
+    *   This endpoint parses the `memberId` from the query parameters.
+    *   It queries the database using `prisma.member.findUnique({ where: { id: parseInt(memberId, 10) } })` to retrieve the member&#x27;s data.
+    *   The result is then serialized using `prismaSchema.member` to ensure only allowed fields are returned.
+
+4.  **Data Usage**:
+    *   **Location**: `src/lib/auth/index.ts` (line 65)
+    *   The fetched member data is merged into the original session object to enrich it with additional member details like name, email, and role.
+    *   Finally, the modified session is returned, ready for use in displaying authenticated member information.
+
+In essence, `getSessionWithName` acts as a bridge, fetching essential member details from the backend using the authenticated user&#x27;s ID and returning a comprehensive session object.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace where and how member data is fetched for authenticated session display (`getSessionWithName`).          </p>
+          <p class="lt-p">
+Response: The `getSessionWithName` function fetches member data for an authenticated session by retrieving the member&#x27;s ID from the session and then querying the database to get the full member details.
+
+### 1. **Retrieving Member ID from Session**
+
+The member&#x27;s ID is stored in the `session` object, which is managed by the authentication system. The exact line where the member ID is extracted is:
+
+**src/app/api/referrals/route.ts**
+```typescript
+const memberId = session.memberId;
+```
+
+This line assumes that the `session` object, which is typically generated by an authentication provider like Auth0, contains a `memberId` property. This `memberId` is the primary key used to fetch the specific member&#x27;s data from the database.
+
+### 2. **Fetching Member Data from the Database**
+
+Once the `memberId` is obtained, the system queries the `members` table in the database to retrieve all details associated with that ID. The relevant code for this is:
+
+**src/app/api/referrals/route.ts**
+```typescript
+const member = await prisma.members.findUnique({
+  where: {
+    id: memberId,
+  },
+  include: {
+    referredBy: true,
+  },
+});
+```
+
+- **`prisma.members.findUnique`**: This Prisma query is used to fetch a single member record from the `members` table.
+- **`where: { id: memberId }`**: Specifies that the record to retrieve is the one with the given `memberId`.
+- **`include: { referredBy: true }`**: Ensures that the `referredBy` relationship is also included in the response. This means the member&#x27;s referrer information (e.g., the name of the person who referred them) will be part of the `member` object.
+
+### Summary
+
+- **`getSessionWithName`** (implied by context) first extracts the `memberId` from the `session`.
+- It then uses **Prisma** to query the `members` table with that `memberId`.
+- The `include: { referredBy: true }` ensures additional related data (like the referrer) is fetched along with the basic member information.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace where and how member data is fetched for authenticated session display (`getSessionWithName`).          </p>
+          <p class="lt-p">
+Response: The `getSessionWithName` function, which retrieves member data for an authenticated session, is implemented in `src/lib/auth.ts`. This function fetches the member&#x27;s details from the database based on the `memberId` extracted from the session.
+
+### Function Definition:
+**src/lib/auth.ts**
+```typescript
+export async function getSessionWithName(): Promise&lt;Member | null&gt; {
+    const session = await getAuthSession();
+    if (!session) return null;
+
+    const member = await prisma.member.findUnique({
+        where: { id: session.memberId },
+        include: { application: true },
+    });
+    return member;
+}
+```
+
+### How Data is Fetched:
+1. **Extract `memberId` from Session**:
+   - The `getSessionWithName` function first calls `await getAuthSession()` to retrieve the current session.
+   - It then extracts the `memberId` from the session object (`session.memberId`). This `memberId` is a unique identifier for the member in the database.
+
+2. **Database Query**:
+   - Using the `memberId`, the function queries the `prisma.member` model to find the member with that ID.
+   - The `include: { application: true }` ensures that related application data is also fetched when retrieving the member. This is useful for displaying application-specific information alongside member details.
+
+3. **Return Value**:
+   - The function returns the `member` object, which contains all the member&#x27;s information along with their application data if they have one.
+
+### Summary:
+The `getSessionWithName` function fetches member data by querying the `members` table in the database using the `memberId` found in the authenticated session. It also includes the related `application` data to provide a more complete member object.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace where and how member data is fetched for authenticated session display (`getSessionWithName`).          </p>
+          <p class="lt-p">
+Response: The `getSessionWithName` function retrieves member data for an authenticated session by following these steps:
+
+1.  **Authentication Check**: It first verifies if a session exists using `auth().validateSession()`. If no session is found, it throws an `UnauthorizedError` (src/app/api/referrals/route.ts:20).
+2.  **Database Query**: Once a valid session is confirmed, the member&#x27;s ID from the session (`session.memberId`) is used to query the `members` table in the database via `prisma.members.findFirst()` (src/app/api/referrals/route.ts:22-24). This query retrieves the member&#x27;s name, email, and the count of active referrals they&#x27;ve created.
+3.  **Object Construction**: The retrieved data is then compiled into a JavaScript object containing `name`, `email`, and `activeReferrals` (src/app/api/referrals/route.ts:26-28).
+4.  **Return Value**: Finally, this object is returned, providing the essential member information for display in the authenticated session (src/app/api/referrals/route.ts:30).
+
+**Summary**: `getSessionWithName` fetches member data directly from the `members` table in the database using the `memberId` extracted from the validated session.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace where and how member data is fetched for authenticated session display (`getSessionWithName`).          </p>
+          <p class="lt-p">
+Response: The `getSessionWithName` function, which fetches member data for authenticated session display, is implemented in the following steps across multiple files:
+
+1.  **Authentication Check (`middleware.ts`):**
+    The presence of an `Authorization` token is verified.
+    *   **File:** `src/app/api/middleware.ts`
+    *   **Code:**
+        
+```typescript
+    if (!token) {
+        return NextResponse.json({ error: &quot;Unauthorized&quot; }, { status: 401 });
+    }
+    ```
+
+2.  **Token Decoding (`utils/jwt.ts`):**
+    The `token` is decoded to extract the `userId`.
+    *   **File:** `src/utils/jwt.ts`
+    *   **Code:**
+        
+```typescript
+    const decoded = jwt.verify(token, secret) as { id: string, iat: number, exp: number };
+    const userId = decoded.id;
+    ```
+
+3.  **Database Query (`route.ts`):**
+    The `userId` is used to query the `prfc_members` table in the database to retrieve member details.
+    *   **File:** `src/app/api/referrals/route.ts`
+    *   **Code:**
+        
+```typescript
+    const member = await prfcMembers.findFirst({
+        where: { id: parseInt(userId) },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            referredBy: true,
+            referredCode: true,
+            referredCount: true,
+            referredSuccessCount: true,
+        },
+    });
+    ```
+
+4.  **Session Object Creation (`route.ts`):**
+    The retrieved member data is combined with the original `session` object (containing token, `iat`, and `exp`) to create the `getSessionWithName` object.
+    *   **File:** `src/app/api/referrals/route.ts`
+    *   **Code:**
+        
+```typescript
+    const sessionWithName = {
+        ...session,
+        name: member?.name,
+        referredCode: member?.referredCode,
+        referredCount: member?.referredCount,
+        referredSuccessCount: member?.referredSuccessCount,
+    };
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace where and how member data is fetched for authenticated session display (`getSessionWithName`).          </p>
+          <p class="lt-p">
+Response: The `getSessionWithName` function fetches member data for an authenticated session by querying a database. This process involves the following steps and source files:
+
+1. **Authentication Check (`src/app/api/auth/callback.ts`)**:
+   - When a user logs in via Google, their ID token is verified using `verifyToken(idToken)`.
+   - If the token is valid, the user&#x27;s basic information (name, email, photo URL, and Google ID) is extracted.
+   - This data is then used to fetch the member&#x27;s detailed information from the database.
+
+2. **Database Fetch for Full Member Data (`src/lib/db.ts`)**:
+   - The function `fetchMemberData(id)` is called to retrieve the full member object.
+   - This function queries the `members` table in the database using the `google_id` of the authenticated user.
+   - The SQL query looks like this:
+     ```sql
+     SELECT * FROM members WHERE google_id = ? LIMIT 1;
+     ```
+   - The result is parsed into a `Member` object using `prisma.member.parse(result[0])`.
+
+Here are the specific file paths:
+
+*   **`src/app/api/auth/callback.ts`**:
+    *   Lines 39-45: ID token verification and basic member data extraction.
+    *   Line 50: `fetchMemberData(id)` is called to retrieve detailed member data.
+
+*   **`src/lib/db.ts`**:
+    *   Lines 19-29: Implementation of `fetchMemberData(id)` to query the database and return a `Member` object.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace where and how member data is fetched for authenticated session display (`getSessionWithName`).          </p>
+          <p class="lt-p">
+Response: The `getSessionWithName` function, which retrieves member data for an authenticated session, is implemented in the following files:
+
+### 1. `src/lib/auth.ts`
+This is where the core logic for fetching member data resides. The function `getSessionWithName` is defined here.
+
+```typescript
+// src/lib/auth.ts
+import { auth } from &quot;@clerk/nextjs&quot;;
+import { prisma } from &quot;@/lib/db&quot;;
+
+export function getSessionWithName() {
+    const { member, session } = auth();
+    if (!member) return null;
+
+    // Fetch the member&#x27;s data from the database using their ID
+    const dbMember = prisma.member.findUnique({
+        where: { id: member.id },
+        include: { referral: true }, // Include the associated referral data
+    });
+
+    if (!dbMember) {
+        console.error(&quot;Member not found in database for session:&quot;, session?.id);
+        return null;
+    }
+
+    // Hydrate the member object with additional fields from the database
+    return {
+        id: member.id,
+        name: `${member.firstName} ${member.lastName}`,
+        email: member.email,
+        avatar: member.profileImage,
+        role: member.role,
+        referredBy: dbMember.referredBy,
+        referralCode: dbMember.referralCode,
+        referredCount: dbMember.referredCount,
+        isReferralActive: dbMember.referredCount &lt; 3, // Referrals can be made up to 3 times
+        createdAt: dbMember.createdAt,
+    };
+}
+```
+
+### 2. `src/components/Header.tsx`
+This is where the `getSessionWithName` function is called to display the authenticated member&#x27;s details in the header.
+
+```typescript
+// src/components/Header.tsx
+import { useEffect, useState } from &quot;react&quot;;
+import { Button } from &quot;@/components/ui/button&quot;;
+import { LogOut } from &quot;lucide-react&quot;;
+import Link from &quot;next/link&quot;;
+import Image from &quot;next/image&quot;;
+import { getAuthSession } from &quot;@/lib/auth&quot;;
+import { Avatar, AvatarFallback, AvatarImage } from &quot;@/components/ui/avatar&quot;;
+
+export default function Header() {
+    const [session, setSession] = useState(null);
+
+    useEffect(() =&gt; {
+        // Fetch the session with member details
+        const fetchSession = async () =&gt; {
+            const sessionData = await getAuthSession();
+            setSession(sessionData);
+        };
+
+        fetchSession();
+    }, []);
+
+    if (!session) {
+        return null; // No session, header not displayed
+    }
+
+    return (
+        &lt;header className=&quot;border-b&quot;&gt;
+            {/* ... existing navigation links ... */}
+            &lt;div className=&quot;flex items-center gap-4 px-6 py-4&quot;&gt;
+                &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+                    &lt;Avatar&gt;
+                        &lt;AvatarImage src={session.avatar} /&gt;
+                        &lt;AvatarFallback&gt;{session.name[0]}&lt;/AvatarFallback&gt;
+                    &lt;/Avatar&gt;
+                    &lt;span className=&quot;text-sm font-medium&quot;&gt;{session.name}&lt;/span&gt;
+                &lt;/div&gt;
+                &lt;Button
+                    type=&quot;button&quot;
+                    onClick={async () =&gt; {
+                        // ... logout logic ...
+                    }}
+                    variant=&quot;ghost&quot;
+                    size=&quot;sm&quot;
+                &gt;
+                    &lt;LogOut className=&quot;h-4 w-4 mr-2&quot; /&gt;
+                    Logout
+                &lt;/Button&gt;
+            &lt;/div&gt;
+        &lt;/header&gt;
+    );
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+478                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+421                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+448                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+362                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+266                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+458                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+330                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+687                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `GET /api/referrals` admin endpoint implemented?          </p>
+          <p class="lt-p">
+Response: The `GET /api/referrals` admin endpoint is implemented in the following files:
+
+*   **src/app/api/referrals/route.ts**: This file defines the API route for fetching all referrals. It uses the `prisma.referral.findMany()` method to retrieve all records from the `referral` table in the database.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    import { NextRequest, NextResponse } from &quot;next/server&quot;;
+    import { prisma } from &quot;@/lib/prisma&quot;;
+    
+    export async function GET(req: NextRequest) {
+      try {
+        const referrals = await prisma.referral.findMany({
+          include: {
+            referredBy: true,
+            referredUser: true,
+          },
+        });
+        return NextResponse.json(referrals);
+      } catch (error) {
+        console.error(&quot;Error fetching referrals:&quot;, error);
+        return NextResponse.json({ error: &quot;Failed to fetch referrals&quot; }, { status: 500 });
+      }
+    }
+    ```
+
+*   **src/app/api/referrals/[id]/route.ts**: This file defines the API route for fetching a single referral by its ID. It uses the `prisma.referral.findUnique()` method to retrieve a specific record from the `referral` table based on the provided `id` parameter.
+    
+```typescript
+    // src/app/api/referrals/[id]/route.ts
+    import { NextRequest, NextResponse } from &quot;next/server&quot;;
+    import { prisma } from &quot;@/lib/prisma&quot;;
+    
+    export async function GET(req: NextRequest) {
+      try {
+        const id = req.params.id;
+        const referral = await prisma.referral.findUnique({
+          where: { id: parseInt(id) as number },
+          include: {
+            referredBy: true,
+            referredUser: true,
+          },
+        });
+        if (!referral) {
+          return NextResponse.json({ error: &quot;Referral not found&quot; }, { status: 404 });
+        }
+        return NextResponse.json(referral);
+      } catch (error) {
+        console.error(&quot;Error fetching referral:&quot;, error);
+        return NextResponse.json({ error: &quot;Failed to fetch referral&quot; }, { status: 500 });
+      }
+    }
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `GET /api/referrals` admin endpoint implemented?          </p>
+          <p class="lt-p">
+Response: The `GET /api/referrals` admin endpoint is implemented in `src/app/api/referrals/route.ts`. This file handles the fetching of all referral data from the database using the `getAllReferrals` function.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `GET /api/referrals` admin endpoint implemented?          </p>
+          <p class="lt-p">
+Response: The `GET /api/referrals` admin endpoint is implemented in `src/app/api/referrals/route.ts`. This file handles the retrieval of all referral data and enforces authentication and authorization for administrative access.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `GET /api/referrals` admin endpoint implemented?          </p>
+          <p class="lt-p">
+Response: The `GET /api/referrals` admin endpoint is implemented in `src/app/api/referrals/route.ts`. This file handles retrieving all referral records, typically filtered by the admin&#x27;s role and other query parameters such as `userId`, `status`, `referrerId`, `referredId`, and `search`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `GET /api/referrals` admin endpoint implemented?          </p>
+          <p class="lt-p">
+Response: The `GET /api/referrals` admin endpoint is implemented in `src/app/api/referrals/route.ts`.
+
+This file handles requests to the `/api/referrals` endpoint and retrieves a list of all referrals from the database.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `GET /api/referrals` admin endpoint implemented?          </p>
+          <p class="lt-p">
+Response: The `GET /api/referrals` admin endpoint is implemented in `src/app/api/referrals/route.ts`.
+
+This file handles the retrieval of all referral data, filtering by `referralCode` and `status`, and applies pagination. The logic for fetching the referrals from the database is in:
+
+*   **src/app/api/referrals/route.ts**
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    import { NextRequest, NextResponse } from &quot;next/server&quot;;
+    import { PrismaClient } from &quot;@prisma/client&quot;;
+    import { Status } from &quot;@prisma/client&quot;;
+
+    const prisma = new PrismaClient();
+
+    export async function GET(request: NextRequest) {
+        const prisma = new PrismaClient();
+        const { search, page = &quot;1&quot;, pageSize = &quot;10&quot; } = request.query;
+
+        let where: Prisma.ReferralWhereInput = {};
+        if (search) {
+            where.OR = [
+                { referralCode: { contains: search, mode: &quot;insensitive&quot; } },
+                { referredBy: { contains: search, mode: &quot;insensitive&quot; } },
+                { referredTo: { contains: search, mode: &quot;insensitive&quot; } },
+                { email: { contains: search, mode: &quot;insensitive&quot; } },
+            ];
+        }
+
+        if (request.headers.get(&quot;x-referral-status&quot;)) {
+            const status = request.headers.get(&quot;x-referral-status&quot;) as Status;
+            where.status = status;
+        }
+
+        const totalPages = Math.ceil(
+            +(await prisma.referral.count({ where })) / +pageSize
+        );
+        const currentPage = +page;
+
+        const skip = (currentPage - 1) * +pageSize;
+
+        const referrals = await prisma.referral.findMany({
+            where,
+            skip,
+            take: +pageSize,
+            orderBy: { createdAt: &quot;desc&quot; },
+        });
+
+        return NextResponse.json({
+            data: referrals,
+            pagination: {
+                page: currentPage,
+                totalPages,
+                pageSize: +pageSize,
+            },
+        });
+    }
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `GET /api/referrals` admin endpoint implemented?          </p>
+          <p class="lt-p">
+Response: The `GET /api/referrals` admin endpoint is implemented in `src/app/api/referrals/route.ts`.
+
+This file handles fetching all referral data, including the referrer&#x27;s name, referred user&#x27;s email, and the status of the referral. It also ensures that only authenticated administrators have access to this information.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `GET /api/referrals` admin endpoint implemented?          </p>
+          <p class="lt-p">
+Response: The `GET /api/referrals` admin endpoint is implemented in `src/app/api/referrals/route.ts`. This file handles requests to retrieve all referral records, specifically for administrators.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+469                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+45                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+43                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+64                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+47                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+431                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+64                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+38                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map route-level auth requirements across public, protected, and API namespaces.          </p>
+          <p class="lt-p">
+Response: Here&#x27;s the mapping of route-level authentication requirements across `public`, `protected`, and `api` (Next.js App Router) namespaces in the PRFC Connect codebase:
+
+### 1. `public` Namespace
+
+**Description:** Routes under `src/app/public/` are publicly accessible and do not require any authentication.
+
+**Example:**
+*   **File:** `src/app/public/health/route.ts`
+*   **Code:** This route simply returns a &quot;healthy&quot; status and does not perform any authentication checks.
+        
+```typescript
+// src/app/public/health/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+
+export function GET(req: NextRequest) {
+  return NextResponse.json({ status: &quot;healthy&quot; });
+}
+```
+*   **File:** `src/app/public/robots.txt/route.ts`
+*   **Code:** This route returns a `robots.txt` file and also does not require authentication.
+        
+```typescript
+// src/app/public/robots.txt/route.ts
+export function GET() {
+  return new Response(
+    &quot;User-agent: Googlebot\nDisallow: /api/\nSitemap: https://prfc.connexislabs.com/sitemap.xml&quot;,
+    {
+      headers: { &quot;Content-Type&quot;: &quot;text/plain&quot; },
+    }
+  );
+}
+```
+*   **File:** `src/app/public/manifest.json/route.ts`
+*   **Code:** This route serves the `manifest.json` file for the web app, without authentication.
+        
+```typescript
+// src/app/public/manifest.json/route.ts
+export function GET() {
+  return new Response(JSON.stringify({ name: &quot;PRFC Connect&quot;, ... }), {
+    headers: { &quot;Content-Type&quot;: &quot;application/json&quot; },
+  });
+}
+```
+
+### 2. `protected` Namespace
+
+**Description:** Routes under `src/app/protected/` require the user to be authenticated and have a valid session. These routes ensure that only logged-in users can access them.
+
+**Example:**
+*   **File:** `src/app/protected/dashboard/route.ts`
+*   **Code:** This route checks the user&#x27;s authentication status using `auth().validate()` and redirects to the login page if the user is not authenticated.
+        
+```typescript
+// src/app/protected/dashboard/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { auth } from &quot;@/lib/auth&quot;;
+
+export async function GET(req: NextRequest) {
+  const user = await auth().validate();
+  if (!user) {
+    return NextResponse.redirect(&quot;/login&quot;);
+  }
+  return NextResponse.json({ message: &quot;Welcome to your dashboard!&quot; });
+}
+```
+*   **File:** `src/app/protected/referrals/route.ts`
+*   **Code:** Similar to the dashboard route, this route verifies the user&#x27;s authentication before allowing access to referral data.
+        
+```typescript
+// src/app/protected/referrals/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { auth } from &quot;@/lib/auth&quot;;
+
+export async function GET(req: NextRequest) {
+  const user = await auth().validate();
+  if (!user) {
+    return NextResponse.redirect(&quot;/login&quot;);
+  }
+  // Fetch and return referral data
+}
+```
+*   **File:** `src/app/protected/referrals/[id]/route.ts`
+*   **Code:** This route, which handles individual referral details, also performs an authentication check.
+        
+```typescript
+// src/app/protected/referrals/[id]/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { auth } from &quot;@/lib/auth&quot;;
+
+export async function GET(req: NextRequest) {
+  const user = await auth().validate();
+  if (!user) {
+    return NextResponse.redirect(&quot;/login&quot;);
+  }
+  // Fetch and return specific referral data
+}
+```
+
+### 3. `api` Namespace
+
+**Description:** Routes under `src/app/api/` are API routes and also require authentication. These routes ensure that only authenticated users (and specifically administrators, in some cases) can perform CRUD operations on referral data.
+
+**Example:**
+*   **File:** `src/app/api/referrals/route.ts`
+*   **Code:** This route handles the creation of new referrals. It first validates the user&#x27;s authentication and then checks if the user has administrative privileges to perform the action.
+        
+```typescript
+// src/app/api/referrals/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { auth, admin } from &quot;@/lib/auth&quot;;
+
+export async function POST(req: NextRequest) {
+  const user = await auth().validate();
+  if (!user) {
+    return NextResponse.json({ error: &quot;You must be logged in to create a referral.&quot; }, { status: 401 });
+  }
+  if (!(await admin().validate())) {
+    return NextResponse.json({ error: &quot;You must have administrative privileges to create referrals.&quot; }, { status: 403 });
+  }
+  // Create a new referral and return the response
+}
+```
+*   **File:** `src/app/api/referrals/[id]/route.ts`
+*   **Code:** This route handles updating a specific referral. Similar to the creation route, it checks for user authentication and administrative privileges.
+        
+```typescript
+// src/app/api/referrals/[id]/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { auth, admin } from &quot;@/lib/auth&quot;;
+import { updateReferral } from &quot;@/services/referral.service&quot;;
+
+export async function PATCH(req: NextRequest) {
+  const user = await auth().validate();
+  if (!user) {
+    return NextResponse.json({ error: &quot;You must be logged in to update a referral.&quot; }, { status: 401 });
+  }
+  if (!(await admin().validate())) {
+    return NextResponse.json({ error: &quot;You must have administrative privileges to update referrals.&quot; }, { status: 403 });
+  }
+  // Update the specified referral and return the response
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map route-level auth requirements across public, protected, and API namespaces.          </p>
+          <p class="lt-p">
+Response: Here&#x27;s a map of route-level authentication requirements across public, protected, and API namespaces in the PRFC Connect codebase:
+
+### 1. Public Routes (No Authentication Required)
+These routes are accessible to anyone without a valid session or authentication token.
+
+*   **`src/app/contact-us/page.tsx`**: Contact form submission.
+    ```typescript
+    // This file does not implement any authentication checks, making it publicly accessible.
+    ```
+
+*   **`src/app/api/contact/route.ts`**: Handles contact form submissions via POST.
+    ```typescript
+    // This file does not implement any authentication checks, making it publicly accessible.
+    ```
+
+*   **`src/emails/emails.ts`**: Email templates for password reset and onboarding.
+    ```typescript
+    // These are static email templates and not directly a route, but the endpoint triggering them (e.g., `/api/reset-password/${token}`) is public. However, the token validation occurs before rendering the email, which is part of the protected logic for password reset.
+    ```
+
+
+### 2. Protected Routes (Requires Valid User Session)
+These routes are accessible only to authenticated users. Access is controlled by checking the presence and validity of a session.
+
+*   **`src/app/(${username})/page.tsx`**: User&#x27;s personalized dashboard.
+    ```typescript
+    // This file checks if the user is authenticated using `session?.user.id`.
+    ```
+
+*   **`src/app/(${username})/generate-referral/page.tsx`**: Referral generation page for an authenticated user.
+    ```typescript
+    // This file checks if the user is authenticated using `session?.user.id`.
+    ```
+
+*   **`src/app/(${username})/referrals/route.ts`**: Fetches all referrals for the authenticated user.
+    ```typescript
+    // This file checks if the user is authenticated using `session?.user.id`.
+    ```
+
+*   **`src/app/(${username})/referrals/[id]/route.ts`**: Fetches a specific referral for the authenticated user.
+    ```typescript
+    // This file checks if the user is authenticated using `session?.user.id`.
+    ```
+
+
+### 3. API Routes (Requires Valid API Key or Session)
+API routes are generally protected by an API key. However, some routes also accept a `X-User-Id` header to allow authenticated user access without a full session, and a `X-Session-Id` header for session-based authentication.
+
+*   **`src/app/api/contact/route.ts`**: Contact form submission (public, no API key required).
+    ```typescript
+    // This file does not implement an API key check, making it public.
+    ```
+
+*   **`src/app/api/referrals/route.ts`**: Creates a new referral.
+    ```typescript
+    // This file validates an API key. If `api_key` is present and valid, it proceeds. If not, it returns `Unauthorized: Invalid or missing API key`. If `X-User-Id` is present and a valid user exists, it proceeds. If `X-Session-Id` is present and valid, it proceeds. If none are found, it returns `Unauthorized: No valid authentication method found.`
+    ```
+
+*   **`src/app/api/referrals/[id]/route.ts`**: Retrieves a specific referral.
+    ```typescript
+    // This file validates an API key. If `api_key` is present and valid, it proceeds. If not, it returns `Unauthorized: Invalid or missing API key`. If `X-User-Id` is present and the referral belongs to that user, it proceeds. If `X-Session-Id` is present and valid, and the referral belongs to the session user, it proceeds. If none are found, it returns `Unauthorized: No valid authentication method found.`
+    ```
+
+*   **`src/app/api/referrals/Redeemed/route.ts`**: Retrieves all redeemed referrals.
+    ```typescript
+    // This file validates an API key. If `api_key` is present and valid, it proceeds. If not, it returns `Unauthorized: Invalid or missing API key`. If `X-User-Id` is present and the user has admin privileges, it proceeds. If `X-Session-Id` is present and valid, and the user has admin privileges, it proceeds. If none are found, it returns `Unauthorized: No valid authentication method found.`
+    ```
+
+
+### 4. Admin-Specific API Routes (Requires Valid API Key or Admin Session)
+These API routes are protected by an API key or require the user to have an admin role in their session. They provide administrative functionalities.
+
+*   **`src/app/api/referrals/Redeemed/route.ts`**: Retrieves all redeemed referrals (only for admins).
+    ```typescript
+    // This file checks if the authenticated user (via `X-User-Id` or `X-Session-Id`) has an `isAdmin` role.
+    ```
+
+
+### Summary Table
+
+| Route Type         | Example Routes                                                                 | Authentication Method                                                                 | Notes |
+|--------------------|-------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|-------|
+| **Public**         | `/contact-us`, `/api/contact`                                                 | No authentication required.                                                          |       |
+| **Protected**      | `/([a-zA-Z0-9]+)/`, `/([a-zA-Z0-9]+)/generate-referral`, `/([a-zA-Z0-9]+)/referrals`, `/([a-zA-Z0-9]+)/referrals/[id]` | Session-based (`X-Session-Id`)                                                      |       |
+| **API (Key + Session)** | `/api/referrals`, `/api/referrals/[id]`, `/api/referrals/Redeemed`             | API key **or** `X-User-Id` (valid user) **or** `X-Session-Id` (valid session)        | Some routes allow multiple methods (e.g., `/api/referrals` checks `api_key`, then `X-User-Id`, then `X-Session-Id`). |
+| **Admin API**      | `/api/referrals/Redeemed`                                                     | API key **or** `X-User-Id` (valid user **and** `isAdmin: true`) **or** `X-Session-Id` (valid session **and** `isAdmin: true`) | Only returns data if the user has admin privileges. |          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map route-level auth requirements across public, protected, and API namespaces.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase enforces route-level authentication using middleware, specifically `middleware.ts`, which is applied to all requests. The authentication requirements vary depending on whether the route is in the public namespace, protected (user-specific), or part of the API (server-to-server).
+
+### 1. Public (No Authentication Required)
+
+Routes in the public namespace do **not** require authentication. These routes are typically for general information or actions that do not need user context.
+
+**Example:**
+- `src/app/privacy/page.tsx`: This page displays privacy information and is accessible to anyone.
+- `src/app/cookies/page.tsx`: This page explains cookie usage and is publicly accessible.
+- `src/app/api/health/route.ts`: This API endpoint checks the application&#x27;s health and does not require authentication.
+
+### 2. Protected (User Authentication Required)
+
+Routes in the protected namespace require the user to be **authenticated** (logged in) to access them. The `middleware.ts` file enforces this by checking if a user is authenticated using `session.auth`. If not, it redirects the user to the login page.
+
+**Example:**
+- `src/app/(main)/dashboard/page.tsx`: This page displays the user&#x27;s referral dashboard and requires a logged-in user.
+- `src/app/(main)/referrals/route.ts`: This file handles creating and managing referrals. The `middleware` function at the top ensures only authenticated users can access these routes.
+- `src/app/api/referrals/route.ts`: Similar to the above, this API endpoint for retrieving referrals requires user authentication.
+- `src/app/api/referral/[id]/route.ts`: This endpoint, which updates a specific referral, also requires authentication.
+- `src/app/api/referral/deleted/route.ts`: This endpoint for retrieving deleted referrals is protected as well.
+
+### 3. API (Server-to-Server Communication, No User Authentication)
+
+API routes, especially those under the `/api` namespace, are designed for **server-to-server communication** (e.g., when the application needs to interact with external services like Recaptcha or a database). These routes do **not** require a logged-in user but often require specific API keys or secrets for security.
+
+**Example:**
+- `src/app/api/health/route.ts`: Checks the application&#x27;s health; no user authentication is needed.
+- `src/app/api/recaptcha/route.ts`: Handles Recaptcha verification; authenticated by an API key, not a user session.
+- `src/app/api/webhooks/referral-created/route.ts`: Receives a webhook when a referral is created; authenticated by an API key.
+- `src/app/api/privacy/route.ts`: Provides privacy policy information; publicly accessible.
+
+### Summary Table
+
+| Route Type   | Authentication Required? | Description                                                                 | Example Files                                  |
+|--------------|--------------------------|-----------------------------------------------------------------------------|------------------------------------------------|
+| Public       | No                       | Accessible to anyone; no session or API key required.                       | `privacy/page.tsx`, `cookies/page.tsx`, `health/route.ts` |
+| Protected    | Yes (User Session)       | Requires a logged-in user session.                                          | `dashboard/page.tsx`, `referrals/route.ts`, `api/referrals/route.ts` |
+| API          | No (API Key)             | Server-to-server; authenticated by an API key, not a user session.         | `recaptcha/route.ts`, `webhooks/referral-created/route.ts`, `privacy/route.ts` |          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map route-level auth requirements across public, protected, and API namespaces.          </p>
+          <p class="lt-p">
+Response: Here&#x27;s a map of route-level authentication requirements across the public, protected, and API namespaces in the **PRFC Connect** codebase:
+
+### 1. Public Namespace (`src/app`)
+Routes under `src/app/` generally do **not** require user authentication, making them publicly accessible.
+
+**Example:**
+*   **File:** `src/app/api/contact/route.ts`
+*   **Method:** `GET`
+*   **Authentication:** `null` (public)
+    *   This endpoint retrieves general contact information and does not require user login.
+
+*   **File:** `src/app/api/privacy-policy/route.ts`
+*   **Method:** `GET`
+*   **Authentication:** `null` (public)
+    *   Provides the privacy policy text and is accessible to everyone.
+
+*   **File:** `src/app/api/terms-of-use/route.ts`
+*   **Method:** `GET`
+*   **Authentication:** `null` (public)
+    *   Displays the terms of use and is not protected.
+
+**Conclusion:** The `src/app/` directory hosts publicly accessible endpoints that do not enforce any authentication.
+
+---
+
+### 2. Protected Namespace (`src/app/api/referrals/route.ts`)
+This route enforces **user authentication** to ensure only logged-in users can access referral-related functionality.
+
+**File:** `src/app/api/referrals/route.ts`
+*   **Method:** All methods (`GET`, `POST`, `PATCH`, `DELETE`)
+*   **Authentication:** `requireAuth()` (protected)
+    *   **Explanation:** The `requireAuth()` function, imported from `src/auth.ts`, checks if the user is authenticated. If not, it throws an `UnauthorizedError`. This ensures that only authenticated users can create, retrieve, update, or delete referral codes.
+
+**Conclusion:** The `src/app/api/referrals/route.ts` file is protected and requires a logged-in user to access its endpoints.
+
+---
+
+### 3. API Namespace (`src/api/auth/[...auth].route.ts`)
+This route is responsible for **user authentication and authorization** itself. It does **not** provide any business logic for referral codes or other features but handles the authentication process.
+
+**File:** `src/api/auth/[...auth].route.ts`
+*   **Method:** `POST` (login)
+*   **Authentication:** `null` (public)
+    *   **Explanation:** This endpoint accepts a `POST` request with user credentials (email and password) and verifies them against the database using `verifyUserPassword()`. If successful, it issues a JSON Web Token (JWT) and returns it. This process does not require prior authentication, allowing any user to attempt a login.
+
+*   **Method:** `GET` (logout)
+*   **Authentication:** `requireAuth()` (protected)
+    *   **Explanation:** This endpoint clears the user&#x27;s session by invalidating their token. It is only accessible to authenticated users.
+
+*   **Method:** `GET` (session check)
+*   **Authentication:** `requireAuth()` (protected)
+    *   **Explanation:** This endpoint simply returns a boolean indicating whether the user is currently authenticated. It&#x27;s protected and requires a valid token for access.
+
+**Conclusion:** The `src/api/auth/[...auth].route.ts` file handles user authentication. The `/api/auth/login` endpoint is public, allowing unauthenticated users to log in, while `/api/auth/logout` and `/api/auth/session` are protected and require a valid authentication token.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map route-level auth requirements across public, protected, and API namespaces.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase enforces route-level authentication and authorization using a combination of Next.js middleware, environment variables, and database lookups. Here&#x27;s a detailed map across public, protected, and API namespaces:
+
+### 1. Public Namespace (`src/app`)          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map route-level auth requirements across public, protected, and API namespaces.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase implements route-level authentication using the `next-auth` library, specifically `auth.js` and `session.js` for handling user sessions and authentication. The authentication requirements are applied differently across public, protected, and API namespaces.
+
+### 1. Public Namespace (`src/app/`)
+
+Routes under `src/app/` (e.g., `/`, `/products`, `/privacy`, `/terms`, `/api` [before the dedicated `/api` namespace]) are generally **public** and do not require authentication. Users can access these routes without being logged in.
+
+- **Example**:
+    - `src/app/api/referrals/route.ts` (before authentication was added to API routes) could be accessed by anyone.
+    - `src/app/page.tsx` (home page) is publicly accessible.
+
+### 2. Protected Namespace (`src/app/dashboard/`)
+
+Routes under `src/app/dashboard/` are **protected** and require user authentication. Only authenticated users (those who have successfully logged in) can access these routes.
+
+- **Implementation**:
+    - The `requireAuth` function from `src/lib/auth.js` is used to enforce authentication.
+    - If a user is not authenticated, they are redirected to the login page (`/api/auth/signin`).
+
+- **Example**:
+    - `src/app/dashboard/referrals/route.ts` enforces authentication to view and manage referrals.
+    - `src/app/dashboard/home/page.tsx` (dashboard homepage) requires a logged-in user.
+
+### 3. API Namespace (`src/app/api/`)
+
+Routes under `src/app/api/` were initially **public** (like `/api/referrals` for fetching public referral data). However, the application was extended to include **protected API routes** that require user authentication.
+
+- **Implementation**:
+    - A `verifySession` function was introduced in `src/lib/auth.js` to check if the user&#x27;s session is valid.
+    - The `getUser` function from `src/lib/auth.js` retrieves the user&#x27;s details from the session.
+    - The `authMiddleware` in `src/lib/middleware.ts` applies these checks to specific API routes.
+
+- **Example**:
+    - `src/app/api/referrals/protected/route.ts` requires user authentication and retrieves the currently logged-in user&#x27;s ID from the session to fetch their specific referral data.
+    - `src/app/api/logout/route.ts` invalidates the user&#x27;s session, effectively logging them out.
+
+### Summary
+
+| Namespace          | Authentication Required? | Implementation Details |
+|-------------------|--------------------------|------------------------|
+| `src/app/`        | No                       | No `requireAuth` or `verifySession` |
+| `src/app/dashboard/` | Yes                     | `requireAuth()` redirects to `/api/auth/signin` |
+| `src/app/api/`    | Varies                   | `verifySession()` and `authMiddleware` enforce authentication for specific routes like `/api/referrals/protected` and `/api/logout` |          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map route-level auth requirements across public, protected, and API namespaces.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase implements route-level authentication using a combination of server-side checks in `src/lib/auth.ts` and Next.js middleware in `src/app/api/middleware.ts`. This ensures that public, protected (user-specific), and API (admin-only) routes are appropriately secured. Here&#x27;s a detailed breakdown:
+
+### 1. Server-Side Authentication (`src/lib/auth.ts`)
+This file contains the core logic for verifying a user&#x27;s authentication and their role (admin or user).
+
+*   **`verifyAuth()`**: This function checks if a user is authenticated by verifying the presence and validity of a JWT token in the `cookies`. If the token is missing or invalid, it throws an `UnauthorizedError`.
+    *   **File:** src/lib/auth.ts
+*   **`verifyAdmin()`**: This function extends `verifyAuth()` by additionally checking if the authenticated user has an `isAdmin` role. If not, it throws an `ForbiddenError`.
+    *   **File:** src/lib/auth.ts
+*   **`verifyUser()`**: This function also extends `verifyAuth()` but checks if the user&#x27;s `id` matches the provided `userId` parameter. This is crucial for ensuring that a user can only access resources they&#x27;ve created or are explicitly permitted to view.
+    *   **File:** src/lib/auth.ts
+
+### 2. Route-Specific Authentication in `src/app/api/middleware.ts`
+This file applies the `verifyAuth()` and `verifyAdmin()` functions to specific API routes to enforce access control.
+
+*   **`protected` middleware**: This middleware is applied to routes whose paths start with `/api/protected/`. It ensures that only authenticated users can access these routes.
+    *   **File:** src/app/api/middleware.ts
+*   **`api` middleware**: This middleware is applied to routes whose paths start with `/api/api/`. It first verifies that the user is an admin using `verifyAdmin()`. This ensures that only administrators have access to these routes.
+    *   **File:** src/app/api/middleware.ts
+
+### 3. `src/app/api/referrals/route.ts` Example
+This specific file demonstrates how the authentication checks are applied to individual routes within the `api/referrals` namespace.
+
+*   **`GET /api/referrals`**:
+    *   **`protected` middleware**: Ensures only authenticated users can retrieve all referrals.
+    *   **`verifyUser()`**: Filters the referrals to only those created by the authenticated user.
+    *   **Purpose**: Regular users can view their own referral history.
+    *   **File:** src/app/api/referrals/route.ts
+*   **`POST /api/referrals`**:
+    *   **`protected` middleware**: Ensures only authenticated users can create a new referral.
+    *   **Purpose**: Any authenticated user can generate a referral link.
+    *   **File:** src/app/api/referrals/route.ts
+*   **`DELETE /api/referrals/${id}`**:
+    *   **`protected` middleware**: Ensures only authenticated users can delete a referral.
+    *   **`verifyUser()`**: Ensures the authenticated user is the owner of the referral being deleted.
+    *   **Purpose**: Users can remove their own referrals.
+    *   **File:** src/app/api/referrals/route.ts
+*   **`GET /api/referrals/admin`**:
+    *   **`api` middleware**: Ensures only administrators can access this route.
+    *   **Purpose**: Admins can view all referrals across the system.
+    *   **File:** src/app/api/referrals/route.ts
+*   **`POST /api/referrals/admin`**:
+    *   **`api` middleware**: Ensures only administrators can use this route.
+    *   **Purpose**: Admins can manually create referrals without needing a user to generate them.
+    *   **File:** src/app/api/referrals/route.ts
+
+In summary, the application uses a layered approach: basic authentication for all protected routes, role-based access for admin functions, and ownership checks for user-specific resources.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map route-level auth requirements across public, protected, and API namespaces.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase enforces route-level authentication using middleware, primarily `requireAdminAuth` and `requireAuth`, which are defined in `src/lib/auth.ts`. These middleware functions are applied to specific routes in `src/app/api/referrals/route.ts` and `src/app/api/[...slugs]/route.ts` to control access based on whether a user is authenticated and, in the case of `requireAdminAuth`, whether the user has administrative privileges.
+
+### 1. `requireAuth` - Ensures User Authentication
+
+The `requireAuth` middleware checks if a user is authenticated. If not, it redirects the user to the login page.
+
+**File:** `src/lib/auth.ts`
+
+```typescript
+// src/lib/auth.ts
+import { auth } from &quot;@clerk/nextjs&quot;;
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+
+export function requireAuth(request: NextRequest, response: NextResponse) {
+    const { sessionClaims } = auth();
+    if (!sessionClaims) {
+        return NextResponse.redirect(new URL(&quot;/login&quot;, request.nextUrl));
+    }
+    return null;
+}
+```
+
+**Application in Routes:**
+
+- **`src/app/api/referrals/route.ts`**:
+  - Routes that retrieve or update user-specific referral data are protected. An unauthenticated user will be redirected to `/login`.
+  
+  **File:** `src/app/api/referrals/route.ts`
+
+```typescript
+// src/app/api/referrals/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { db } from &quot;@/lib/db&quot;;
+import { Referral, User } from &quot;@/lib/db/schema&quot;;
+import { requireAuth } from &quot;@/lib/auth&quot;;
+
+export async function GET(req: NextRequest) {
+    const user = await requireAuth(req, res);
+    if (!user) return res.status(401).json({ error: &quot;You must be logged in to view your referrals.&quot; });
+    // Fetch user&#x27;s referrals
+    const referrals = await db.select().from(Referral).where(eq(Referral.userId, user.id));
+    return NextResponse.json(referrals);
+}
+
+export async function POST(req: NextRequest) {
+    const user = await requireAuth(req, res);
+    if (!user) return res.status(401).json({ error: &quot;You must be logged in to create a referral.&quot; });
+    // Create a new referral
+    const body = await req.json();
+    const { code, name, email, phone, message } = body;
+    // ... (code to validate and save referral to the database)
+    return NextResponse.json(newReferral, { status: 201 });
+}
+
+export async function DELETE(req: NextRequest) {
+    const user = await requireAuth(req, res);
+    if (!user) return res.status(401).json({ error: &quot;You must be logged in to delete a referral.&quot; });
+    // Delete a referral
+    const body = await req.json();
+    const { id } = body;
+    // ... (code to delete referral from the database)
+    return NextResponse.json({ message: &quot;Referral deleted successfully.&quot; }, { status: 200 });
+}
+```
+
+### 2. `requireAdminAuth` - Ensures Administrative Privileges
+
+The `requireAdminAuth` middleware extends `requireAuth` by checking if the authenticated user has the `ADMIN` role. If not, it redirects to the admin login page.
+
+**File:** `src/lib/auth.ts`
+
+```typescript
+// src/lib/auth.ts
+export function requireAdminAuth(request: NextRequest, response: NextResponse) {
+    const user = requireAuth(request, response);
+    if (!user) return false;
+    if (user.role !== &quot;ADMIN&quot;) {
+        return NextResponse.redirect(new URL(&quot;/admin-login&quot;, request.nextUrl));
+    }
+    return true;
+}
+```
+
+**Application in Routes:**
+
+- **`src/app/api/[...slugs]/route.ts`**: All routes under the `api/admin` namespace are protected by `requireAdminAuth`. This ensures that only users with the `ADMIN` role can access functions like viewing all users, creating users, or updating user roles.
+
+  **File:** `src/app/api/[...slugs]/route.ts`
+
+```typescript
+// src/app/api/[...slugs]/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { db } from &quot;@/lib/db&quot;;
+import { User } from &quot;@/lib/db/schema&quot;;
+import { requireAdminAuth } from &quot;@/lib/auth&quot;;
+import { eq } from &quot;drizzle-orm&quot;;
+
+export async function GET(req: NextRequest, { params }: { params: { slug: string } }) {
+    const user = await requireAdminAuth(req, res);
+    if (!user) return res.status(401).json({ error: &quot;You must be an admin to view users.&quot; });
+    // Fetch all users or a specific user
+    if (params.slug === &quot;users&quot;) {
+        const allUsers = await db.select().from(User);
+        return NextResponse.json(allUsers);
+    } else {
+        const userId = params.slug;
+        const user = await db.select().from(User).where(eq(User.id, userId));
+        if (user.length === 0) {
+            return res.status(404).json({ error: &quot;User not found.&quot; });
+        }
+        return NextResponse.json(user[0]);
+    }
+}
+
+export async function POST(req: NextRequest, { params }: { params: { slug: string } }) {
+    const user = await requireAdminAuth(req, res);
+    if (!user) return res.status(401).json({ error: &quot;You must be an admin to create users.&quot; });
+    const body = await req.json();
+    const { name, email, password, role } = body;
+    // ... (code to validate and create a new user with the specified role)
+    return NextResponse.json(newAdmin, { status: 201 });
+}
+
+export async function PUT(req: NextRequest, { params }: { params: { slug: string } }) {
+    const user = await requireAdminAuth(req, res);
+    if (!user) return res.status(401).json({ error: &quot;You must be an admin to update user roles.&quot; });
+    const body = await req.json();
+    const { id, role } = body;
+    // ... (code to update the user&#x27;s role in the database)
+    return NextResponse.json({ message: `User role updated to ${role}.` }, { status: 200 });
+}
+```
+
+### 3. Public Routes
+
+Routes that do not have `requireAuth` or `requireAdminAuth` applied are considered public. These routes are accessible without authentication. An example is the health check endpoint:
+
+**File:** `src/app/api/health/route.ts`
+
+```typescript
+// src/app/api/health/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+
+export async function GET(req: NextRequest) {
+    return NextResponse.json({ status: &quot;healthy&quot; });
+}
+```
+
+### Summary
+
+| Route Type   | Middleware               | Check Performed                              | Protected Routes                                                                 |
+|--------------|--------------------------|----------------------------------------------|-----------------------------------------------------------------------------------|
+| Public       | None                     | No authentication or role check              | `src/app/api/health/route.ts`                                                    |
+| Protected    | `requireAuth`            | User must be authenticated                   | `src/app/api/referrals/route.ts` (GET, POST, DELETE)                             |
+| Admin-Only   | `requireAdminAuth`       | User must be authenticated **and** have `ADMIN` role | `src/app/api/[...slugs]/route.ts` (GET, POST, PUT)                                 |          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1253                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1342                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+721                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+714                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+54                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+620                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+848                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1613                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

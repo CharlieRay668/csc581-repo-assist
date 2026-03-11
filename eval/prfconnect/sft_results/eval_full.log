@@ -97,4 +97,56 @@ Sampling client ready.
   [89/100] PRFC-H009 (suggest)... ok (754 words, 46195ms)
   [90/100] PRFC-H010 (suggest)... ok (575 words, 31939ms)
   [91/100] PRFC-H011 (suggest)... ok (851 words, 41972ms)
-  [92/100] PRFC-H012 (suggest)... 
+  [92/100] PRFC-H012 (suggest)... ok (857 words, 38025ms)
+  [93/100] PRFC-H013 (suggest)... ok (1066 words, 42161ms)
+  [94/100] PRFC-H014 (suggest)... ok (510 words, 25007ms)
+  [95/100] PRFC-H015 (suggest)... ok (1183 words, 48304ms)
+  [96/100] PRFC-H016 (suggest)... ok (687 words, 45921ms)
+  [97/100] PRFC-H017 (suggest)... ok (777 words, 48068ms)
+  [98/100] PRFC-H018 (suggest)... ok (761 words, 39108ms)
+  [99/100] PRFC-H019 (suggest)... ok (674 words, 55179ms)
+  [100/100] PRFC-H020 (suggest)... ok (845 words, 32446ms)
+
+Agent outputs: eval/prfconnect/sft_results/agent_outputs.sft.jsonl
+Generating eval artifacts...
+{
+  "tasks_total": 100,
+  "matched_agent_outputs": 100,
+  "missing_agent_outputs": 0,
+  "ratings_out": "eval/prfconnect/sft_results/ratings.sft.jsonl",
+  "retrieval_out": "eval/prfconnect/sft_results/retrieval.sft.jsonl",
+  "run_results_out": "eval/prfconnect/sft_results/run_results.sft.jsonl",
+  "difficulty_counts": {
+    "easy": 40,
+    "medium": 40,
+    "hard": 20
+  }
+}
+Computing scorecard...
+
+Scorecard: eval/prfconnect/sft_results/output.sft.json
+
+============================================================
+SFT MODEL EVALUATION RESULTS
+============================================================
+  Pass rate:        0.08
+  Rubric mean:      3.85
+  Critical errors:  0.33
+    correctness: 0.16
+    grounding: 0.85
+    relevance: 1.51
+    clarity: 1.33
+  Success rate:     0.07
+  Exact match:      0.07
+  P@3:              0.065
+  R@3:              0.065
+  nDCG@3:           0.06787154602990972
+
+  Δ vs Baseline (Gemini):
+    quality.pass_rate: -0.4900
+    quality.rubric_mean_total: -1.9900
+    task_success.success_rate: -0.3800
+    retrieval.p@3: -0.2833
+    retrieval.r@3: -0.4628
+    retrieval.ndcg@3: -0.4264
+============================================================

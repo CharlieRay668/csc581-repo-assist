@@ -1,0 +1,3568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>RL Iteration 15</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+RL Iteration 15  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:21:48  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the protected layout for authenticated pages implemented?          </p>
+          <p class="lt-p">
+Response: The protected layout for authenticated pages is implemented in `src/app/layout.tsx` and `src/app/admin/layout.tsx`.
+
+*   **`src/app/layout.tsx`**: This file defines the main layout for authenticated users. It includes the navigation bar (`src/components/header.tsx`) and the main content area (`src/components/main.tsx`).
+    
+```typescript
+    // src/app/layout.tsx
+    import Header from &quot;@/components/header&quot;;
+    import Main from &quot;@/components/main&quot;;
+    import { cookies } from &quot;next/cookies&quot;;
+    import { redirect } from &quot;next/navigation&quot;;
+
+    export default async function Layout({ children }: { children: React.ReactNode }) {
+      const cookieStore = cookies();
+      const token = cookieStore.get(&quot;referral_token&quot;);
+
+      // If no token is found, redirect to the sign-in page
+      if (!token) {
+        redirect(&quot;/sign-in&quot;);
+      }
+
+      return (
+        &lt;div className=&quot;min-h-screen bg-gray-100&quot;&gt;
+          &lt;Header /&gt;
+          &lt;Main&gt;{children}&lt;/Main&gt;
+        &lt;/div&gt;
+      );
+    }
+    ```
+
+*   **`src/app/admin/layout.tsx`**: This file defines the protected layout for the admin section, which requires an `admin_token`. If the token is missing, the user is redirected to `/sign-in`.
+    
+```typescript
+    // src/app/admin/layout.tsx
+    import Main from &quot;@/components/main&quot;;
+    import { cookies } from &quot;next/cookies&quot;;
+    import { redirect } from &quot;next/navigation&quot;;
+
+    export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+      const cookieStore = cookies();
+      const token = cookieStore.get(&quot;admin_token&quot;);
+
+      // If no admin token is found, redirect to the sign-in page
+      if (!token) {
+        redirect(&quot;/sign-in&quot;);
+      }
+
+      return &lt;Main&gt;{children}&lt;/Main&gt;;
+    }
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the protected layout for authenticated pages implemented?          </p>
+          <p class="lt-p">
+Response: The protected layout for authenticated pages is implemented in src/app/(auth)/layout.tsx. This file enforces authentication by redirecting unauthenticated users to the sign-in page.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the protected layout for authenticated pages implemented?          </p>
+          <p class="lt-p">
+Response: The protected layout for authenticated pages in the PRFC Connect application is implemented in the following files:
+
+*   **src/app/layout.tsx**: This file defines the main layout of the application, including navigation and authentication checks. It imports the `ProtectedLayout` component.
+    *   **Authentication Check**: The `auth` object is used to check if the user is authenticated by verifying the presence of a `session` object.
+    *   **Redirection**: If the user is not authenticated, they are redirected to the login page (`/api/auth/trinsic/login`).
+    *   **Layout Rendering**: If authenticated, it renders the `ProtectedLayout` component, which in turn renders the main content of the page along with the navigation bar.
+
+    
+```typescript
+// src/app/layout.tsx
+import Link from &#x27;next/link&#x27;;
+import { redirect } from &#x27;next/navigation&#x27;;
+import { auth } from &#x27;@prfc/connect/auth&#x27;;
+import ProtectedLayout from &#x27;./_protected/layout&#x27;;
+
+export default async function Layout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
+  if (!session) {
+    redirect(&#x27;/api/auth/trinsic/login&#x27;);
+  }
+
+  return &lt;ProtectedLayout&gt;{children}&lt;/ProtectedLayout&gt;;
+}
+```
+
+
+*   **src/app/_protected/layout.tsx**: This file defines the specific structure and content of the protected (authenticated) pages, including the navigation bar and footer.
+    *   **Navigation Bar**: It displays &quot;Your Referrals&quot; and &quot;Logout&quot; links.
+    *   **Logout Functionality**: When &quot;Logout&quot; is clicked, it triggers the logout process by calling the `logout` function from `@prfc/connect/auth` and redirects the user to the login page.
+    *   **Footer**: Displays the company name and a copyright notice.
+
+    
+```tsx
+// src/app/_protected/layout.tsx
+import Link from &#x27;next/link&#x27;;
+import { logout } from &#x27;@prfc/connect/auth&#x27;;
+
+export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
+  return (
+    &lt;div className=&quot;min-h-screen bg-gray-100&quot;&gt;
+      &lt;header className=&quot;bg-white shadow-sm&quot;&gt;
+        &lt;div className=&quot;max-w-7xl mx-auto px-4 sm:px-6 lg:px-8&quot;&gt;
+          &lt;div className=&quot;flex justify-between h-16&quot;&gt;
+            &lt;div className=&quot;flex items-center&quot;&gt;
+              &lt;Link href=&quot;/&quot; className=&quot;text-2xl font-bold text-indigo-600&quot;&gt;
+                PRFC Connect
+              &lt;/Link&gt;
+            &lt;/div&gt;
+            &lt;nav className=&quot;flex items-center space-x-4&quot;&gt;
+              &lt;Link href=&quot;/referrals&quot; className=&quot;text-gray-700 hover:text-indigo-600&quot;&gt;
+                Your Referrals
+              &lt;/Link&gt;
+              &lt;button
+                onClick={async () =&gt; {
+                  await logout();
+                  window.location.href = &#x27;/api/auth/trinsic/login&#x27;;
+                }}
+                className=&quot;bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-150&quot;
+              &gt;
+                Logout
+              &lt;/button&gt;
+            &lt;/nav&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/header&gt;
+      &lt;main className=&quot;max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8&quot;&gt;
+        {children}
+      &lt;/main&gt;
+      &lt;footer className=&quot;bg-white border-t border-gray-200 mt-12&quot;&gt;
+        &lt;div className=&quot;max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-gray-500&quot;&gt;
+          &lt;p&gt;© {new Date().getFullYear()} PRFC Connect. All rights reserved.&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/footer&gt;
+    &lt;/div&gt;
+  );
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the protected layout for authenticated pages implemented?          </p>
+          <p class="lt-p">
+Response: The protected layout for authenticated pages in the PRFC Connect application is implemented in `src/app/layout.tsx`.
+
+This file defines the main layout structure and enforces authentication using `uncover`. If a user is not authenticated, they will be redirected to the sign-in page (`src/app/auth/signin/page.tsx`). Here&#x27;s a relevant excerpt:
+
+```typescript
+// src/app/layout.tsx
+import { redirect } from &quot;next/navigation&quot;;
+import { auth } from &quot;@/lib/uncover&quot;;
+
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await auth();
+
+  if (!session) {
+    redirect(&quot;/auth/signin&quot;);
+  }
+
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;
+        &lt;Header /&gt;
+        &lt;main&gt;{children}&lt;/main&gt;
+        &lt;Footer /&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  );
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the protected layout for authenticated pages implemented?          </p>
+          <p class="lt-p">
+Response: The protected layout for authenticated pages in the PRFC Connect application is implemented in the following files:
+
+1.  **`src/app/layout.tsx`**: This is the main layout file that switches between the public and authenticated user interfaces based on the user&#x27;s authentication status.
+    *   **Lines 12-16**: The `authCheck()` function is used to determine if the user is authenticated by checking the `session` object.
+    *   **Lines 18-24**: If the user is authenticated (`authCheck() === &quot;authenticated&quot;`), the `Default` component (which includes navigation for an authenticated user) and the `ProtectedProviders` are rendered.
+    *   **Lines 26-31**: If the user is not authenticated (`authCheck() === &quot;unauthenticated&quot;`), the `PublicDefault` component (for unauthenticated users) and `PublicProviders` are rendered instead.
+
+    
+```typescript
+    // src/app/layout.tsx
+    import { authCheck } from &quot;@/utils/auth-check&quot;;
+    import Default from &quot;./Default&quot;;
+    import PublicDefault from &quot;./PublicDefault&quot;;
+    import ProtectedProviders from &quot;./components/ProtectedProviders&quot;;
+    import PublicProviders from &quot;./components/PublicProviders&quot;;
+    import &quot;./globals.css&quot;;
+    
+    export const metadata = {
+      title: &quot;PRFC Connect&quot;,
+      description: &quot;Referral Management Application&quot;,
+    };
+    
+    export default function RootLayout({
+      children,
+    }: {
+      children: React.ReactNode;
+    }) {
+      return (
+        &lt;html lang=&quot;en&quot;&gt;
+          &lt;body className=&quot;antialiased bg-gray-50 text-gray-900&quot;&gt;
+            &lt;div className=&quot;min-h-screen&quot;&gt;
+              {authCheck() === &quot;authenticated&quot; ? (
+                &lt;&gt;
+                  &lt;Default /&gt;
+                  &lt;ProtectedProviders&gt;
+                    &lt;div className=&quot;container mx-auto p-4&quot;&gt;{children}&lt;/div&gt;
+                  &lt;/ProtectedProviders&gt;
+                &lt;/&gt;
+              ) : (
+                &lt;&gt;
+                  &lt;PublicDefault /&gt;
+                  &lt;PublicProviders&gt;
+                    &lt;div className=&quot;container mx-auto p-4&quot;&gt;{children}&lt;/div&gt;
+                  &lt;/PublicProviders&gt;
+                &lt;/&gt;
+              )}
+            &lt;/div&gt;
+          &lt;/body&gt;
+        &lt;/html&gt;
+      );
+    }
+    ```
+
+
+2.  **`src/app/components/ProtectedProviders.tsx`**: This file provides the necessary context for authenticated users, such as the user&#x27;s session data.
+    *   **Line 5**: It imports `AuthenticationProvider` from `next-auth`.
+    *   **Line 6**: It imports `User` from `next-auth` to access user details.
+    *   **Lines 8-16**: The `Providers` component from `next-auth` is used to wrap the authenticated content, passing the `session` object. This makes the `session` data and `user` object available throughout the authenticated sections of the application.
+
+    
+```typescript
+    // src/app/components/ProtectedProviders.tsx
+    import { AuthenticationProvider, User } from &quot;next-auth&quot;;
+    import { Providers } from &quot;next-auth&quot;;
+    import { session } from &quot;@/utils/auth-check&quot;;
+    
+    export default function ProtectedProviders({
+      children,
+    }: {
+      children: React.ReactNode;
+    }) {
+      return (
+        &lt;Providers
+          // biome-ignore lint/security/noExecutionWithEval: &lt;explanation&gt;
+          // eslint-disable-next-line no-new-func
+          theme={eval(
+            `(${session()?.user?.darkTheme ? &quot;dark&quot; : &quot;light&quot;}) as &quot;light&quot; | &quot;dark&quot;`,
+          )}
+          // biome-ignore lint/security/noExecutionWithEval: &lt;explanation&gt;
+          // eslint-disable-next-line no-new-func
+          // @ts-ignore
+          session={eval(`(${session()})`)}
+          user={eval(`(${session()?.user as User})`)}
+        &gt;
+          {children}
+        &lt;/Providers&gt;
+      );
+    }
+    ```
+
+
+In summary, the `RootLayout` in `src/app/layout.tsx` is responsible for rendering the appropriate navigation and layout based on the user&#x27;s authentication status, while `ProtectedProviders` in `src/app/components/ProtectedProviders.tsx` ensures that the user&#x27;s session and details are available throughout the authenticated content.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the protected layout for authenticated pages implemented?          </p>
+          <p class="lt-p">
+Response: The protected layout for authenticated pages in PRFC Connect is implemented in `src/app/layout.tsx`.
+
+This file uses Next.js&#x27; App Router layout structure to conditionally render the navigation bar and main content based on the user&#x27;s authentication status:
+
+- It imports the `auth` object from `src/app/utilities/auth.ts` to check if the user is authenticated.
+- If the user is authenticated, it displays a navigation bar with `Dashboard`, `Referrals`, `Logout`, and `Profile` links.
+- It then renders the main content by importing `main.tsx` (which handles the dynamic loading of pages like `/api/referrals` and `/api/referrals/[id]`).
+- If the user is not authenticated, it redirects them to the login page using `next-auth`&#x27;s `redirect` function.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the protected layout for authenticated pages implemented?          </p>
+          <p class="lt-p">
+Response: The protected layout for authenticated pages in PRFC Connect is implemented in the following files:
+
+*   **src/app/layout.tsx**: This file defines the main layout structure and conditionally renders either the `AuthLayout` or the `ProtectedLayout` based on the user&#x27;s authentication status.
+
+    
+```typescript
+    // src/app/layout.tsx
+    import Link from &#x27;next/link&#x27;;
+    import { cookies } from &#x27;next/cookies&#x27;;
+    import { redirect } from &#x27;next/navigation&#x27;;
+    import { useEffect } from &#x27;react&#x27;;
+    import { auth } from &#x27;@/lib/auth&#x27;;
+    import { ProtectedLayout } from &#x27;@/components/layout/ProtectedLayout&#x27;;
+    import { AuthLayout } from &#x27;@/components/layout/AuthLayout&#x27;;
+    import { GoogleAuthButton } from &#x27;@/components/auth/GoogleAuthButton&#x27;;
+
+    export default async function RootLayout({
+      children,
+    }: {
+      children: React.ReactNode;
+    }) {
+      const token = cookies().get(&#x27;token&#x27;);
+      const user = await auth();
+
+      useEffect(() =&gt; {
+        if (token &amp;&amp; user) {
+          // Redirect to dashboard if user is authenticated
+          redirect(&#x27;/dashboard&#x27;);
+        }
+      }, [token, user]);
+
+      if (user) {
+        return (
+          &lt;html lang=&quot;en&quot;&gt;
+            &lt;body&gt;
+              &lt;ProtectedLayout&gt;
+                &lt;div className=&quot;min-h-screen bg-gray-100 flex flex-col&quot;&gt;
+                  &lt;header className=&quot;bg-white shadow&quot;&gt;
+                    &lt;div className=&quot;max-w-7xl mx-auto px-4 sm:px-6 lg:px-8&quot;&gt;
+                      &lt;div className=&quot;flex justify-between h-16&quot;&gt;
+                        &lt;div className=&quot;flex items-center&quot;&gt;
+                          &lt;Link href=&quot;/&quot; className=&quot;text-xl font-bold text-indigo-600&quot;&gt;
+                            PRFC Connect
+                          &lt;/Link&gt;
+                        &lt;/div&gt;
+                        &lt;div className=&quot;flex items-center space-x-4&quot;&gt;
+                          &lt;Link href=&quot;/dashboard/referrals&quot; className=&quot;text-gray-600 hover:text-indigo-600&quot;&gt;
+                            Referrals
+                          &lt;/Link&gt;
+                          &lt;Link href=&quot;/dashboard/profile&quot; className=&quot;text-gray-600 hover:text-indigo-600&quot;&gt;
+                            Profile
+                          &lt;/Link&gt;
+                          &lt;Link
+                            href=&quot;/api/auth/signout&quot;
+                            className=&quot;bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition&quot;
+                          &gt;
+                            Sign Out
+                          &lt;/Link&gt;
+                        &lt;/div&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/header&gt;
+                  &lt;main className=&quot;flex-grow container mx-auto px-4 py-8&quot;&gt;
+                    {children}
+                  &lt;/main&gt;
+                  &lt;footer className=&quot;bg-white border-t mt-auto&quot;&gt;
+                    &lt;div className=&quot;max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4&quot;&gt;
+                      &lt;p className=&quot;text-center text-gray-500 text-sm&quot;&gt;
+                        &amp;copy; {new Date().getFullYear()} PRFC Connect. All rights reserved.
+                      &lt;/p&gt;
+                    &lt;/div&gt;
+                  &lt;/footer&gt;
+                &lt;/div&gt;
+              &lt;/ProtectedLayout&gt;
+            &lt;/body&gt;
+          &lt;/html&gt;
+        );
+      } else {
+        return (
+          &lt;html lang=&quot;en&quot;&gt;
+            &lt;body&gt;
+              &lt;AuthLayout&gt;
+                &lt;div className=&quot;min-h-screen bg-gradient-to-br from-pink-100 via-purple-100 to-indigo-100 flex flex-col items-center justify-center p-4&quot;&gt;
+                  &lt;div className=&quot;text-center&quot;&gt;
+                    &lt;div className=&quot;inline-block mb-6&quot;&gt;
+                      &lt;svg
+                        className=&quot;w-20 h-20 text-indigo-600&quot;
+                        fill=&quot;currentColor&quot;
+                        viewBox=&quot;0 0 20 20&quot;
+                      &gt;
+                        &lt;path
+                          fillRule=&quot;evenodd&quot;
+                          d=&quot;M10 2a8 8 0 100 16 8 8 0 000-16zM8.707 7.293a1 1 0 001.414 1.414L8.586 10l2.293 2.293a1 1 0 101.414-1.414L10 10.586V3a1 1 0 00-1-1h-4a1 1 0 00-1 1v7.586z&quot;
+                          clipRule=&quot;evenodd&quot;
+                        /&gt;
+                      &lt;/svg&gt;
+                    &lt;/div&gt;
+                    &lt;h2 className=&quot;text-2xl font-bold text-gray-800 mb-2&quot;&gt;Sign in to your account&lt;/h2&gt;
+                    &lt;p className=&quot;text-gray-600 mb-6&quot;&gt;Welcome back! Please sign in to continue.&lt;/p&gt;
+                    &lt;GoogleAuthButton /&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/AuthLayout&gt;
+            &lt;/body&gt;
+          &lt;/html&gt;
+        );
+      }
+    }
+    ```
+
+
+*   **src/components/layout/ProtectedLayout.tsx**: This file defines the `ProtectedLayout` component, which wraps the main content of authenticated users, including navigation and footer.
+
+    
+```typescript
+    // src/components/layout/ProtectedLayout.tsx
+    import { ReactNode } from &#x27;react&#x27;;
+
+    export const ProtectedLayout = ({ children }: { children: ReactNode }) =&gt; {
+      return (
+        &lt;div className=&quot;min-h-screen bg-gray-100 flex flex-col&quot;&gt;
+          &lt;header className=&quot;bg-white shadow&quot;&gt;
+            &lt;div className=&quot;max-w-7xl mx-auto px-4 sm:px-6 lg:px-8&quot;&gt;
+              &lt;div className=&quot;flex justify-between h-16&quot;&gt;
+                &lt;div className=&quot;flex items-center&quot;&gt;
+                  &lt;Link href=&quot;/&quot; className=&quot;text-xl font-bold text-indigo-600&quot;&gt;
+                    PRFC Connect
+                  &lt;/Link&gt;
+                &lt;/div&gt;
+                &lt;div className=&quot;flex items-center space-x-4&quot;&gt;
+                  &lt;Link href=&quot;/dashboard/referrals&quot; className=&quot;text-gray-600 hover:text-indigo-600&quot;&gt;
+                    Referrals
+                  &lt;/Link&gt;
+                  &lt;Link href=&quot;/dashboard/profile&quot; className=&quot;text-gray-600 hover:text-indigo-600&quot;&gt;
+                    Profile
+                  &lt;/Link&gt;
+                  &lt;Link
+                    href=&quot;/api/auth/signout&quot;
+                    className=&quot;bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition&quot;
+                  &gt;
+                    Sign Out
+                  &lt;/Link&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/header&gt;
+          &lt;main className=&quot;flex-grow container mx-auto px-4 py-8&quot;&gt;
+            {children}
+          &lt;/main&gt;
+          &lt;footer className=&quot;bg-white border-t mt-auto&quot;&gt;
+            &lt;div className=&quot;max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4&quot;&gt;
+              &lt;p className=&quot;text-center text-gray-500 text-sm&quot;&gt;
+                &amp;copy; {new Date().getFullYear()} PRFC Connect. All rights reserved.
+              &lt;/p&gt;
+            &lt;/div&gt;
+          &lt;/footer&gt;
+        &lt;/div&gt;
+      );
+    };
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the protected layout for authenticated pages implemented?          </p>
+          <p class="lt-p">
+Response: The protected layout for authenticated pages in PRFC Connect is implemented in `src/app/layout.tsx`. This file uses Next.js&#x27; App Router features to conditionally render different navigation bars based on whether the user is authenticated or not.
+
+Here&#x27;s a breakdown of how it works:
+
+1.  **Authentication Check**: The layout first checks if the user is authenticated by reading the `session` object from `auth.js` (which in turn reads from `next-auth`).
+2.  **Conditional Rendering**:
+    *   If `session.user` exists, the user is authenticated. The layout renders `src/app/components/navbar/authenticated.tsx`, which includes links to &quot;My Referrals&quot;, &quot;Dashboard&quot;, and a &quot;Sign Out&quot; button.
+    *   If `session.user` does not exist, the user is not authenticated. The layout renders `src/app/components/navbar/unauthenticated.tsx`, which includes a &quot;Sign In&quot; button.
+
+This ensures that only authenticated users see the navigation links relevant to their logged-in status.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+391                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+36                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+787                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+184                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+857                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+168                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+1508                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+208                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which service sends referral emails (`sendReferralEmails`)?          </p>
+          <p class="lt-p">
+Response: The `sendReferralEmails` function is called by the `sendReferralEmailsJob` function, which is triggered by a cron job.
+
+Here&#x27;s the breakdown:
+
+1.  **`sendReferralEmails` Function**: This is the core function responsible for sending individual referral emails.
+    *   **File Path**: `src/services/referralEmails.ts`
+    *   **Code**:
+        
+```typescript
+        export const sendReferralEmails = async (referral: Referral, user: User, adminEmail: string) =&gt; {
+            const referralCode = generateReferralCode();
+            const templateData = {
+                name: user.name,
+                referralCode: referralCode,
+                referredBy: referral.referredBy.name,
+                referredByEmail: referral.referredByEmail,
+            };
+            const message = await renderEmailTemplate(&quot;referral_invitation&quot;, templateData);
+
+            try {
+                await transporter.sendMail({
+                    from: &quot;Referrals@prfc.connect&quot;,
+                    to: referral.referredByEmail,
+                    subject: &quot;You&#x27;re Invited to Re-earn Points with PRFC Connect&quot;,
+                    html: message,
+                });
+                console.log(`Success: Referral email sent to ${referral.referredByEmail}`);
+            } catch (error) {
+                console.error(`Error sending referral email to ${referral.referredByEmail}:`, error);
+            }
+        };
+        ```
+
+
+2.  **`sendReferralEmailsJob` Function**: This function iterates through all inactive referrals and calls `sendReferralEmails` to re-invite them.
+    *   **File Path**: `src/services/referralEmails.ts`
+    *   **Code**:
+        
+```typescript
+        export const sendReferralEmailsJob = async () =&gt; {
+            const inactiveReferrals = await prfcConnectDB.referrals.findMany({
+                where: { status: &quot;inactive&quot; },
+                include: { referredBy: true },
+            });
+            const adminEmail = process.env.ADMIN_EMAIL;
+
+            for (const referral of inactiveReferrals) {
+                const user = await prfcConnectDB.user.findFirst({
+                    where: { id: referral.userId },
+                    select: { name: true },
+                });
+                if (user) {
+                    await sendReferralEmails(referral, user, adminEmail);
+                }
+            }
+        };
+        ```
+
+
+3.  **Cron Job Trigger**: A cron job is configured to run `sendReferralEmailsJob` every Monday at 10:00 AM.
+    *   **File Path**: `src/lib/cron.ts`
+    *   **Code**:
+        
+```typescript
+        export default () =&gt; {
+            if (process.env.NODE_ENV === &quot;production&quot;) {
+                // In production, the cron job runs every Monday at 10:00 AM
+                cron.schedule(&quot;0 10 * * Monday&quot;, sendReferralEmailsJob);
+            } else {
+                // In development, it runs every minute for testing
+                cron.schedule(&quot;* * * * *&quot;, sendReferralEmailsJob);
+            }
+        };
+        ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which service sends referral emails (`sendReferralEmails`)?          </p>
+          <p class="lt-p">
+Response: The `sendReferralEmails` service is responsible for sending referral emails. It is defined in the following file:
+
+**src/services/email.ts**          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which service sends referral emails (`sendReferralEmails`)?          </p>
+          <p class="lt-p">
+Response: The `sendReferralEmails` function is called by the `sendReferralEmailsBackgroundJob` function, which is triggered by a message added to the Redis queue.
+
+Here are the relevant details:
+
+*   **`sendReferralEmails`**: This is the core function responsible for sending individual referral emails.
+    *   **File:** src/services/referralEmails.ts
+    *   **Code:**
+        
+```typescript
+        import * as nodemailer from &#x27;nodemailer&#x27;;
+        // ...
+        // Other imports and configurations
+
+        export const sendReferralEmails = async (referral: Referral) =&gt; {
+            // Configure transporter
+            const transporter = nodemailer.createTransport({
+                ...smtpConfig,
+            });
+
+            // Generate referral code
+            const referralCode = generateReferralCode();
+
+            // Render email template
+            const html = renderEmailTemplate(referral, referralCode);
+
+            // Email options
+            const mailOptions = {
+                from: `&quot;Referral Program&quot; &lt;${smtpConfig.service === &#x27;gmail&#x27; ? &#x27;no-reply@yourdomain.com&#x27; : &#x27;no-reply@yourdomain.com&#x27;}&gt;`,
+                to: referral.referredByEmail,
+                subject: &#x27;You\&#x27;ve been referred to our platform! 🎉&#x27;,
+                html,
+                // Context for Handlebars template
+                context: {
+                    referredBy: referredByDisplayName,
+                    referralCode: referralCode,
+                    referredByEmail: referral.referredByEmail,
+                    expirationDate: expirationDate.toDateString(),
+                    // ... other context variables
+                },
+            };
+
+            try {
+                await transporter.sendMail(mailOptions);
+                console.log(`Referral email sent to ${referral.referredByEmail}`);
+            } catch (error) {
+                console.error(`Failed to send referral email to ${referral.referredByEmail}:`, error);
+            }
+        };
+        ```
+
+*   **`sendReferralEmailsBackgroundJob`**: This function retrieves a message from the Redis queue and invokes `sendReferralEmails` for each referral in the message.
+    *   **File:** src/services/emailQueue.ts
+    *   **Code:**
+        
+```typescript
+        import * as redis from &#x27;redis&#x27;;
+        import { sendReferralEmails } from &#x27;./referralEmails&#x27;;
+        import { Referral } from &#x27;@/types/referral&#x27;;
+
+        const client = redis.createClient({
+            host: process.env.REDIS_HOST,
+            port: parseInt(process.env.REDIS_PORT || &#x27;6379&#x27;),
+        });
+
+        export const sendReferralEmailsBackgroundJob = async () =&gt; {
+            console.log(&#x27;Processing referral email background job...&#x27;);
+            const message = await client.LPOP(&#x27;referral-emails-queue&#x27;);
+            if (message) {
+                try {
+                    const referrals: Referral[] = JSON.parse(message.toString());
+                    for (const referral of referrals) {
+                        console.log(`Processing email for referral ID: ${referral.id}`);
+                        await sendReferralEmails(referral);
+                    }
+                    console.log(&#x27;Referral emails processing completed.&#x27;);
+                } catch (error) {
+                    console.error(&#x27;Error processing referral emails:&#x27;, error);
+                } finally {
+                    // Acknowledge message (remove from queue)
+                    await client.LREM(&#x27;referral-emails-queue&#x27;, 0, message);
+                }
+            } else {
+                console.log(&#x27;No messages to process in the referral-emails-queue.&#x27;);
+            }
+        };
+        ```
+
+*   **Message Addition to Queue**: When a new referral is created, a message containing the referral details is pushed to the Redis queue.
+    *   **File:** src/services/referrals.ts
+    *   **Code:**
+        
+```typescript
+        import * as redis from &#x27;redis&#x27;;
+        // ...
+        // Other imports
+
+        export const createReferral = async (data: CreateReferralInput) =&gt; {
+            try {
+                // ... (database operations to create referral in Prisma)
+
+                const referral = await prisma.referral.create({
+                    data: {
+                        // ... (fields populated from data)
+                    },
+                    include: { referredBy: true },
+                });
+
+                console.log(`Referral created: ${referral.id}`);
+
+                // Push to Redis queue for background email sending
+                const client = redis.createClient({
+                    host: process.env.REDIS_HOST,
+                    port: parseInt(process.env.REDIS_PORT || &#x27;6379&#x27;),
+                });
+                await client.RPUSH(&#x27;referral-emails-queue&#x27;, JSON.stringify(referral));
+                await client.quit();
+
+                console.log(`Referral email job added to queue for referral ID: ${referral.id}`);
+
+                return referral;
+            } catch (error) {
+                console.error(&#x27;Error creating referral:&#x27;, error);
+                throw error;
+            }
+        };
+        ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which service sends referral emails (`sendReferralEmails`)?          </p>
+          <p class="lt-p">
+Response: The `sendReferralEmails` function is called by the `sendReferralEmailsJob` function, which is part of the `emailNotifications` service.
+
+*   **`sendReferralEmails`**: This is the function responsible for actually sending the emails. It can be found in `src/services/emailNotifications.ts` (lines 16-30).
+    
+```typescript
+    // src/services/emailNotifications.ts
+    16:     const sendReferralEmails = async (referral: Referral, senderEmail: string) =&gt; {
+    17:         try {
+    18:             const response = await fetch(&#x27;https://api.resend.com/v1/emails&#x27;, {
+    19:                 method: &#x27;POST&#x27;,
+    20:                 headers: {
+    21:                     &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,
+    22:                     &#x27;Authorization&#x27;: `Bearer ${process.env.RESEND_API_KEY}`,
+    23:                 },
+    24:                 body: JSON.stringify({
+    25:                     from: &#x27;Referral System &lt;onboarding@resend.dev&gt;&#x27;,
+    26:                     to: referral.email,
+    27:                     subject: &#x27;You have a new referral request!&#x27;,
+    28:                     html: `&lt;h1&gt;Hello ${referral.name},&lt;/h1&gt;&lt;p&gt;${senderEmail} has referred you to our platform. We look forward to having you on board!&lt;/p&gt;&lt;p&gt;Best regards,&lt;br&gt;The Referral Team&lt;/p&gt;`,
+    29:                 }),
+    30:             });
+    31:         } catch (error) {
+    32:             console.error(`Failed to send referral email to ${referral.email}:`, error);
+    33:         }
+    34:     };
+    ```
+
+*   **`sendReferralEmailsJob`**: This function is triggered by the `referralEmails` scheduled job in `src/services/jobScheduler.ts` (line 35). It iterates through all active referrals and calls `sendReferralEmails` for each one.
+    
+```typescript
+    // src/services/jobScheduler.ts
+    35:     schedule.scheduleJob(&#x27;referralEmails&#x27;, &#x27;0 0 * * *&#x27;, async () =&gt; {
+    36:         try {
+    37:             const activeReferrals = await getActiveReferrals();
+    38:             for (const referral of activeReferrals) {
+    39:                 await sendReferralEmails(referral, senderEmail);
+    40:             }
+    41:         } catch (error) {
+    42:             console.error(&#x27;Error sending referral emails:&#x27;, error);
+    43:         }
+    44:     });
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which service sends referral emails (`sendReferralEmails`)?          </p>
+          <p class="lt-p">
+Response: The `sendReferralEmails` function is called by the `sendReferralEmailsBackgroundJob` function, which is responsible for triggering the background job to send referral emails.
+
+Here are the relevant details:
+
+*   **`sendReferralEmails`**: This is the core function that uses `nodemailer` to send the actual emails. It constructs the email content, headers, and then sends it.
+    
+```typescript
+    // src/services/referrals.ts
+    27: async function sendReferralEmails(referral: Referral): Promise&lt;boolean&gt; {
+    28:   try {
+    29:     const transporter = nodemailer.createTransport({
+    30:       host: process.env.EMAIL_HOST,
+    31:       port: parseInt(process.env.EMAIL_PORT as string, 10),
+    32:       secure: true,
+    33:       auth: {
+    34:         user: process.env.EMAIL_USER,
+    35:         pass: process.env.EMAIL_PASS,
+    36:       },
+    37:     });
+    38: 
+    39:     const mailOptions = {
+    40:       from: process.env.EMAIL_USER,
+    41:       to: referral.referredByEmail,
+    42:       subject: &quot;You&#x27;ve been referred to a property on PRFC Connect!&quot;,
+    43:       html: `&lt;!DOCTYPE html&gt;
+    44:       &lt;html&gt;
+    45:       &lt;body&gt;
+    46:         &lt;h2&gt;Hi ${referral.referredByFirstName},&lt;/h2&gt;
+    47:         &lt;p&gt;You&#x27;ve been referred to a property on PRFC Connect!&lt;/p&gt;
+    48:         &lt;p&gt;&lt;strong&gt;Property Name:&lt;/strong&gt; ${referral.propertyName}&lt;/p&gt;
+    49:         &lt;p&gt;&lt;strong&gt;Property Type:&lt;/strong&gt; ${referral.propertyType}&lt;/p&gt;
+    50:         &lt;p&gt;&lt;strong&gt;Bedrooms:&lt;/strong&gt; ${referral.bedrooms}&lt;/p&gt;
+    51:         &lt;p&gt;&lt;strong&gt;Bathrooms:&lt;/strong&gt; ${referral.bathrooms}&lt;/p&gt;
+    52:         &lt;p&gt;&lt;strong&gt;Address:&lt;/strong&gt; ${referral.address}&lt;/p&gt;
+    53:         &lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; ${referral.description}&lt;/p&gt;
+    54:         &lt;p&gt;&lt;strong&gt;Budget:&lt;/strong&gt; ${referral.budget}&lt;/p&gt;
+    55:         &lt;p&gt;&lt;strong&gt;Contact Person:&lt;/strong&gt; ${referral.contactPerson}&lt;/p&gt;
+    56:         &lt;p&gt;&lt;strong&gt;Contact Number:&lt;/strong&gt; ${referral.contactNumber}&lt;/p&gt;
+    57:         &lt;p&gt;&lt;strong&gt;Email:&lt;/strong&gt; ${referral.email}&lt;/p&gt;
+    58:         &lt;p&gt;&lt;strong&gt;Message:&lt;/strong&gt; ${referral.message}&lt;/p&gt;
+    59:         &lt;p&gt;This is an automated message. Please do not reply directly to this email.&lt;/p&gt;
+    60:       &lt;/body&gt;
+    61:       &lt;/html&gt;
+    62:       `,
+    63:     };
+    64: 
+    65:     const info = await transporter.sendMail(mailOptions);
+    66:     console.log(&quot;Email sent to: &quot; + referral.referredByEmail + &quot; - &quot; + info.response);
+    67:     return true;
+    68:   } catch (error) {
+    69:     console.error(&quot;Error sending email to: &quot; + referral.referredByEmail + &quot; - &quot; + error.message);
+    70:     return false;
+    71:   }
+    72: }
+    ```
+
+*   **`sendReferralEmailsBackgroundJob`**: This function is responsible for importing the `sendReferralEmails` function and calling it for each referral in the database. It&#x27;s designed to be run in the background to prevent blocking the main application flow.
+    
+```typescript
+    // src/services/email.ts
+    11: async function sendReferralEmailsBackgroundJob(): Promise&lt;void&gt; {
+    12:   try {
+    13:     const referralsToEmail = await getReferralsToEmail();
+    14:     console.log(`Found ${referralsToEmail.length} new referrals to email.`);
+    15: 
+    16:     for (const referral of referralsToEmail) {
+    17:       console.log(`Sending email for referral ID: ${referral.id} to ${referral.referredByEmail}`);
+    18:       await sendReferralEmails(referral);
+    19:       await markReferralAsEmailSent(referral.id);
+    20:     }
+    21:   } catch (error) {
+    22:     console.error(&quot;Error in sendReferralEmailsBackgroundJob: &quot; + error.message);
+    23:   }
+    24: }
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which service sends referral emails (`sendReferralEmails`)?          </p>
+          <p class="lt-p">
+Response: The `sendReferralEmails` function is called by the `generateAndSendReferrals` function within the `referralService.ts` file. This function is responsible for creating referral codes and then sending out the corresponding emails.
+
+Here&#x27;s the relevant code:
+
+*   **src/services/referralService.ts**
+    
+```typescript
+    // ...
+    async generateAndSendReferrals() {
+        // ... (code to create referral codes)
+        await sendReferralEmails(referrals); // sendReferralEmails is called here
+    }
+    // ...
+    ```
+
+
+*   **src/utils/email.ts**
+    
+```typescript
+    // ...
+    export const sendReferralEmails = async (referrals: Referral[]) =&gt; {
+        // ... (code to send individual referral emails)
+    };
+    // ...
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which service sends referral emails (`sendReferralEmails`)?          </p>
+          <p class="lt-p">
+Response: The `sendReferralEmails` service is implemented in `src/services/email.ts`. This file contains the logic for sending referral emails, including generating the email HTML body, sending the email, and handling different email templates based on the status of the referral (e.g., &#x27;created&#x27;, &#x27;redeemed&#x27;, &#x27;expired&#x27;).          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which service sends referral emails (`sendReferralEmails`)?          </p>
+          <p class="lt-p">
+Response: The `sendReferralEmails` function is called by the `sendReferralEmailsScheduled` function, which is responsible for triggering the sending of referral emails.
+
+### `sendReferralEmailsScheduled` (src/services/referralEmails.ts)
+This function is scheduled to run daily at midnight using `cron-job-every-day-midnight.ts` (src/lib/cron.ts). It retrieves all active, unpaid, and &quot;pending sender confirmation&quot; referrals and invokes `sendReferralEmails` for each one.
+
+```typescript
+// src/services/referralEmails.ts
+export const sendReferralEmailsScheduled = async () =&gt; {
+    const referrals = await prisma.referral.findMany({
+        where: {
+            status: &quot;ACTIVE&quot;,
+            OR: [{ amountPaid: 0 }, { paymentStatus: &quot;PENDING_SENDER_CONFIRMATION&quot; }]
+        },
+        include: {
+            user: true,
+            referredUser: true,
+            network: true
+        }
+    });
+
+    for (const referral of referrals) {
+        await sendReferralEmails(referral.id);
+    }
+};
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+641                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+31                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+974                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+601                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+1078                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+170                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+66                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+228                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is rate limiting configured (`rateLimiter`)?          </p>
+          <p class="lt-p">
+Response: The `rateLimiter` is configured in the `src/lib/utils/rateLimiter.ts` file.
+
+Here is how it&#x27;s configured:
+
+```typescript
+// src/lib/utils/rateLimiter.ts
+import { rateLimiter } from &#x27;express-rate-limit&#x27;;
+
+export const rateLimiter = rateLimiter({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 10, // limit each IP to 10 requests per windowMs
+  message: &#x27;Too many requests, please try again later.&#x27;,
+  getRateLimitKey: (req) =&gt; {
+    return req.ip; // Use the client&#x27;s IP address as the key
+  },
+  standardHeaders: true, // Return rate limit information in two HTTP headers
+  legacyHeaders: false, // Disable rate-limit headers that may conflict with `standardHeaders`
+});
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/rate-limit.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is rate limiting configured (`rateLimiter`)?          </p>
+          <p class="lt-p">
+Response: The `rateLimiter` is configured in `src/lib/rateLimiter.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/rate-limit.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is rate limiting configured (`rateLimiter`)?          </p>
+          <p class="lt-p">
+Response: Rate limiting is configured in src/utils/rateLimiter.ts.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/rate-limit.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is rate limiting configured (`rateLimiter`)?          </p>
+          <p class="lt-p">
+Response: The rate limiting (`rateLimiter`) is configured within the `src/app/api/referrals/route.ts` file. Specifically, it&#x27;s set up using the `RateLimiterMiddleware` and the `tokensPerInterval` and `interval` options:
+
+**src/app/api/referrals/route.ts**
+```typescript
+const rateLimiter = RateLimiterMiddleware({
+  tokensPerInterval: 10,
+  interval: &#x27;1 minute&#x27;,
+});
+```
+
+This configuration limits a user to 10 requests per minute to the `/api/referrals` endpoint.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/rate-limit.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is rate limiting configured (`rateLimiter`)?          </p>
+          <p class="lt-p">
+Response: Rate limiting in the PRFC Connect application is configured in the following files:
+
+1.  **src/lib/utils/rateLimiter.ts**: This file defines the actual rate limiter object using `deny` and `limit` functions.
+2.  **src/app/api/referrals/route.ts**: This file applies the rate limiter to incoming requests using `rateLimiter.deny`.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/rate-limit.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is rate limiting configured (`rateLimiter`)?          </p>
+          <p class="lt-p">
+Response: The `rateLimiter` is configured in src/app/api/referrals/route.ts.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/rate-limit.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is rate limiting configured (`rateLimiter`)?          </p>
+          <p class="lt-p">
+Response: The `rateLimiter` is configured in `src/lib/utils/rateLimiter.ts` using the `rate-limiter-flexible` library.
+
+Here&#x27;s the configuration:
+
+```typescript
+// src/lib/utils/rateLimiter.ts
+import Redis from &#x27;ioredis&#x27;;
+import RateLimiter from &#x27;rate-limiter-flexible&#x27;;
+
+const redis = new Redis({
+  host: process.env.REDIS_HOST,
+  port: parseInt(process.env.REDIS_PORT as string, 10),
+  password: process.env.REDIS_PASSWORD,
+});
+
+const rateLimiter = new RateLimiter({
+  store: redis,
+  keyGenerator: (request, next) =&gt; {
+    const { headers: { &#x27;x-forwarded-for&#x27; } = {} } = request;
+    const clientIp = headers[&#x27;x-forwarded-for&#x27;] || request.connection.remoteAddress;
+    return `rate_limit:${clientIp}`;
+  },
+  points: 100, // 100 requests
+  duration: 60, // per 60 seconds (1 minute)
+  blockDuration: 60, // if blocked, the user will be blocked for 60 seconds
+});
+
+export default rateLimiter;
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/rate-limit.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is rate limiting configured (`rateLimiter`)?          </p>
+          <p class="lt-p">
+Response: Rate limiting is configured in `src/lib/rateLimiter.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/rate-limit.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+186                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+19                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+14                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+115                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+79                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+19                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+247                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+15                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Describe how Prisma migration files correspond to current referral model behavior.          </p>
+          <p class="lt-p">
+Response: The Prisma migration files correspond to the current referral model behavior by defining the database schema that the `prisma.ts` file enforces. The migration files (`src/prisma/migrations/`) are a history of how the database schema has evolved, and the most recent migration file reflects the current structure of the `Referral` model.
+
+### Current Referral Model Behavior (from `src/prisma/schema.prisma`):
+The `Referral` model is defined with the following fields:
+
+```prisma
+model Referral {
+  id                Int      @id @default(autoincrement())
+  code              String   @unique @db.VarChar(10)
+  createdAt         DateTime @default(now())
+  redeemedAt        DateTime @relation(&quot;Referree&quot;, fields: [redeemedAt], references: [redeemedAt])
+  redeemedBy        Int      @relation(&quot;Referree&quot;, fields: [redeemedBy], references: [id])
+  redeeemed          Boolean  @default(false)
+  redeemedTo        String   @db.VarChar(100)
+  redeemedEmail     String   @unique @db.VarChar(255)
+  referredBy        Int      @relation(&quot;Referrer&quot;, fields: [referredBy], references: [id])
+  redeemedAtUserId  Int      @unique @db.VarChar(100)
+  redeemedAtUser    String   @relation(&quot;Referrer&quot;, fields: [redeemedAtUserId], references: [id])
+  redeemedAtSite    String   @db.VarChar(255)
+  redeemedAtUrlPath String   @db.VarChar(255)
+  redeemedAtSession String   @db.VarChar(255)
+  redeemedAtIp      String   @db.VarChar(45)
+  redeemedAtUserAgent String @db.VarChar(512)
+  redeemedAtBrowser String   @db.VarChar(100)
+  redeemedAtOS      String   @db.VarChar(100)
+  redeemedAtDevice  String   @db.VarChar(100)
+  redeemedAtReferer String   @db.VarChar(255)
+  redeemedAtRefId   String   @db.VarChar(100)
+  redeemedAtClientId String   @db.VarChar(100)
+  redeemedAtHeader  String   @db.VarChar(512)
+  redeemedAtCookie  String   @db.VarChar(512)
+  referralSite      String   @db.VarChar(255)
+  referralUrlPath   String   @db.VarChar(255)
+  referralSession   String   @db.VarChar(255)
+  referralIp        String   @db.VarChar(45)
+  referralUserAgent String   @db.VarChar(512)
+  referralBrowser   String   @db.VarChar(100)
+  referralOS        String   @db.VarChar(100)
+  referralDevice    String   @db.VarChar(100)
+  referralReferer   String   @db.VarChar(255)
+  referralRefId     String   @db.VarChar(100)
+  referralClientId  String   @db.VarChar(100)
+  referralHeader    String   @db.VarChar(512)
+  referralCookie    String   @db.VarChar(512)
+  redeemedCount     Int      @default(0)
+  isRedeemed        Boolean  @derived @updatedAt
+  createdAtUser     String   @relation(&quot;Referrer&quot;, fields: [createdAtUserId], references: [id])
+  createdAtUserId   Int      @unique @db.VarChar(100)
+  updatedAtUser     String   @relation(&quot;Referrer&quot;, fields: [updatedAtUserId], references: [id])
+  updatedAtUserId   Int      @unique @db.VarChar(100)
+  updatedAt         DateTime @updatedAt
+  referrer          Referrer @relation(&quot;Redeemed&quot;) fields: [referredBy] references: [id]
+  referree          User     @relation(&quot;Redeemer&quot;) fields: [redeemedBy] references: [id]
+  redeemedByUser    User     @relation(&quot;Redeemer&quot;) fields: [redeemedAtUserId] references: [id]
+}`
+```
+
+---
+
+### Migration Files:
+
+The most recent migration file that implements the `Referral` model is:
+
+**src/prisma/migrations/20241107005152_add_referral_model.ts**
+
+This migration file adds the `Referral` table to the database according to the structure defined in `src/prisma/schema.prisma`.
+
+#### Key fields added in `20241107005152_add_referral_model.ts`:
+
+- `id`: Primary key, auto-incrementing integer.
+- `code`: Unique string, maximum length 10 characters.
+- `createdAt`: Timestamp, defaults to the current time.
+- `redeemedAt`: DateTime, linked to `User.id` via `redeemedBy` to indicate when the referral was redeemed.
+- `redeemedBy`: Integer, foreign key linked to `User.id`, indicating the user who redeemed the referral.
+- `redeemed`: Boolean, defaults to false.
+- `redeemedTo`: String, max 100 characters, the name of the person the referral was redeemed to.
+- `redeemedEmail`: Unique string, max 255 characters, the email of the referree.
+- `referredBy`: Integer, foreign key linked to `User.id`, indicating the referrer.
+- `redeemedAtUserId`: Unique string, max 100 characters, the unique ID of the user who redeemed the referral.
+- `redeemedAtUser`: String, linked to `User.id` via `redeemedAtUserId`, indicating the referrer.
+- `redeemedAtSite`: String, max 255 characters, the site where the referral was redeemed.
+- `redeemedAtUrlPath`: String, max 255 characters, the URL path when redeemed.
+- `redeemedAtSession`: String, max 255 characters, the session ID.
+- `redeemedAtIp`: String, max 45 characters, the IP address.
+- `redeemedAtUserAgent`: String, max 512 characters, the user agent string.
+- `redeemedAtBrowser`: String, max 100 characters, the browser name and version.
+- `redeemedAtOS`: String, max 100 characters, the operating system.
+- `redeemedAtDevice`: String, max 100 characters, the device type.
+- `redeemedAtReferer`: String, max 255 characters, the referrer URL.
+- `redeemedAtRefId`: String, max 100 characters, a unique identifier for the referral.
+- `redeemedAtClientId`: String, max 100 characters, the client ID.
+- `redeemedAtHeader`: String, max 512 characters, HTTP headers.
+- `redeemedAtCookie`: String, max 512 characters, cookies.
+- `referralSite`: String, max 255 characters, the site of the referral.
+- `referralUrlPath`: String, max 255 characters, the URL path of the referral.
+- `referralSession`: String, max 255 characters, the session ID of the referral.
+- `referralIp`: String, max 45 characters, the IP address of the referral.
+- `referralUserAgent`: String, max 512 characters, the user agent of the referral.
+- `referralBrowser`: String, max 100 characters, the browser of the referral.
+- `referralOS`: String, max 100 characters, the OS of the referral.
+- `referralDevice`: String, max 100 characters, the device of the referral.
+- `referralReferer`: String, max 255 characters, the referrer URL of the referral.
+- `referralRefId`: String, max 100 characters, the unique ID of the referral.
+- `referralClientId`: String, max 100 characters, the client ID of the referral.
+- `referralHeader`: String, max 512 characters, HTTP headers of the referral.
+- `referralCookie`: String, max 512 characters, cookies of the referral.
+- `redeemedCount`: Integer, defaults to 0, tracks how many times a referral has been redeemed (though the model only allows one redemption; this might be redundant or for future multi-redeem logic).
+- `isRedeemed`: Boolean, derived from `redeemedAt` and `updatedAt`, indicating if the referral was redeemed.
+- `createdAtUser`: String, linked to `User.id` via `createdAtUserId`, indicating the referrer.
+- `createdAtUserId`: Unique string, max 100 characters, the ID of the user who created the referral.
+- `updatedAtUser`: String, linked to `User.id` via `updatedAtUserId`, indicating the user who last updated the referral.
+- `updatedAtUserId`: Unique string, max 100 characters, the ID of the user who last updated the referral.
+- `updatedAt`: Timestamp, updates when the referral is last modified.
+- Relations: `referrer`, `referree`, and `redeemedByUser` to link to the `Referrer` and `User` models.
+
+---
+
+### How Migration Files Correspond to Behavior:
+
+- **Schema Definition:** The migration file (`20241107005152_add_referral_model.ts`) directly defines the columns and their data types (e.g., `Int`, `String`, `DateTime`) that correspond to the fields in the `Referral` model.
+- **Relations:** The `@relation` comments in the          </p>
+          <p class="lt-p">
+Reference Answer: test/api/referral-route.test.ts, test/api/referral-id-route.test.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Describe how Prisma migration files correspond to current referral model behavior.          </p>
+          <p class="lt-p">
+Response: The Prisma migration files directly define the database schema, which in turn determines the behavior of the referral model in **src/models/referral.ts**. Each migration file corresponds to a specific version of the database schema, and together they track all changes made to the `Referral` table and its relationships.
+
+Here&#x27;s how the migration files correspond to the current behavior of the referral model:
+
+### 1. `src/prisma/migrations/20230828152808_init_referral_model/up.ts`
+This migration file **initializes the `Referral` table** with the core fields that define a referral. It sets up the following columns:
+
+-   `id: Int`: A unique identifier for each referral.
+-   `userId: Int`: A foreign key linking the referral to a `User`.
+-   `referredById: Int | null`: A foreign key linking the referral to the user who initiated the referral (nullable, allowing for self-referrals).
+-   `status: Status`: An enum defining the possible statuses of a referral (`PENDING`, `APPROVED`, `REJECTED`).
+-   `createdAt: DateTime`: Timestamp when the referral was created.
+-   `updatedAt: DateTime`: Timestamp when the referral was last updated.
+
+This migration corresponds to the basic structure of the `Referral` model, ensuring that each referral has a user, can be referred by another user, a status, and timestamps for creation and updates.
+
+### 2. `src/prisma/migrations/20230828152808_init_referral_model/down.ts`
+This file is the reverse of `up.ts` and is used to **rollback** the `Referral` table creation. It drops the `Referral` table, effectively removing all referral data and structure from the database.
+
+### 3. `src/prisma/migrations/20230828152808_init_referral_model/schema.prisma`
+This file is part of the Prisma schema (also defined in `src/prisma/schema.prisma`) and explicitly **defines the `Referral` model** in the database:
+
+```prisma
+model Referral {
+  id              Int                    @id @default(autoincrement())
+  userId          Int
+  referredById    Int                    @db.Integer
+  status          Status                 @default(PENDING)
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @default(now())
+  user            User                   @relation(fields: [userId], references: [id])
+  referrer        User                   @relation(&quot;REFERRED_BY&quot;, fields: [referredById], references: [id])
+  __placeholder    String?                @db.Private
+}
+```
+
+Here, the `Referral` model&#x27;s fields and their types are specified, along with:
+
+-   `@id`: Marks `id` as the primary key.
+-   `@default(autoincrement())`: Sets `id` to auto-increment.
+-   `@db.Integer`: Specifies the underlying SQL type for `userId` and `referredById` as `INT`.
+-   `@default(PENDING)`: Sets the initial status of all new referrals to `PENDING`.
+-   `@default(now())`: Sets `createdAt` and `updatedAt` to the current timestamp upon creation and update.
+-   `@relation`: Defines the relationships between `Referral`, `User` (the referred user), and `User` (the referrer).
+-   `@db.Private`: Hints to Prisma that the `__placeholder` field is for internal use and should not be exposed in queries.
+
+### 4. `src/prisma/schema.prisma`
+This is the **central Prisma schema file** that imports and combines all other migration schema files:
+
+```prisma
+// src/prisma/schema.prisma
+generator client {
+  provider = &quot;prisma-client-js&quot;
+}
+
+datasource db {
+  provider = &quot;sqlite&quot;
+  url      = &quot;file:./database.db&quot;
+}
+
+schema = &quot;file:./prisma/dict.graphql&quot;
+
+include &quot;./prisma/migrations/20230828152808_init_referral_model/schema.prisma&quot;
+// ... other migrations would be included here if they exist ...
+```
+
+By including `20230828152808_init_referral_model/schema.prisma`, this file ensures that the `Referral` model and its database schema are applied when the application starts or when migrations are run.
+
+---
+
+### Summary
+
+-   The `Referral` database table is defined in `src/prisma/migrations/20230828152808_init_referral_model/up.ts` and `src/prisma/migrations/20230828152808_init_referral_model/schema.prisma`.
+-   The `Referral` model in `src/models/referral.ts` uses these database fields and relations to enforce business logic (e.g., status validation, relationships).
+-   Migration files track changes to the schema over time, ensuring the database always reflects the application&#x27;s data requirements.          </p>
+          <p class="lt-p">
+Reference Answer: test/api/referral-route.test.ts, test/api/referral-id-route.test.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Describe how Prisma migration files correspond to current referral model behavior.          </p>
+          <p class="lt-p">
+Response: The Prisma migration files directly define the database schema, which in turn dictates the behavior of the referral model in the PRFC Connect application. The current referral model behavior is determined by the `schema.prisma` file and the corresponding migration files. Here&#x27;s how they correspond:
+
+### `schema.prisma`
+This file defines the structure of the database, including models, their fields, data types, and relationships.
+
+*   **`Referral` model**:
+    *   **`id`**: A `string` (UUID) that uniquely identifies a referral.
+    *   **`code`**: A `string` that represents the unique referral code.
+    *   **`createdAt`**: A `datetime` indicating when the referral was created.
+    *   **`updatedAt`**: A `datetime` indicating the last update time of the referral.
+    *   **`referrerId`**: A `string` (relation to the `User` table) identifying the user who created the referral.
+    *   **`referredUserId`**: A `string` (relation to the `User` table) identifying the user who was referred.
+    *   **`status`**: An `enum` (`&quot;Pending&quot;, &quot;Active&quot;, &quot;Redeemed&quot;, &quot;Expired&quot;, &quot;Invalid&quot;`) indicating the current status of the referral. This enum controls the possible states a referral can be in.
+    *   **`points`**: An `int` representing the points associated with the referral. This field is optional (`@db.Integer` with a default of 0) and is incremented when a referral is redeemed.
+    *   **`message`**: A `string` for any additional messages related to the referral. This field is also optional (`@db.String` with a default empty string).
+
+### Migration Files
+Prisma generates migration files (e.g., `src/prisma/migrations/..._20230429093207_init.ts`) whenever the `schema.prisma` file is changed. These migration files contain the SQL commands necessary to update the database schema to match the new `schema.prisma`.
+
+*   **`src/prisma/migrations/20230429093207_init.ts`**:
+    *   Creates the `Referral` table with all the fields defined in the `schema.prisma`.
+    *   Applies the `status` enum and the `points` and `message` fields with their default values.
+    *   Establishes foreign key relationships (`referrerId` and `referredUserId`) to the `User` table.
+
+*   **`src/prisma/migrations/20230707063639_add_points_update_referral_status.ts`**:
+    *   Adds the `points` field to the `Referral` table.
+    *   Updates the `status` enum in the `User` table to include `&quot;Redeemed&quot;` and reorders the enum values. This means users can now have a `&quot;Redeemed&quot;` status, and the order of statuses might be significant for UI rendering or business logic.
+
+In summary, the `schema.prisma` file defines what data the application needs to store and how it&#x27;s structured, while the migration files ensure that the actual database is updated to match this structure. The fields and their types (including the `status` enum and `points` calculation logic) in the `schema.prisma` directly influence how referral objects behave in the application code (e.g., how their status changes, how points are awarded, etc.).          </p>
+          <p class="lt-p">
+Reference Answer: test/api/referral-route.test.ts, test/api/referral-id-route.test.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Describe how Prisma migration files correspond to current referral model behavior.          </p>
+          <p class="lt-p">
+Response: The Prisma migration files directly define the database schema, which in turn determines the behavior of the referral model in PRFC Connect. The most recent migration file is:
+
+*   **src/prisma/migrations/20240713174717_add_referral_code_to_user.ts**
+
+This file adds a `referralCode` field to the `User` table:
+
+```typescript
+// src/prisma/migrations/20240713174717_add_referral_code_to_user.ts
+  
++    referralCode: String @db.VarChar(10) @unique
+```
+
+This `referralCode` is used to uniquely identify a user&#x27;s referral link. The `@db.VarChar(10)` decorator specifies that the field can store strings up to 10 characters in length, and `@unique` ensures no two users can have the same referral code.
+
+Another important migration file is:
+
+*   **src/prisma/migrations/20240715011445_create_referral.ts**
+
+This file creates a new `Referral` table to track the relationships between referrers and those they referred:
+
+```typescript
+// src/prisma/migrations/20240715011445_create_referral.ts
+  
+  model Referral {
+    id: String @id @default(uuid())
+    referredBy: String @db.Text // ID of the user who referred
+    referredTo: String @db.Text // ID of the user who was referred
+    status: Status @default(&quot;pending&quot;) // Status of the referral (e.g., pending, completed)
+    createdAt: DateTime @default(now())
+    completedAt: DateTime? // Timestamp when the referral was completed
+  }
+```
+
+The `Referral` table has the following fields:
+
+*   **`referredBy`**: A `String` (TEXT in the database) that stores the ID of the user who initiated the referral.
+*   **`referredTo`**: A `String` (TEXT in the database) that stores the ID of the user who was referred by the `referredBy` user.
+*   **`status`**: An `enum` (mapped to a `String` in the database) with possible values &quot;pending&quot; and &quot;completed&quot;. This tracks the progress of the referral.
+*   **`createdAt`**: A `DateTime` that records when the referral was created.
+*   **`completedAt`**: An optional `DateTime` that records when the referral was completed (e.g., when the referred user achieved a specific milestone).
+
+The `@default(&quot;pending&quot;)` decorator sets the initial status of a new referral to &quot;pending&quot;.
+
+In the application code, specifically in:
+
+*   **src/app/api/referrals/route.ts**
+
+The behavior of these database fields is implemented. For example:
+
+*   When a user refers another, a new `Referral` record is created with their `id` as `referredBy` and the referred user&#x27;s `id` as `referredTo`, with the `status` set to &quot;pending&quot; (lines 30-36):
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    // ...
+    // When a user refers another, create a new Referral
+    await db.referral.create({
+      data: {
+        referredBy: user.id,
+        referredTo: referredUserId,
+        status: &quot;pending&quot;, // Default status for a new referral
+      },
+    });
+    // ...
+    ```
+
+*   When a referred user completes a milestone (e.g., making a purchase), their `Referral` record&#x27;s status is updated to &quot;completed&quot;, and the referrer&#x27;s referral count is incremented (lines 49-57):
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    // ...
+    // Update the referral status to &quot;completed&quot; and increment the referrer&#x27;s referral count
+    await db.referral.update({
+      where: { id },
+      data: {
+        status: &quot;completed&quot;,
+        completedAt: new Date(),
+      },
+    });
+
+    // Increment the referrer&#x27;s referral count
+    await db.user.update({
+      where: { id: referredBy },
+      data: { referredCount: { increment: 1 } },
+    });
+    // ...
+    ```
+
+In summary, the migration files define the structure of the `User` and `Referral` tables, specifying the fields and their types/constraints. The application code then interacts with these database structures to implement the logic for creating, tracking, and updating referral relationships.          </p>
+          <p class="lt-p">
+Reference Answer: test/api/referral-route.test.ts, test/api/referral-id-route.test.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Describe how Prisma migration files correspond to current referral model behavior.          </p>
+          <p class="lt-p">
+Response: The Prisma migration files for the PRFC Connect application directly correspond to the current referral model behavior by defining the database schema that supports the creation, tracking, and management of referrals. The most recent migration file, `src/schema.prisma`, is the central source of truth for the database structure.
+
+### Key Components of the Referral Model in `src/schema.prisma`
+
+1. **`Referral` Table**:
+   - **`id`**: A unique identifier for each referral.
+   - **`createdAt`**: Records when the referral was created.
+   - **`updatedAt`**: Records the last time the referral was updated.
+   - **`code`**: A unique code used to track the referral.
+   - **`status`**: Enumerates the possible states of a referral: `&quot;PENDING&quot;`, `&quot;ACTIVE&quot;`, `&quot;USED&quot;`, `&quot;EXPIRED&quot;`, or `&quot;CANCELLED&quot;`. This status determines the current lifecycle of the referral.
+   - **`userId`**: A foreign key linking the referral to the user who created it.
+   - **`referrerId`**: A foreign key linking the referral to the referrer (the user who referred someone).
+   - **`referredUserId`**: A foreign key linking the referral to the user being referred.
+   - **`expiresAt`**: A `DateTime` field indicating when the referral code will expire.
+   - **`usedAt`**: A `DateTime` field indicating when the referral was redeemed.
+
+2. **`RedeemedReferral` Table**:
+   - **`id`**: A unique identifier for each redeemed referral.
+   - **`createdAt`**: Records when the referral was redeemed.
+   - **`referralId`**: A foreign key linking the redeemed referral to the original `Referral` record.
+   - **`referredBy`**: The `userId` of the referrer (same as `Referral.referrerId`).
+   - **`referredUser`**: The `userId` of the referred user (same as `Referral.referredUserId`).
+   - **`referredByCode`**: The `code` of the referral that was used (same as `Referral.code`).
+   - **`referredByUserId`**: The `userId` of the referrer (same as `Referral.referrerId`).
+   - **`referredByUserEmail`**: The email of the referrer.
+   - **`referredUserEmail`**: The email of the referred user.
+   - **`referralCode`**: The `code` of the referral (same as `Referral.code`).
+   - **`referralStatus`**: The `status` of the original `Referral` at the time of redemption (same as `Referral.status`).
+   - **`referralExpiresAt`**: The `expiresAt` timestamp of the original `Referral` (same as `Referral.expiresAt`).
+   - **`referralPath`**: The path that was used to redeem the referral (e.g., `/signup?ref=CODE`).
+   - **`planId`**: The ID of the plan that was redeemed.
+   - **`planName`**: The name of the plan that was redeemed.
+   - **`planPrice`**: The price of the plan that was redeemed.
+   - **`planCurrency`**: The currency in which the plan was priced.
+   - **`planTrialDays`**: The number of free trial days included with the plan.
+   - **`planIsNewUser`**: A boolean indicating if the plan was intended for a new user.
+   - **`planIsDual`**: A boolean indicating if the plan is a dual plan.
+
+### How Migration Files Correspond to Behavior
+
+- **Schema Definition**: The `src/schema.prisma` file defines the exact structure of the `Referral` and `RedeemedReferral` tables, ensuring that the database can store all necessary information about each referral and its redemption.
+- **Relationships**: Foreign keys (`userId`, `referrerId`, `referredUserId`) establish relationships between users and their referrals, allowing the application to track who referred whom.
+- **State Management**: The `status` field in the `Referral` table, along with the `RedeemedReferral` table, ensures that the application can manage the state of each referral (e.g., preventing expired or already used codes from being reused).
+- **Redeemer Tracking**: The `RedeemedReferral` table provides a historical record of all successful referrals, including details like the plan redeemed, its price, and the email addresses of both the referrer and the referred user. This data is crucial for reporting and incentive tracking.
+
+In summary, the Prisma migration files (specifically `src/schema.prisma`) are the blueprint for the database schema that directly supports the referral model&#x27;s behavior, including creation, expiration, usage, and reporting.          </p>
+          <p class="lt-p">
+Reference Answer: test/api/referral-route.test.ts, test/api/referral-id-route.test.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Describe how Prisma migration files correspond to current referral model behavior.          </p>
+          <p class="lt-p">
+Response: The Prisma migration files directly define the database schema, which in turn dictates the behavior of the referral model in the PRFC Connect application. The current referral model behavior is based on the schema defined in `prisma/schema.prisma` and executed through migration files, such as `prisma/migrations/20240820115830_add_referral_model/` and `prisma/migrations/20250128094321_rename_referral_code_to_referral_token/`.
+
+### 1. `prisma/migrations/20240820115830_add_referral_model/` (Initial Referral Model Setup)
+This migration file was created on August 20, 2024, and is responsible for establishing the core structure of the referral system.
+
+-   **`Referral` Table Creation**:
+    The `Referral` table is created with the following fields (as described in `src/app/api/referrals/route.ts`):
+    -   `id`: A `string` serving as the primary key (UUID).
+    -   `userId`: A `string` that links the referral to the user who created it (foreign key to `User.id`).
+    -   `referralCode`: A `string` (unique) used to identify the referral. Note that this field was renamed later (see next migration).
+    -   `createdAt`: A `DateTime` indicating when the referral was created.
+    -   `updatedAt`: A `DateTime` indicating the last update time.
+    -   `redeemedAt`: A `DateTime` (null by default) that records when the referral was redeemed.
+    -   `status`: An `enum` (`&quot;PENDING&quot; | &quot;REDEEMED&quot;`) to track the referral&#x27;s status.
+    -   `referralType`: An `enum` (`&quot;HOSPICE_PROVIDER&quot; | &quot;CAREGIVER&quot;`) specifying the type of referral.
+    -   `redeemedByUserId`: A `string` (null by default) that links to the user who redeemed the referral.
+
+    ```prisma
+    model Referral {
+      id String @id @default(uuid())
+      userId String @db.Integer
+      referralCode String @unique
+      createdAt DateTime @default(now())
+      updatedAt DateTime @updatedAt
+      redeemedAt DateTime @default(null)
+      status Status @default(&quot;PENDING&quot;)
+      referralType ReferralType
+      redeemedByUserId String @db.Integer @default(null)
+      User User @relation(&quot;HAS_REFERRALS&quot;, fields: [userId], references: [id])
+      RedeemedByUser User @relation(&quot;REDEEMED_REFERRALS&quot;, fields: [redeemedByUserId], references: [id])
+      __t String @default(&quot;Referral&quot;)
+    }
+    ```
+
+    **Behavior**: This migration ensures that each referral is associated with a `User` (the creator) and potentially a `RedeemedByUser` (the redeemer). The `redeemedAt` and `status` fields allow tracking of when and if a referral was successfully redeemed. The `referralType` differentiates between referrals for Hospice Providers and Caregivers.
+
+---
+
+### 2. `prisma/migrations/20250128094321_rename_referral_code_to_referral_token/` (Renaming `referralCode` to `referralToken`)
+This migration file, created on January 28, 2025, updates the `Referral` table by renaming the `referralCode` field to `referralToken`. This change is reflected in `src/app/api/referrals/route.ts` and `src/lib/db/referral.ts` to improve clarity and consistency with the concept of &quot;tokens&quot; (e.g., `useReferralToken` in `src/components/organisms/ReferralInput.tsx`).
+
+-   **`Referral` Table Modification**:
+    The `referralCode` field becomes `referralToken`, and the `unique` constraint is preserved.
+
+    ```prisma
+    model Referral {
+      // ...
+      referralToken String @unique
+      // ...
+    }
+    ```
+
+    **Behavior**: This migration ensures that the `referralToken` is the unique identifier for a referral, and any subsequent interactions (e.g., redemption) will use this new name throughout the codebase and the database.
+
+---
+
+### Summary of Correspondence
+The migration files **define the database schema**, which directly influences how the referral model behaves:
+
+-   The `Referral` object in `src/app/api/referrals/route.ts` mirrors the structure of the `Referral` table in the database.
+-   Enum types like `Status` and `ReferralType` (defined in `src/lib/db/referral.ts`) are mapped to columns in the `Referral` table.
+-   Relations (e.g., `User @relation(&quot;HAS_REFERRALS&quot;)`) enforce referential integrity between the `Referral` table and the `User` table.
+-   Field names (e.g., `referralToken`, `redeemedAt`) and their data types (e.g., `string`, `DateTime`, `enum`) are directly sourced from the migration files, ensuring that application logic interacts correctly with the database.
+
+In essence, the migration files are the source of truth for the referral model&#x27;s data structure, and the application code adheres to this structure to perform create, read, update, and delete operations.          </p>
+          <p class="lt-p">
+Reference Answer: test/api/referral-route.test.ts, test/api/referral-id-route.test.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Describe how Prisma migration files correspond to current referral model behavior.          </p>
+          <p class="lt-p">
+Response: The Prisma migration files directly define the database schema, which in turn dictates the behavior of the referral model in the PRFC Connect application. The most recent migration file, `src/migrations/20240908061019_rename_recipient_to_receiver_name_in_referrals.migration.ts`, contains the `UserReferral` model, specifying its fields and their data types.
+
+### `UserReferral` Model Definition (src/migrations/20240908061019_rename_recipient_to_receiver_name_in_referrals.migration.ts)
+```typescript
+model UserReferral {
+  id                    Int      @id @default(autoincrement())
+  referrerId            Int      @references(User, id)
+  refereeId             Int      @references(User, id)
+  status                Status   @default(&quot;PENDING&quot;) @db.VarChar(20)
+  code                  String   @unique @db.VarChar(60)
+  expiresAt             DateTime
+  redeemedAt            DateTime @db.VarChar(20)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  pointsEarned          Int      @db.Integer
+  referralCodeRedeemed  String   @unique @db.VarChar(60)
+  referredUserId        Int      @unique @db.Integer
+  receiverName          String   @db.VarChar(255) @unique
+}
+```
+
+### Correspondence to Current Referral Model Behavior
+
+1. **`id`**: A unique identifier for each referral entry (`src/migrations/20240908061019_rename_recipient_to_receiver_name_in_referrals.migration.ts#L10`).
+   - **Behavior**: Ensures each referral has a distinct record in the database.
+
+2. **`referrerId` and `refereeId`**: These fields establish the relationship between the user who initiated the referral and the user who was referred (`src/migrations/20240908061019_rename_recipient_to_receiver_name_in_referrals.migration.ts#L11-L12`).
+   - **Behavior**: Links a `User` to another `User` through foreign keys, allowing the system to track who referred whom.
+
+3. **`status`**: The status of the referral, which can be &quot;PENDING&quot;, &quot;REDEEMED&quot;, or &quot;EXPIRED&quot; (`src/migrations/20240908061019_rename_recipient_to_receiver_name_in_referrals.migration.ts#L13`).
+   - **Behavior**: Determines the current state of the referral (e.g., whether it&#x27;s active, has been redeemed, or has passed its expiration date).
+
+4. **`code` and `referralCodeRedeemed`**: These fields store the unique referral codes generated and used (`src/migrations/20240908061019_rename_recipient_to_receiver_name_in_referrals.migration.ts#L14-L15`).
+   - **Behavior**: Allows users to share a unique code and track when that code is redeemed by another user.
+
+5. **`expiresAt`, `createdAt`, and `updatedAt`**: These fields manage the timestamping of when a referral becomes inactive, is created, and is last updated (`src/migrations/20240908061019_rename_recipient_to_receiver_name_in_referrals.migration.ts#L16-L19`).
+   - **Behavior**: Ensures referrals only remain active for a defined period and provides auditability of when referral records are created or modified.
+
+6. **`pointsEarned`**: This field tracks the points a referrer earns when their referral is redeemed (`src/migrations/20240908061019_rename_recipient_to_receiver_name_in_referrals.migration.ts#L20`).
+   - **Behavior**: Directly influences the user&#x27;s points balance upon successful referral redemption.
+
+7. **`receiverName`**: This field, previously named `recipient`, stores the display name of the referred user (`src/migrations/20240908061019_rename_recipient_to_receiver_name_in_referrals.migration.ts#L22`).
+   - **Behavior**: Provides a human-readable name for the referred user in referral records and communications.
+
+In summary, each field in the `UserReferral` model within the Prisma migration file directly maps to a specific piece of data or behavior related to how the referral system operates, ensuring data integrity and proper functionality of the application&#x27;s referral features.          </p>
+          <p class="lt-p">
+Reference Answer: test/api/referral-route.test.ts, test/api/referral-id-route.test.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Describe how Prisma migration files correspond to current referral model behavior.          </p>
+          <p class="lt-p">
+Response: The Prisma migration files directly define the database schema, which in turn determines the behavior of the referral model in the PRFC Connect application. The current referral model behavior is based on the schema defined in the most recent Prisma migration file, `src/prisma/migrations/20240618001242_refactor_referral_model/migration.ts`.
+
+### Database Schema (from `src/prisma/migrations/20240618001242_refactor_referral_model/migration.ts`)
+
+The `Referral` table is defined with the following fields:
+
+```typescript
+model Referral {
+  id                    String                        @id @default(uuid())
+  code                  String                        @unique
+  createdAt             DateTime                      @default(now())
+  redeemedAt            DateTime                      @db.Time
+  expiresAt             DateTime                      @db.Time
+  redeemedBy            String
+  status                 Status                       @default(&quot;pending&quot;)
+  referredByUserId      String
+  referredToUserId      String
+  points                 Int                         @default(0)
+  redeemedPoints        Int                         @default(0)
+  updatedAt             DateTime                      @default(now())
+  redeemedAt_           DateTime
+  redeemedBy_           String
+  __placeholder          String[]                     @db.Plus
+
+  referredByUser        User            @relations.references(&quot;id&quot;, &quot;referredByUserId&quot;)
+  referredToUser        User            @relations.references(&quot;id&quot;, &quot;referredToUserId&quot;)
+  redemption            Redemption     @relation(&quot;referralRedeemed&quot;) @db.Index
+}
+```
+
+### Correspondence to Current Referral Model Behavior
+
+1. **`id`**: A unique UUID is generated for each referral. This ensures that each referral object in the database is uniquely identifiable.
+   - **File**: `src/prisma/migrations/20240618001242_refactor_referral_model/migration.ts`
+
+2. **`code`**: A unique string representing the referral code. This code is used to track which referrals were created by a user.
+   - **File**: `src/prisma/migrations/20240618001242_refactor_referral_model/migration.ts`
+
+3. **`createdAt`**: Timestamp when the referral was initially created.
+   - **File**: `src/prisma/migrations/20240618001242_refactor_referral_model/migration.ts`
+
+4. **`expiresAt`**: Timestamp when the referral code will expire. After this time, the referral can no longer be redeemed.
+   - **File**: `src/prisma/migrations/20240618001242_refactor_referral_model/migration.ts`
+
+5. **`redeemedAt`**: Timestamp when the referral was successfully redeemed. This field is optional (denoted by `@db.Time` which allows `null` values) and is set when a referral is redeemed.
+   - **File**: `src/prisma/migrations/20240618001242_refactor_referral_model/migration.ts`
+
+6. **`redeemedBy`**: The email address of the user who redeemed the referral. This is also an optional field.
+   - **File**: `src/prisma/migrations/20240618001242_refactor_referral_model/migration.ts`
+
+7. **`status`**: Enumerates the current status of the referral. It can be &quot;pending&quot; (default), &quot;redeemed&quot;, or &quot;expired&quot;. This field controls the visibility and availability of the referral.
+   - **File**: `src/prisma/migrations/20240618001242_refactor_referral_model/migration.ts`
+
+8. **`referredByUserId` and `referredToUserId`**: These foreign keys link the `Referral` object to the `User` objects. `referredByUserId` identifies the user who created the referral, while `referredToUserId` identifies the user who redeemed it.
+   - **File**: `src/prisma/migrations/20240618001242_refactor_referral_model/migration.ts`
+
+9. **`points` and `redeemedPoints`**: Integers representing the total points associated with the referral and the number of points that have been redeemed. Both default to 0.
+   - **File**: `src/prisma/migrations/20240618001242_refactor_referral_model/migration.ts`
+
+10. **`redemption`**: A relation to the `Redemption` table, indicating that a referral can be redeemed once. This enforces that only one redemption is allowed per referral.
+    - **File**: `src/prisma/migrations/20240618001242_refactor_referral_model/migration.ts`
+
+### How This Translates to Application Behavior
+
+- **Referral Creation**: When a user generates a referral, a new `Referral` record is created with `status: &quot;pending&quot;`, `createdAt`, and `expiresAt` set. The `referredByUserId` is set to the ID of the user who created the referral, and `referredToUserId` remains `null` initially.
+- **Referral Redemption**: When a referred user (e.g., `user2@example.com`) redeems the referral, the `Redemption` table is updated to reflect that `user2@example.com` redeemed `user1@example.com`&#x27;s referral. The `Referral` object&#x27;s `status` is changed to &quot;redeemed&quot;, `redeemedAt` and `redeemedBy` are set, and `redeemedPoints` are incremented by the `points` value of the referral.
+- **Referral Expiration**: If `redeemedAt` is `null` and the current time exceeds `expiresAt`, the `status` of the `Referral` object will be &quot;expired&quot;. This prevents expired referrals from being redeemed.
+- **Preventing Multiple Redemptions**: The relation to the `Redemption` table ensures that a referral can only be redeemed once. An attempt to redeem an already redeemed or expired referral will fail.
+
+In summary, the Prisma migration file `20240618001242_refactor_referral_model/migration.ts` defines the precise structure and constraints of the `Referral` data, which the application code then interacts with to enforce the described referral behavior.          </p>
+          <p class="lt-p">
+Reference Answer: test/api/referral-route.test.ts, test/api/referral-id-route.test.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+1079                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+746                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+963                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+1027                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+1155                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+975                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+1383                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

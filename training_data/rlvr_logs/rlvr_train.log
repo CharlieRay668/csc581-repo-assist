@@ -1,0 +1,24 @@
+/Users/charlieray/Desktop/CSC 581/csc581-repo-assist/src/training/rlvr_train.py:413: RuntimeWarning: coroutine 'main' was never awaited
+  train.main(config)
+RuntimeWarning: Enable tracemalloc to get the object allocation traceback
+Loaded 100 task-answer pairs with verifiable file lists
+  Expected files per task: min=1, max=7, avg=2.8
+  By mode: {'locate': 40, 'explain': 40, 'suggest': 20}
+  By difficulty: {'easy': 40, 'medium': 40, 'hard': 20}
+  Train/test split: 80 / 20
+
+Starting RLVR training:
+  model       = Qwen/Qwen3-8B
+  loss_fn     = importance_sampling
+  lr          = 1e-05
+  group_size  = 8 samples/prompt
+  batch_size  = 4 tasks/batch
+  max_tokens  = 2048
+  renderer    = qwen3_disable_thinking
+  f1_threshold= 0.5
+  checkpoint  = tinker://38b4be07-1ac0-5d16-81f6-73c8918aca6e:train:0/weights/sft-epoch-7
+
+
+Warning: could not find final checkpoint in checkpoints.jsonl
+
+RLVR training complete.

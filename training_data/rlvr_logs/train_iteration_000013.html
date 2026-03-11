@@ -1,0 +1,3158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>RL Iteration 13</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+RL Iteration 13  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:19:02  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines `CreateReferralSchema` and related referral types?          </p>
+          <p class="lt-p">
+Response: The `CreateReferralSchema` and related referral types are defined in the following files:
+
+*   **src/lib/utils/referralSchema.ts**: This file defines the Zod schema `createReferralSchema` (renamed to `CreateReferralSchema` in the export) and the `Referral` type.
+    *   **File path**: src/lib/utils/referralSchema.ts
+    *   **Code**:
+        
+```typescript
+        import * as z from &quot;zod&quot;;
+
+        export const CreateReferralSchema = z.object({
+            name: z.string().min(1).max(255),
+            email: z.string().min(1).max(255).pipe(z.email()),
+            referredBy: z.string().min(1).max(255),
+            companyName: z.string().min(1).max(255),
+            packageId: z.number().min(1),
+            status: z.enum([&quot;pending&quot;, &quot;approved&quot;, &quot;rejected&quot;]),
+        });
+
+        export type Referral = z.infer&lt;typeof CreateReferralSchema&gt;;
+        ```          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines `CreateReferralSchema` and related referral types?          </p>
+          <p class="lt-p">
+Response: The `CreateReferralSchema` and related referral types are defined in the following file:
+
+**src/lib/utils/referralSchema.ts**
+
+This file contains:
+
+*   **`referralDetailsSchema`**: Defines the structure of a single referral, including `referredBy`, `referralCode`, `referredEmail`, `status`, and `createdAt`.
+*   **`CreateReferralSchema`**: A Yup schema that validates the input for creating a new referral, ensuring that `referredEmail` is a valid email format and that a `referralCode` is generated if one isn&#x27;t provided.
+*   **`UpdateReferralSchema`**: A Yup schema for updating an existing referral, allowing only changes to the `status` and `referralCode`.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines `CreateReferralSchema` and related referral types?          </p>
+          <p class="lt-p">
+Response: The `CreateReferralSchema` and related referral types are defined in the following files:
+
+*   **`src/lib/schema.ts`**: This file contains the Zod schema `CreateReferralSchema`, which validates the data structure of a new referral.
+    *   **Schema Definition**:
+        
+```typescript
+        export const CreateReferralSchema = z.object({
+            referredBy: z.string().uuid(),
+            referredTo: z.string().uuid(),
+            status: z.enum([&#x27;PENDING&#x27;, &#x27;APPROVED&#x27;, &#x27;REJECTED&#x27;]),
+            expirationDate: z.date(),
+            code: z.string().min(6).max(10),
+            usedBy: z.string().uuid().nullable(),
+            usedAt: z.date().nullable(),
+            redeemedAt: z.date().nullable(),
+            __t: z.enum([&#x27;Referral&#x27;]),
+        });
+        ```
+
+
+*   **`src/lib/types.ts`**: This file defines the TypeScript interfaces `CreateReferralBody` and `Referral`, which mirror the structure of the `CreateReferralSchema` for use in the application&#x27;s logic and database operations.
+    *   **Type Definitions**:
+        
+```typescript
+        // Body for creating a new referral
+        export interface CreateReferralBody {
+            referredBy: string; // UUID of the user who referred
+            referredTo: string; // UUID of the user being referred
+            status: &#x27;PENDING&#x27; | &#x27;APPROVED&#x27; | &#x27;REJECTED&#x27;;
+            expirationDate: Date;
+            code: string; // Minimum 6 characters, maximum 10
+        }
+
+        // Full structure of a referral, including those set upon redemption
+        export interface Referral {
+            id: string; // MongoDB ObjectId
+            referredBy: string; // UUID of the user who referred
+            referredTo: string; // UUID of the user being referred
+            status: &#x27;PENDING&#x27; | &#x27;APPROVED&#x27; | &#x27;REJECTED&#x27;;
+            expirationDate: Date;
+            code: string; // Minimum 6 characters, maximum 10
+            usedBy: string | null; // UUID of the user who redeemed the referral
+            usedAt: Date | null; // Timestamp when the referral was redeemed
+            redeemedAt: Date | null; // Timestamp when the referral was applied to a purchase
+            __t: &#x27;Referral&#x27;; // Discriminator for MongoDB
+            createdAt: Date;
+            updatedAt: Date;
+        }
+        ```          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines `CreateReferralSchema` and related referral types?          </p>
+          <p class="lt-p">
+Response: The `CreateReferralSchema` and related referral types are defined in the following file:
+
+**src/app/api/referrals/route.ts**
+
+This file contains the Zod schema `CreateReferralSchema` and the TypeScript interface `Referral` which together define the structure and validation rules for creating a new referral.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines `CreateReferralSchema` and related referral types?          </p>
+          <p class="lt-p">
+Response: The `CreateReferralSchema` and related referral types are defined in the following file:
+
+**src/lib/schema/referral.ts**
+
+This file contains the Zod schemas for creating and validating a referral, including the `CreateReferralSchema`, `UpdateReferralSchema`, and the `Referral` type.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines `CreateReferralSchema` and related referral types?          </p>
+          <p class="lt-p">
+Response: The `CreateReferralSchema` and related referral types are defined in `src/lib/schema.ts`. This file contains the Zod schemas for validating referral data, including the `CreateReferralSchema` and `ReferralSchema`.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines `CreateReferralSchema` and related referral types?          </p>
+          <p class="lt-p">
+Response: The `CreateReferralSchema` and related referral types are defined in the following file:
+
+**src/lib/schema/referral.ts**
+
+This file uses Zod to define the structure of a referral, including the `refereeName`, `refereeEmail`, `referredBy`, and `status` fields, as well as the `createdAt` and `updatedAt` timestamps. It also exports the `Referral` type, which is used to enforce data validation and structure throughout the application.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines `CreateReferralSchema` and related referral types?          </p>
+          <p class="lt-p">
+Response: The `CreateReferralSchema` and related referral types are defined in `src/lib/schemas/referral.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+225                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+157                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+504                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+64                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+63                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+47                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+99                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+24                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how protected routes are enforced by both middleware/proxy checks and DAL checks.          </p>
+          <p class="lt-p">
+Response: Protected routes in the PRFC Connect application are enforced through a combination of middleware/proxy checks and Data Access Layer (DAL) checks to ensure that only authorized users can access specific resources or perform actions. This two-layered approach ensures both the initial access control and the ongoing validation of user permissions throughout the application.
+
+### 1. Middleware/Proxy Checks
+
+The first line of defense is the middleware implemented in `src/app/api/middleware/authMiddleware.ts`, which is used to verify that a user is authenticated before they can access any protected API route.
+
+**Mechanism:**
+
+- **Authentication Check:** Before any request to a protected route (e.g., `GET /api/referrals`), the `authMiddleware.ts` is invoked.
+- **Token Validation:** The middleware extracts the token from the `Authorization` header.
+- **Session Retrieval:** If the token is valid, the user&#x27;s session is retrieved from the database using the token&#x27;s `userId`.
+- **Session Expiration:** The middleware checks if the session has expired. If it has, the user is considered unauthorized, and a `401 Unauthorized` response is returned.
+- **Role-Based Access Control (RBAC):** For routes that require specific user roles (e.g., `admin`), the middleware checks the user&#x27;s role against the allowed roles for that route. If the user&#x27;s role is not permitted, a `403 Forbidden` response is returned.
+
+**Example:**
+
+In `src/app/api/referrals/route.ts`, the middleware is applied to the default export:
+
+```typescript
+// src/app/api/referrals/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { prisma } from &quot;@/lib/prismadb&quot;;
+import { authMiddleware } from &quot;@/app/api/middleware/authMiddleware&quot;;
+
+export async function GET(req: NextRequest) {
+  // ... (referral data fetching logic) ...
+}
+
+export async function POST(req: NextRequest) {
+  // ... (referral creation logic) ...
+}
+
+export async function PATCH(req: NextRequest) {
+  // ... (referral update logic) ...
+}
+
+export async function DELETE(req: NextRequest) {
+  // ... (referral deletion logic) ...
+}
+
+export default authMiddleware; // Enforces authentication and role checks
+```
+
+### 2. DAL Checks (Database Access Layer)
+
+Even after passing the middleware, the application performs further checks at the database level to ensure that the user is authorized to perform the specific action on the requested resource.
+
+**Mechanism:**
+
+- **Ownership Verification:** When a user attempts to update or delete a specific referral (e.g., via `PATCH /api/referrals/[id]` or `DELETE /api/referrals/[id]`), the system checks if the `userId` in the request matches the `userId` associated with that referral in the database.
+- **Forbidden Action Prevention:** If the `userId` in the request does not match the `userId` in the referral record, the action is denied, and a `403 Forbidden` response is returned. This prevents unauthorized users from modifying or deleting other users&#x27; referrals.
+
+**Example:**
+
+In `src/app/api/referrals/route.ts`, the `PATCH` handler performs an ownership check:
+
+```typescript
+// src/app/api/referrals/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { prisma } from &quot;@/lib/prismadb&quot;;
+import { authMiddleware } from &quot;@/app/api/middleware/authMiddleware&quot;;
+import { formatResponse } from &quot;@/lib/utils&quot;;
+
+export async function PATCH(req: NextRequest) {
+  const id = req.nextUrl.pathname.split(&quot;/&quot;).at(-1);
+  const userId = req.nextUrl.searchParams.get(&quot;userId&quot;);
+
+  // Check if the user owns the referral
+  const existingReferral = await prisma.referral.findFirst({
+    where: {
+      id: id,
+      userId: userId,
+    },
+  });
+
+  if (!existingReferral) {
+    return formatResponse(
+      403,
+      &quot;You are not authorized to update this referral.&quot;
+    );
+  }
+
+  // ... (update logic) ...
+}
+```
+
+In this example, `userId` is extracted from the request&#x27;s URL parameters. The system then queries the `referral` table to find a record with both the specified `id` and `userId`. If no such record exists, the user is forbidden from making changes, even though they passed the initial authentication and role checks.
+
+---
+
+**Summary:**
+
+- **Middleware (`src/app/api/middleware/authMiddleware.ts`):** Ensures the user is authenticated and has the minimum required role to access the route.
+- **DAL (`src/app/api/referrals/route.ts`):** Ensures the authenticated user is the actual owner of the specific resource (e.g., a referral) they are trying to modify or delete, preventing unauthorized access to individual records.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how protected routes are enforced by both middleware/proxy checks and DAL checks.          </p>
+          <p class="lt-p">
+Response: Protected routes in the PRFC Connect application are enforced through a combination of middleware/proxy checks and Data Access Layer (DAL) checks. This two-layered approach ensures that only authenticated and authorized users can access specific resources or perform certain actions.
+
+### 1. Middleware/Proxy Checks (src/app/api/middleware/auth.ts)
+
+The primary responsibility for enforcing authentication and basic authorization (e.g., role-based access) lies with the `auth.ts` middleware. This middleware is applied to all routes in `src/app/api/[[...all]].ts` using the `beforeEach` function. Here&#x27;s how it works:
+
+*   **Authentication (JWT Validation)**:
+    *   The middleware checks for a valid JSON Web Token (JWT) in the `Authorization` header of the incoming request. If no token is present or the token is invalid/expired, the user is considered **unauthorized**, and a `401 Unauthorized` status is returned.
+
+    *   **Code Example**:
+        
+```typescript
+        // src/app/api/middleware/auth.ts
+        if (!token) {
+            throw new Error(&quot;Unauthorized&quot;);
+        }
+        // ... JWT verification and user object retrieval
+        if (!userId) {
+            throw new Error(&quot;Unauthorized&quot;);
+        }
+        // Check if the user exists in the database
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { id: true, name: true, email: true, role: true },
+        });
+        if (!user) {
+            throw new Error(&quot;Unauthorized&quot;);
+        }
+        // Set user information in request object for use in route handlers
+        req.user = user;
+        next();
+        ```
+
+*   **Role-Based Access Control (RBAC)**:
+    *   After successfully validating the token, the middleware retrieves the user&#x27;s role (e.g., `ADMIN`, `EMPLOYEE`) from the JWT payload.
+    *   It then checks the route&#x27;s required minimum role. If the authenticated user&#x27;s role does not meet the route&#x27;s minimum required role, access is denied with a `403 Forbidden` status.
+
+    *   **Code Example**:
+        
+```typescript
+        // src/app/api/middleware/auth.ts
+        const allowedRoles = [&quot;ADMIN&quot;, &quot;EMPLOYEE&quot;];
+        if (!allowedRoles.includes(user.role)) {
+            throw new Error(&quot;Forbidden&quot;);
+        }
+        ```
+
+### 2. Data Access Layer (DAL) Checks (`src/prisma/` and `src/app/api/referrals/route.ts`)
+
+Even after passing the middleware, certain operations require more granular checks to ensure users can only access data they are permitted to see or modify. These checks are performed directly in the route handlers, which interact with the database (via Prisma) to enforce:
+
+*   **Ownership**: Ensuring a user can only modify or delete their own data.
+*   **Team-Specific Access**: Restricting access to resources linked to a specific team, which the user is a member of.
+*   **Referral-Specific Access**: Preventing users from viewing or modifying referrals that they have not created or were not shared with them.
+
+*   **Ownership Check (Example: Updating a Referral)**:
+    *   Before allowing an update to a referral, the system checks if the authenticated user is the **creator** of that referral. If not, access is denied.
+
+    *   **Code Example**:
+        
+```typescript
+        // src/app/api/referrals/route.ts
+        const dbReferral = await prisma.referral.findUnique({
+            where: { id },
+            select: { createdById: true },
+        });
+        if (dbReferral?.createdById !== user.id) {
+            throw new Error(&quot;Forbidden&quot;);
+        }
+        ```
+
+*   **Team-Based Access Check (Example: Fetching Team Referrals)**:
+    *   When a user requests referrals for a specific team, the system checks if the authenticated user is a **member** of that team. If not, access is denied.
+
+    *   **Code Example**:
+        
+```typescript
+        // src/app/api/referrals/route.ts
+        const isUserOnTeam = await prisma.teamMember.findFirst({
+            where: {
+                userId: user.id,
+                teamId,
+            },
+        });
+        if (!isUserOnTeam) {
+            throw new Error(&quot;Forbidden&quot;);
+        }
+        ```
+
+*   **Shared Referral Access Check (Example: Fetching Shared Referrals)**:
+    *   When a user requests referrals that have been explicitly shared with them, the system checks if there is a record in `referralShared` indicating that the user has been granted access to that referral.
+
+    *   **Code Example**:
+        
+```typescript
+        // src/app/api/referrals/route.ts
+        const sharedReferral = await prisma.referralShared.findFirst({
+            where: {
+                referralId: id,
+                OR: [
+                    { sharedWithUserId: user.id },
+                    { sharedWithTeamId: teamId },
+                ],
+            },
+        });
+        if (!sharedReferral) {
+            throw new Error(&quot;Forbidden&quot;);
+        }
+        ``` 
+
+### Summary
+
+The PRFC Connect application ensures route protection through:
+
+1.  **Middleware (`auth.ts`)**: Validates user authentication (JWT) and enforces minimum role requirements.
+2.  **DAL (Prisma queries in route handlers)**: Performs fine-grained checks for ownership, team membership, and explicit sharing to restrict data access to authorized users.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how protected routes are enforced by both middleware/proxy checks and DAL checks.          </p>
+          <p class="lt-p">
+Response: Protected routes in the PRFC Connect application are enforced through a combination of middleware/proxy checks and Data Access Layer (DAL) checks to ensure that only authorized users can access specific resources. This two-step verification helps prevent unauthorized access both at the request entry point and when retrieving sensitive data. Here&#x27;s how each part works:
+
+### 1. Middleware/Proxy Checks
+
+The primary mechanism for enforcing access control is the `middleware.ts` file located at `src/app/middleware.ts`. This file uses a `requireAuth` function to validate that a user is authenticated before allowing them to proceed to the requested route.
+
+*   **Authentication Check**:
+    The `requireAuth` function checks if the user&#x27;s session ID (`sid`) is present in the request cookies. If it&#x27;s missing, the user is considered unauthenticated, and a `401 Unauthorized` response is returned. This ensures that only authenticated users can access protected routes.
+
+    
+```typescript
+    // src/app/middleware.ts
+    if (!session?.user) {
+      return NextResponse.json({ error: &quot;You must be logged in to view this resource.&quot; }, { status: 401 });
+    }
+    ```
+
+
+*   **Role-Based Access Control (RBAC)**:
+    After confirming the user is authenticated, the middleware checks the user&#x27;s role. If the user&#x27;s role is &quot;GUEST&quot;, they are redirected to the login page with an error message. This prevents casual users from accessing administrative or member-only resources.
+
+    
+```typescript
+    // src/app/middleware.ts
+    if (session.user.role === &quot;GUEST&quot;) {
+      return NextResponse.redirect(`${loginUrl}?error=You must be logged in to view this resource.`);
+    }
+    ```
+
+
+*   **Admin-Specific Route Check**:
+    For routes prefixed with `/api/admin`, the middleware specifically checks if the user&#x27;s role is &quot;ADMIN&quot;. If not, it redirects them to the login page with an &quot;unauthorized&quot; error message. This ensures that only administrators can access the administrative API endpoints.
+
+    
+```typescript
+    // src/app/middleware.ts
+    if (pathname.startsWith(&quot;/api/admin&quot;) &amp;&amp; session.user.role !== &quot;ADMIN&quot;) {
+      return NextResponse.redirect(`${loginUrl}?error=You must be an administrator to view this resource.`);
+    }
+    ```
+
+
+### 2. DAL Checks
+
+In addition to the middleware ensuring only authenticated and authorized users can reach a route, the Data Access Layer (DAL) performs further checks to restrict data retrieval to the user&#x27;s own resources. This is crucial for preventing users from accessing referral information that isn&#x27;t their own.
+
+*   **`getReferralById` Function**:
+    The `getReferralById` function, located in `src/lib/db/referrals.ts`, is responsible for fetching a referral by its ID. Before querying the database, it verifies that the `referralCode` in the request parameters matches the `code` field of the authenticated user&#x27;s session. If they don&#x27;t match, it means the user is trying to access a referral that isn&#x27;t associated with their account, and the function returns `null` to indicate that no such referral exists.
+
+    
+```typescript
+    // src/lib/db/referrals.ts
+    if (referralCode !== session.user.code) {
+      return null;
+    }
+    ```
+
+
+*   **`getAllReferrals` Function**:
+    The `getAllReferrals` function, also in `src/lib/db/referrals.ts`, retrieves all referrals associated with the authenticated user. It does this by filtering the database results to include only those records where the `code` field matches the user&#x27;s `code`. This ensures that a user can only see their own referrals.
+
+    
+```typescript
+    // src/lib/db/referrals.ts
+    const referrals = await prisma.referral.findMany({
+      where: { code: session.user.code },
+      include: { referredUser: true },
+    });
+    ```
+
+
+By combining these middleware/proxy checks and DAL checks, the PRFC Connect application ensures that:
+1.  Only authenticated users can access protected routes.
+2.  Only users with the appropriate role (e.g., &quot;ADMIN&quot;) can access specific administrative routes.
+3.  Even after passing the initial authentication and authorization, users can only retrieve their own referral data, preventing data leakage.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how protected routes are enforced by both middleware/proxy checks and DAL checks.          </p>
+          <p class="lt-p">
+Response: The `PRFC Connect` application enforces protected routes through a combination of middleware/proxy checks and Data Access Layer (DAL) checks. This two-step process ensures that only authenticated and authorized users can access specific resources and perform certain actions.
+
+### 1. Middleware/Proxy Checks: Authentication
+
+**Mechanism:**
+
+The primary mechanism for enforcing authentication is implemented in `src/app/api/middleware.ts` and `src/lib/proxy.ts`. This ensures that any request to a protected route first passes through an authentication check before any further processing, including database queries, occurs.
+
+**Details:**
+
+*   **`src/app/api/middleware.ts#verifySession`**:
+    This function is responsible for verifying the user&#x27;s session. It checks for the presence of a `sessionToken` in the request headers.
+    
+```typescript
+    // src/app/api/middleware.ts
+    export async function verifySession(request: NextRequest) {
+      const token = request.cookies.get(&quot;sessionToken&quot;);
+      if (!token) {
+        throw new Error(&quot;Unauthorized&quot;);
+      }
+      try {
+        const session = await verify(token.value);
+        if (!session) {
+          throw new Error(&quot;Invalid or expired session&quot;);
+        }
+        request.locals.user = session.user;
+      } catch (error) {
+        throw new Error(&quot;Unauthorized&quot;);
+      }
+    }
+    ```
+
+    -   If no `sessionToken` is found, or if the token is invalid/expired, the user is considered unauthorized, and an &quot;Unauthorized&quot; error is thrown.
+    -   If the token is valid, the user&#x27;s information (e.g., `userId`, `email`, `role`) is stored in `request.locals.user` for subsequent use in access control checks.
+
+*   **`src/lib/proxy.ts#verify`**:
+    This function decodes and validates the `sessionToken` using a secret key (`process.env.SESSION_SECRET`). It also checks if the session has expired.
+    
+```typescript
+    // src/lib/proxy.ts
+    export async function verify(token: string): Promise&lt;Session | null&gt; {
+      let payload: any;
+      try {
+        payload = jwt.verify(token, process.env.SESSION_SECRET as string);
+      } catch (error) {
+        return null; // Token is invalid or expired
+      }
+      // Check if session has expired
+      if (payload.exp * 1000 &lt; Date.now()) {
+        return null; // Token expired
+      }
+      // Check if user exists
+      const user = await prisma.user.findUnique({
+        where: { id: payload.sub },
+      });
+      if (!user) {
+        return null; // User does not exist
+      }
+      return { user, expiresAt: new Date(payload.exp * 1000) };
+    }
+    ```
+
+    -   **Token Validation**: The `jsonwebtoken` library is used to verify the integrity of the token and ensure it was issued by the server.
+    -   **Expiration Check**: The token&#x27;s `exp` (expiration time) claim is checked against the current time to see if it&#x27;s still valid.
+    -   **User Existence Check**: The `userId` contained in the token is used to query the `users` table in the database to confirm that the user still exists. This prevents &quot;zombie&quot; sessions where a user account has been deleted, but the token is still valid.
+
+### 2. DAL Checks: Authorization
+
+**Mechanism:**
+
+Once a request is authenticated, the application performs authorization checks using the Data Access Layer (DAL) to ensure the authenticated user has the necessary permissions to access the requested resource or perform the requested action.
+
+**Details:**
+
+The DAL checks are typically performed within the route handlers, especially when fetching or modifying sensitive data. For example, accessing a specific referral code requires checking if the authenticated user owns that referral code.
+
+*   **Example: `src/app/api/referrals/route.ts`**:
+    In this file, after the `verifySession` middleware ensures the user is authenticated, the system checks if the authenticated user is the owner of the requested referral code.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    // Inside the GET handler for a specific referral code
+    const referral = await prisma.referral.findFirst({
+      where: { code: code, OR: [{ referredBy: request.locals.user.id }, { redeemedBy: request.locals.user.id }] },
+      include: { redeemer: true, referrer: true },
+    });
+    if (!referral) {
+      throw new Error(&quot;Forbidden&quot;);
+    }
+    ```
+
+    -   **Ownership Check**: The `referral` object is fetched from the database using the `code` from the request.
+    -   **`referredBy` or `redeemedBy` Check**: The system checks if the `referredBy` or `redeemedBy` field of the `referral` object matches the `id` of the authenticated user (`request.locals.user.id`).
+    -   **Forbidden Error**: If the authenticated user is neither the one who referred the code nor the one who redeemed it, a &quot;Forbidden&quot; error is thrown, preventing access to the referral data.
+
+*   **Example: `src/app/api/referrals/[code]/redeem/route.ts`**:
+    This route handler ensures that only the *referrer* (the original person who created the referral code) can redeem it.
+    
+```typescript
+    // src/app/api/referrals/[code]/redeem/route.ts
+    const referral = await prisma.referral.findFirst({
+      where: { code: code, redeemedBy: null },
+      include: { referrer: true },
+    });
+    if (!referral) {
+      throw new Error(&quot;Forbidden&quot;);
+    }
+    if (referral.referrer.id !== request.locals.user.id) {
+      throw new Error(&quot;Forbidden&quot;);
+    }
+    ```
+
+    -   **Redemption Validity Check**: The `referral` object is fetched to check if it has already been redeemed (`redeemedBy: null`).
+    -   **Referrer Check**: The `referrer.id` is compared with `request.locals.user.id` to ensure only the original referrer can redeem the code.
+    -   **Forbidden Error**: If the authenticated user is not the referrer, a &quot;Forbidden&quot; error is thrown, preventing unauthorized redemption.
+
+### Summary:
+
+-   **Middleware/Proxy (`src/app/api/middleware.ts`, `src/lib/proxy.ts`)**: Ensures the request is authenticated by validating a secure `sessionToken`. If invalid or missing, the request is rejected with an &quot;Unauthorized&quot; error.
+-   **DAL Checks (`src/app/api/referrals/route.ts`, `src/app/api/referrals/[code]/redeem/route.ts`)**: After authentication, the system queries the database to verify that the authenticated user has the specific authorization (e.g., ownership of a referral code) to access or modify the resource. If not, a &quot;Forbidden&quot; error is thrown.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how protected routes are enforced by both middleware/proxy checks and DAL checks.          </p>
+          <p class="lt-p">
+Response: Protected routes in the PRFC Connect application are enforced through a multi-layered approach that combines middleware/proxy checks and Data Access Layer (DAL) checks to ensure that only authenticated and authorized users can access specific resources, such as referring an event or viewing a referree&#x27;s details.
+
+### 1. Middleware/Proxy Checks
+
+The first layer of protection is implemented in the middleware and proxy setup, which ensures that only authenticated users (via a valid session token) can even attempt to access protected routes.
+
+*   **Session Validation (src/app/api/referrals/route.ts#L7-L11):**
+    Before any request to the `/api/referrals` endpoint is processed, the system checks if the user is authenticated by verifying the session token stored in the cookie `next-auth.session-token`.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    if (!session) {
+      return NextResponse.json({ error: &quot;Not authorized&quot; }, { status: 403 });
+    }
+    ```
+
+    If the session token is missing or invalid, the user is immediately denied access with a &quot;Not authorized&quot; error (HTTP status 403).
+
+*   **Role-Based Access Control (src/app/api/referrals/route.ts#L13-L15):**
+    Once the user&#x27;s session is validated, the system checks if the user has the necessary role(s) to perform the requested action. For referring an event, the user must have either the &quot;ADMIN&quot; or &quot;USER&quot; role.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    if (session.user.roles.includes(&quot;ADMIN&quot;) || session.user.roles.includes(&quot;USER&quot;)) {
+      // Proceed to handle the request
+    } else {
+      return NextResponse.json({ error: &quot;Forbidden&quot; }, { status: 403 });
+    }
+    ```
+
+    If the user&#x27;s role does not match the allowed roles, they receive a &quot;Forbidden&quot; error (HTTP status 403), indicating they don&#x27;t have permission to perform that action.
+
+### 2. DAL Checks
+
+Even after passing the middleware checks, the application performs Data Access Layer (DAL) checks to ensure that the user has the right to interact with the specific data they are trying to access.
+
+*   **Referree Existence Check (src/app/api/referrals/route.ts#L27-L30):**
+    When retrieving details about a specific referree (e.g., `/api/referrals?userId=123`), the system first checks if a `User` record exists in the database with the provided `userId`.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    const existingUser = await prisma.user.findFirst({
+      where: { id: parseInt(userId) },
+    });
+    if (!existingUser) {
+      return NextResponse.json({ error: &quot;Referree not found&quot; }, { status: 404 });
+    }
+    ```
+
+    If no such user is found, the system returns a &quot;Referree not found&quot; error (HTTP status 404), preventing the exposure of non-existent data.
+
+*   **Ownership Check for Referred Events (src/app/api/referrals/route.ts#L32-L35):**
+    When a user attempts to refer an event, the system checks if the event being referred belongs to the authenticated user. This is crucial to prevent users from referring events they do not own.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    const userEvent = await prisma.event.findFirst({
+      where: { id: parseInt(eventId), creatorUserId: session.user.id },
+    });
+    if (!userEvent) {
+      return NextResponse.json({ error: &quot;You are not the creator of this event&quot; }, { status: 403 });
+    }
+    ```
+
+    If the event is not owned by the authenticated user, they get an error stating &quot;You are not the creator of this event&quot; (HTTP status 403), effectively blocking access to that event&#x27;s referral functionality.
+
+*   **Preventing Duplicate Referrals (src/app/api/referrals/route.ts#L37-L41):**
+    To avoid multiple referrals for the same user-event combination, the system checks if a `Referral` record already exists for the authenticated user, the specified `userId` (the person being referred), and the `eventId`.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    const existingReferral = await prisma.referral.findFirst({
+      where: { creatorUserId: session.user.id, referredUserId: parseInt(userId), eventIds: { has: parseInt(eventId) } },
+    });
+    if (existingReferral) {
+      return NextResponse.json({ error: &quot;You have already referred this user to this event&quot; }, { status: 400 });
+    }
+    ```
+
+    If a duplicate referral is found, a &quot;Bad Request&quot; error (HTTP status 400) is returned, preventing the creation of redundant referral records.
+
+By combining these middleware/proxy checks and DAL checks, the PRFC Connect application ensures that:
+1.  Only authenticated users can access protected routes.
+2.  Only users with the appropriate roles can perform specific actions.
+3.  Users can only interact with data they are authorized to access (e.g., their own events, existing referrees, and preventing duplicate referrals).
+4.  The integrity and consistency of the data are maintained.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how protected routes are enforced by both middleware/proxy checks and DAL checks.          </p>
+          <p class="lt-p">
+Response: Protected routes in the PRFC Connect application are enforced through a two-layered security approach: **middleware/proxy checks** (app/api/middleware/authMiddleware.ts) and **Data Access Layer (DAL) checks** (e.g., src/lib/prfc-connect/db.ts). This ensures that only authenticated and authorized users can access specific resources and perform certain actions.
+
+### 1. Middleware/Proxy Checks (app/api/middleware/authMiddleware.ts)
+
+The primary gatekeeper for accessing protected routes is the `authMiddleware` function, located in `app/api/middleware/authMiddleware.ts`. This middleware is responsible for validating the user&#x27;s session token and ensuring they are authenticated before allowing access to any protected API endpoint.
+
+-   **Token Verification**: The middleware retrieves the `token` from the `cookies` of the incoming request. It then verifies this token against the one stored in the database (via `src/lib/prfc-connect/db.ts`, specifically the `getSession` function) to confirm its validity and prevent tampering.
+-   **Session Existence Check**: If the `token` is missing or has been tampered with, `getSession` will return `null`, indicating an unauthenticated user. In this case, the middleware will throw an `UnauthorizedError`, and the request will be rejected with a `401` HTTP status code.
+-   **Preventing Unauthenticated Access**: This process ensures that only requests originating from authenticated users (those who have successfully logged in) are allowed to proceed further. It acts as the first line of defense, blocking malicious or unauthorized attempts to access protected resources.
+
+### 2. DAL Checks (src/lib/prfc-connect/db.ts and specific endpoint logic)
+
+Once a request passes the `authMiddleware`, the user is authenticated, but their **authorization** to perform a specific action (e.g., retrieving their own referral data) is validated at the Data Access Layer (DAL) within the specific API endpoint&#x27;s database queries.
+
+-   **Session Retrieval**: The `getSession` function (src/lib/prfc-connect/db.ts) is used to fetch the user&#x27;s session details, including their `id`. This `id` is crucial for verifying that the authenticated user is indeed the one requesting the data or performing the action.
+-   **Example: Retrieving Referrals**:
+    - In `src/app/api/referrals/route.ts`, after verifying the user&#x27;s authentication, the system retrieves the `userId` from the session.
+    - When querying the database for referrals (e.g., in `src/app/api/referrals/route.ts`, lines corresponding to fetching all referrals for the user), the `where` clause in the database query enforces that only referrals associated with the authenticated `userId` are returned.
+    - If an attempt is made to access referrals that do not belong to the authenticated user (e.g., trying to retrieve `referrals where referralCode = &quot;INVALID&quot;`), the DAL will return an empty array or `null`, effectively preventing unauthorized access to other users&#x27; referral data.
+-   **Preventing Unauthorized Data Access**: By filtering database queries based on the authenticated `userId`, the DAL ensures that users can only interact with their own referral data. This prevents scenarios where a user might inadvertently or maliciously access data they are not permitted to view or modify.
+
+In summary, the `authMiddleware` ensures the user is who they claim to be (authentication), while the DAL checks ensure they are only permitted to access their own data (authorization). Together, they create a robust security mechanism for protecting sensitive referral information.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how protected routes are enforced by both middleware/proxy checks and DAL checks.          </p>
+          <p class="lt-p">
+Response: Protected routes in the PRFC Connect application are enforced through a two-step process that combines middleware/proxy checks with Database Access Layer (DAL) checks to ensure that only authorized users can access specific resources. This dual-layer security approach helps prevent unauthorized access by verifying the user&#x27;s session at the network level and then validating their permissions against the database.
+
+### 1. Middleware/Proxy Checks (src/app/api/middleware/auth.ts)
+
+The primary mechanism for enforcing access control is the `auth.ts` middleware, which is applied to all protected routes. This middleware performs the following steps:
+
+*   **Session Validation:** It first checks if a `sessionToken` cookie exists in the request. If no `sessionToken` is found, the user is considered unauthenticated, and a `401 Unauthorized` status is returned. This ensures that only users who have successfully logged in can proceed to the next steps.
+    
+```typescript
+    // src/app/api/middleware/auth.ts
+    if (!sessionToken) {
+      return NextResponse.json({ error: &#x27;Unauthorized&#x27; }, { status: 401 });
+    }
+    ```
+
+*   **Database Lookup:** If a `sessionToken` is present, the middleware uses the `UserSessionDAL` to find a matching session in the `UserSession` table. This step is crucial because it verifies that the token is valid and has not expired.
+    
+```typescript
+    // src/app/api/middleware/auth.ts
+    const session = await UserSessionDAL.findByToken(token);
+    ```
+
+*   **Expiration Check:** It then checks if the session has expired by comparing the `expiresAt` timestamp with the current time. If the session is expired, a `401 Unauthorized` status is returned.
+    
+```typescript
+    // src/app/api/middleware/auth.ts
+    if (session?.expiresAt &lt; new Date()) {
+      // Session expired
+      return NextResponse.json({ error: &#x27;Unauthorized&#x27; }, { status: 401 });
+    }
+    ```
+
+*   **Role and Permission Check:** Finally, the middleware retrieves the user associated with the valid session from the `User` table. It then checks if the user has the `ADMIN` role. If the user is not an administrator, a `403 Forbidden` status is returned, indicating that they don&#x27;t have permission to access the protected resource.
+    
+```typescript
+    // src/app/api/middleware/auth.ts
+    if (user?.role !== &#x27;ADMIN&#x27;) {
+      return NextResponse.json({ error: &#x27;Forbidden&#x27; }, { status: 403 });
+    }
+    ```
+
+### 2. DAL Checks (src/prfc-connect/db/models/user-session.ts, src/prfc-connect/db/models/user.ts)
+
+The actual data validation to enforce fine-grained access control occurs within the Data Access Layer. The `UserSessionDAL` and `UserDAL` interact with the `UserSession` and `User` database tables to store and retrieve session tokens and user roles/permissions. These DAL checks are critical for maintaining the integrity of the authentication and authorization process.
+
+*   **UserSessionDAL (`src/prfc-connect/db/models/user-session.ts`):**
+    *   **Token Validation:** This DAL is responsible for finding a `UserSession` record in the database that matches the provided `sessionToken`. It also checks the `expiresAt` timestamp to determine if the session is still valid.
+        
+```typescript
+        // src/prfc-connect/db/models/user-session.ts
+        const session = await prisma.userSession.findUnique({
+          where: { token: token },
+        });
+        ```
+
+*   **UserDAL (`src/prfc-connect/db/models/user.ts`):**
+    *   **Role Retrieval:** Once a valid session is confirmed, the `UserDAL` is used to fetch the `User` object associated with that session. The `role` field of this `User` object determines the user&#x27;s access level (e.g., `ADMIN` vs. `USER`).
+        
+```typescript
+        // src/prfc-connect/db/models/user.ts
+        const user = await prisma.user.findUnique({
+          where: { id: session?.userId },
+        });
+        ```
+
+In summary, the application enforces protected routes by first validating the user&#x27;s session token at the network level using `auth.ts`, and then, assuming the token is valid, it retrieves the user&#x27;s role and permissions from the `UserSession` and `User` tables in the database. If the user is not an administrator, access is denied with a `403 Forbidden` status. This combination of middleware and DAL checks ensures robust security for protected resources.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how protected routes are enforced by both middleware/proxy checks and DAL checks.          </p>
+          <p class="lt-p">
+Response: Protected routes in the PRFC Connect application are enforced through a multi-layered approach that combines middleware/proxy checks and Data Access Layer (DAL) checks to ensure that only authenticated and authorized users can access specific resources.
+
+### 1. Middleware/Proxy Checks
+
+The initial layer of protection is enforced by middleware and proxy checks, which are responsible for authenticating the user and ensuring they have a valid session.
+
+-   **Authentication Check (src/app/api/referrals/route.ts#L8-L11)**:
+    Before any request to the `/api/referrals` endpoint is processed, the system checks if the user is authenticated by verifying the `sessionToken` cookie.
+    ```typescript
+    if (!session) {
+        return NextResponse.json({ error: &quot;Unauthorized&quot; }, { status: 401 });
+    }
+    ```
+    This check is crucial. If the cookie is missing or the token is invalid, the request is rejected with a `401 Unauthorized` status, preventing further processing.
+
+-   **Role-Based Access Control (RBAC) - Proxy Check (src/app/api/referrals/route.ts#L18-L21)**:
+    Even if the user is authenticated, their role must be checked to determine if they have access to create, retrieve, update, or delete (CRUD) referrals.
+    ```typescript
+    if (session.user.role !== &quot;ADMIN&quot; &amp;&amp; !referrerId) {
+        return NextResponse.json({ error: &quot;Forbidden&quot; }, { status: 403 });
+    }
+    ```
+    This logic ensures that:
+    -   *Admins* can create referrals without a specific `referrerId`.
+    -   *Non-admins* can only create referrals if they provide a valid `referrerId`, implying they are the referrer.
+    This acts as a proxy gatekeeper, filtering requests based on the user&#x27;s role and the context of the request (e.g., whether a `referrerId` is provided).
+
+---
+
+### 2. DAL Checks
+
+Beyond the initial proxy checks, the Data Access Layer (DAL) performs additional validations to ensure that the specific data being accessed is indeed owned by the authenticated user or is a protected resource.
+
+-   **Referrer Ownership Check (src/app/api/referrals/route.ts#L29-L33)**:
+    When a non-admin user attempts to create or update a referral, the system checks if the `referrerId` provided belongs to the authenticated user.
+    ```typescript
+    if (session.user.role !== &quot;ADMIN&quot;) {
+        const referrer = await prisma.user.findFirst({
+            where: { id: referrerId, referredBy: session.user.id },
+        });
+        if (!referrer) {
+            return NextResponse.json({ error: &quot;Forbidden&quot; }, { status: 403 });
+        }
+    }
+    ```
+    This query checks two conditions:
+    1.  The `referrerId` exists in the database.
+    2.  The `referredBy` field of that user record matches the authenticated user&#x27;s `id`. This ensures that the authenticated user is indeed the one who referred the `referrerId`.
+
+-   **Update Rejection Based on Referral Status (src/app/api/referrals/route.ts#L37-L41)**:
+    When updating a referral, the system checks the current status of the referral to prevent invalid state transitions.
+    ```typescript
+    const existingReferral = await prisma.referral.findFirst({
+        where: { OR: [{ referredUserId: updateData.referredUserId }, { referrerId: updateData.referrerId }] },
+    });
+    if (existingReferral?.status === &quot;PAID&quot;) {
+        return NextResponse.json({ error: &quot;Referral has already been paid out&quot; }, { status: 400 });
+    }
+    ```
+    This ensures that once a referral is marked as &quot;PAID&quot;, it cannot be updated further, maintaining data integrity.
+
+-   **Deletion Restriction for Paid Referrals (src/app/api/referrals/route.ts#L43-L47)**:
+    Finally, the system prevents the deletion of referrals that have already been paid out.
+    ```typescript
+    const existingReferral = await prisma.referral.findFirst({
+        where: { OR: [{ referredUserId: deleteData.referredUserId }, { referrerId: deleteData.referrerId }] },
+    });
+    if (existingReferral?.status === &quot;PAID&quot;) {
+        return NextResponse.json({ error: &quot;Paid-out referrals cannot be deleted&quot; }, { status: 400 });
+    }
+    ```
+    This check ensures that only unpaid referrals can be deleted, preventing the loss of important financial records.
+
+---
+
+### Summary
+
+The protected routes are enforced through:
+1.  **Middleware/Proxy Checks**: Verifying the user&#x27;s authentication token and their role to ensure they are permitted to perform the requested action.
+2.  **DAL Checks**: Validating that the specific data being accessed (e.g., a referral) is owned by the authenticated user or is in a permitted state (e.g., not paid out).
+
+This layered approach provides robust security, ensuring that users can only interact with resources they are authorized to manage.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+84                </td>
+                <td>
+1004                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+84                </td>
+                <td>
+1133                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+84                </td>
+                <td>
+882                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+84                </td>
+                <td>
+1448                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+84                </td>
+                <td>
+1133                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+84                </td>
+                <td>
+718                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+84                </td>
+                <td>
+952                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+84                </td>
+                <td>
+1070                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the members collection API route (`/api/members`) implemented?          </p>
+          <p class="lt-p">
+Response: The `/api/members` route, which retrieves data for all members, is implemented in `src/app/api/members/route.ts`. This file defines an asynchronous GET handler that queries the `members` collection from the database and returns the results.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/members/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the members collection API route (`/api/members`) implemented?          </p>
+          <p class="lt-p">
+Response: The `/api/members` route, which retrieves the &quot;all members&quot; list, is implemented in **src/app/api/members/route.ts**. This file handles both `GET` and `POST` requests to retrieve and search for members.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/members/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the members collection API route (`/api/members`) implemented?          </p>
+          <p class="lt-p">
+Response: The members collection API route (`/api/members`) is implemented in `src/app/api/members/route.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/members/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the members collection API route (`/api/members`) implemented?          </p>
+          <p class="lt-p">
+Response: The `/api/members` route, which handles CRUD operations for the members collection, is implemented in `src/app/api/members/route.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/members/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the members collection API route (`/api/members`) implemented?          </p>
+          <p class="lt-p">
+Response: The `/api/members` route, which handles requests to the &quot;Members&quot; collection, is implemented in the following files:
+
+*   **src/app/api/members/route.ts**: This file defines the main API route for retrieving all members. It uses the `getAll` function to fetch data from the database and returns the results as a JSON array.
+
+    ```typescript
+    // src/app/api/members/route.ts
+    import { NextRequest, NextResponse } from &quot;next/server&quot;;
+    import { members as getAll } from &quot;@/data/members&quot;;
+
+    export async function GET(request: NextRequest) {
+        const members = await getAll();
+        return NextResponse.json(members, { status: 200 });
+    }
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/members/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the members collection API route (`/api/members`) implemented?          </p>
+          <p class="lt-p">
+Response: The members collection API route (`/api/members`) is implemented in `src/app/api/members/route.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/members/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the members collection API route (`/api/members`) implemented?          </p>
+          <p class="lt-p">
+Response: The `/api/members` route, which handles fetching members from the &quot;members&quot; collection, is implemented in `src/app/api/members/route.ts`. This file contains the logic for retrieving all members and returning them as a JSON array.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/members/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the members collection API route (`/api/members`) implemented?          </p>
+          <p class="lt-p">
+Response: The members collection API route (`/api/members`) is implemented in `src/app/api/members/route.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/members/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+51                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+51                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+25                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+31                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+152                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+25                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+50                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+25                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are Playwright e2e tests configured?          </p>
+          <p class="lt-p">
+Response: The Playwright e2e tests are configured in the following files:
+
+1.  **playwright.config.ts**: This file sets up the general configuration for Playwright, including the test directory, browsers to run tests on, and the reporter.
+    
+```typescript
+    // playwright.config.ts
+    import { defineConfig, devices } from &quot;@playwright/test&quot;;
+
+    export default defineConfig({
+      testDir: &quot;./test/e2e&quot;,
+      /* Run tests in files matching the pattern. */
+      /* For a single file use: testMatch: [&quot;./test/e2e/example.test.ts&quot;] */
+      testMatch: [&quot;**/*.test.ts&quot;],
+      /* Run tests with a single worker process, unless otherwise specified. */
+      workers: 1,
+      /* Reporter to use. See https://playwright.dev/docs/test-reporters */
+      reporter: &quot;html&quot;,
+      /* Configure browsers to run tests on. */
+      use: {
+        /* Launch browsers in headless mode. */
+        headless: true,
+        /* Playwright will attempt to retry tests if they fail due to specific, unstable reasons.
+        /* If you want to disable retries, set `retry: 0`. */
+        /* See https://playwright.dev/docs/test-approaches#test-retries */
+        retry: 0,
+        /* Base URL to use in所有 requests. */
+        baseURL: &quot;http://localhost:3000&quot;,
+      },
+      /* Configure projects for major browsers. */
+      projects: [
+        {
+          name: &quot;chromium&quot;,
+          use: {
+            ...devices[&quot;Desktop Chrome&quot;],
+          },
+        },
+        /* Uncomment below to run the same tests in Firefox. */
+        /* {
+          name: &quot;firefox&quot;,
+          use: {
+            ...devices[&quot;Desktop Firefox&quot;],
+          },
+        }, */
+        /* Uncomment below to run the same tests in Safari.
+        /* Safari technical requirements: https://playwright.dev/docs/browsers#safari-requirements */
+        /* {
+          name: &quot;safari&quot;,
+          use: {
+            ...devices[&quot;Desktop Safari&quot;],
+          },
+        }, */
+      ],
+    });
+    ```
+
+    *   **baseURL**: Points to the local development server (`http://localhost:3000`).
+    *   **testDir**: Specifies the directory where the test files are located (`./test/e2e`).
+    *   **workers**: Sets the number of worker processes (1 in this case).
+    *   **reporter**: Configures the reporter to generate an HTML report.
+    *   **projects**: Defines the browsers (Chromium, Firefox, Safari) to run the tests on. Only Chromium is enabled by default.
+
+2.  **test/e2e/example.test.ts**: This file contains an example test case demonstrating how to perform an e2e test.
+    
+```typescript
+    // test/e2e/example.test.ts
+    import { test, expect, Page, BrowserContext } from &quot;@playwright/test&quot;;
+
+    test.describe(&quot;Example E2E Test&quot;, () =&gt; {
+      let page: Page;
+      let context: BrowserContext;
+
+      // A fresh browser context is created for each test file.
+      test.beforeEach(async ({ page, context }) =&gt; {
+        context = await browser.newContext();
+        page = await context.newPage();
+      });
+
+      test.afterEach(async () =&gt; {
+        // Closing the browser context after each test file.
+        await context.close();
+      });
+
+      test(&quot;should display &#x27;Hello world!&#x27; on the home page&quot;, async () =&gt; {
+        await page.goto(&quot;/&quot;);
+
+        // Expect the page to have the heading &quot;Hello world!&quot;.
+        await expect(page.getByRole(&quot;heading&quot;, { name: &quot;Hello world!&quot; })).toBeVisible();
+      });
+    });
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: playwright.config.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are Playwright e2e tests configured?          </p>
+          <p class="lt-p">
+Response: The Playwright e2e tests are configured in the `playwright.config.ts` file.
+
+**File path:** `playwright.config.ts`          </p>
+          <p class="lt-p">
+Reference Answer: playwright.config.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are Playwright e2e tests configured?          </p>
+          <p class="lt-p">
+Response: The Playwright e2e tests are configured in the following files:
+
+*   **playwright.config.ts**: This file defines the global configuration for Playwright, including the test directories, browsers to run tests on, and reporters.
+
+    *   **Path**: `tests/playwright/playwright.config.ts`
+    
+*   **test-data/user-data.ts**: This file provides sample user data used in the tests, such as admin and member details.
+
+    *   **Path**: `tests/playwright/test-data/user-data.ts`          </p>
+          <p class="lt-p">
+Reference Answer: playwright.config.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are Playwright e2e tests configured?          </p>
+          <p class="lt-p">
+Response: The Playwright e2e tests are configured in the `playwright.config.ts` file located at `dev-playwright/playwright.config.ts`. This file specifies the browsers to launch, the test directories, reporters, and other configurations for running the end-to-end tests.          </p>
+          <p class="lt-p">
+Reference Answer: playwright.config.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are Playwright e2e tests configured?          </p>
+          <p class="lt-p">
+Response: The Playwright e2e tests are configured in the following files:
+
+1.  **`playwright.config.ts`**: This is the main configuration file for Playwright, specifying browsers, devices, and test directories.
+    *   **Path:** `playwright/playwright.config.ts`
+    *   **Relevant content (lines 8-12):**
+        
+```typescript
+        /* browsers to run tests on */
+        browsers: [&#x27;chromium&#x27;, &#x27;firefox&#x27;, &#x27;webkit&#x27;],
+        /* devices to run tests on */
+        devices: [&#x27;iphone-14-pro&#x27;, &#x27;pixel-8&#x27;],
+        /* collect traces for all tests */
+        /* trace: &#x27;on-first-failure&#x27;, */ // change &#x27;off&#x27; to &#x27;on&#x27; for all traces
+        /* timeout for individual tests (can be overridden in test file) */
+        timeout: 30000,
+        /* directories where tests are located (relative to project root) */
+        testDir: &#x27;./tests&#x27;,
+        /* reporters to use */
+        reporter: &#x27;list&#x27;
+        ```
+
+2.  **`tests/example.spec.ts`**: This file demonstrates how to write individual e2e tests, including opening pages, interacting with elements, and asserting outcomes.
+    *   **Path:** `tests/example.spec.ts`
+    *   **Example content (lines 1-12):**
+        
+```typescript
+        import { test, expect, Page } from &#x27;@playwright/test&#x27;;
+
+        test(&#x27;example test&#x27;, async ({ page }) =&gt; {
+            // Open the login page
+            await page.goto(&#x27;/&#x27;);
+
+            // Fill the email input
+            await page.fill(&#x27;input[placeholder=&quot;Email&quot;]&#x27;, &#x27;test@example.com&#x27;);
+
+            // Fill the password input
+            await page.fill(&#x27;input[placeholder=&quot;Password&quot;]&#x27;, &#x27;password&#x27;);
+
+            // Click the login button
+            await page.click(&#x27;button[type=&quot;submit&quot;]&#x27;);
+
+            // Assert that the URL has changed to /dashboard
+            await expect(page).toHaveURL(&#x27;/dashboard&#x27;);
+
+            // Assert that the heading on the dashboard is visible
+            await expect(page.locator(&#x27;h1&#x27;)).toContainText(&#x27;Referrals&#x27;);
+        });
+        ```          </p>
+          <p class="lt-p">
+Reference Answer: playwright.config.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are Playwright e2e tests configured?          </p>
+          <p class="lt-p">
+Response: The Playwright e2e tests are configured in the following files:
+
+*   **`playwright.config.ts`**: This file specifies the browsers to launch, the test paths (glob patterns to locate all `.spec.ts` files), and the reporter configuration. It also sets the environment variable `NEXT_PUBLIC_BACKEND_URL` to `http://localhost:3000` for the tests.
+    
+```typescript
+    // playwright.config.ts
+    import { defineConfig } from &quot;@playwright/test&quot;;
+
+    export default defineConfig({
+      /* Configure browsers to launch. */
+      browsers: [&quot;chromium&quot;],
+      /* Configure projects for major browsers. */
+      projects: [
+        {
+          name: &quot;chromium&quot;,
+          use: { ...devices[&quot;Desktop Chrome&quot;] },
+        },
+      ],
+      /* Run all tests in the `e2e` directory. */
+      testDir: &quot;e2e&quot;,
+      /* Run tests in files matching the pattern `*.spec.ts` (or `*.test.ts`). */
+      testMatch: [&quot;**/+(*_test_|_test_|_spec_)\.+(ts|js)x?($|\\.)&quot;],
+      /* Reporter to use. See https://playwright.dev/docs/configuration-reporters. */
+      reporter: &quot;html&quot;,
+      /* Output the report file. */
+      outputFolder: &quot;playwright-report&quot;,
+      /* Environment variable to set for the tests. */
+      env: {
+        NEXT_PUBLIC_BACKEND_URL: &quot;http://localhost:3000&quot;,
+      },
+    });
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: playwright.config.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are Playwright e2e tests configured?          </p>
+          <p class="lt-p">
+Response: The Playwright e2e tests are configured in the following files:
+
+*   **`playwright.config.ts`**: This is the main configuration file for Playwright, specifying the test directories, browsers to run tests on, and other global settings.
+
+    *   **Path**: `playwright/playwright.config.ts`
+    *   **Description**: It uses `testDir: src/app/test/e2e` to point to the directory containing the actual test files and `projects` to define that tests should run in `chromium` and `firefox` browsers.
+
+*   **`src/app/test/e2e/fixtures/fixtures.ts`**: This file provides mock data for the tests, such as a sample user, a referral code, and some referral data. This data is injected into the database before each test to ensure a consistent environment.
+
+    *   **Path**: `src/app/test/e2e/fixtures/fixtures.ts`
+    *   **Description**: The `beforeEach` hook in `src/app/test/e2e/fixtures/fixtures.ts` truncates the `prfc_referral_codes` and `prfc_referrals` tables and inserts the mock data.
+
+*   **`src/app/test/e2e/lib/db.ts`**: This file handles the database connection for the tests. It starts a Prisma transaction, which is rolled back after each test to keep the database clean.
+
+    *   **Path**: `src/app/test/e2e/lib/db.ts`
+    *   **Description**: The `beforeEach` and `afterEach` hooks in this file ensure that each test runs in isolation with a fresh database state.
+
+*   **`src/app/test/e2e/lib/utils.ts`**: This file contains utility functions for the tests, including:
+    *   `api` (line 7): A function to make POST requests to the `/api/referrals` endpoint, sending a referral code and a referral&#x27;s details.
+    *   `generateReferralCode` (lines 13-19): A function that generates a unique referral code using UUIDs and a prefix &quot;REF_&quot;.
+
+    *   **Path**: `src/app/test/e2e/lib/utils.ts`
+    *   **Description**: These utilities simplify the process of creating and validating referrals within the tests.
+
+In summary, the e2e tests are configured through `playwright.config.ts`, `fixtures.ts`, `db.ts`, and `utils.ts` to ensure a consistent, isolated, and realistic testing environment for the PRFC Connect application.          </p>
+          <p class="lt-p">
+Reference Answer: playwright.config.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are Playwright e2e tests configured?          </p>
+          <p class="lt-p">
+Response: The Playwright e2e tests are configured in the following files:
+
+*   **`playwright.config.ts`**: This file specifies the global configuration for Playwright, including the test directory, browser launch options, and reporting settings. It also imports specific configurations from `test-web.config.ts` (for web tests) and `test-db.config.ts` (for database tests).  
+    *   **Path**: `playwright/playwright.config.ts`
+
+*   **`test-web.config.ts`**: This file configures the specific settings for web browser tests, such as the viewport size and the base URL of the application.  
+    *   **Path**: `playwright/test-web.config.ts`
+
+*   **`test-db.config.ts`**: This file configures the settings for database (prisma) tests, including the test database URL.  
+    *   **Path**: `playwright/test-db.config.ts`          </p>
+          <p class="lt-p">
+Reference Answer: playwright.config.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+766                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+30                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+106                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+55                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+440                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+314                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+513                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+187                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

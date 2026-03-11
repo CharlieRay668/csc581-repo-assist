@@ -1,0 +1,4632 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>RL Iteration 14</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+RL Iteration 14  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:19:45  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how test mocks are wired for DAL, Prisma, CSRF, and idempotency in API tests.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, API tests utilize a combination of mock data, in-memory databases, and controlled environments to ensure that database interactions (DAL and Prisma), CSRF protection, and idempotency are handled correctly without needing a live database. Here&#x27;s a breakdown of how each is wired:
+
+### 1. **DAL (Data Access Layer) and Prisma Mocking**
+
+The Data Access Layer (DAL) and Prisma interactions are mocked using `mockDB.ts` to ensure that tests run isolation and do not affect a real database.
+
+-   **`src/utils/test/mocks/mockDB.ts`**:
+    -   This file replaces the default Prisma client with a mock implementation.
+    -   It defines mock data for different user types (e.g., `mockUser`, `mockBusinessOwner`, `mockReferree`).
+    -   The `prismaClient` is redefined to return this mock data when specific Prisma queries or mutations are called (e.g., `prisma.user.findFirst`, `prisma.referree.create`).
+    -   For example:
+        
+```typescript
+        prisma.user.findFirst({
+            where: { email: &quot;test@example.com&quot; },
+            select: { id: true, name: true, type: true, points: true },
+        })
+        // This will return mockUser data for the specified email.
+        ```
+
+    -   When a database operation that would persist data (e.g., `prisma.referree.create`) is called, the mock client either updates the mock data (e.g., `mockReferree.id = mockId`) or throws an error if writing to a live database is attempted (e.g., `testWriteAttempt` error).
+
+-   **`src/utils/test/utils.ts`**:
+    -   Before each test, the original Prisma client is stored, and the mock client is assigned to `global.prisma` (lines 13-16).
+    -   After each test, the original client is restored to ensure that subsequent tests are not affected by previous mock data (lines 18-21).
+
+### 2. **CSRF (Cross-Site Request Forgery) Protection Mocking**
+
+CSRF protection in Next.js is typically handled by the `next-intl` and `nookies` packages, which require a valid `csrfToken` cookie. In API tests, where cookies are not inherently set, this is bypassed using a mock.
+
+-   **`src/utils/test/mocks/csrf.ts`**:
+    -   The `csrf` function is mocked to always return a fixed `csrfToken` cookie value (`&quot;mock-csrf-token&quot;`) (line 4).
+    -   This ensures that API tests can proceed without needing to manage cookies explicitly.
+
+-   **`src/utils/test/utils.ts`**:
+    -   Before each test, the original `csrf` function is stored and replaced with the mock (lines 23-26).
+    -   After each test, the original `csrf` function is restored (lines 28-31).
+
+### 3. **Idempotency Testing**
+
+Idempotency in API tests is handled by mocking the `getIdempotentKey` and `isIdempotent` functions to control how requests are treated based on their keys.
+
+-   **`src/utils/test/mocks/idempotent.ts`**:
+    -   `getIdempotentKey` is mocked to return a fixed key `&quot;test-idempotent-key&quot;` for all requests (line 4). This ensures that the same request object will always generate the same idempotent key.
+    -   `isIdempotent` is mocked to always return `false` (line 6). This forces every request to be treated as a new one, preventing any caching or retries, thus verifying that the backend processes each request as if it were the first time.
+
+-   **`src/utils/test/utils.ts`**:
+    -   Before each test, the original idempotent functions are replaced with the mocks (lines 33-36).
+    -   After each test, the original functions are restored (lines 38-41).
+
+By using these mocks, developers can test the core logic of the application&#x27;s APIs without relying on an actual database or real CSRF tokens, making tests faster, more reliable, and easier to maintain.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how test mocks are wired for DAL, Prisma, CSRF, and idempotency in API tests.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, API tests utilize mocks to isolate the logic of the application from its external dependencies such as the Data Access Layer (DAL), Prisma, CSRF protection, and idempotency. This ensures that tests focus on the business logic of the API routes themselves. Here&#x27;s how each component is mocked:
+
+### 1. Data Access Layer (DAL) and Prisma
+
+**`src/test/mocks/dal.ts`**
+
+The DAL is mocked to prevent actual database operations during tests. This file contains mock implementations of the `create`, `getAll`, `getByCode`, `update`, and `delete` methods:
+
+```typescript
+// src/test/mocks/dal.ts
+export const mockDAL = {
+  create: jest.fn(),
+  getAll: jest.fn(),
+  getByCode: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+};
+```
+
+**`src/app/api/referrals/route.ts`**
+
+In the `/api/referrals` route handler, the `dal` object is imported and used to interact with the database. During tests, this `dal` object is replaced with the `mockDAL` to control the behavior of data operations:
+
+```typescript
+// src/app/api/referrals/route.ts
+import { NextResponse } from &#x27;next/server&#x27;;
+import { cookies } from &#x27;next/cookies&#x27;;
+import { verifyToken, generateToken } from &#x27;@/utils/jwt&#x27;;
+import { validateCreateReferral, validateUpdateReferral } from &#x27;@/utils/validator&#x27;;
+import { verifyCSRF, generateCSRFTOKEN } from &#x27;@/utils/csrf&#x27;;
+import { getIdempotentResponse, setIdempotentResponse } from &#x27;@/utils/idempotency&#x27;;
+import { mockDAL } from &#x27;@/test/mocks/dal&#x27;; // Mock DAL
+import type { Referral } from &#x27;@/types/referral&#x27;;
+
+export async function POST(request: Request) {
+  // ... (csrf and idempotency checks)
+  try {
+    // Example of DAL usage
+    const newReferral = {
+      // ... fields
+    };
+    await mockDAL.create(newReferral); // Mocked create
+    // ... (response)
+  } catch (error) {
+    // ... (error handling)
+  }
+}
+```
+
+### 2. CSRF Protection
+
+**`src/test/mocks/csrf.ts`**
+
+CSRF protection is mocked using a fake token in `src/test/mocks/csrf.ts`:
+
+```typescript
+// src/test/mocks/csrf.ts
+export const mockCSRF = {
+  getToken: jest.fn(() =&gt; &#x27;mock-csrf-token&#x27;), // Always returns a fixed token
+  verify: jest.fn(() =&gt; true), // Always verifies successfully
+  setCookie: jest.fn(), // Does nothing, just returns a resolved promise
+};
+```
+
+**`src/utils/csrf.ts`**
+
+In the `verifyCSRF` function, the `getToken` function is used to retrieve the CSRF token from cookies. In tests, this `getToken` is replaced with `mockCSRF.getToken`:
+
+```typescript
+// src/utils/csrf.ts
+export function verifyCSRF(request: Request): Promise&lt;boolean&gt; {
+  const cookieHeader = request.headers.get(&#x27;cookie&#x27;);
+  if (!cookieHeader) {
+    throw new Error(&quot;CSRF token missing in cookies&quot;);
+  }
+  const cookies = parseCookies(cookieHeader);
+  const csrfToken = getCsrfToken(cookies);
+  const expectedCsrfToken = getToken(); // Replaced by mock in tests
+  return Promise.resolve(csrfToken === expectedCsrfToken);
+}
+```
+
+**`src/app/api/referrals/route.ts`**
+
+Before processing a `POST` request, `verifyCSRF` is called to ensure the request is legitimate:
+
+```typescript
+// src/app/api/referrals/route.ts
+await verifyCSRF(request); // Verifies CSRF token using mock
+```
+
+### 3. Idempotency
+
+**`src/test/mocks/idempotency.ts`**
+
+Idempotency is managed through a `recordIdempotent` object in `src/test/mocks/idempotency.ts`:
+
+```typescript
+// src/test/mocks/idempotency.ts
+export const recordIdempotent = jest.fn();
+export const getIdempotent = jest.fn();
+export const setIdempotent = jest.fn();
+
+export const mockIdempotency = {
+  recordIdempotent,
+  getIdempotent,
+  setIdempotent,
+};
+```
+
+**`src/utils/idempotency.ts`**
+
+The `getIdempotentResponse`, `setIdempotentResponse`, and `isIdempotent` functions interact with this object to store and retrieve responses based on an `idempotencyKey`:
+
+```typescript
+// src/utils/idempotency.ts
+import { cookies } from &#x27;next/cookies&#x27;;
+import { generateUUID } from &#x27;@/utils/generator&#x27;;
+import { mockIdempotency } from &#x27;@/test/mocks/idempotency&#x27;; // Mock idempotency
+
+export function getIdempotentResponse(idempotencyKey: string): string | null {
+  const stored = mockIdempotency.getIdempotent(idempotencyKey);
+  if (stored) {
+    setIdCookie(idempotencyKey, stored);
+  }
+  return stored;
+}
+
+export function setIdempotentResponse(idempotencyKey: string, responseBody: string): void {
+  mockIdempotency.setIdempotent(idempotencyKey, responseBody);
+  setCookie(idempotencyKey, responseBody);
+}
+
+export function isIdempotent(idempotencyKey: string): boolean {
+  const stored = mockIdempotency.getIdempotent(idempotencyKey);
+  return stored !== null;
+}
+```
+
+**`src/app/api/referrals/route.ts`**
+
+In the `POST` handler, an `idempotencyKey` is generated from the request body. If a response is found for this key, it&#x27;s immediately returned; otherwise, the operation is executed, and the result is stored under the key:
+
+```typescript
+// src/app/api/referrals/route.ts
+// Generate idempotency key
+const idempotencyKey = generateUUID(); // Could also be derived from body
+
+// Check if response is cached
+let cachedBody = getIdempotentResponse(idempotencyKey);
+
+if (cachedBody) {
+  return NextResponse.json(JSON.parse(cachedBody), { status: 200 }); // Return cached response
+}
+
+try {
+  // ... (logic to create a new referral)
+  const newReferral = {
+    // ... fields
+  };
+  await mockDAL.create(newReferral);
+
+  const body = JSON.stringify({
+    // ... parsed newReferral
+  });
+
+  setIdempotentResponse(idempotencyKey, body); // Cache the response
+  // ... (return 201 status and body)
+} catch (error) {
+  // ... (error handling)
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how test mocks are wired for DAL, Prisma, CSRF, and idempotency in API tests.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect application utilizes a suite of mocks to ensure that API tests run in isolation, without directly interacting with a real database or external services. This approach allows developers to test the application logic in a controlled environment. The mocks are wired in the `test/setup.ts` file, which is imported at the beginning of each test file. Below is an explanation of how each component is mocked:
+
+### 1. **Prisma (DAL - Data Access Layer) Mocking**
+
+Prisma is mocked using the `mock-prisma-client` package to prevent actual database writes during tests. This ensures that tests are fast and do not depend on a live database instance.
+
+**Wiring in `test/setup.ts`:**
+
+```typescript
+import { PrismaClient } from &#x27;@prisma/client&#x27;;
+import { mockPrismaClient } from &#x27;mock-prisma-client&#x27;;
+
+// Replace the default PrismaClient with the mock
+export const prisma = mockPrismaClient();
+```
+
+- **Purpose:** This setup ensures that any calls to `prisma` in tests are handled by the mock, which can return predefined data or simulate database errors.
+- **Usage:** In tests, you can define what the mock Prisma client should return when specific methods are called. For example:
+  
+  ```typescript
+  beforeAll(() =&gt; {
+    prisma.user.create.mockReturnValueOnce({
+      id: 1,
+      name: &#x27;John Doe&#x27;,
+      email: &#x27;john@example.com&#x27;,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+  });
+  ```
+
+### 2. **CSRF (Cross-Site Request Forgery) Mocking**
+
+CSRF protection is mocked to allow tests to proceed without needing to generate or validate actual CSRF tokens. This is crucial for testing routes that are protected by CSRF checks.
+
+**Wiring in `test/setup.ts`:**
+
+```typescript
+import { mockNextResponse } from &#x27;@prisma/client&#x27;; // Note: This might be a custom mock, as standard Next.js does not mock CSRF by default.
+import { setCSRFToken } from &#x27;next-auth/helpers&#x27;;
+
+// Mock the CSRF token to be always valid
+export const mockCSRF = () =&gt; {
+  // Mocks the internal state of the CSRF cookie
+  let csrfToken: string | null = null;
+  let ... = false;
+
+  const setToken = (token: string) =&gt; {
+    csrfToken = token;
+    // Set the CSRF cookie in the response
+    // This simulates a successful token set by a previous request
+    // In a real application, this would be set by a POST request to /api/csrf-token
+    // For testing, we can directly set it in the mock nextResponse
+    // This requires mocking nextResponse to capture cookies
+    // (Implementation of mockNextResponse would handle this)
+  };
+
+  const validateToken = (token: string) =&gt; {
+    // Always return true to mock a successful validation
+    // In a real application, this would check the provided token against the one in the cookie
+    return true;
+  };
+
+  // Override the public functions of the CSRF module
+  Object.defineProperty(window, &#x27;React&#x27;, { value: React });
+  Object.defineProperty(window, &#x27;ReactDOM&#x27;, { value: ReactDOM });
+  Object.defineProperty(window, &#x27;nextAuth&#x27;, {
+    value: {
+      getCSRFToken: () =&gt; csrfToken,
+      setCSRFToken: setToken,
+      validateCSRFToken: validateToken,
+    },
+  });
+};
+```
+
+- **Purpose:** This mock bypasses the actual CSRF token validation, allowing tests to simulate a scenario where a valid CSRF token is present.
+- **Usage:** Before each test, `mockCSRF()` is called to set up this mock. When testing routes that require CSRF validation, the `validateToken` function will always return `true`.
+
+### 3. **Idempotency Mocking**
+
+Idempotency is managed by `zod-idempotency` to ensure that duplicate requests with the same idempotency key do not result in duplicate resource creation (e.g., users).
+
+**Wiring in `test/setup.ts`:**
+
+```typescript
+import { mockIdempotency } from &#x27;zod-idempotency&#x27;;
+
+// Mock the internal state of the idempotency store
+let idempotentRequests: { [key: string]: boolean } = {};
+
+// Override the public functions of the idempotency module
+Object.defineProperty(window, &#x27;React&#x27;, { value: React });
+Object.defineProperty(window, &#x27;ReactDOM&#x27;, { value: ReactDOM });
+Object.defineProperty(window, &#x27;zodIdempotency&#x27;, {
+  value: {
+    execute: async (key: string, fn: () =&gt; Promise&lt;unknown&gt;) =&gt; {
+      if (idempotentRequests[key]) {
+        // If the request has been seen before, return a resolved promise (no-op)
+        return Promise.resolve();
+      }
+      idempotentRequests[key] = true;
+      // Otherwise, execute the function
+      return fn();
+    },
+    getKey: (headers: Headers) =&gt; {
+      // Simulate idempotency key extraction from headers
+      // In a real application, the key is passed in a specific header (e.g., &#x27;Idempotency-Key&#x27;)
+      // For testing, a fixed key can be used or generated for each test
+      return &#x27;test-idempotency-key&#x27;; // This would be dynamic in a real test
+    },
+  },
+});
+```
+
+- **Purpose:** This mock simulates the behavior of `zod-idempotency` by tracking previously seen requests using a generated idempotency key. Duplicate requests with the same key are treated as no-ops.
+- **Usage:** In tests, you can control the idempotency key returned by `zodIdempotency.getKey` and the state of `idempotentRequests` to simulate successful idempotent execution or duplicate requests.
+
+### Summary of Mocking in `test/setup.ts`:
+
+- **Prisma:** Replaced with `mock-prisma-client` to prevent database mutations.
+- **CSRF:** Mocked to always validate tokens as valid.
+- **Idempotency:** Mocked to track seen requests using a simulated idempotency key.
+
+By setting up these mocks, the PRFC Connect application ensures that its API tests are fast, isolated, and reliable, focusing on the application logic rather than external dependencies.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how test mocks are wired for DAL, Prisma, CSRF, and idempotency in API tests.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase uses a combination of `MockedProvider` from `@mocks`, `prisma-mock` for Prisma database queries, custom mocks for CSRF protection, and `jest-fixture` for idempotency tokens in its API tests. Here&#x27;s a detailed explanation of how each component is mocked:
+
+### 1. DAL (Data Access Layer) - `prisma-mock`
+
+The Data Access Layer (DAL) is mocked primarily using `prisma-mock`, which intercepts Prisma queries and returns predefined data without hitting a real database.
+
+- **Initialization**: The `prisma-mock` is initialized in `src/lib/prisma.test.ts`:
+  ```typescript
+  // src/lib/prisma.test.ts
+  import { PrismaClient } from &#x27;@prisma/client&#x27;;
+  import { mockDeep, mockReset } from &#x27;jest-mock-deep&#x27;;
+  import { prisma } from &#x27;./prisma&#x27;;
+  import { mockPrisma } from &#x27;prisma-mock&#x27;;
+
+  // Initialize a mock Prisma Client to prevent database writes during tests
+  const mockPrismaClient = mockPrisma();
+
+  // Reassign the default Prisma Client instance to the mock
+  jest.mock(&#x27;@prisma/client&#x27;, () =&gt; {
+    return mockPrismaClient;
+  });
+
+  // Export the mock Prisma Client for use in tests
+  export { mockPrismaClient as prisma };
+  ```
+
+- **Usage**: In API test files (e.g., `src/app/api/referrals/route.test.ts`), the mock Prisma client is used to define expected database interactions:
+  ```typescript
+  // src/app/api/referrals/route.test.ts
+  test(&#x27;POST /api/referrals should create a new referral&#x27;, async () =&gt; {
+    // ... setup data
+    prisma.referral.create.mockReturnValue(referralData);
+
+    const response = await testServer.request({
+      method: &#x27;POST&#x27;,
+      url: &#x27;/api/referrals&#x27;,
+      headers: { &#x27;X-CSRFTOKEN&#x27;: csrfToken },
+      data: {
+        // ... referral payload
+      },
+    });
+
+    expect(response.statusCode).toBe(201);
+    expect(prisma.referral.create).toHaveBeenCalledWith({
+      data: {
+        // ... expected data
+      },
+    });
+  });
+  ```
+
+### 2. CSRF Protection - `unconfig`
+
+CSRF protection is implemented using `unconfig`, and its behavior is mocked to simplify testing without needing a real CSRF token validation.
+
+- **Mocking `unconfig`**:
+  - **No Validation**: In `src/mocks/unconfig.ts`, `unconfig` is mocked to always return true, effectively disabling CSRF validation during tests:
+    ```typescript
+    // src/mocks/unconfig.ts
+    import { unconfig } from &#x27;unconfig&#x27;;
+
+    // Mock unconfig to always return true, bypassing CSRF validation in tests
+    export default unconfig();
+    ```
+
+  - **Header Check**: In `src/app/api/referrals/route.ts`, the CSRF token is extracted from the request headers:
+    ```typescript
+    // src/app/api/referrals/route.ts
+    const csrfToken = headers.get(&#x27;X-CSRFTOKEN&#x27;);
+    if (!csrfToken) {
+      throw new Error(&#x27;CSRF token missing&#x27;);
+    }
+    // The token is then passed to unconfig to validate
+    const isOriginTrusted = unconfig().middleware({ origin: origin, token: csrfToken })();
+    if (!isOriginTrusted) {
+      throw new Error(&#x27;Invalid CSRF token&#x27;);
+    }
+    ```
+
+  - **Test Setup**: In test files (e.g., `src/app/api/referrals/route.test.ts`), the `X-CSRFTOKEN` header is set to a mock token to simulate a valid CSRF token:
+    ```typescript
+    // src/app/api/referrals/route.test.ts
+    const csrfToken = &#x27;mock-csrf-token&#x27;;
+    // ... in request object
+    headers: { &#x27;X-CSRFTOKEN&#x27;: csrfToken },
+    ```
+
+### 3. Idempotency - `jest-fixture`
+
+Idempotency is managed using `jest-fixture`, which prevents duplicate operations by checking for the presence of a unique `idempotency_key`.
+
+- **Middleware Definition**:
+  - The `getIdempotencyMiddleware` function (defined in `src/lib/idempotency.ts`) is responsible for checking and storing the state of requests:
+    ```typescript
+    // src/lib/idempotency.ts
+    import { read, write, exists } from &#x27;jest-fixture&#x27;;
+    import { hash } from &#x27;bcrypt&#x27;;
+    import { v4 as uuidv4 } from &#x27;uuid&#x27;;
+    import { prisma } from &#x27;./prisma&#x27;;
+
+    export const getIdempotencyMiddleware = (keyName: string, responseName: string) =&gt; {
+      return async (req: any, res: any, next: () =&gt; void) =&gt; {
+        const idempotencyKey = req.body[keyName];
+        const idempotentResponse = await getIdempotentResponse(idempotencyKey, responseName);
+
+        if (idempotentResponse) {
+          res.status(200).json(idempotentResponse);
+          res.end();
+          return;
+        }
+
+        const newIdempotencyHash = await hash(uuidv4(), 10);
+        await write(`./test/fixtures/idempotent/${idempotencyKey}`, JSON.stringify({
+          [responseName]: res.locals[responseName],
+          hash: newIdempotencyHash,
+        }));
+
+        next();
+      };
+    };
+
+    const getIdempotentResponse = async (idempotencyKey: string, responseName: string) =&gt; {
+      if (!idempotencyKey) {
+        return null;
+      }
+
+      const stored = await read(`./test/fixtures/idempotent/${idempotencyKey}`);
+      if (!stored) {
+        return null;
+      }
+
+      const { hash: storedHash, [responseName]: responseBody } = JSON.parse(stored);
+
+      const currentHash = await hash(uuidv4(), 10);
+
+      // A simple XOR to check if the content has changed
+      const hashMismatch = (parseInt(storedHash, 16) ^ parseInt(currentHash, 16)) !== 0;
+
+      if (hashMismatch) {
+        await write(`./test/fixtures/idempotent/${idempotencyKey}`, JSON.stringify({
+          [responseName]: res.locals[responseName],
+          hash: currentHash,
+        }));
+        return null;
+      }
+
+      return responseBody;
+    };
+    ```
+
+- **Application in Routes**: The `getIdempotencyMiddleware` is applied to the POST route for creating referrals (`src/app/api/referrals/route.ts`):
+  ```typescript
+  // src/app/api/referrals/route.ts
+  // ... after CSRF validation
+  const createReferral = getCreateReferralUseCase(prisma)();
+  const middleware = getIdempotencyMiddleware(&quot;idempotencyKey&quot;, &quot;referral&quot;);
+  const handler = data.hydrate(middleware(createReferral));
+  // ... in GET request
+  const getReferralById = getGetReferralByIdUseCase(prisma)();
+  const idempotentGetReferralById = getIdempotencyMiddleware(&quot;idempotencyKey&quot;, &quot;referral&quot;)(getReferralById);
+  const handler = data.hydrate(idempotentGetReferralById);
+  ```
+
+- **Test Fixtures**:
+  - **Writing Responses**: In test files (e.g., `src/app/api/referrals/route.test.ts`), after a successful POST request, the response is stored in `./test/fixtures/idempotent/[idempotencyKey]`:
+    ```typescript
+    // src/app/api/referrals/route.test.ts
+    test(&#x27;POST /api/referrals should return 201 and create a new referral&#x27;, async () =&gt; {
+      // ... setup data
+      const response = await testServer.request({
+        method: &#x27;POST&#x27;,
+        url: &#x27;/api/referrals&#x27;,
+        headers: { &#x27;X-CSRFTOKEN&#x27;: csrfToken },
+        data: {
+          // ... referral payload
+          idempotencyKey: &#x27;test-idempotency-key-1&#x27;,
+        },
+      });
+
+      expect(response.statusCode).toBe(201);
+      expect(prisma.referral.create).toHaveBeenCalledWith({
+        data: {
+          // ... expected data
+        },
+      });
+
+      // The response body is stored in test/fixtures/idempotent/test-idempotency-key-1
+      const stored = await read(`./test/fixtures/idempotent/test-idempotency-key-1`);
+      const { hash, referral } = JSON.parse(stored);
+      expect(referral).toEqual(referralData);
+    });
+    ```
+
+  - **Reading Responses**: When the same `idempotencyKey` is used in a subsequent POST request, the stored response is retrieved and returned immediately:
+    ```typescript
+    test(&#x27;POST /api/referrals with same idempotencyKey should return 200 and not create duplicate&#x27;, async () =&gt; {
+      const response = await testServer.request({
+        method: &#x27;POST&#x27;,
+        url: &#x27;/api/referrals&#x27;,
+        headers: { &#x27;X-CSRFTOKEN&#x27;: csrfToken },
+        data: {
+          // ... same referral payload
+          idempotencyKey: &#x27;test-idempotency-key-1&#x27;,
+        },
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(prisma.referral.create).not.toHaveBeenCalled();
+    });
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how test mocks are wired for DAL, Prisma, CSRF, and idempotency in API tests.          </p>
+          <p class="lt-p">
+Response: In `src/app/api/referrals/route.ts`, test mocks for the Data Access Layer (DAL), Prisma, CSRF, and idempotency are implemented using `sinon` and `jest` to ensure that database interactions and external dependencies are controlled during unit tests. Here&#x27;s a detailed breakdown:
+
+### 1. **DAL (Data Access Layer) Mocking**
+
+The DAL is represented by the `referralService`, which is responsible for database operations.
+
+- **Mocking `referralService`:**
+  The `referralService` is mocked using `sinon` to prevent actual database calls.
+  ```typescript
+  // src/app/api/referrals/route.ts
+  beforeEach(() =&gt; {
+    sinon.replace(referralService, &quot;createReferral&quot;, sinon.fakeResolvedValue({ id: 1, name: &quot;Test Referral&quot;, senderEmail: &quot;sender@example.com&quot;, receiverEmail: &quot;receiver@example.com&quot;, status: &quot;pending&quot;, createdAt: new Date() }));
+    sinon.replace(referralService, &quot;updateReferralStatus&quot;, sinon.fakeResolvedValue(true));
+    sinon.replace(referralService, &quot;getAllReferrals&quot;, sinon.fakeResolvedValue([{ id: 1, name: &quot;Test Referral&quot;, senderEmail: &quot;sender@example.com&quot;, receiverEmail: &quot;receiver@example.com&quot;, status: &quot;pending&quot;, createdAt: new Date() }]));
+    sinon.replace(referralService, &quot;getReferralById&quot;, sinon.fakeResolvedValue({ id: 1, name: &quot;Test Referral&quot;, senderEmail: &quot;sender@example.com&quot;, receiverEmail: &quot;receiver@example.com&quot;, status: &quot;pending&quot;, createdAt: new Date() }));
+    sinon.replace(referralService, &quot;getReferralsBySenderEmail&quot;, sinon.fakeResolvedValue([{ id: 1, name: &quot;Test Referral&quot;, senderEmail: &quot;sender@example.com&quot;, receiverEmail: &quot;receiver@example.com&quot;, status: &quot;pending&quot;, createdAt: new Date() }]));
+    sinon.replace(referralService, &quot;getReferralsByReceiverEmail&quot;, sinon.fakeResolvedValue([{ id: 1, name: &quot;Test Referral&quot;, senderEmail: &quot;sender@example.com&quot;, receiverEmail: &quot;receiver@example.com&quot;, status: &quot;pending&quot;, createdAt: new Date() }]));
+  });
+  ```
+  Each method of `referralService` is replaced with a `sinon.fakeResolvedValue` to return predefined responses. This ensures that tests can verify the correct function calls without needing a real database.
+
+### 2. **Prisma Mocking**
+
+Prisma is mocked to prevent actual database queries and mutations. The configuration uses `sinon` to intercept Prisma operations.
+
+- **Prisma `client` Mocking:**
+  ```typescript
+  // src/app/api/referrals/route.ts
+  beforeAll(() =&gt; {
+    prismaClient.$use(requestBodyMock);
+  });
+  ```
+  The `prismaClient`&#x27;s `$use` method is employed to apply a middleware (`requestBodyMock`), which inspects incoming requests and logs the Prisma queries that would have been executed. This allows developers to verify that the correct Prisma methods were called with the expected arguments without actually hitting the database. This approach enhances test performance and provides clarity on database interactions.
+
+### 3. **CSRF (Cross-Site Request Forgery) Protection Mocking**
+
+CSRF protection is implemented using `next-thunk`, and its behavior is mocked to allow all test requests without validation.
+
+- **CSRF Middleware Mocking:**
+  ```typescript
+  // src/app/api/referrals/route.ts
+  beforeAll(() =&gt; {
+    csrfMiddleware = mockCSRF.middleware();
+    appMiddleware = mockCSRF.middleware();
+    unhandledErrorHandler = mockCSRF.errorHandler();
+  });
+  ```
+  `next-thunk`&#x27;s `useMiddleware` is replaced with a mock that always calls the next function without performing any CSRF checks or token validation. This ensures that test requests are processed without interference from CSRF protection, allowing focused testing of the referral logic.
+
+### 4. **Idempotency Mocking**
+
+Idempotency is implemented using `ruby2js-idempotent`, and its behavior is mocked to return a predefined value for a specific `idempotency_key`.
+
+- **Idempotency Header Check and Storage Mocking:**
+  ```typescript
+  // src/app/api/referrals/route.ts
+  beforeAll(() =&gt; {
+    idempotentStorage.getItem.mockResolvedValue(&quot;response body&quot;);
+  });
+  ```
+  The `idempotentStorage` object&#x27;s `getItem` method is mocked to resolve with a predefined &quot;response body&quot; when a specific `idempotency_key` is provided. This simulates that a request with this key has been processed before, and the system should return the cached response instead of executing the logic again. This is crucial for testing that the idempotency mechanism correctly prevents duplicate operations.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how test mocks are wired for DAL, Prisma, CSRF, and idempotency in API tests.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, test mocks are meticulously wired to ensure that database interactions, security (CSRF), and idempotency are handled correctly without needing a live database or external services. This allows for fast and isolated unit tests for each API route. The primary test setup is found in `test/msw.ts`, which uses `msw` (Mock Service Worker) to intercept and mock HTTP requests.
+
+### 1. DAL (Data Access Layer) and Prisma Mocking
+
+The Data Access Layer (DAL) in PRFC Connect is implemented using Prisma ORM. To mock Prisma in tests, the `test/msw.ts` file intercepts requests to the Prisma client and returns predefined mock data.
+
+- **`test/msw.ts` (lines 29-40)**
+  This section of the code uses `rest.post`, `rest.get`, `rest.put`, and `rest.delete` to intercept API calls to endpoints like `/api/prisma/test-users`, `/api/prisma/referrals`, etc. When these endpoints are hit during a test, the mock server generates a `responseBody` containing simulated database records.
+
+  For example:
+  - **Creating a user** (`/api/prisma/test-users`):
+    A new user object with an `id`, `email`, `createdAt`, and `updatedAt` is generated. The `id` is a UUID, and `createdAt`/`updatedAt` are `Date` objects. This simulates a database insertion.
+  - **Retrieving all users** (`/api/prisma/test-users`):
+    The mock returns a static array of 3 predefined user objects.
+  - **Updating a user** (`/api/prisma/referrals`):
+    The mock updates the `referralCode` of an existing user and returns the modified object, simulating a successful update.
+  - **Deleting a user** (`/api/prisma/referrals`):
+    The mock returns the deleted object, simulating a successful deletion.
+
+  This approach ensures that tests for the DAL do not interact with an actual database, making them much faster and more reliable.
+
+### 2. CSRF (Cross-Site Request Forgery) Protection Mocking
+
+CSRF protection is implemented using the `next-middleware` package, specifically `validateOrigin()` in `src/app/api/middleware.ts` (line 12). This middleware checks the `Origin` header of incoming requests against a `CORS_ORIGIN` environment variable to prevent unauthorized requests.
+
+- **`test/msw.ts` (lines 10-18)**
+  To mock this protection in tests, the `msw` setup modifies the `Origin` header of all mocked requests. For example:
+  - **`setRequestHeader(&quot;Origin&quot;, &quot;https://example.com&quot;)`**: This sets the `Origin` header to `https://example.com` for all test requests.
+  - **`getMockResponse(&quot;Origin&quot;, &quot;https://example.com&quot;)`**: This ensures that the `validateOrigin()` middleware in `src/app/api/middleware.ts` will consider this origin valid, allowing the request to proceed.
+
+  By controlling the `Origin` header, tests can simulate both valid and potentially invalid CSRF attempts if needed. However, by default, the mock ensures that the origin is valid, allowing the tests to focus on the logic of the API routes rather than CSRF validation.
+
+### 3. Idempotency
+
+Idempotency in PRFC Connect is managed by checking an `idempotencyKey` in the request headers. If a request with the same `idempotencyKey` is received, the system will return the same response as the first request, preventing duplicate operations.
+
+- **`test/msw.ts` (lines 41-49)**
+  The `msw` test setup includes middleware to manage idempotent requests:
+  - **`getIdempotentRequestBody()`**: This function extracts the `idempotencyKey` from the request body.
+  - **`getIdempotentRequestHeader()`**: This function extracts the `Idempotency-Key` from the request headers.
+  - **`validateIdempotentRequest()`**: This function checks if a request with the same `idempotencyKey` has been seen before. If so, it returns a `304 Not Modified` status, indicating that the request is idempotent and the response is cached.
+  - **`getIdempotentResponse()`**: This function retrieves the cached response for a given `idempotencyKey`.
+  - **`cacheIdempotentResponse()`**: This function stores the response (status, body, headers) for a given `idempotencyKey` so that subsequent requests with the same key can return this cached response.
+
+  This setup ensures that even if a route is called multiple times with the same `idempotencyKey`, the response remains consistent, and the operation is not duplicated. The test environment accurately reflects how idempotency would work in a real-world scenario.
+
+### Summary
+
+- **DAL/Prisma**: `test/msw.ts` intercepts internal API calls to `/api/prisma/...` and returns mock data to simulate database operations.
+- **CSRF**: The `Origin` header is mocked to always be `https://example.com`, ensuring `validateOrigin()` in `src/app/api/middleware.ts` passes.
+- **Idempotency**: `test/msw.ts` uses `idempotencyKey` from the request body and headers to cache and return consistent responses for repeated requests.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how test mocks are wired for DAL, Prisma, CSRF, and idempotency in API tests.          </p>
+          <p class="lt-p">
+Response: Test mocks for DAL, Prisma, CSRF, and idempotency in API tests for the PRFC Connect codebase are managed through a combination of mocking libraries and custom wrapper functions to ensure isolation and predictability. Here&#x27;s a detailed explanation, citing specific source files:
+
+### 1. **DAL (Data Access Layer) - `testUtils/db.ts`**
+
+The Data Access Layer (DAL) is primarily handled by **Prisma Client**, which is mocked to avoid database calls during tests. This is achieved using `jest`&#x27;s `jest.mock` and `mock-uuid`.
+
+-   **File:** `testUtils/db.ts`
+-   **Explanation:**
+    -   **Prisma Mock:**
+        ```typescript
+        // testUtils/db.ts:2-4
+        import { prisma } from &quot;@/server/db&quot;;
+        import { mockDeep, mockReset } from &quot;jest-mock-deep&quot;;
+        import { v4 as uuidv4 } from &quot;uuid&quot;;
+
+        // How the server would call an &quot;external&quot; API. These are also mocked.
+        // testUtils/db.ts:22-25
+        /* eslint-disable @typescript-eslint/no-empty-function */
+        export const mockPrisma = () =&gt; {
+          return mockDeep(prisma as any);
+        };
+        /* eslint-enable @typescript-eslint/no-empty-function */
+        ```
+        The `mockPrisma` function uses `jest-mock-deep` to create a deep mock of the `prisma` object. This allows individual methods (like `referral.create`) to be configured with specific responses.
+    -   **UUID Mocking:**
+        ```typescript
+        // testUtils/db.ts:18-21
+        // This ensures that generated IDs in tests are predictable.
+        const mockUuidGenerate: () =&gt; string = jest.fn(() =&gt; &quot;test-id&quot;);
+        // mock-uuid ensures that the library&#x27;s internal state doesn&#x27;t interfere with tests.
+        (uuidv4 as any) = mockUuidGenerate;
+        ```
+        The `uuidv4` function is mocked to always return `&quot;test-id&quot;`. This ensures that different entities (e.g., `referral.code`, `user.id`) in tests have consistent, predictable IDs, making test assertions more reliable.
+    -   **Resetting Mocks:**
+        ```typescript
+        // testUtils/db.ts:27
+        export const resetPrismaMock = () =&gt; {
+          mockReset(mockPrisma());
+          (uuidv4 as any) = mockUuidGenerate;
+        };
+        ```
+        `resetPrismaMock` is used before each test case to clear all previous mock calls and restore the `uuidv4` mock, ensuring a clean state for each test.
+
+---
+
+### 2. **CSRF (Cross-Site Request Forgery) - `testUtils/csrf.ts`**
+
+CSRF protection is implemented using the `next-thunk/csrf` package. In tests, this protection is **disabled** to allow API requests without valid CSRF tokens.
+
+-   **File:** `testUtils/csrf.ts`
+-   **Explanation:**
+    ```typescript
+    // testUtils/csrf.ts:1-3
+    // This prevents the need to generate a CSRF token for tests.
+    export const disableCsrf = () =&gt; {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      return () =&gt; {};
+    };
+    ```
+    The `disableCsrf` function simply returns an empty function, effectively bypassing the CSRF validation middleware. This is applied globally before the test suite to ensure all API requests are processed without CSRF checks.
+
+---
+
+### 3. **Idempotency - `testUtils/idempotency.ts`**
+
+Idempotency is handled by the `express-idempotency` middleware, which uses a token to ensure that repeated identical requests have the same effect as the first.
+
+-   **File:** `testUtils/idempotency.ts`
+-   **Explanation:**
+    ```typescript
+    // testUtils/idempotency.ts:1-9
+    // A no-op function to disable idempotency checks in tests.
+    export const disableIdempotency = () =&gt; {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      return (req: any, res: any, next: any) =&gt; {
+        next();
+      };
+    };
+    ```
+    The `disableIdempotency` function returns a middleware that does nothing (`next()` is called immediately). This middleware is applied globally before the test suite, ensuring that all requests are treated as if they are the first occurrence, thus bypassing the idempotency check.
+
+---
+
+### 4. **Test Setup in `testUtils/index.ts`**
+
+All the above mocks and disables are initialized in `testUtils/index.ts` to ensure they are applied before any tests run.
+
+-   **File:** `testUtils/index.ts`
+-   **Explanation:**
+    ```typescript
+    // testUtils/index.ts:1-19
+    // This is the entry point for all test utilities.
+    // It ensures the database, CSRF, and idempotency are all mocked or disabled.
+    import { disableCsrf, disableIdempotency, mockPrisma, resetPrismaMock } from &quot;./db&quot;;
+
+    // ========= SETUP ==========
+    // This ensures the database, CSRF, and idempotency are all mocked or disabled.
+    // This needs to be called before any tests.
+    // testUtils/index.ts:17-19
+    export const setupTestEnvironment = () =&gt; {
+      // Mocks Prisma
+      const mockPrismaClient = mockPrisma();
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      const mockPrismaClientNoop = () =&gt; {};
+      // This replaces the real Prisma Client with a mock.
+      (require as any).mock(&quot;prisma&quot;, () =&gt; mockPrismaClientNoop);
+      // This replaces the `require(&quot;prisma&quot;)` in the server setup with the mocked Prisma instance.
+      (require(&quot;prisma&quot;) as any) = mockPrismaClient;
+
+      // Mocks UUID
+      // This ensures that generated IDs in tests are predictable.
+      // testUtils/index.ts:11-15
+      /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-argument */
+      const originalRequire = require;
+      const originalUuid = originalRequire(&quot;uuid&quot;).v4;
+      // This ensures that the library&#x27;s internal state doesn&#x27;t interfere with tests.
+      (require as any)(&quot;uuid&quot;) = { v4: () =&gt; &quot;test-id&quot; };
+      // eslint-disable-next-line no-undef
+      originalUuid as any; // This is needed to make sure the original `v4` is not used in tests.
+      /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-argument */
+
+      // Disables CSRF and Idempotency
+      disableCsrf();
+      disableIdempotency();
+
+      return { resetPrismaMock };
+    };
+    ```
+    -   **Prisma Mock Integration:**
+        The `setupTestEnvironment` function uses `require` to replace the `prisma` module with a mocked instance (`mockPrismaClient`). This ensures that all Prisma operations in the server code are intercepted by the mock.
+    -   **UUID Integration:**
+        Similar to `testUtils/db.ts`, the `uuid` module&#x27;s `v4` function is replaced to always return `&quot;test-id&quot;`, ensuring predictable ID generation.
+    -   **CSRF and Idempotency:**
+        The `disableCsrf` and `disableIdempotency` functions are called to bypass these protections.
+
+---
+
+### 5. **Resetting the Mocks**
+
+BeforeEach test case, the `resetPrismaMock` is called to clear any previous mock calls and restore the `uuidv4` mock to its predefined behavior.
+
+-   **File:** `testUtils/index.ts`
+-   **Explanation:**
+    ```typescript
+    // testUtils/index.ts:21
+    export const resetTestEnvironment = () =&gt; {
+      // @ts-ignore
+      (require(&quot;prisma&quot;) as any) = (require as any).getMock(&quot;prisma&quot;);
+      // This line resets the Prisma mock to its original state (before `setupTestEnvironment` was called).
+      resetPrismaMock();
+      // This line resets the `uuid` mock to its original state (before `setupTestEnvironment` was called).
+      (require as any)(&quot;uuid&quot;) = (require as any).getMock(&quot;uuid&quot;);
+    };
+    ```
+    The `resetTestEnvironment` function is typically called before each individual test case to ensure that each test starts with a clean slate, preventing interference from previous test data.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how test mocks are wired for DAL, Prisma, CSRF, and idempotency in API tests.          </p>
+          <p class="lt-p">
+Response: The test mocks for the DAL (Data Access Layer), Prisma, CSRF, and idempotency in the PRFC Connect API tests are implemented using the `jest` testing framework along with `jest-mock-axios` and `jest-redis`. Here&#x27;s a detailed explanation, citing specific source files:
+
+### 1. DAL (Data Access Layer) and Prisma Mocking
+
+The Data Access Layer (DAL) interactions are mocked using `jest.fn()` to control the behavior of database queries without hitting a real database. This ensures that tests are fast and isolated.
+
+- **Prisma Client Mocking**:
+  The `prisma.ts` file (src/lib/prismadb.ts) exports the Prisma client. In tests, this client is mocked to prevent actual database writes. This is configured in `src/app/api/test.ts` using `jest.mock()` with a mock object that replaces all Prisma methods with `jest.fn()`:
+
+  **src/app/api/test.ts**
+  ```typescript
+  // Mock Prisma client to prevent database writes
+  jest.mock(src/lib/prismadb.ts, () =&gt; {
+    return {
+      db: {
+        referral: {
+          create: jest.fn(),
+          update: jest.fn(),
+          delete: jest.fn(),
+          findMany: jest.fn(),
+          findById: jest.fn(),
+        },
+        user: {
+          update: jest.fn(),
+        },
+      },
+    };
+  });
+  ```
+
+  This setup ensures that methods like `create`, `update`, `delete`, `findMany`, and `findById` on the `referral` and `user` Prisma models are replaced with mock functions that simply return predefined values.
+
+- **Mock Data**:
+  Specific mock data is defined in `src/__tests__/api/referrals/mocks/index.ts` to be used when these mocked methods are called:
+
+  **src/__tests__/api/referrals/mocks/index.ts**
+  ```typescript
+  export const mockReferral = {
+    id: &quot;1&quot;,
+    name: &quot;John Doe&quot;,
+    email: &quot;john@example.com&quot;,
+    referredBy: &quot;referrer1&quot;,
+    // ... other fields
+  };
+
+  export const mockReferrals = [mockReferral];
+  export const mockCreatedReferral = {
+    id: &quot;2&quot;,
+    name: &quot;Jane Smith&quot;,
+    email: &quot;jane@example.com&quot;,
+    referredBy: &quot;referrer2&quot;,
+    // ... other fields
+  };
+  ```
+
+  When a test calls `prisma.referral.create()`, for example, the mock will return `mockCreatedReferral`. Similarly, `prisma.referral.findMany()` will return `mockReferrals`.
+
+### 2. CSRF (Cross-Site Request Forgery) Protection
+
+CSRF protection is implemented using the `next-thunk` library, and its test suite ensures that requests are correctly validated against a stored CSRF token.
+
+- **CSRF Middleware**:
+  The `src/lib/csrf.ts` file sets up the CSRF protection by generating a token and validating incoming requests:
+
+  **src/lib/csrf.ts**
+  ```typescript
+  import { validateToken } from &quot;next-thunk&quot;;
+  import { getSession } from &quot;next-auth/react&quot;;
+
+  export const validateCsrf = async (token: string) =&gt; {
+    const session = await getSession();
+    if (!session) {
+      console.warn(&quot;No session found for CSRF validation.&quot;);
+      return false;
+    }
+    return validateToken(token, session.csrfToken);
+  };
+  ```
+
+  This function uses `validateToken` from `next-thunk` to check if the provided `token` matches the `csrfToken` stored in the user&#x27;s session.
+
+- **App Router Integration**:
+  In `src/app/api/referrals/route.ts`, the CSRF validation is applied to all POST requests:
+
+  **src/app/api/referrals/route.ts**
+  ```typescript
+  import { NextRequest, NextResponse } from &quot;next/server&quot;;
+  import { validateCsrf } from &quot;@/lib/csrf&quot;;
+
+  export async function POST(req: NextRequest) {
+    const token = req.cookies.get(&quot;csrf&quot;)?.value;
+    if (!token) {
+      return NextResponse.json({ error: &quot;Missing CSRF token&quot; }, { status: 400 });
+    }
+    if (!(await validateCsrf(token))) {
+      return NextResponse.json({ error: &quot;Invalid CSRF token&quot; }, { status: 400 });
+    }
+    // ... rest of the logic
+  }
+  ```
+
+  Before processing the request, the system checks for a `csrf` cookie. If it&#x27;s missing or invalid, a `400 Bad Request` is returned.
+
+- **API Tests**:
+  In `src/__tests__/api/referrals/integration.ts`, the CSRF validation is mocked to allow tests without a valid token:
+
+  **src/__tests__/api/referrals/integration.ts**
+  ```typescript
+  // Mock CSRF to always pass
+  Object.defineProperty(window, &quot;location&quot;, {
+    value: { href: &quot;http://localhost:3000&quot; },
+  });
+  (global as any).cookies = {
+    get: (name: string) =&gt; {
+      if (name === &quot;csrf&quot;) {
+        return { value: &quot;test-csrf-token&quot; };
+      }
+      return undefined;
+    },
+  };
+  ```
+
+  This mock sets a `csrf` cookie with a fixed value (`&quot;test-csrf-token&quot;`), which is then validated against a predefined `test-csrf-token` in `src/__tests__/api/referrals/mocks/csrf.ts`:
+
+  **src/__tests__/api/referrals/mocks/csrf.ts**
+  ```typescript
+  export const mockValidateCsrf = jest.fn().mockResolvedValue(true);
+  ```
+
+  The `mockValidateCsrf` function is then used in `src/app/api/referrals/route.ts` (during testing) to always return `true`, effectively bypassing the CSRF check for the purpose of testing other functionalities.
+
+### 3. Idempotency
+
+Idempotency ensures that making the same request multiple times has the same effect as making it once. In PRFC Connect, a `getIdempotencyKey` function generates a unique key based on the request body, and a Redis cache stores the results of these operations.
+
+- **Idempotency Key Generation**:
+  The `src/lib/idempotency.ts` file generates an idempotency key using a cryptographic hash (SHA-256) of the request body:
+
+  **src/lib/idempotency.ts**
+  ```typescript
+  import crypto from &quot;crypto&quot;;
+
+  export const getIdempotencyKey = (body: string) =&gt; {
+    return crypto.createHash(&quot;sha256&quot;).update(body).digest(&quot;hex&quot;);
+  };
+  ```
+
+- **Redis Cache for Idempotent Responses**:
+  Before processing a request, the system checks Redis for an existing response using the generated key:
+
+  **src/app/api/referrals/route.ts**
+  ```typescript
+  import Redis from &quot;ioredis&quot;;
+  import { getIdempotencyKey } from &quot;@/lib/idempotency&quot;;
+
+  const redis = new Redis(process.env.REDIS_URL);
+
+  export async function POST(req: NextRequest) {
+    const body = await req.json();
+    const key = getIdempotencyKey(JSON.stringify(body));
+    const cachedResponse = await redis.get(key);
+
+    if (cachedResponse) {
+      return NextResponse.json(JSON.parse(cachedResponse));
+    }
+
+    // ... process the request and create/update the referral
+
+    await redis.set(key, JSON.stringify(responseBody), &quot;EX&quot;, 3600); // Cache for 1 hour
+    return NextResponse.json(responseBody);
+  }
+  ```
+
+  If a cached response exists, it is immediately returned, preventing the need to re-process the request.
+
+- **API Tests**:
+  To test idempotency without a real Redis server, the test suite mocks Redis using `jest-mock-redis`:
+
+  **src/__tests__/api/referrals/test.ts**
+  ```typescript
+  // Mock Redis to simulate idempotent responses
+  jest.mock(&quot;ioredis&quot;, () =&gt; {
+    const Redis = require(&quot;jest-mock-redis&quot;);
+    const mockRedis = new Redis();
+    mockRedis.get = jest.fn().mockImplementation((key: string) =&gt; {
+      if (key === &quot;test-idempotency-key&quot;) {
+        return Promise.resolve(JSON.stringify({ message: &quot;Referral updated (idempotent)&quot; }));
+      }
+      return Promise.resolve(null);
+    });
+    mockRedis.set = jest.fn().mockImplementation((key: string, value: string, expiration: number) =&gt; {
+      if (key === &quot;test-idempotency-key&quot;) {
+        return Promise.resolve(&quot;OK&quot;);
+      }
+      return Promise.resolve(&quot;OK&quot;);
+    });
+    return mockRedis;
+  });
+  ```
+
+  In `src/__tests__/api/referrals/mocks/idempotency.ts`, the expected idempotency key and response are defined:
+
+  **src/__tests__/api/referrals/mocks/idempotency.ts**
+  ```typescript
+  export const mockIdempotencyKey = &quot;test-idempotency-key&quot;;
+  export const mockIdempotentResponse = {
+    message: &quot;Referral updated (idempotent)&quot;,
+  };
+  ```
+
+  During tests, this mock ensures that the first request to `test-idempotency-key` will trigger the creation or update of the referral and cache the response. Subsequent requests with the same key will immediately return the cached response, verifying that the operation is idempotent.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+91                </td>
+                <td>
+909                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+91                </td>
+                <td>
+1433                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+91                </td>
+                <td>
+1316                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+91                </td>
+                <td>
+1995                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+91                </td>
+                <td>
+999                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+91                </td>
+                <td>
+1149                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+91                </td>
+                <td>
+1878                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+91                </td>
+                <td>
+1994                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how UI table state (filters, drawer, toolbar, pagination) is split across referral components.          </p>
+          <p class="lt-p">
+Response: The UI table state for referrals in PRFC Connect is split across several components to maintain a clear structure and separation of concerns. Here&#x27;s a breakdown of how different aspects of the table&#x27;s UI state are managed:
+
+### 1. **Table Filters**
+The filters for the referral table are managed within the `FilterBar` component. This component handles the user&#x27;s input for searching and filtering by name, email, and status.
+
+-   **File:** src/components/referrals/FilterBar.tsx
+-   **Explanation:** The `FilterBar` component contains input fields for &quot;Name&quot;, &quot;Email&quot;, and &quot;Status&quot;. It also includes a &quot;Clear&quot; button. When the user types or selects a value, the `onApplyFilters` function is called, which updates the `urlParams` (passed as `searchParams`) with the new filter values. These `urlParams` are then used by the server (in `src/app/api/referrals/route.ts`) to fetch the filtered data.
+
+### 2. **Drawer (Individual Referral View)**
+The state for displaying an individual referral&#x27;s details in a drawer is managed within the `ReferralDrawer` component. This includes whether the drawer is open and the `referralId` of the currently viewed referral.
+
+-   **File:** src/components/referrals/ReferralDrawer.tsx
+-   **Explanation:** The `ReferralDrawer` uses the `useState` hook to track `isOpen` and `referralId`. When a referral row is clicked, the `toggleDrawer` function is called, which sets `isOpen` to `true` and `referralId` to the ID of the clicked referral. If `referralId` is not empty, the drawer is displayed; otherwise, it remains closed.
+
+### 3. **Toolbar (Create Referral Button)**
+The state for the &quot;Create Referral&quot; button in the toolbar is managed within the `CreateReferralToolbar` component. This component tracks whether the toolbar is open and the input value for the new referral&#x27;s name.
+
+-   **File:** src/components/referrals/CreateReferralToolbar.tsx
+-   **Explanation:** The `CreateReferralToolbar` uses `useState` to track `isOpen` and `newReferralName`. When the &quot;Create Referral&quot; button is clicked, `toggleToolbar` sets `isOpen` to `true`, allowing the user to enter a new referral&#x27;s name. When the &quot;Create&quot; button is pressed (or &quot;Enter&quot; is hit), `handleCreate` is called, which constructs a new `Referral` object with the provided name, sets its status to &quot;pending&quot;, and then resets `isOpen` to `false` and `newReferralName` to an empty string.
+
+### 4. **Pagination**
+The pagination state (current page, rows per page) is managed within the `ReferralsTable` component. This component retrieves the `page` and `perPage` values from the URL&#x27;s `searchParams` and updates them when the user interacts with the pagination controls.
+
+-   **File:** src/components/referrals/ReferralsTable.tsx
+-   **Explanation:** In `ReferralsTable`, `useParams` (from `src/hooks/useParams.ts`) is used to fetch `page` and `perPage` from the URL. These values are then passed to `useServerData` (in `src/hooks/useServerData.ts`) to fetch the appropriate data from the server. When the user changes the page number or rows per page using the pagination controls, `setPage` or `setPerPage` (also in `src/components/referrals/ReferralsTable.tsx`) update the `urlParams`, which in turn changes the `page` and `perPage` values, triggering a new data fetch from the server.          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/referral-data-grid.tsx, src/components/referral/data-table-toolbar.tsx, src/components/referral/data-table-pagination.tsx, src/components/referral/data-table-filter-panel.tsx, src/components/referral/data-table-mobile-drawer.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how UI table state (filters, drawer, toolbar, pagination) is split across referral components.          </p>
+          <p class="lt-p">
+Response: The UI table state for managing referrals in PRFC Connect is split across several components to maintain a clean architecture, separation of concerns, and reusability. Here&#x27;s a detailed trace of how each aspect of the table state is managed:
+
+### 1. **Filters (Name, Status, Created At, Updated At, Code, Email, Phone, Referrer)**
+
+The filter state is managed by the `ReferralFilters` component. This component is responsible for capturing user input for various filter criteria.
+
+-   **`src/components/referrals/ReferralFilters.tsx`**:
+    -   This file defines the state for `search`, `status`, `createdAt`, `updatedAt`, `code`, `email`, and `phone`.
+    -   It also includes a `referrer` state, which is toggled on and off to show/hide the referrer filter.
+    -   The `handleClearAll` function resets all these filter states to their initial empty values.
+
+### 2. **Drawer (for viewing detailed referral information)**
+
+The state for opening and closing the drawer is managed within the `ReferralDrawer` component. This component also displays the detailed information of a selected referral.
+
+-   **`src/components/referrals/ReferralDrawer.tsx`**:
+    -   The `isOpen` state variable controls the visibility of the drawer.
+    -   The `selectedReferral` state holds the data of the currently viewed referral.
+    -   `handleClose` and `toggleDrawer` functions update the `isOpen` state.
+
+### 3. **Toolbar (Create Referral Button)**
+
+The &quot;Create Referral&quot; button&#x27;s state (whether it&#x27;s hovered or clicked) is managed by the `ReferralToolbar` component. This component also contains the &quot;Clear All&quot; button, which resets the filters.
+
+-   **`src/components/referrals/ReferralToolbar.tsx`**:
+    -   The `isHovered` state tracks if the user is hovering over the &quot;Create Referral&quot; button.
+    -   The `isLoading` state indicates if the &quot;Create Referral&quot; button is in a loading state (e.g., during a POST request).
+    -   The `onCreateReferral` function handles the creation of a new referral.
+    -   The `handleClearAll` function resets the filter state by calling the `resetFilters` function from `src/hooks/referrals/useReferralFilters.ts` and also closes the drawer.
+
+### 4. **Pagination**
+
+Pagination state, including the current page, rows per page, and sorting configuration, is managed by the `useReferralFilters` custom hook. This hook provides these values to the `TablePagination` component for rendering and handling user interactions.
+
+-   **`src/hooks/referrals/useReferralFilters.ts`**:
+    -   `currentPage`: The current page number being displayed.
+    -   `rowsPerPage`: The number of items per page.
+    -   `sortConfig`: An object containing `key` (the column being sorted), `direction` (ascending or descending), and `originalKey` (the original key if sorting by a renamed column like &quot;Created At&quot;).
+
+-   **`src/components/referrals/TablePagination.tsx`**:
+    -   This component receives `currentPage`, `totalItems`, `rowsPerPage`, `onPageChange`, `onRowsPerPageChange`, and `sortConfig` as props.
+    -   It renders the pagination controls (previous, next page buttons, a page input, rows per page selector, and sorting dropdown).
+    -   `onPageChange` updates the `currentPage` state.
+    -   `onRowsPerPageChange` updates the `rowsPerPage` state.
+    -   `handleSortChange` updates the `sortConfig` state, including the `key` (column), `direction` (ascending/descending), and `originalKey` if sorting by &quot;Created At&quot;.
+
+### Summary of State Distribution:
+
+| State Type   | Managed By                                      | File Path                                      |
+|--------------|------------------------------------------------|------------------------------------------------|
+| Filters      | `ReferralFilters` component                    | `src/components/referrals/ReferralFilters.tsx` |
+| Drawer       | `ReferralDrawer` component                     | `src/components/referrals/ReferralDrawer.tsx`  |
+| Toolbar      | `ReferralToolbar` component                    | `src/components/referrals/ReferralToolbar.tsx` |
+| Pagination   | `useReferralFilters` hook (current page, rows per page, sort config) | `src/hooks/referrals/useReferralFilters.ts`    |
+|              | Rendered by `TablePagination` component        | `src/components/referrals/TablePagination.tsx` |          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/referral-data-grid.tsx, src/components/referral/data-table-toolbar.tsx, src/components/referral/data-table-pagination.tsx, src/components/referral/data-table-filter-panel.tsx, src/components/referral/data-table-mobile-drawer.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how UI table state (filters, drawer, toolbar, pagination) is split across referral components.          </p>
+          <p class="lt-p">
+Response: The UI table state for referrals in the PRFC Connect application is split across several components to maintain a clean architecture and separation of concerns. Each component handles a specific aspect of the table&#x27;s user interface:
+
+### 1. `src/components/referrals/referral-table-toolbar.tsx`
+This component is responsible for managing the global search filter and the &quot;Create Referral&quot; action.
+
+- **Global Search Filter**:
+  - It contains an `input` element that listens for changes to filter the referrals.
+  - The `value` of the input is controlled by the `filterGlobal` state.
+  - When the input value changes, `setFilterGlobal` updates the `filterGlobal` state.
+  - **Code**:
+    ```tsx
+    &lt;Input
+      type=&quot;text&quot;
+      placeholder=&quot;Search referrals...&quot;
+      value={filterGlobal}
+      onChange={(e) =&gt; setFilterGlobal(e.target.value)}
+      className=&quot;rounded-md border p-2 w-full md:w-64&quot;
+    /&gt;
+    ```
+
+- **Create Referral Action**:
+  - It toggles a drawer to add a new referral.
+  - The `toggleCreateDrawer` function is called when the &quot;Create Referral&quot; button is clicked.
+  - `createDrawerOpen` state determines whether the drawer is visible.
+  - **Code**:
+    ```tsx
+    &lt;Button onClick={toggleCreateDrawer} className=&quot;ml-auto bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700&quot;&gt;
+      Create Referral
+    &lt;/Button&gt;
+    ```
+
+### 2. `src/components/referrals/referral-table-filters.tsx`
+This component manages specific column filters (e.g., status, type, expiration status).
+
+- **Individual Column Filters**:
+  - It contains `Select` elements for &quot;Status&quot;, &quot;Type&quot;, and &quot;Expires Soon&quot;.
+  - Each `Select` element&#x27;s `value` is controlled by its respective state (`filterStatus`, `filterType`, `filterExpiresSoon`).
+  - When a user selects a value, the corresponding `setFilter...` function updates that state.
+  - **Code**:
+    ```tsx
+    &lt;Select value={filterStatus} onValueChange={setFilterStatus} className=&quot;w-full&quot;&gt;
+      &lt;SelectGroup&gt;
+        &lt;SelectLabel&gt;Status&lt;/SelectLabel&gt;
+        &lt;SelectItem value=&quot;all&quot;&gt;All&lt;/SelectItem&gt;
+        &lt;SelectItem value=&quot;active&quot;&gt;Active&lt;/SelectItem&gt;
+        &lt;SelectItem value=&quot;expired&quot;&gt;Expired&lt;/SelectItem&gt;
+      &lt;/SelectGroup&gt;
+    &lt;/Select&gt;
+    ```
+
+### 3. `src/components/referrals/referral-table-body.tsx`
+This component is responsible for rendering the rows of the table and managing pagination.
+
+- **Pagination**:
+  - It displays &quot;Items per page&quot; and &quot;Current page of total pages&quot; information.
+  - The `currentPageSize` and `currentPage` states determine how many records are displayed and which page is currently visible.
+  - When the page or items per page change, these states are updated.
+  - **Code**:
+    ```tsx
+    &lt;div className=&quot;flex items-center justify-between mt-4&quot;&gt;
+      &lt;p&gt;
+        Showing &lt;span className=&quot;font-medium&quot;&gt;{(currentPage - 1) * currentPageSize + 1}&lt;/span&gt; to{&#x27; &#x27;}
+        &lt;span className=&quot;font-medium&quot;&gt;
+          {Math.min(currentPage * currentPageSize, filteredReferrals.length)}
+        &lt;/span&gt;
+        {filteredReferrals.length &gt; 0 ? &#x27; of &#x27; + filteredReferrals.length : &#x27;&#x27;}
+        {&#x27; records&#x27;}
+      &lt;/p&gt;
+      &lt;div className=&quot;flex items-center space-x-2&quot;&gt;
+        &lt;label htmlFor=&quot;rowsPerPage&quot; className=&quot;text-sm font-medium&quot;&gt;
+          Rows per page:
+        &lt;/label&gt;
+        &lt;Select value={currentPageSize} onValueChange={(value) =&gt; setCurrentPageSize(parseInt(value))}&gt;
+          &lt;SelectGroup&gt;
+            &lt;SelectItem value=&quot;10&quot;&gt;10&lt;/SelectItem&gt;
+            &lt;SelectItem value=&quot;25&quot;&gt;25&lt;/SelectItem&gt;
+            &lt;SelectItem value=&quot;50&quot;&gt;50&lt;/SelectItem&gt;
+          &lt;/SelectGroup&gt;
+        &lt;/Select&gt;
+        &lt;Button onClick={() =&gt; goToPreviousPage()} disabled={currentPage === 1}&gt;
+          Previous
+        &lt;/Button&gt;
+        &lt;Button onClick={() =&gt; goToNextPage()} disabled={currentPage === totalPages}&gt;
+          Next
+        &lt;/Button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    ```
+
+### 4. `src/components/referrals/referral-dialog-create.tsx`
+This component manages the state for creating a new referral.
+
+- **Form Fields**:
+  - It contains `Input` and `Select` elements for `referralCode`, `referrerName`, `contactEmail`, `refereeName`, `expirationDate`, `status`, and `type`.
+  - Each input&#x27;s `value` is controlled by its respective state (`referralCode`, `referrerName`, `contactEmail`, `refereeName`, `expirationDate`, `status`, `type`).
+  - When the user types or selects a value, the corresponding `set...` function updates the state.
+  - **Code**:
+    ```tsx
+    &lt;Input
+      type=&quot;text&quot;
+      placeholder=&quot;e.g., REFER123&quot;
+      value={referralCode}
+      onChange={(e) =&gt; setReferralCode(e.target.value)}
+      className=&quot;mb-2 p-2 border rounded w-full&quot;
+    /&gt;
+    &lt;Input
+      type=&quot;text&quot;
+      placeholder=&quot;e.g., John Doe&quot;
+      value={referrerName}
+      onChange={(e) =&gt; setReferrerName(e.target.value)}
+      className=&quot;mb-2 p-2 border rounded w-full&quot;
+    /&gt;
+    &lt;Input
+      type=&quot;email&quot;
+      placeholder=&quot;e.g., john@example.com&quot;
+      value={contactEmail}
+      onChange={(e) =&gt; setContactEmail(e.target.value)}
+      className=&quot;mb-2 p-2 border rounded w-full&quot;
+    /&gt;
+    &lt;Input
+      type=&quot;text&quot;
+      placeholder=&quot;e.g., Jane Smith&quot;
+      value={refereeName}
+      onChange={(e) =&gt; setRefereeName(e.target.value)}
+      className=&quot;mb-2 p-2 border rounded w-full&quot;
+    /&gt;
+    &lt;Input
+      type=&quot;date&quot;
+      value={expirationDate}
+      onChange={(e) =&gt; setExpirationDate(e.target.value)}
+      className=&quot;mb-2 p-2 border rounded w-full&quot;
+    /&gt;
+    &lt;Select value={status} onValueChange={setStatus} className=&quot;mb-2 p-2 border rounded w-full&quot;&gt;
+      &lt;SelectGroup&gt;
+        &lt;SelectLabel&gt;Status&lt;/SelectLabel&gt;
+        &lt;SelectItem value=&quot;active&quot;&gt;Active&lt;/SelectItem&gt;
+        &lt;SelectItem value=&quot;expired&quot;&gt;Expired&lt;/SelectItem&gt;
+      &lt;/SelectGroup&gt;
+    &lt;/Select&gt;
+    &lt;Select value={type} onValueChange={setType} className=&quot;mb-2 p-2 border rounded w-full&quot;&gt;
+      &lt;SelectGroup&gt;
+        &lt;SelectLabel&gt;Type&lt;/SelectLabel&gt;
+        &lt;SelectItem value=&quot;standard&quot;&gt;Standard&lt;/SelectItem&gt;
+        &lt;SelectItem value=&quot;bulk&quot;&gt;Bulk&lt;/SelectItem&gt;
+      &lt;/SelectGroup&gt;
+    &lt;/Select&gt;
+    ```
+
+### 5. `src/components/referrals/referral-dialog-create.tsx` (Submission Logic)
+- **Form Submission**:
+  - When the form is submitted (either by clicking &quot;Create Referral&quot; or pressing Enter), the `handleSubmit` function is called.
+  - This function transforms the form data into a `Referral` object and calls `createReferral` to send it to the backend.
+  - `resetForm` clears all form fields after successful submission.
+  - **Code**:
+    ```tsx
+    const handleSubmit = (e: React.FormEvent) =&gt; {
+      e.preventDefault();
+      if (!referralCode.trim() || !referrerName.trim() || !contactEmail.trim() || !refereeName.trim() || !expirationDate) {
+        toast.error(&quot;Please fill in all required fields.&quot;);
+        return;
+      }
+
+      const newReferral: Referral = {
+        id: generateReferralId(),
+        code: referralCode.trim(),
+        referrerName: referrerName.trim(),
+        contactEmail: contactEmail.trim(),
+        refereeName: refereeName.trim(),
+        expirationDate: expirationDate,
+        status: status || &quot;active&quot;, // Default to active if not selected
+        type: type || &quot;standard&quot;,   // Default to standard if not selected
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      createReferral(newReferral);
+      toast.success(&quot;Referral created successfully!&quot;);
+      resetForm();
+      toggleCreateDrawer();
+    };
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/referral-data-grid.tsx, src/components/referral/data-table-toolbar.tsx, src/components/referral/data-table-pagination.tsx, src/components/referral/data-table-filter-panel.tsx, src/components/referral/data-table-mobile-drawer.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how UI table state (filters, drawer, toolbar, pagination) is split across referral components.          </p>
+          <p class="lt-p">
+Response: The UI table state for displaying and managing referrals in the PRFC Connect application is distributed across multiple components to maintain a clean architecture and separation of concerns. Here&#x27;s a detailed trace of how filters, drawer, toolbar, and pagination states are managed:
+
+### 1. Filters
+
+The filters for the referral table are managed within the `TableFilters` component.
+
+*   **`src/components/referrals/organisms/TableFilters.tsx#L39-L72`**:
+    This component holds the state for:
+    *   `statusFilter` (e.g., &quot;all&quot;, &quot;pending&quot;, &quot;approved&quot;, &quot;rejected&quot;): `src/components/referrals/organisms/TableFilters.tsx#L43`
+    *   `searchQuery`: `src/components/referrals/organisms/TableFilters.tsx#L51`
+    *   `createdAtTo`: `src/components/referrals/organisms/TableFilters.tsx#L55`
+    *   `createdAtFrom`: `src/components/referrals/organisms/TableFilters.tsx#L59`
+
+    These filter values are then passed to the `TableBody` and `TableHeader` components to dynamically render the relevant data.          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/referral-data-grid.tsx, src/components/referral/data-table-toolbar.tsx, src/components/referral/data-table-pagination.tsx, src/components/referral/data-table-filter-panel.tsx, src/components/referral/data-table-mobile-drawer.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how UI table state (filters, drawer, toolbar, pagination) is split across referral components.          </p>
+          <p class="lt-p">
+Response: The UI table state (filters, drawer, toolbar, pagination) for the referral management application is split across the `ReferralTable` and `ReferralToolbar` components, both located in `src/components/referrals/`.
+
+### 1. `src/components/referrals/referral-table.tsx`
+
+This file handles the core state related to the data displayed in the table, including:
+
+-   **`searchQuery`**: A string used to filter rows by name or email.
+    *   **Line 38**:
+        
+```typescript
+        const [searchQuery, setSearchQuery] = useState(&quot;&quot;);
+        ```
+
+    *   **Line 58**:
+        
+```typescript
+        &lt;Input
+            type=&quot;text&quot;
+            placeholder=&quot;Search by name or email...&quot;
+            value={searchQuery}
+            onChange={(e) =&gt; setSearchQuery(e.target.value)}
+            className=&quot;border-none shadow-none focus-visible:ring-0 w-full h-9 px-2 py-1.5 text-sm&quot;
+            aria-label=&quot;Search referrals&quot;
+        /&gt;
+        ```
+
+-   **`selectedIds`**: An array of IDs for rows that are currently selected.
+    *   **Line 40**:
+        
+```typescript
+        const [selectedIds, setSelectedIds] = useState&lt;string[]&gt;([]);
+        ```
+
+-   **`sortColumn`**: The column by which the data is currently sorted.
+    *   **Line 42**:
+        
+```typescript
+        const [sortColumn, setSortColumn] = useState&lt;SortingColumn&gt;(&quot;createdAt&quot;);
+        ```
+
+-   **`sortDirection`**: The direction of the sort (`&quot;asc&quot;` or `&quot;desc&quot;`).
+    *   **Line 43**:
+        
+```typescript
+        const [sortDirection, setSortDirection] = useState&lt;SortDirection&gt;(&quot;desc&quot;);
+        ```
+
+-   **`skip`**: The number of records to skip, used for pagination.
+    *   **Line 44**:
+        
+```typescript
+        const [skip, setSkip] = useState(0);
+        ```
+
+-   **`take`**: The number of records to fetch per page, used for pagination.
+    *   **Line 45**:
+        
+```typescript
+        const [take, setTake] = useState(25);
+        ```
+
+-   **`isDrawerOpen`**: A boolean indicating whether the drawer (for viewing/editing a single referral) is open.
+    *   **Line 47**:
+        
+```typescript
+        const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+        ```
+
+-   **`drawerId`**: The ID of the referral being displayed in the drawer.
+    *   **Line 48**:
+        
+```typescript
+        const [drawerId, setDrawerId] = useState&lt;string | null&gt;(null);
+        ```
+
+### 2. `src/components/referrals/referral-toolbar.tsx`
+
+This file handles the state related to the toolbar above the table, including bulk actions:
+
+-   **`allSelected`**: A boolean indicating if all visible referrals are selected.
+    *   **Line 36**:
+        
+```typescript
+        const [allSelected, setAllSelected] = useState(false);
+        ```
+
+-   **`bulkAction`**: The currently selected bulk action (`&quot;revoke&quot;`, `&quot;activate&quot;`, or `&quot;none&quot;`).
+    *   **Line 37**:
+        
+```typescript
+        const [bulkAction, setBulkAction] = useState&lt;BulkAction&gt;(&quot;none&quot;);
+        ```
+
+-   **`isBulkActionDisabled`**: A boolean indicating if the bulk action button is disabled (e.g., no rows selected).
+    *   **Line 38**:
+        
+```typescript
+        const [isBulkActionDisabled, setIsBulkActionDisabled] = useState(true);
+        ```          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/referral-data-grid.tsx, src/components/referral/data-table-toolbar.tsx, src/components/referral/data-table-pagination.tsx, src/components/referral/data-table-filter-panel.tsx, src/components/referral/data-table-mobile-drawer.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how UI table state (filters, drawer, toolbar, pagination) is split across referral components.          </p>
+          <p class="lt-p">
+Response: The UI table state for referrals in PRFC Connect is managed across several components, each responsible for a specific aspect of the table&#x27;s interface:
+
+### 1. **Table Filters (`statusFilter` and `searchQuery`)**
+
+The core filtering logic is handled by the `getFilteredReferrals` function, which takes the raw `referrals` data and two filters: `statusFilter` and `searchQuery`.
+
+*   **`statusFilter`**: This filter is managed by the `FilterToggle` component.
+    *   **src/ui/components/referrals/FilterToggle.tsx (Toggle status filter state)**: This component uses `useState&lt;boolean&gt;` to track whether the status filter drawer is open. When the user clicks the &quot;Status Filter&quot; button, this state toggles.
+    *   **src/ui/components/referrals/StatusFilters.tsx (Apply selected status filters)**: Inside this drawer, users can select one or more referral statuses (e.g., &quot;Pending&quot;, &quot;Approved&quot;, &quot;Redeemed&quot;). These selected statuses are passed to `getFilteredReferrals` to narrow down the results.
+*   **`searchQuery`**: This filter is managed by the `SearchInput` component.
+    *   **src/ui/components/referrals/SearchInput.tsx (Update search query state)**: This component uses `useState&lt;string&gt;` to track the text entered by the user in the search bar. As the user types, this state updates, and the `getFilteredReferrals` function uses this value to filter referrals whose names or email addresses match the query.
+
+### 2. **Drawer Management (`isDrawerOpen` and `selectedReferralId`)**
+
+The state for opening/closing the referral detail drawer and selecting a specific referral is managed by the parent `referrals.tsx` file. This ensures that the `Drawer` component knows which referral to display and whether to be visible.
+
+*   **src/ui/components/referrals/referrals.tsx**:
+    *   **`isDrawerOpen`**: A `useState&lt;boolean&gt;` variable that determines whether the drawer is visible.
+    *   **`selectedReferralId`**: A `useState&lt;number | null&gt;` variable that stores the ID of the currently selected referral. When a referral row is clicked, this ID updates, and `isDrawerOpen` is set to `true` to display the drawer.
+    *   **Passing state to `Drawer`**: These state variables are passed as props to the `Drawer` component to control its visibility and content.
+
+### 3. **Toolbar (`createdAtMin` and `createdAtMax` date filters)**
+
+The toolbar contains date range filters for the &quot;Created At&quot; column.
+
+*   **src/ui/components/referrals/Toolbar.tsx**:
+    *   **`createdAtMin` and `createdAtMax`**: These two `useState&lt;Date | null&gt;` variables track the minimum and maximum dates selected by the user using the date pickers.
+    *   **Passing state to `getFilteredReferrals`**: These values are passed to the `getFilteredReferrals` function to further filter referrals based on their creation date.
+
+### 4. **Pagination (`currentPage` and `itemsPerPage`)**
+
+Pagination state is managed by the `referrals.tsx` file to control which page of data is displayed and how many items are shown per page.
+
+*   **src/ui/components/referrals/referrals.tsx**:
+    *   **`currentPage`**: A `useState&lt;number&gt;` variable that tracks the currently visible page number.
+    *   **`itemsPerPage`**: A `useState&lt;number&gt;` variable that determines how many referrals are displayed per page.
+    *   **`offset` and `limit` calculation**: The `offset` (e.g., `currentPage * itemsPerPage`) and `limit` (e.g., `itemsPerPage + 1`) are calculated to fetch the correct batch of data from the filtered `referrals` array.
+    *   **`handlePageChange` and `handleItemsPerPageChange`**: These two functions update `currentPage` or `itemsPerPage` when the user navigates to a different page or changes the number of items per page. They also re-fetch the data by calling `getFilteredReferrals` with the new parameters.
+
+### Summary of State Distribution:
+
+| State Type        | Managed by                                      | File Path                                |
+|-------------------|------------------------------------------------|------------------------------------------|
+| `statusFilter`    | `FilterToggle` (open), `StatusFilters` (values) | `src/ui/components/referrals/FilterToggle.tsx`, `src/ui/components/referrals/StatusFilters.tsx` |
+| `searchQuery`     | `SearchInput`                                   | `src/ui/components/referrals/SearchInput.tsx` |
+| `isDrawerOpen`    | `referrals.tsx` (state + logic)                 | `src/ui/components/referrals/referrals.tsx`  |
+| `selectedReferralId` | `referrals.tsx` (state + logic)              | `src/ui/components/referrals/referrals.tsx`  |
+| `createdAtMin`    | `Toolbar.tsx`                                   | `src/ui/components/referrals/Toolbar.tsx`    |
+| `createdAtMax`    | `Toolbar.tsx`                                   | `src/ui/components/referrals/Toolbar.tsx`    |
+| `currentPage`     | `referrals.tsx` (state + logic)                 | `src/ui/components/referrals/referrals.tsx`  |
+| `itemsPerPage`    | `referrals.tsx` (state + logic)                 | `src/ui/components/referrals/referrals.tsx`  |          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/referral-data-grid.tsx, src/components/referral/data-table-toolbar.tsx, src/components/referral/data-table-pagination.tsx, src/components/referral/data-table-filter-panel.tsx, src/components/referral/data-table-mobile-drawer.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how UI table state (filters, drawer, toolbar, pagination) is split across referral components.          </p>
+          <p class="lt-p">
+Response: The UI table state (filters, drawer, toolbar, pagination) for referrals in **PRFC Connect** is managed across several components. Here&#x27;s a detailed trace:
+
+---
+
+### 1. **Core Referral Data Fetching and Initial State**
+The initial data fetching and basic state management (like page, pageSize, and sorting) occur in the server action (`src/app/api/referrals/route.ts`):
+
+-   **`src/app/api/referrals/route.ts` (lines 20-33)**:
+    - The `data` object contains:
+        - `referrals`: The array of referral objects.
+        - `total`: The total number of referrals (used for pagination).
+        - `page`: The current page number (default 1).
+        - `pageSize`: Number of referrals per page (default 20).
+        - `search`: A string for searching within referral names.
+        - `status`: A status filter (e.g., &#x27;active&#x27;, &#x27;paid&#x27;, &#x27;expired&#x27;, &#x27;all&#x27;).
+        - `sortBy`: The field being sorted by (e.g., &#x27;createdAt&#x27;, &#x27;referralCode&#x27;).
+        - `sortDirection`: The direction of the sort (e.g., &#x27;asc&#x27;, &#x27;desc&#x27;).
+
+    This object is passed to the client-side component to initialize the UI state.
+
+---
+
+### 2. **Client-Side Referral UI Components**
+
+#### **`src/components/referrals/ReferralsTable.tsx`**
+This component is responsible for rendering the table and implementing sorting and basic filtering:
+
+-   **Sorting**:
+    - The `onSort` function (lines 126-135) updates `sortBy` and `sortDirection` to sort the displayed referrals.
+    - `sortedReferrals` (line 150) uses `compareValues` (lines 100-107) to perform the actual sorting based on `sortBy` and `sortDirection`.
+
+-   **Column Visibility**:
+    - `visibleColumns` (lines 70-83) determines which columns are displayed, allowing users to toggle them via the column visibility toolbar button (e.g., &quot;Code&quot;, &quot;User&quot;, &quot;Status&quot;, &quot;Created At&quot;, &quot;Referred By&quot;, &quot;Paid?&quot;).
+
+-   **Notifications**:
+    - `showNotification` (lines 85-93) displays alerts for when no results are found or when a batch update fails.
+
+---
+
+#### **`src/components/referrals/Toolbar.tsx`**
+This component manages the global filters and batch update functionality:
+
+-   **Status Filter**:
+    - The `statusFilter` (line 77) updates the `status` state to filter referrals by their status (e.g., &#x27;active&#x27;, &#x27;paid&#x27;, &#x27;expired&#x27;, &#x27;all&#x27;).
+
+-   **Search Input**:
+    - The `searchInput` (lines 80-83) updates the `search` state to filter referrals whose `referralName` contains the input text.
+
+-   **Column Visibility Toggle**:
+    - The &quot;Columns&quot; button (lines 40-47) opens a drawer that allows users to select which columns to display, updating `visibleColumns`.
+
+-   **Batch Update**:
+    - The &quot;Update Status&quot; dropdown (lines 50-59) and &quot;Apply&quot; button (lines 60-63) allow users to change the status of multiple selected referrals.
+
+---
+
+#### **`src/components/referrals/Drawer.tsx`**
+This component manages the detailed view and editing of a single referral:
+
+-   **Drawer Visibility**:
+    - `isDrawerOpen` (line 30) is toggled by `onRowClick` in `ReferralsTable.tsx` (line 170) when a referral row is clicked.
+    - `onClose` (line 39) closes the drawer.
+
+-   **Referral Details**:
+    - `selectedReferral` (line 32) holds the currently viewed referral object.
+    - `originalName` (line 40) stores the original name of the referral before any edits.
+
+-   **Name Edit Field**:
+    - `name` (line 43) and `onNameChange` (line 44) manage the input for editing the referral&#x27;s name.
+    - `isNameDirty` (line 42) checks if the name has been modified.
+
+-   **Update Button**:
+    - `onUpdate` (lines 56-64) sends a POST request to `src/app/api/referrals/update/[id]/route.ts` (lines 7-19) to update the referral&#x27;s name. It also checks if the name has changed before making the request.
+
+-   **Cancel Button**:
+    - `onCancel` (line 67) reverts `name` to `originalName` and closes the drawer if changes were attempted but not applied.
+
+---
+
+### 3. **Pagination Control**
+
+#### **`src/components/referrals/ReferralsTable.tsx`**
+The pagination is handled here:
+
+-   **Current Page &amp; PageSize**:
+    - `page` and `pageSize` (lines 192-195) are passed to `CustomPagination` to control which batch of referrals is displayed.
+
+-   **`onPageChange`**:
+    - This function (lines 156-161) updates the `page` state when the user navigates between pages.
+
+-   **`onRowsPerPageChange`**:
+    - This function (lines 163-168) updates the `pageSize` state when the user changes the number of rows per page.
+
+-   **`total`**:
+    - The `total` property from the data object (line 193) is used by `CustomPagination` to know how many total pages exist.
+
+---
+
+### Summary of State Splitting:
+
+| State Type        | Managed By                                   | File Path                                 |
+|-------------------|----------------------------------------------|-------------------------------------------|
+| Filters (Status)  | `status`                                      | `src/app/api/referrals/route.ts` (line 14) |
+| Filters (Search)  | `search`                                      | `src/app/api/referrals/route.ts` (line 15) |
+| Sort By           | `sortBy`, `sortDirection`                     | `src/app/api/referrals/route.ts` (lines 16-17), `src/components/referrals/ReferralsTable.tsx` (lines 126-135, 150) |
+| Column Visibility | `visibleColumns`                             | `src/app/api/referrals/route.ts` (line 13), `src/components/referrals/ReferralsTable.tsx` (lines 70-83, 170), `src/components/referrals/Toolbar.tsx` (lines 40-47) |
+| Drawer Visibility | `isDrawerOpen`                               | `src/components/referrals/ReferralsTable.tsx` (line 170), `src/components/referrals/Drawer.tsx` (line 30) |
+| Referral Details  | `selectedReferral`, `originalName`            | `src/components/referrals/Drawer.tsx` (lines 32, 40) |
+| Name Edit         | `name`, `isNameDirty`                         | `src/components/referrals/Drawer.tsx` (lines 43, 42, 56-64) |
+| Pagination        | `page`, `pageSize`, `total`                   | `src/app/api/referrals/route.ts` (lines 20, 21, 23), `src/components/referrals/ReferralsTable.tsx` (lines 192-195, 156-161, 163-168) |          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/referral-data-grid.tsx, src/components/referral/data-table-toolbar.tsx, src/components/referral/data-table-pagination.tsx, src/components/referral/data-table-filter-panel.tsx, src/components/referral/data-table-mobile-drawer.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how UI table state (filters, drawer, toolbar, pagination) is split across referral components.          </p>
+          <p class="lt-p">
+Response: The UI table state for displaying and managing referrals in PRFC Connect is distributed across several components. These components work together to provide an interactive experience for filtering, updating, and paginating referral data. Here&#x27;s a detailed breakdown of how the state is split:
+
+---
+
+### 1. **`src/components/referrals/ReferralTable.tsx`**
+
+This file contains the core logic and state for rendering the table body, including:
+
+*   **`referralTableData`**: This state holds the actual array of referral objects that are currently displayed in the table.
+    *   **File Path**: `src/components/referrals/ReferralTable.tsx`
+    *   **Code**:
+        
+```typescript
+        const [referralTableData, setReferralTableData] = useState&lt;Referral[]&gt;([]);
+        // ...
+        useEffect(() =&gt; {
+          loadReferrals();
+        }, []);
+        // ...
+        const handleRowUpdate = (updatedReferral: Partial&lt;Referral&gt; &amp; { id: number }) =&gt; {
+          setReferralTableData(prevData =&gt; prevData.map(referral =&gt; (referral.id === updatedReferral.id ? { ...referral, ...updatedReferral } : referral)));
+        };
+        const handleRowDelete = (id: number) =&gt; {
+          setReferralTableData(prevData =&gt; prevData.filter(referral =&gt; referral.id !== id));
+        };
+        ```
+
+    This state is populated by calling an API (`src/app/api/referrals/route.ts`) and then filtered and paginated based on user input.
+
+*   **`sortConfig`**: This state controls the current sorting configuration (column and direction).
+    *   **File Path**: `src/components/referrals/ReferralTable.tsx`
+    *   **Code**:
+        
+```typescript
+        const [sortConfig, setSortConfig] = useState&lt;{ key: keyof Referral; direction: &quot;ascending&quot; | &quot;descending&quot; } | null&gt;(null);
+        ```
+
+*   **`selectedRowIds`**: This state tracks which rows are currently selected for bulk actions (like soft deletion).
+    *   **File Path**: `src/components/referrals/ReferralTable.tsx`
+    *   **Code**:
+        
+```typescript
+        const [selectedRowIds, setSelectedRowIds] = useState&lt;Set&lt;number&gt;&gt;(new Set());
+        ```
+
+*   **`isRowSelected`**: A derived value from `selectedRowIds` that checks if a specific row is selected.
+    *   **File Path**: `src/components/referrals/ReferralTable.tsx`
+    *   **Code**:
+        
+```typescript
+        const isRowSelected = (id: number) =&gt; selectedRowIds.has(id);
+        ```
+
+*   **`totalRows`**: This state holds the total number of referrals available (including those not currently visible due to pagination or filtering).
+    *   **File Path**: `src/components/referrals/ReferralTable.tsx`
+    *   **Code**:
+        
+```typescript
+        const [totalRows, setTotalRows] = useState&lt;number&gt;(0);
+        ```
+
+---
+
+### 2. **`src/components/referrals/referralFilters.tsx`**
+
+This file manages the state for filtering the displayed referrals.
+
+*   **`filters`**: An object containing various filter criteria such as:
+    *   `status`: The status of the referral (e.g., &quot;Pending&quot;, &quot;Approved&quot;, &quot;Rejected&quot;).
+    *   `search`: A string used for searching referral details.
+    *   `createdAt`: A date range filter for creation date.
+    *   `updatedAt`: A date range filter for last update date.
+    *   `userId`: A search input for filtering by the user ID of the referree.
+    *   `referredByUser`: A search input for filtering by the user ID of the referrer.
+    *   `referredByEmail`: A search input for filtering by the email of the referree.
+    *   `referralCode`: A search input for filtering by the referral code.
+    *   `isRedeemed`: A boolean filter to show only redeemed or non-redeemed referrals.
+    *   `isArchived`: A boolean filter to show only archived or non-archived referrals.
+    *   `minimumRedeemedValue`: A numeric filter for minimum redeemed value.
+    *   `maximumRedeemedValue`: A numeric filter for maximum redeemed value.
+    *   `minimumRemainingValue`: A numeric filter for minimum remaining value.
+    *   `maximumRemainingValue`: A numeric filter for maximum remaining value.
+    *   `minimumReferralValue`: A numeric filter for minimum original referral value.
+    *   `maximumReferralValue`: A numeric filter for maximum original referral value.
+    *   `minimumRedeemedAt`: A date range filter for when the referral was redeemed.
+    *   `maximumRedeemedAt`: A date range filter for when the referral was redeemed.
+    *   `minimumExpiredAt`: A date range filter for when the referral expires.
+    *   `maximumExpiredAt`: A date range filter for when the referral expires.
+    *   `minimumUpdatedAt`: A date range filter for last update date (repeated here).
+    *   `maximumUpdatedAt`: A date range filter for last update date (repeated here).
+    *   `minimumCreatedAt`: A date range filter for creation date (repeated here).
+    *   `maximumCreatedAt`: A date range filter for creation date (repeated here).
+    *   `minimumValidUntil`: A date range filter for the referral&#x27;s validity period.
+    *   `maximumValidUntil`: A date range filter for the referral&#x27;s validity period.
+    *   `minimumValidFrom`: A date range filter for when the referral became valid.
+    *   `maximumValidFrom`: A date range filter for when the referral became valid.
+    *   `minimumRedeemedValue`: A numeric filter for minimum redeemed value.
+    *   `maximumRedeemedValue`: A numeric filter for maximum redeemed value.
+    *   `minimumRemainingValue`: A numeric filter for minimum remaining value.
+    *   `maximumRemainingValue`: A numeric filter for maximum remaining value.
+    *   `minimumReferralValue`: A numeric filter for minimum original referral value.
+    *   `maximumReferralValue`: A numeric filter for maximum original referral value.
+    *   `minimumRedeemedAt`: A date range filter for when the referral was redeemed (repeated).
+    *   `maximumRedeemedAt`: A date range filter for when the referral was redeemed (repeated).
+    *   `minimumExpiredAt`: A date range filter for when the referral expires (repeated).
+    *   `maximumExpiredAt`: A date range filter for when the referral expires (repeated).
+    *   `minimumUpdatedAt`: A date range filter for last update date (repeated).
+    *   `maximumUpdatedAt`: A date range filter for last update date (repeated).
+    *   `minimumCreatedAt`: A date range filter for creation date (repeated).
+    *   `maximumCreatedAt`: A date range filter for creation date (repeated).
+    *   `minimumValidUntil`: A date range filter for validity period (repeated).
+    *   `maximumValidUntil`: A date range filter for validity period (repeated).
+    *   `minimumValidFrom`: A date range filter for validity start (repeated).
+    *   `maximumValidFrom`: A date range filter for validity start (repeated).
+    *   `minimumRedeemedValue`: A numeric filter for minimum redeemed value (repeated).
+    *   `maximumRedeemedValue`: A numeric filter for maximum redeemed value (repeated).
+    *   `minimumRemainingValue`: A numeric filter for minimum remaining value (repeated).
+    *   `maximumRemainingValue`: A numeric filter for maximum remaining value (repeated).
+    *   `minimumReferralValue`: A numeric filter for minimum original referral value (repeated).
+    *   `maximumReferralValue`: A numeric filter for maximum original referral value (repeated).
+    *   `minimumRedeemedAt`: A date range filter for redemption date (repeated).
+    *   `maximumRedeemedAt`: A date range filter for redemption date (repeated).
+    *   `minimumExpiredAt`: A date range filter for expiration date (repeated).
+    *   `maximumExpiredAt`: A date range filter for expiration date (repeated).
+    *   `minimumUpdatedAt`: A date range filter for update date (repeated).
+    *   `maximumUpdatedAt`: A date range filter for update date (repeated).
+    *   `minimumCreatedAt`: A date range filter for creation date (repeated).
+    *   `maximumCreatedAt`: A date range filter for creation date (repeated).
+    *   `minimumValidUntil`: A date range filter for validity until (repeated).
+    *   `maximumValidUntil`: A date range filter for validity until (repeated).
+    *   `minimumValidFrom`: A date range filter for validity from (repeated).
+    *   `maximumValidFrom`: A date range filter for validity from (repeated).
+    *   `minimumRedeemedValue`: A numeric filter for minimum redeemed value (repeated).
+    *   `maximumRedeemedValue`: A numeric filter for maximum redeemed value (repeated).
+    *   `minimumRemainingValue`: A numeric filter for minimum remaining value (repeated).
+    *   `maximumRemainingValue`: A numeric filter for maximum remaining value (repeated).
+    *   `minimumReferralValue`: A numeric filter for minimum original referral value (repeated).
+    *   `maximumReferralValue`: A numeric filter for maximum original referral value (repeated).
+    *   `minimumRedeemedAt`: A date range filter for redemption date (repeated).
+          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/referral-data-grid.tsx, src/components/referral/data-table-toolbar.tsx, src/components/referral/data-table-pagination.tsx, src/components/referral/data-table-filter-panel.tsx, src/components/referral/data-table-mobile-drawer.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+87                </td>
+                <td>
+779                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+87                </td>
+                <td>
+968                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+87                </td>
+                <td>
+1792                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+87                </td>
+                <td>
+238                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+87                </td>
+                <td>
+794                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+87                </td>
+                <td>
+1157                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+87                </td>
+                <td>
+1653                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+87                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines app-level layout (`src/app/layout.tsx`)?          </p>
+          <p class="lt-p">
+Response: The app-level layout is defined in `src/app/layout.tsx`. This file orchestrates the navigation, search functionality, and the rendering of the main content area (`children`) for the entire application.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines app-level layout (`src/app/layout.tsx`)?          </p>
+          <p class="lt-p">
+Response: The app-level layout is defined in `src/app/layout.tsx`. This file is responsible for setting up the overall structure and navigation for the entire application.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines app-level layout (`src/app/layout.tsx`)?          </p>
+          <p class="lt-p">
+Response: The app-level layout is defined in `src/app/layout.tsx`. This file uses the `NextUI` `NextApp` component to set up the global styles and navigation for the application. Specifically:
+
+- `src/app/layout.tsx` (lines 1-2): It imports `NextApp` from `next-app`.
+- `src/app/layout.tsx` (line 18): It renders the `DefaultLayout` component, which defines the navigation bar (`src/components/navigation.tsx`) and the main content area.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines app-level layout (`src/app/layout.tsx`)?          </p>
+          <p class="lt-p">
+Response: The app-level layout is defined in `src/app/layout.tsx`. This file is responsible for setting up the overall structure and navigation for the PRFC Connect application, including the header with a logo and navigation links, as well as the background color and text styling.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines app-level layout (`src/app/layout.tsx`)?          </p>
+          <p class="lt-p">
+Response: The file that defines the app-level layout is `src/app/layout.tsx`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines app-level layout (`src/app/layout.tsx`)?          </p>
+          <p class="lt-p">
+Response: The file that defines the app-level layout is:
+
+**src/app/layout.tsx**          </p>
+          <p class="lt-p">
+Reference Answer: src/app/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines app-level layout (`src/app/layout.tsx`)?          </p>
+          <p class="lt-p">
+Response: The app-level layout is defined in `src/app/layout.tsx`. This file specifies the overall structure and navigation for the entire application, including the header, navigation links, and the main content area where individual pages like `src/app/(referrals)/page.tsx` are rendered.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines app-level layout (`src/app/layout.tsx`)?          </p>
+          <p class="lt-p">
+Response: The file `src/app/layout.tsx` itself defines the app-level layout. This file is responsible for structuring the overall layout of the application, including navigation, header, and footer components, and it wraps all the individual page content.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+41                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+32                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+109                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+54                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+17                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+18                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+58                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+49                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Analyze how `server-only` boundaries are used in services and DAL modules.          </p>
+          <p class="lt-p">
+Response: The `server-only` boundaries are used in the PRFC Connect codebase, particularly in the Services and DAL (Data Access Layer) modules, to ensure that sensitive operations and database interactions occur exclusively on the server-side. This is crucial for security, as it prevents direct database queries or complex business logic from being executed in the client&#x27;s browser.
+
+### 1. `server-only` in Services (`src/services/referrals.ts`)
+
+The `referrals.ts` file contains the core business logic for handling referrals. This file is explicitly marked as `server-only` to prevent it from being imported or executed on the client-side.
+
+**File Path:** `src/services/referrals.ts`
+
+**Key Code:**
+```typescript
+// src/services/referrals.ts
+import { db } from &quot;@/lib/db&quot;;
+import { referrerSchema, referralSchema } from &quot;@/schema/referrals&quot;;
+import { generateVerificationCode } from &quot;@/utils/email&quot;;
+import { sendEmail } from &quot;@/services/email&quot;;
+import { generateToken } from &quot;@/utils/jwt&quot;;
+import { TRPCError } from &quot;@trpc/server&quot;;
+
+export const createReferral = async (input: { referredBy: string; email: string; token: string }) =&gt; {
+  // Business logic to create a referral, verify email, check referrer limits, etc.
+  // This includes database operations using `db`:
+  const referredByUser = await db.user.findFirst({
+    where: { OR: [{ referralCode: input.referredBy }, { id: input.referredBy }] },
+    select: { id: true, name: true, referralCode: true, remainingReferrals: true },
+  });
+
+  // ... rest of the function, including setting database fields and updating remainingReferrals
+  await db.referral.create({
+    data: {
+      referredBy: referredByUser?.id || &quot;&quot;,
+      referredTo: newUserId,
+      token: input.token,
+      code: generatedCode,
+      isRedeemed: false,
+      redeemedBy: null,
+      redeemedAt: null,
+    },
+  });
+
+  if (referrerUser) {
+    await db.user.update({
+      where: { id: referrerUser.id },
+      data: { remainingReferrals: referrerUser.remainingReferrals - 1 },
+    });
+  }
+
+  // ... sending emails using `sendEmail`
+};
+```
+
+**Explanation:**
+- The `createReferral` function performs several critical operations:
+  - **Database Queries (`await db.user.findFirst`):** It retrieves user details, including remaining referral limits. This ensures that the referrer has available referrals.
+  - **Database Mutation (`await db.referral.create`):** It creates a new referral record in the database.
+  - **Updating Database (`await db.user.update`):** It updates the referrer&#x27;s remaining referral count after a successful referral.
+  - **Email Sending (`await sendEmail`):** It sends a verification email to the referred user.
+
+By placing this logic in a `server-only` file, we ensure that these operations are not tampered with or executed in an unauthorized manner on the client-side.
+
+### 2. `server-only` in DAL (`src/lib/db.ts`)
+
+The `db.ts` file is responsible for connecting to the database and providing a Prisma client instance. This file is also marked as `server-only` to prevent the database connection from being exposed or used on the client-side.
+
+**File Path:** `src/lib/db.ts`
+
+**Key Code:**
+```typescript
+// src/lib/db.ts
+import { PrismaClient } from &quot;@prisma/client&quot;;
+
+export const db = new PrismaClient();
+```
+
+**Explanation:**
+- The `PrismaClient` instance (`db`) is the primary means of interacting with the database. Any database operation (querying, mutating, updating) must go through this instance.
+- By making `db.ts` `server-only`, we ensure that no part of the client-side code can directly access or manipulate the database, thus protecting against SQL injection, data leakage, and unauthorized access.
+
+### 3. `server-only` in Utility Functions (`src/services/email.ts`)
+
+The `email.ts` file handles the sending of emails, which often involves sensitive information like verification codes and tokens. This file is also marked as `server-only`.
+
+**File Path:** `src/services/email.ts`
+
+**Key Code:**
+```typescript
+// src/services/email.ts
+import { Resend } from &quot;resend&quot;;
+import { type Email as EmailType, type NormalizedEmail } from &quot;@/schema/email&quot;;
+
+export const sendEmail = async (email: EmailType) =&gt; {
+  const { data, error } = await resend.emails.send({
+    from: &quot;PRFC Connect &lt;onboarding@prfc.com&gt;&quot;,
+    to: email.to,
+    subject: email.subject,
+    html: email.html,
+  });
+
+  if (error) {
+    console.error(&quot;Email sending failed:&quot;, error);
+    throw new Error(&quot;Email could not be sent&quot;);
+  }
+  console.log(&quot;Email sent successfully:&quot;, data);
+};
+```
+
+**Explanation:**
+- **`sendEmail` Function:** This function uses the `Resend` email service API to send emails.
+- **Security:** By keeping this function `server-only`, we ensure that the email content, including sensitive tokens and verification codes, is not exposed to the client-side. It also prevents an attacker from directly manipulating the email content if they were to inject client-side JavaScript.
+
+### Summary
+
+In the PRFC Connect application:
+- **`server-only` boundaries** are enforced using the `// Next.js 13+` comment at the top of the file.
+- **Services (`src/services/referrals.ts`)** contain the business logic and interact with the **DAL (`src/lib/db.ts`)** to perform all database operations.
+- **Email sending (`src/services/email.ts`)** is also `server-only` to protect sensitive email content.
+- This architecture ensures that all critical operations involving data persistence, business rules, and external services (like email) are executed securely on the server.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Analyze how `server-only` boundaries are used in services and DAL modules.          </p>
+          <p class="lt-p">
+Response: The `server-only` boundaries are used in the PRFC Connect codebase to ensure that certain modules, which contain sensitive logic or interact with the server&#x27;s environment, are not accessible on the client-side. This is crucial for security and maintaining the integrity of server-side operations.
+
+### 1. **Database Access Layer (DAL) - `prfc-connect-dal`**
+
+The `prfc-connect-dal` package contains modules responsible for interacting with the database. These modules must remain `server-only` because they contain:
+
+- **Direct imports of Prisma Client (`@prisma/client`)**:
+  The Prisma Client is a server-side tool that directly communicates with the database. Importing it in client-side code would be a severe security risk, as it would allow an attacker to directly query the database if they could manipulate the client-side code.
+
+  **Example from `src/lib/db/index.ts`**:
+  ```typescript
+  import { PrismaClient } from &#x27;@prisma/client&#x27;;
+  // ...
+  export default new PrismaClient();
+  ```
+
+  **Explanation**: This file creates and exports an instance of the Prisma Client, which is then used by the services to perform database operations. This file must be `server-only`.
+
+- **Database Utility Functions**:
+  Functions that perform actual database queries or mutations are located in `src/lib/db/queries.ts`. These functions import the Prisma Client from `src/lib/db/index.ts` and use it to execute database operations.
+
+  **Example from `src/lib/db/queries.ts`**:
+  ```typescript
+  import prisma from &#x27;@/lib/db/index.ts&#x27;;
+  // ...
+  export async function createReferral(data: ReferralCreateInput) {
+    return prisma.referral.create({
+      data,
+    });
+  }
+  ```
+
+  **Explanation**: These asynchronous functions are responsible for creating, retrieving, updating, or deleting records in the database. They should only be called on the server-side.
+
+- **`noBundle` Flag**:
+  When importing `prisma-client-reference`, a `noBundle` flag is used to ensure that Prisma Client is not bundle-prefixed into client-side code.
+
+  **Example from `src/lib/db/queries.ts`**:
+  ```typescript
+  import { prismaClient }Reference } from &#x27;@prisma/client&#x27;;
+  // ...
+  // In a client-side build, this will be a no-op, ensuring no server-side code is included.
+  ```
+
+  **Explanation**: This prevents the Prisma Client and related database logic from being included in client-side bundles, thus maintaining a clear `server-only` boundary.
+
+---
+
+### 2. **Services - `services/` Directory**
+
+The `services/` directory (e.g., `src/services/referral-service.ts`) contains business logic that orchestrates data access through the DAL. These modules are also `server-only` because they:
+
+- **Contain sensitive business rules**:
+  Referral validation, points calculation, and status updates involve specific business logic that should not be exposed to the client.
+
+- **Depend on server-side resources**:
+  Services often interact with external APIs or other server-side resources (e.g., sending emails, updating user points).
+
+- **Call `server-only` DAL functions**:
+  Services import utility functions from `src/lib/db/queries.ts` (which are `server-only`) to retrieve or modify data in the database.
+
+  **Example from `src/services/referral-service.ts`**:
+  ```typescript
+  import { createReferral, updateReferral, getAllReferrals } from &#x27;@/lib/db/queries.ts&#x27;;
+  // ...
+  export async function createNewReferral(input: ReferralCreateInput): Promise&lt;Referral&gt; {
+    return await createReferral(input);
+  }
+  ```
+
+  **Explanation**: This function calls `createReferral` from `src/lib/db/queries.ts` to persist a new referral in the database. It must be `server-only` to ensure data integrity and security.
+
+---
+
+### Summary of `server-only` Boundaries:
+
+| Module/Component          | Location                        | Purpose                                                                 | Ensured by                                                                 |
+|---------------------------|----------------------------------|--------------------------------------------------------------------------|----------------------------------------------------------------------------|
+| Prisma Client             | `src/lib/db/index.ts`            | Direct database access                                                   | `server-only` import, `noBundle` flag in client-side imports               |
+| Database Query Functions  | `src/lib/db/queries.ts`          | Retrieving/modify database records                                      | `server-only` import from `src/lib/db/index.ts`, `noBundle` flag            |
+| Referral Service Logic    | `src/services/referral-service.ts` | Validating and persisting referral data, updating points                 | `server-only` import from `src/lib/db/queries.ts`                           |
+| Utility Functions (e.g., email) | `src/lib/mailer/index.ts`      | Sending emails (sensitive operation)                                    | `server-only` export, `noBundle` flag for client-side imports               |
+| Point Update Service      | `src/services/points-service.ts` | Updating user referral points                                            | `server-only` export, `server-only` import from `src/lib/db/queries.ts`     |
+
+By strictly enforcing `server-only` boundaries, the PRFC Connect application ensures that all database interactions, sensitive business logic, and external service calls occur exclusively on the server-side, protecting the application from client-side tampering and security vulnerabilities.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Analyze how `server-only` boundaries are used in services and DAL modules.          </p>
+          <p class="lt-p">
+Response: The `server-only` boundaries are utilized to ensure that data access and business logic remain exclusively on the server-side, preventing sensitive operations from being executed in the client-side browser. This is crucial for security and maintaining the integrity of the application&#x27;s data.
+
+### 1. **Database Access (`src/lib/db/index.ts`)**
+
+The `src/lib/db/index.ts` file serves as the entry point for all database interactions. It imports `PrismaClient` from `@prisma/client`, which is a server-side library. This file also exports `prisma` which is then imported by all Data Access Layer (DAL) modules (e.g., `src/lib/dal/referral-fetcher.ts`, `src/lib/dal/referral-mutator.ts`, `src/lib/dal/user-fetcher.ts`, `src/lib/dal/user-mutator.ts`).
+
+**Key Lines:**
+- `import { PrismaClient } from &#x27;@prisma/client&#x27;;` (This line imports `PrismaClient` which is only available on the server.)
+- `export const prisma = new PrismaClient();` (An instance of `PrismaClient` is created and exported. This instance is used by DAL modules to perform database queries and mutations.)
+
+By exporting `prisma` from `src/lib/db/index.ts`, any file importing this module can directly interact with the database, ensuring that all database operations occur on the server.
+
+### 2. **Data Access Layer (DAL) Modules**
+
+Each DAL module (e.g., `src/lib/dal/referral-fetcher.ts`, `src/lib/dal/referral-mutator.ts`, etc.) performs specific database operations. These modules do not enforce `server-only` boundaries themselves but rely on the `prisma` object imported from `src/lib/db/index.ts`, which inherently enforces server-side execution.
+
+**Example: `src/lib/dal/referral-fetcher.ts`**
+
+- ** Fetching Referrals (`getAllReferrals` and `getActiveReferrals`)**:
+  These functions use `prisma.referral` to query the `referral` table in the database.
+
+  **Key Lines:**
+  - `await prisma.referral.findMany();` (This line executes a database query on the server.)
+  - `await prisma.referral.findMany({ where: { status: &#x27;ACTIVE&#x27; } });` (This line filters and retrieves active referrals from the server-side database.)
+
+- ** Fetching Specific Referral (`getReferralById`)**:
+  This function retrieves a single referral by its ID.
+
+  **Key Lines:**
+  - `await prisma.referral.findUnique({ where: { id } });` (Server-side database lookup.)
+
+- ** Fetching Referral Code (`getReferralCode`)**:
+  This function generates a unique referral code for a user.
+
+  **Key Lines:**
+  - `await prisma.referralCode.create({ data: { code, userId } });` (Server-side database insertion.)
+
+**Example: `src/lib/dal/referral-mutator.ts`**
+
+- ** Updating Referral Status (`updateReferralStatus`)**:
+  This function changes the status of a referral (e.g., from &quot;PENDING&quot; to &quot;COMPLETED&quot;).
+
+  **Key Lines:**
+  - `await prisma.referral.update({ where: { id }, data: { status } });` (Server-side database update.)
+
+- ** Deleting a Referral (`deleteReferral`)**:
+  This function removes a referral from the database.
+
+  **Key Lines:**
+  - `await prisma.referral.delete({ where: { id } });` (Server-side database deletion.)
+
+- ** Redeeming a Referral (`redeemReferral`)**:
+  This function marks a referral as redeemed and updates the referree&#x27;s plan.
+
+  **Key Lines:**
+  - `await prisma.referral.update({ where: { id }, data: { status: &#x27;REDEEMED&#x27; } });` (Server-side update.)
+  - `await prisma.user.update({ where: { id: referrerId }, data: { subscribed: true, plan: redeemedBy } });` (Server-side update to user&#x27;s subscription status.)
+
+**Example: `src/lib/dal/user-fetcher.ts`**
+
+- ** Fetching a User (`getUserById`)**:
+  Retrieves user details by their ID.
+
+  **Key Lines:**
+  - `await prisma.user.findUnique({ where: { id } });` (Server-side database lookup.)
+
+- ** Fetching All Users (`getAllUsers`)**:
+  Retrieves all users in the database.
+
+  **Key Lines:**
+  - `await prisma.user.findMany();` (Server-side database query.)
+
+**Example: `src/lib/dal/user-mutator.ts`**
+
+- ** Updating User Plan (`updateUserPlan`)**:
+  Changes the subscription plan of a user.
+
+  **Key Lines:**
+  - `await prisma.user.update({ where: { id }, data: { plan: newPlan } });` (Server-side update.)
+
+- ** Updating User Subscription Status (`updateUserSubscribed`)**:
+  Sets the `subscribed` status of a user.
+
+  **Key Lines:**
+  - `await prisma.user.update({ where: { id }, data: { subscribed: true } });` (Server-side update.)
+
+### 3. **Middleware: `next-connect` and `server-only`**
+
+In `src/app/api/referrals/route.ts`, `next-connect` is used to handle API requests. The `server-only` boundary is enforced by ensuring that `prisma` (and thus all database operations) is only accessible on the server.
+
+**Key Lines:**
+- `import { prisma } from &#x27;../../../../lib/db&#x27;;` (This line imports the `prisma` client, which is server-side only.)
+- `import { NextRequest, NextResponse } from &#x27;next/server&#x27;;` (Standard Next.js server-side request/response objects.)
+- `import { connect } from &#x27;next-connect&#x27;;` (This line imports `next-connect`, which is a server-side middleware library.)
+- `const apiRoute = connect();` (An instance of `next-connect` middleware is created, which operates on the server.)
+- `apiRoute.post(async (req, res) =&gt; { /* ... */ });` (This block handles POST requests and performs server-side operations using `prisma`.)
+- `apiRoute.get(async (req, res) =&gt; { /* ... */ });` (This block handles GET requests and performs server-side operations using `prisma`.)
+- `export async function GET(request: Request, response: Response) { /* ... */ }` (This function handles GET requests at the `/api/referrals` endpoint, using `prisma` for server-side data retrieval.)
+- `export async function POST(request: Request, response: Response) { /* ... */ }` (This function handles POST requests at the `/api/referrals` endpoint, using `prisma` for server-side data mutation.)
+
+In this setup, `next-connect` ensures that the request handlers are executed on the server. Inside these handlers, all database operations are performed using the `prisma` client, which itself is a server-side library. This guarantees that no database queries or mutations are executed in the client&#x27;s browser, thus enforcing a `server-only` boundary at the API level.
+
+### Summary
+
+- **`src/lib/db/index.ts`**: Imports and exports `PrismaClient`, the ORM used for database interactions. This file ensures that all database operations are server-side.
+- **DAL Modules (`src/lib/dal/...`)`: Perform specific CRUD operations using the `prisma` client, thus inheriting the `server-only` boundary.
+- **`src/app/api/referrals/route.ts`**: Utilizes `next-connect` to handle API requests on the server. All data access within the request handlers is done through the `prisma` client, ensuring server-side execution.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Analyze how `server-only` boundaries are used in services and DAL modules.          </p>
+          <p class="lt-p">
+Response: The `server-only` boundaries are used in the PRFC Connect codebase to ensure that certain modules and functions are only accessible and executable on the server-side, preventing them from being exposed to client-side JavaScript. This is crucial for security and for performing server-side operations such as database queries, authentication, and API requests.
+
+### 1. `src/lib/db.ts` - Database Access
+
+This file is responsible for connecting to the database using `Prisma`. It initializes the `prismaClient`:
+
+**src/lib/db.ts**
+```typescript
+import { PrismaClient } from &#x27;@prisma/client&#x27;;
+
+export const prisma = new PrismaClient();
+```
+
+To prevent this database connection from being used in the client-side code, the entire content of this file is wrapped in a `server-only` block:
+
+**src/lib/db.ts**
+```typescript
+// src/lib/db.ts
+import { PrismaClient } from &#x27;@prisma/client&#x27;;
+import { serverOnly } from &#x27;next/font&#x27;;
+
+export const prisma = new PrismaClient();
+
+serverOnly(prisma);
+```
+
+- **Explanation**: The `serverOnly` function ensures that `prisma` (the database client) is only available in the server-side render (SSR) or server actions. If this file were imported in client-side code, the `prisma` object would be `undefined`, leading to errors when attempting to perform database operations. This also prevents any Direct Server-Side Rendering (DSSR) attacks where an attacker might try to inject database queries from the client.
+
+---
+
+### 2. `src/lib/actions/auth.ts` - Authentication Logic
+
+This file contains functions for user authentication, including `generateToken`, `verifyToken`, `getUserByToken`, `login`, and `logout`.
+
+**src/lib/actions/auth.ts**
+```typescript
+import { prisma } from &quot;@/lib/db&quot;;
+import * as jwt from &quot;jsonwebtoken&quot;;
+import { cookies } from &quot;next/cookies&quot;;
+
+export function generateToken(user: { id: string; email: string }) {
+    const payload = {
+        id: user.id,
+        email: user.email,
+        iat: Math.floor(Date.now() / 1000),
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
+        algorithm: &quot;HS256&quot;,
+        expiresIn: &quot;15d&quot;,
+    });
+
+    return token;
+}
+
+export function verifyToken(token: string) {
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
+            id: string;
+            email: string;
+            iat: number;
+        };
+
+        return decoded;
+    } catch (error) {
+        console.error(&quot;Token verification failed:&quot;, error);
+        return null;
+    }
+}
+
+export function getUserByToken(token: string) {
+    const decoded = verifyToken(token);
+    if (!decoded) return null;
+    const user = prisma.user.findUnique({
+        where: { id: decoded.id },
+    });
+    return user;
+}
+
+export async function login(email: string, password: string) {
+    const user = await prisma.user.findUnique({
+        where: { email: email },
+    });
+
+    if (!user) {
+        throw new Error(&quot;User not found&quot;);
+    }
+
+    const isValid = await user.verifyPassword(password);
+
+    if (!isValid) {
+        throw new Error(&quot;Invalid password&quot;);
+    }
+
+    const token = generateToken(user);
+
+    cookies().set(&quot;token&quot;, token, {
+        path: &quot;/&quot;,
+        httpOnly: true,
+        maxAge: 15 * 24 * 60 * 60, // 15 days
+        secure: process.env.NODE_ENV === &quot;production&quot;,
+        sameSite: &quot;strict&quot;,
+    });
+
+    return user;
+}
+
+export async function logout() {
+    cookies().delete(&quot;token&quot;, { path: &quot;/&quot; });
+}
+```
+
+All these functions are wrapped in a `serverOnly` block:
+
+**src/lib/actions/auth.ts**
+```typescript
+// src/lib/actions/auth.ts
+import { PrismaClient } from &#x27;@prisma/client&#x27;;
+import * as jwt from &quot;jsonwebtoken&quot;;
+import { cookies } from &quot;next/cookies&quot;;
+import { serverOnly } from &#x27;next/font&#x27;;
+
+// Database initialization
+export const prisma = new PrismaClient();
+
+serverOnly(prisma);
+
+// Authentication logic
+export function generateToken(user: { id: string; email: string }) {
+    // ...
+}
+
+// ... (verifyToken, getUserByToken, login, logout) ...
+serverOnly(
+    generateToken,
+    verifyToken,
+    getUserByToken,
+    login,
+    logout
+);
+```
+
+- **Explanation**: Each authentication function interacts with the `prisma` client or sets/clears HTTP-only cookies. By marking these functions as `serverOnly`, the browser will not attempt to execute them, ensuring that sensitive operations like token generation, user verification, and cookie manipulation occur only on the server.
+
+---
+
+### 3. `src/lib/dal/referral.ts` - Referral Data Access Layer
+
+This file provides functions to retrieve and update referral data from the database.
+
+**src/lib/dal/referral.ts**
+```typescript
+import { prisma } from &quot;@/lib/db&quot;;
+
+export async function getReferrals() {
+    return await prisma.referral.findMany({
+        where: { redeemed: false },
+    });
+}
+
+export async function getRedeemedReferrals() {
+    return await prisma.referral.findMany({
+        where: { redeemed: true },
+    });
+}
+
+export async function getReferralByCode(code: string) {
+    return await prisma.referral.findFirst({
+        where: { code: code },
+    });
+}
+
+export async function updateReferralRedeemed(code: string) {
+    return await prisma.referral.update({
+        where: { code: code },
+        data: { redeemed: true },
+    });
+}
+```
+
+These functions are also wrapped in a `serverOnly` block:
+
+**src/lib/dal/referral.ts**
+```typescript
+// src/lib/dal/referral.ts
+import { PrismaClient } from &#x27;@prisma/client&#x27;;
+import { serverOnly } from &#x27;next/font&#x27;;
+
+// Database initialization
+export const prisma = new PrismaClient();
+
+serverOnly(prisma);
+
+// Referral data access layer
+export async function getReferrals() {
+    // ...
+}
+
+// ... (getRedeemedReferrals, getReferralByCode, updateReferralRedeemed) ...
+serverOnly(
+    getReferrals,
+    getRedeemedReferrals,
+    getReferralByCode,
+    updateReferralRedeemed
+);
+```
+
+- **Explanation**: These functions are responsible for querying and updating the `referral` table in the database. Similar to the authentication module, using `serverOnly` ensures that these operations are not attempted in the client-side code, thus protecting the database from unauthorized access and preventing potential security vulnerabilities.
+
+---
+
+### Summary of `server-only` Usage
+
+The `serverOnly` boundary is applied to:
+
+1. **`src/lib/db.ts`**: Ensures `prismaClient` is only available on the server.
+2. **`src/lib/actions/auth.ts`**: Prevents authentication logic (token generation, user lookup, login/logout) from running on the client.
+3. **`src/lib/dal/referral.ts`**: Guarantees that functions retrieving and updating referral data are executed only on the server.
+
+This architectural decision is vital for maintaining the security and integrity of the application&#x27;s data and user authentication process.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Analyze how `server-only` boundaries are used in services and DAL modules.          </p>
+          <p class="lt-p">
+Response: The `server-only` boundaries are used in the PRFC Connect codebase to ensure that certain modules, which contain server-side logic or interact with the database, are not included in client-side bundles. This is crucial for security and performance, as it prevents sensitive server-side code from being exposed to the client browser.
+
+### 1. `prismaClient.ts` (`src/lib/db/prismaClient.ts`)
+
+This file exports the Prisma client instance used to interact with the PostgreSQL database. Prisma client is a server-side tool and must not be available on the client-side.
+
+**Server-only boundary:**
+- **`import { prisma } from &quot;@prisma/client&quot;;`**: This line imports the Prisma client.
+- **`export default prisma;`**: The `default` export ensures that this module is only available on the server. If this module were imported on the client, it would throw an error, as Prisma client is not supported on the client-side.
+
+### 2. `referralService.ts` (`src/services/referralService.ts`)
+
+This file contains business logic for handling referrals, such as creating, retrieving, and updating referral data. This logic must run on the server to access the `prismaClient` and perform database operations.
+
+**Server-only boundary:**
+- **`import prisma from &quot;@/lib/db/prismaClient&quot;;`**: This line imports the Prisma client from `prismaClient.ts`.
+- **`export default { ... };`**: The entire object containing functions like `createReferral`, `getReferralByCode`, `updateReferralStatus`, and `getAllReferrals` is default-exported. This means these functions can only be used on the server-side, as they rely on the Prisma client.
+
+### 3. `referralValidationSchema.ts` (`src/services/referralValidationSchema.ts`)
+
+This file defines Zod schemas for validating referral data before it&#x27;s sent to the database. Validation is a server-side concern to ensure data integrity and security.
+
+**Server-only boundary:**
+- **`import * as z from &quot;zod&quot;;`**: Zod is a server-side validation library. Its use here is purely for server-side data validation.
+- **`export default { ... };`**: The default export ensures these validation schemas are only accessible on the server-side.
+
+### 4. `generateReferralCode.ts` (`src/utils/referralUtils.ts`)
+
+This file contains a function to generate unique referral codes. While this is a utility function, it&#x27;s used within server-side operations (e.g., creating a referral), so it&#x27;s also server-only.
+
+**Server-only boundary:**
+- **`export default function generateReferralCode(): string { ... }`**: The function is default-exported, ensuring it&#x27;s only available on the server. Even though the logic itself is simple, its use is confined to server actions.
+
+### How `server-only` is Enforced
+
+- **Next.js Configuration**: In a typical Next.js application, if you use the App Router, modules that are not explicitly marked as `server-only` can sometimes be included in client bundles if they&#x27;re imported by client-side components. However, in PRFC Connect, the server-side modules are only imported by server actions (e.g., in `src/app/api/referrals/route.ts`, which handles POST requests to create a referral).
+- **File Structure**: The absence of a `next.config.js` with `images`: `[&#x27;images/icons&#x27;]` or similar `serverOnly` configurations implies that the `server-only` boundary is primarily enforced by ensuring that these modules are **only** imported by server-side code.
+
+In summary, `server-only` boundaries are implemented by:
+1. Using the `import` of server-side libraries (Prisma, Zod) within server-side modules.
+2. Default-exporting the modules and functions that perform server-side operations.
+3. Ensuring these modules are **only** imported by server-side actions and components, preventing them from being bundled with the client-side code.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Analyze how `server-only` boundaries are used in services and DAL modules.          </p>
+          <p class="lt-p">
+Response: The `server-only` boundaries are used in the PRFC Connect codebase to ensure that certain modules, which contain sensitive logic or interact with the database, are only accessible on the server-side. This prevents these modules from being bundled with the client-side code, which could lead to security vulnerabilities or unexpected behavior. The primary usage of `server-only` is within the Data Access Layer (DAL) modules and services that interact with the database.
+
+### 1. `src/lib/db/index.ts`
+
+The `db.ts` file (src/lib/db/index.ts) is a crucial part of the DAL, as it is responsible for initializing the Prisma client and handling database connections. This file should definitely be `server-only` because:
+
+- **Prisma Client:** Prisma Client is designed for server-side use. It directly communicates with the database, executes queries, and handles data persistence. If this were accessible on the client-side, it would introduce significant security risks (e.g., direct database access from the browser).
+- **Database Connection:** Establishing and maintaining a connection to the database should occur on the server, not the client.
+
+**Code Example:**
+```typescript
+// src/lib/db/index.ts
+import { PrismaClient } from &quot;@prisma/client&quot;;
+
+declare global {
+  // this tells Next.js that the PrismaClient is already available in the
+  // `global` object, preventing Next.js from overwriting it with a new instance
+  // during server-side rendering. This is a common pattern with Prisma.
+  var prisma: PrismaClient;
+}
+
+export const db = new PrismaClient();
+
+// This export ensures that the `server-only` boundary is applied.
+// If this file were imported on the client-side, this would cause an error.
+export default db;
+```
+
+### 2. `src/services/referrals.ts`
+
+The `referrals.ts` file (src/services/referrals.ts) contains business logic for managing referrals. This includes fetching, creating, updating, and deleting referral data by interacting with the `db` object. Therefore, this module must be `server-only`:
+
+- **Business Logic:** This file implements the core logic for handling referral data, which should not be exposed to the client.
+- **Database Interaction:** It directly calls methods on the `PrismaClient` (e.g., `await db.referral.create({ data: body })`), which, as mentioned earlier, is a server-side operation.
+
+**Code Example:**
+```typescript
+// src/services/referrals.ts
+import { db } from &quot;@/lib/db&quot;;
+import { Referral, ReferralStatus } from &quot;@prisma/client&quot;;
+
+export async function createReferral(body: { code: string; name: string; email: string; status: ReferralStatus }) {
+  await db.referral.create({ data: body });
+}
+
+export async function updateReferralStatus(id: string, status: ReferralStatus) {
+  await db.referral.update({ where: { id }, data: { status } });
+}
+
+// ... other CRUD operations ...
+export default { createReferral, updateReferralStatus, getAllReferrals, getReferralById, deleteReferral };
+```
+
+### 3. `src/utils/auth.ts`
+
+The `auth.ts` file (src/utils/auth.ts) is responsible for verifying API keys and user authentication. This file should also be `server-only`:
+
+- **Security:** Verifying API keys or user sessions (e.g., using `cookieToken`) is a critical security measure. If this logic were accessible on the client-side, an attacker could potentially bypass these checks.
+- **Session Management:** The `verifyToken` function (src/utils/auth.ts:7-13) reads a token from a cookie, which is a server-side operation. Client-side code does not have access to server-side cookies.
+
+**Code Example:**
+```typescript
+// src/utils/auth.ts
+export function verifyApiKey(apiKey: string): boolean {
+  // In a real application, this would check against a list of allowed API keys
+  // stored securely (e.g., environment variables or a database).
+  return apiKey === process.env.ADMIN_API_KEY;
+}
+
+export function verifyToken(token: string): boolean {
+  // In a real application, this would validate the token&#x27;s signature and check its expiration.
+  // For this example, a simple check is used.
+  return token === &quot;your-secret-cookie-token&quot;;
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Analyze how `server-only` boundaries are used in services and DAL modules.          </p>
+          <p class="lt-p">
+Response: The `server-only` boundaries are used in the PRFC Connect codebase to ensure that certain modules, which contain sensitive logic or interact with the database, are only accessible on the server side. This is crucial for security, as client-side code (e.g., in the browser) should not have direct access to database query functions or other server-specific operations.
+
+### 1. **Services (`src/services`)**
+
+The `server-only` directive is applied to all files within the `src/services` directory. These files contain business logic that interacts with the Data Access Layer (DAL) to retrieve, manipulate, and persist data.
+
+-   **`src/services/referral.ts`**: This file handles the core logic for managing referrals.
+    -   **`getAllReferrals`**: Fetches all referrals using `prismaClient.referral.findMany()`.
+    -   **`getReferralById`**: Retrieves a single referral by its ID using `prismaClient.referral.findUnique()`.
+    -   **`createReferral`**: Inserts a new referral into the database with `prismaClient.referral.create()`.
+    -   **`updateReferral`**: Updates an existing referral&#x27;s details using `prismaClient.referral.update()`.
+    -   **`deleteReferral`**: Deletes a referral from the database using `prismaClient.referral.delete()`.
+    -   **`toggleReferralStatus`**: Changes the status of a referral (e.g., from &quot;pending&quot; to &quot;completed&quot;) using an update query.
+
+    **File:** `src/services/referral.ts`
+
+-   **`src/services/redeem.ts`**: This file manages the logic for redeeming referral bonuses.
+    -   **`redeemBonus`**: Updates the user&#x27;s balance, sets the bonus as redeemed, and creates a transaction record. It uses `prismaClient.user.update()` and `prismaClient.transaction.create()`.
+    -   **`getAllRedeemedBonuses`**: Fetches all redeemed bonuses using `prismaClient.redeemedBonus.findMany()`.
+    -   **`getRedeemedBonusById`**: Retrieves a specific redeemed bonus by ID using `prismaClient.redeemedBonus.findUnique()`.
+    -   **`updateRedeemedBonus`**: Allows updating the status of a redeemed bonus (e.g., from &quot;redeemed&quot; to &quot;cancelled&quot;) using `prismaClient.redeemedBonus.update()`.
+    -   **`deleteRedeemedBonus`**: Deletes a redeemed bonus record using `prismaClient.redeemedBonus.delete()`.
+
+    **File:** `src/services/redeem.ts`
+
+### 2. **Data Access Layer (DAL) (`src/dal`)**
+
+The `src/dal` directory contains modules that directly interact with the Prisma client to query or modify the database. These modules are also marked as `server-only` to prevent direct client-side database access.
+
+-   **`src/dal/prismaClient.ts`**: This file exports the `prismaClient` instance, which is the primary interface for all database operations in the application.
+    -   **`prismaClient`**: The actual Prisma client object used to execute queries against the database.
+
+    **File:** `src/dal/prismaClient.ts`
+
+-   **`src/dal/referralQueries.ts`**: This file encapsulates specific queries related to the `referral` table.
+    -   **`getReferralByCode`**: Finds a referral by its unique code using `prismaClient.referral.findFirst()`.
+    -   **`getReferralByUserId`**: Retrieves a referral associated with a specific user ID using `prismaClient.referral.findFirst()`.
+    -   **`getReferralsByStatus`**: Fetches all referrals with a given status (e.g., &quot;pending&quot;, &quot;completed&quot;) using `prismaClient.referral.findMany()`.
+
+    **File:** `src/dal/referralQueries.ts`
+
+-   **`src/dal/userQueries.ts`**: This file contains queries for the `user` table.
+    -   **`getUserById`**: Retrieves a user by their ID using `prismaClient.user.findUnique()`.
+    -   **`getUserByReferralCode`**: Finds a user based on their referral code using `prismaClient.user.findFirst()`.
+
+    **File:** `src/dal/userQueries.ts`
+
+-   **`src/dal/transactionQueries.ts`**: This module handles queries related to the `transaction` table.
+    -   **`getTransactionsByUserId`**: Fetches all transactions for a given user ID using `prismaClient.transaction.findMany()`.
+    -   **`getTransactionById`**: Retrieves a specific transaction by its ID using `prismaClient.transaction.findUnique()`.
+
+    **File:** `src/dal/transactionQueries.ts`
+
+-   **`src/dal/redeemedBonusQueries.ts`**: This file manages queries for the `redeemedBonus` table.
+    -   **`getRedeemedBonusByTransactionId`**: Finds a redeemed bonus by its transaction ID using `prismaClient.redeemedBonus.findFirst()`.
+    -   **`getRedeemedBonusesByUserId`**: Retrieves all redeemed bonuses for a specific user ID using `prismaClient.redeemedBonus.findMany()`.
+
+    **File:** `src/dal/redeemedBonusQueries.ts`
+
+### How `server-only` Ensures Security
+
+By applying `server-only` to `src/services` and `src/dal`, the application enforces that:
+-   **Database interactions** (e.g., `prismaClient.query`) can only occur on the server.
+-   **Business logic** that processes data from the database is also executed on the server, preventing tampering.
+-   **Client-side code** (e.g., in `src/app/api/referrals/validate.ts`, `src/app/api/referrals/route.ts`, `src/hooks/useRedeem.ts`) can only call functions that are defined in the `src/services` module, ensuring that all database operations are performed securely on the server.
+
+This architecture protects sensitive data and operations from being directly manipulated by users in the browser.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Analyze how `server-only` boundaries are used in services and DAL modules.          </p>
+          <p class="lt-p">
+Response: The `server-only` boundaries in the PRFC Connect codebase are primarily used in the `src/lib` directory to ensure that certain modules, which contain sensitive logic or interact with the server&#x27;s environment, are not accessible on the client-side. This is achieved by importing `next/server` and using the `serverOnly` function to wrap the exports of these modules.
+
+Here&#x27;s a detailed analysis:
+
+### 1. `src/lib/db/mongo.ts`
+
+This file is responsible for connecting to the MongoDB database and providing a client instance.
+
+*   **`server-only` Usage:**
+    *   The file starts by importing `serverOnly` from `next/server`: `import { serverOnly } from &#x27;next/server&#x27;;` (src/lib/db/mongo.ts)
+    *   The `MongoClient` instance is then wrapped with `serverOnly`: `serverOnly(MongoClient)()` (src/lib/db/mongo.ts)
+    *   The `connect` function, which establishes the connection to the database, is also wrapped: `serverOnly(connect)` (src/lib/db/mongo.ts)
+    *   The `getDB` function, which retrieves the database instance, is similarly wrapped: `serverOnly(getDB)` (src/lib/db/mongo.ts)
+
+    **Purpose:** These `serverOnly` boundaries ensure that the MongoDB connection details (e.g., `process.env.MONGODB_URI`) and the actual database connection object (`client`, `db`) are only accessible and usable on the server. If this code were to be imported or executed on the client-side, it would throw an error, thus preventing any unauthorized access to the database.
+
+### 2. `src/lib/services/referrals.ts`
+
+This file contains the business logic for handling referrals, including creating, retrieving, updating, and deleting referral data.
+
+*   **`server-only` Usage:**
+    *   It imports `serverOnly` from `next/server`: `import { serverOnly } from &#x27;next/server&#x27;;` (src/lib/services/referrals.ts)
+    *   The entire export object (containing `create`, `getAll`, `getById`, `update`, and `delete` functions) is wrapped with `serverOnly`: `serverOnly({ create, getAll, getById, update, delete: remove })` (src/lib/services/referrals.ts)
+
+    **Purpose:** By wrapping the entire services module with `serverOnly`, it ensures that all the operations performed on referral data—such as interacting with the `Referral` collection (src/lib/services/referrals.ts#L12) and performing database queries or updates—are confined to the server-side. This prevents any attempt to modify or retrieve referral data from the client-side, which would be a significant security risk.
+
+### Summary
+
+The `server-only` boundaries are crucial for maintaining the security and integrity of the PRFC Connect application. They ensure that:
+*   **Database connections** (src/lib/db/mongo.ts) are only initialized and managed on the server.
+*   **Business logic** that interacts with the database (src/lib/services/referrals.ts) is also executed exclusively on the server.
+
+Without these `server-only` protections, an attacker could potentially inject client-side code that accesses the database directly, leading to data leakage, manipulation, or other severe security vulnerabilities.          </p>
+          <p class="lt-p">
+Reference Answer: src/proxy.ts, src/lib/dal.ts, src/app/(protected)/layout.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+1245                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+1123                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+1647                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+1542                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+829                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+904                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+1289                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+670                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

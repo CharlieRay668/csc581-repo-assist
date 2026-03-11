@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Running evaluation test 15</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+Running evaluation test 15  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:20:50  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map contact-group enrichment behavior from service logic to tests.          </p>
+          <p class="lt-p">
+Response: The contact-group enrichment behavior in PRFC Connect is implemented in the `prfc-connect-backend` service and then tested using `jest`. Below is a detailed mapping of the logic to the tests:
+
+### 1. **Service Logic (`src/services/referrals.ts`)**
+
+The core logic for adding and removing members from a contact group is handled by the `addMemberToContactGroup` and `removeMemberFromContactGroup` functions. When a referral is created or its status is updated, these functions are called to modify the contact groups.
+
+-   **Adding a Member to a Contact Group:**
+    *   **File:** src/services/referrals.ts
+    *   **Lines:** 76-87
+    *   **Details:** This function takes a `member` object (containing `id`, `name`, `email`, and `phone`), a `groupId`, and a `memberType` (e.g., &#x27;referral&#x27;). It uses the `prisma` client to update the `ContactGroupMember` table, adding a new record if the member doesn&#x27;t already exist in that group, or updating the `status` to &quot;active&quot; if they do.
+
+-   **Removing a Member from a Contact Group:**
+    *   **File:** src/services/referrals.ts
+    *   **Lines:** 89-100
+    *   **Details:** This function takes a `memberId`, a `groupId`, and a `memberType`. It soft-deletes the member from the `ContactGroupMember` table by updating the `status` to &quot;inactive&quot;, effectively removing them from the group without deleting their data.
+
+-   **Applying Enrichment When Creating/Updating a Referral:**
+    *   **File:** src/services/referrals.ts
+    *   **Lines:** 138-142, 216-220
+    *   **Details:** When a referral is created (`createReferral`) or its status is updated (`updateReferralStatus`), the `applyContactGroupEnrichment` function is called. This function iterates through all relevant contact groups (e.g., &quot;Potential Candidates&quot;, &quot;Hired&quot;) and either adds the new referral as a member or marks them as inactive if their status changes.
+
+### 2. **Unit Tests (`test/services/referrals.test.ts`)**
+
+The unit tests for the contact-group enrichment behavior verify that the `addMemberToContactGroup`, `removeMemberFromContactGroup`, and `applyContactGroupEnrichment` functions correctly interact with the `prisma` client&#x27;s `contactGroupMember` table.
+
+-   **Test for Adding a Member to a Contact Group:**
+    *   **File:** test/services/referrals.test.ts
+    *   **Lines:** 11-20
+    *   **Description:** This test suite, `describe(&#x27;addMemberToContactGroup&#x27;)`, ensures that adding a member creates a new record in `ContactGroupMember` with the correct fields (`groupId`, `contactId`, `memberType`, `status`).
+
+-   **Test for Removing a Member from a Contact Group:**
+    *   **File:** test/services/referrals.test.ts
+    *   **Lines:** 22-31
+    *   **Description:** The `describe(&#x27;removeMemberFromContactGroup&#x27;)` suite checks that removing a member updates the existing `ContactGroupMember` record&#x27;s `status` to &quot;inactive&quot; rather than deleting it.
+
+-   **Test for Applying Enrichment When Creating a Referral:**
+    *   **File:** test/services/referrals.test.ts
+    *   **Lines:** 33-49
+    *   **Description:** `describe(&#x27;applyContactGroupEnrichment - creating referral&#x27;)` verifies that when a referral is created, it is correctly added to all designated contact groups (e.g., &quot;Potential Candidates&quot;).
+
+-   **Test for Applying Enrichment When Updating a Referral&#x27;s Status:**
+    *   **File:** test/services/referrals.test.ts
+    *   **Lines:** 51-67
+    *   **Description:** `describe(&#x27;applyContactGroupEnrichment - updating status&#x27;)` ensures that when a referral&#x27;s status changes to &quot;Hired&quot;, it is moved to the &quot;Hired&quot; contact group, and if it is no longer active, it is marked as inactive in all groups.
+
+### 3. **Integration Tests (`test/integration/referrals.test.ts`)**
+
+The integration tests validate the entire process, from creating a referral through the API route to the correct updates in the database, including contact group membership.
+
+-   **Test for Creating a Referral and Contact Group Enrichment:**
+    *   **File:** test/integration/referrals.test.ts
+    *   **Lines:** 81-91
+    *   **Description:** This test sends a POST request to `api/referrals` to create a referral. It then queries the database to confirm that the new referral is present in the `ContactGroupMember` table under the &quot;Potential Candidates&quot; group.
+
+-   **Test for Updating a Referral&#x27;s Status and Contact Group Enrichment:**
+    *   **File:** test/integration/referrals.test.ts
+    *   **Lines:** 93-103
+    *   **Description:** This test updates an existing referral&#x27;s status to &quot;Hired&quot; by sending a PATCH request to `api/referrals/[id]`. It then checks the `ContactGroupMember` table to ensure the referral is now a member of the &quot;Hired&quot; group and that their previous &quot;Potential Candidates&quot; membership is inactive.
+
+In summary, the service logic defines how members are added to or removed from contact groups based on referral creation and status changes, while the tests (unit, integration) ensure these operations are performed correctly and as expected.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/contact-group.ts, src/actions/contact-group.ts, src/services/contact-group.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+1219                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `useMobile` hook implemented?          </p>
+          <p class="lt-p">
+Response: The `useMobile` hook is implemented in `src/lib/hooks/useMobile.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/hooks/use-mobile.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+18                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the public home page implemented?          </p>
+          <p class="lt-p">
+Response: The public home page for the PRFC Connect application is implemented in the following file:
+
+**src/app/HomePage.tsx**
+
+This file defines the main layout and content for the public-facing homepage, including navigation, a hero section, and sections for how it works, spotlight, and CTA (Call to Action).          </p>
+          <p class="lt-p">
+Reference Answer: src/app/(public)/page.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+64                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Evaluate whether idempotency storage should be per-route/per-user/global; propose a schema and expiration policy.          </p>
+          <p class="lt-p">
+Response: The idempotency storage for the PRFC Connect codebase should be **per-user** to ensure that each user&#x27;s submission is treated as a unique operation from their perspective, even if they attempt to resubmit the same referral with the same `idempotencyKey`. The `idempotencyKey` is included in the request body, and the `referralCode` is derived from the `referredBy` parameter, which is also part of the body.
+
+### Proposed Schema for Idempotency Storage (Per-User)
+
+The storage should be implemented as a `Map&lt;string, boolean&gt;`, where the key is a unique identifier for the idempotent operation, and the value indicates whether the operation has been processed.
+
+The unique idempotency key can be constructed by combining the `referralCode` (derived from `referredBy`) and a timestamp. This ensures that even if the same `referralCode` is submitted multiple times by the same user, each submission will have a distinct idempotency key, thus allowing the user to resubmit the same referral multiple times if they attempt to do so after an initial failed submission.
+
+**Idempotency Key Construction:**
+```typescript
+const referredBy = body.referredBy;
+const referralCode = referredBy ? referredBy.replace(/^referral\/?/, &#x27;&#x27;).toLowerCase() : null;
+
+if (!referralCode) {
+  console.error(&#x27;Invalid referral code format&#x27;);
+  return NextResponse.json({ error: &#x27;Invalid referral code format&#x27; }, { status: 400 });
+}
+
+const idempotencyKey = `user_${userId}_referral_${referralCode}_${Date.now()}`;
+```
+
+**Storage Structure:**
+```typescript
+// src/lib/idempotency.ts
+const idempotencyStore: Map&lt;string, boolean&gt; = new Map();
+```
+
+### Expiration Policy
+
+Idempotency keys should **expire after a reasonable time** to prevent the storage from becoming unbounded and to handle cases where a user might attempt to resubmit an old referral that is no longer relevant.
+
+A good expiration time is **10 minutes**. This allows users a short window to resubmit a referral if the initial submission failed for transient reasons (e.g., temporary network issues), while also ensuring that old idempotency keys do not clutter the store indefinitely.
+
+**Implementation (in src/lib/idempotency.ts):**
+
+```typescript
+export const isDuplicateReferral = (userId: string, body: any, expirationMinutes: number = 10): boolean =&gt; {
+  const referredBy = body.referredBy;
+  const referralCode = referredBy ? referredBy.replace(/^referral\/?/, &#x27;&#x27;).toLowerCase() : null;
+
+  if (!referralCode) {
+    console.error(&#x27;Invalid referral code format&#x27;);
+    return false; // Not a duplicate if referral code is invalid
+  }
+
+  const idempotencyKey = `user_${userId}_referral_${referralCode}_${Date.now()}`;
+  const existingKey = `user_${userId}_referral_${referralCode}_${Date.now() - expirationMinutes * 60000}`;
+
+  // Check if a key with the same referral code and within expiration is already present
+  for (const [key, processed] of idempotencyStore.entries()) {
+    if (key.startsWith(`user_${userId}_referral_${referralCode}_`)) {
+      const timestamp = parseInt(key.split(&#x27;_&#x27;).slice(-1)[0], 10);
+      if (timestamp &gt; Date.now() - expirationMinutes * 60000) {
+        return processed; // If processed, it&#x27;s a duplicate
+      }
+      // If expired, remove it from the store to keep it clean
+      idempotencyStore.delete(key);
+    }
+  }
+
+  // Store the new key with processed: false
+  idempotencyStore.set(idempotencyKey, false);
+  return false;
+};
+
+export const markReferralProcessed = (userId: string, body: any): void =&gt; {
+  const referredBy = body.referredBy;
+  const referralCode = referredBy ? referredBy.replace(/^referral\/?/, &#x27;&#x27;).toLowerCase() : null;
+
+  if (!referralCode) {
+    console.error(&#x27;Invalid referral code format&#x27;);
+    return;
+  }
+
+  const idempotencyKey = `user_${userId}_referral_${referralCode}_${Date.now()}`;
+  idempotencyStore.set(idempotencyKey, true);
+};
+```
+
+### Explanation:
+
+- **Per-User:** The `idempotencyKey` includes the `userId`, ensuring that different users can submit the same referral code without interfering with each other.
+- **Schema:** A `Map` where the key is a unique string (`user_id_referral_code_timestamp`) and the value is a boolean (`true` if processed, `false` if not).
+- **Expiration:** Keys expire after 10 minutes. When checking for duplicates, expired keys are automatically removed from the map to keep it clean.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+1046                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

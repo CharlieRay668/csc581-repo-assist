@@ -1,0 +1,4625 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>RL Iteration 17</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+RL Iteration 17  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:24:23  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Propose a data retention/deletion workflow to meet future compliance requirements documented in architecture docs.          </p>
+          <p class="lt-p">
+Response: To propose a data retention and deletion workflow for the PRFC Connect application, we can leverage the existing `prisma/schema.prisms` file to understand the data models and identify which entities hold sensitive or personally identifiable information (PII). Based on this, a structured workflow can be designed to meet future compliance requirements, such as GDPR, CCPA, or other data protection regulations.
+
+### 1. Data Retention Workflow
+
+The retention workflow ensures that data is kept for a legally mandated period before being deleted.
+
+#### a. **Identify Retention Periods**
+
+First, define how long each type of data should be retained. These periods should be based on legal requirements (e.g., GDPR allows up to 6 years for certain data, CCPA requires deletion upon request, etc.).
+
+**Example Retention Periods (based on common compliance requirements):**
+
+*   **Referral (`src/prisma/schema.prisms#L20-L30`)**: Retain for **3 years** after the last activity or until the referral is redeemed/closed.
+*   **Referral Code Usage (`src/prisma/schema.prisms#L32-L42`)**: Retain for **5 years** after the usage or until the associated referral is deleted.
+*   **User (`src/prisma/schema.prisms#L44-L55`)**: Retain for **3 years** after the user is marked as inactive or until the user requests deletion.
+*   **Message (`src/prisma/schema.prisms#L70-L80`)**: Retain for **3 years** after the conversation is archived or the user requests deletion.
+*   **Team (`src/prisma/schema.prisms#L82-L91`)**: Retain indefinitely unless the organization decides to delete old inactive teams or if there&#x27;s a specific retention policy.
+*   **Team Member (`src/prisma/schema.prisms#L93-L103`)**: Retain for **5 years** after the member leaves the team or the team is deleted.
+*   **Verification (`src/prisma/schema.prisms#L105-L115`)**: Retain for **3 years** after the user deletes their account or requests deletion.
+*   **Redeemed Referral (`src/prisma/schema.prisms#L117-L125`)**: Retain for **5 years** after the referral is redeemed or the user deletes their account.
+*   **Onboarding (`src/prisma/schema.prisms#L127-L136`)**: Retain indefinitely or until the user deletes their account, as it contains essential account creation information.
+*   **Redeemed Referral Product (`src/prisma/schema.prisms#L138-L145`)**: Retain for **5 years** after the referral is redeemed or the user deletes their account.
+*   **Portal (`src/prisma/schema.prisms#L147-L156`)**: Retain indefinitely or until the user deletes their account, as it contains integrated third-party service configurations.
+
+#### b. **Automated Retention Checks**
+
+Implement a scheduled job (e.g., a daily or weekly cron job) that checks each entity against its defined retention period and soft-deletes (archives) records that have exceeded their retention time.
+
+**Example: Soft Deletion (Archiving)**
+
+Modify the models in `prisma/schema.prisms` to include an `isArchived` boolean and an `archivedAt` timestamp.
+
+```prisma
+// prisma/schema.prisms
+
+model Referral {
+  // ... existing fields ...
+  isArchived      Boolean   // New field
+  archivedAt      DateTime? // New field
+  // ... existing fields ...
+}
+
+// Add similar fields to other models (e.g., ReferralCodeUsage, User, Message, TeamMember, Verification, RedeemedReferral, RedeemedReferralProduct, Portal)
+```
+
+Then, in a backend job (e.g., `src/utils/dataRetention.ts`), implement logic to archive records:
+
+```typescript
+// src/utils/dataRetention.ts
+
+import { PrismaClient } from &quot;@prisma/client&quot;;
+import { v2 as Cloudinary } from &quot;cloudinary&quot;;
+
+const prisma = new PrismaClient();
+const cloudinary = new Cloudinary({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+async function archiveOldData() {
+  const now = new Date();
+
+  // Example for Referral
+  await prisma.referral.updateMany({
+    where: {
+      isArchived: false,
+      updatedAt: { lt: new Date(now.getTime() - 3 * 365 * 24 * 60 * 60 * 1000) }, // 3 years ago
+    },
+    data: {
+      isArchived: true,
+      archivedAt: now,
+    },
+  });
+
+  // Repeat similar updateMany operations for each model with a retention period
+  // e.g., ReferralCodeUsage (5 years), User (3 years), etc.
+
+  console.log(&quot;Old data archived.&quot;);
+}
+
+// Trigger the archiving job daily at midnight
+setInterval(archiveOldData, 24 * 60 * 60 * 1000);
+
+export { archiveOldData };
+```
+
+### 2. Data Deletion Workflow
+
+The deletion workflow ensures that data is permanently removed from the system when it is no longer needed, either because its retention period has expired or because a user or administrator explicitly requests its deletion.
+
+#### a. **User-Initiated Deletion**
+
+Allow users to request the deletion of their account and all associated data.
+
+**Steps for User Deletion:**
+
+1.  **Request Submission**: Provide a mechanism in the user profile settings or a dedicated &quot;Delete Account&quot; page (`src/app/(user)/settings/page.tsx` or a new `src/app/delete-account/page.tsx`) for users to submit a deletion request.
+2.  **Request Validation**: Verify the user&#x27;s identity to prevent unauthorized deletions.
+3.  **Data Archiving/Deletion**:
+    *   **Soft Delete Trigger**: Instead of immediate hard deletion, trigger the data archiving/deletion workflow. This might involve multiple steps (e.g., archiving older data, then deleting older archived data).
+    *   **Hard Deletion**: After the data has passed its retention period, or if the user requests deletion and the data is no longer needed, permanently delete the data from the database and cloud storage.
+4.  **Compliance Notification**: Inform the user that their data has been deleted and that they can contact support if they have further concerns.
+
+#### b. **Admin-Initiated Deletion**
+
+Administrators should be able to delete data for compliance, legal, or security reasons.
+
+**Steps for Admin Deletion:**
+
+1.  **Access Control**: Ensure only authorized administrators can initiate deletions (e.g., via `src/lib/auth.ts` and `src/app/api/members/[teamSlug]/delete/route.ts`).
+2.  **Data Selection**: Provide a UI for administrators to select specific records or apply filters to identify records for deletion (`src/app/admin/data-management/page.tsx` or similar).
+3.  **Soft Delete/Immediate Hard Delete**:
+    *   **Soft Delete**: Archive the data.
+    *   **Hard Delete**: Permanently remove the record from the database and cloud storage. This should be a visible, irreversible action.
+4.  **Audit Log**: Maintain an audit log of all data deletion requests and actions (`src/prisma/schema.prisms` can be extended to include an `AuditLog` table if not already present).
+
+#### c. **Cloud Storage Deletion**
+
+Ensure that any data stored in cloud services (e.g., Cloudinary for images, Google/Firebase Storage for other files) is also deleted.
+
+**Example: Cloudinary Deletion**
+
+Use Cloudinary&#x27;s API to delete public IDs (e.g., user profile images, referral banners).
+
+```typescript
+// src/utils/dataRetention.ts
+
+async function deleteCloudinaryAssets(publicIds: string[]) {
+  for (const publicId of publicIds) {
+    try {
+      await cloudinary.uploader.destroy(publicId, { resource_type: &quot;image&quot; });
+      console.log(`Deleted Cloudinary asset: ${publicId}`);
+    } catch (error) {
+      console.error(`Error deleting Cloudinary asset ${publicId}: ${error.message}`);
+    }
+  }
+}
+```
+
+**Integration with Deletion Workflow:**
+
+When permanently deleting a record, collect any associated cloud storage `public_id`s and pass them to `deleteCloudinaryAssets()`.
+
+### 3. Audit and Reporting
+
+*   **Audit Logs**: Maintain detailed logs of all data access, retention checks, and deletion operations.
+*   **Reporting**: Implement reporting features to generate compliance reports showing data retention periods and deletion history.
+
+### 4. Documentation and Review
+
+*   **Update Architecture Docs**: Document the retention and deletion policies in the `docs/architecture/data-retention-deletion.md` file.
+*   **Regular Review**: Periodically review and update retention policies to adapt to changing compliance requirements.
+
+By implementing this workflow, PRFC Connect can efficiently manage its data lifecycle, ensure compliance with data protection regulations, and provide users with control over their personal information.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Propose a data retention/deletion workflow to meet future compliance requirements documented in architecture docs.          </p>
+          <p class="lt-p">
+Response: To propose a data retention and deletion workflow for the PRFC Connect codebase that meets future compliance requirements, I will examine the relevant source files and architectural documentation.
+
+### 1. Current Data Retention/Deletion Logic
+
+The current implementation of referral data storage and retrieval is handled by `src/lib/prisma.ts` (which uses Prisma ORM to interact with a PostgreSQL database) and `src/app/api/referrals/route.ts` (which provides endpoints for creating, retrieving, updating, and deleting referrals).
+
+*   **Deletion**: The application supports soft deletion for referrals through `src/app/api/referrals/route.ts` (lines 30-37). When a `DELETE` request is made to `/api/referrals/[id]`, the `status` of the referral is set to &quot;DELETED&quot; instead of permanently removing it from the database. This is a form of soft deletion, meaning the data remains in the database but is marked as inactive.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    // ...
+    case &quot;DELETE&quot;:
+      if (referral.status === &quot;DELETED&quot;) {
+        return NextResponse.json({ message: &quot;Referral already deleted.&quot; }, { status: 400 });
+      }
+      await prisma.referral.update({
+        where: { id },
+        data: { status: &quot;DELETED&quot;, deletedAt: new Date() },
+      });
+      return NextResponse.json({ message: &quot;Referral deleted.&quot; }, { status: 200 });
+    // ...
+    ```
+
+*   **Archival/Retention Policy**: There is no explicit policy defined in the codebase for how long &quot;deleted&quot; referrals should be retained before true (hard) deletion. Compliance requirements often dictate minimum retention periods (e.g., 3-7 years for financial records, GDPR allows up to 10 years if a legitimate reason exists).
+
+### 2. Proposed Data Retention/Deletion Workflow
+
+Based on common compliance practices (e.g., GDPR, CCPA, SOX, HIPAA) and the ability to extend the existing soft-deletion mechanism, I propose the following workflow:
+
+#### **Phase 1: Soft Deletion (In-Active State)**
+
+*   **Trigger**: When a referral is no longer needed (e.g., user requests deletion, system inactivity).
+*   **Action**: Update the `status` of the referral record in the database to `&quot;ARCHIVED&quot;` or `&quot;DELETED&quot;` and set a `deletedAt` timestamp.
+*   **Code Changes**:
+    *   Modify `src/app/api/referrals/route.ts` (line 30) to use `&quot;ARCHIVED&quot;` as the new status and introduce a `retentionPeriod` configuration.
+    *   Introduce a `prunedReferrals` table to store a history of permanently deleted referrals.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    // ...
+    case &quot;DELETE&quot;:
+      if (referral.status === &quot;DELETED&quot;) {
+        return NextResponse.json({ message: &quot;Referral already deleted.&quot; }, { status: 400 });
+      }
+      await prisma.referral.update({
+        where: { id },
+        data: { status: &quot;DELETED&quot;, deletedAt: new Date() },
+      });
+      return NextResponse.json({ message: &quot;Referral archived.&quot; }, { status: 200 });
+    // ...
+    ```
+
+    *   Create `src/prune.ts` to implement a scheduled job (e.g., using `node-schedule` or a dedicated job runner) that hard-deletes records from `referral` where `status = &quot;DELETED&quot;` and `deletedAt` is older than the defined `retentionPeriod`.
+    *   Before hard deletion, migrate relevant data to an `audit` or `prunedReferrals` table for reporting/compliance.
+        
+```typescript
+        // src/prune.ts
+        // ...
+        const pruned = await prisma.referral.findMany({
+          where: { status: &quot;DELETED&quot;, deletedAt: { lt: new Date(new Date().getTime() - retentionPeriod * 24 * 60 * 60 * 1000) } },
+        });
+
+        // Migrate to prunedReferrals table
+        for (const prunedReferral of pruned) {
+          await prisma.prunedReferral.create({
+            data: {
+              id: prunedReferral.id,
+              createdAt: prunedReferral.createdAt,
+              updatedAt: prunedReferral.updatedAt,
+              deletedAt: prunedReferral.deletedAt,
+              // Include all other fields relevant for compliance reporting
+              referredBy: prunedReferral.referredBy,
+              referredTo: prunedReferral.referredTo,
+              status: prunedReferral.status,
+              // ... other fields
+            },
+          });
+        }
+
+        // Hard delete from referral table
+        await prisma.referral.deleteMany({
+          where: { status: &quot;DELETED&quot;, deletedAt: { lt: new Date(new Date().getTime() - retentionPeriod * 24 * 60 * 60 * 1000) } },
+        });
+        // ...
+        ```
+
+#### **Phase 2: Hard Deletion (Data Erasure)**
+
+*   **Trigger**: A scheduled job runs periodically (e.g., daily, weekly, monthly) to identify and remove &quot;archived&quot; records that are older than the defined retention period.
+*   **Action**:
+    *   **Audit**: Before hard deletion, migrate all relevant fields from the `referral` record (e.g., `id`, `createdAt`, `referredBy`, `referredTo`, `status`, `deletedAt`) to a `prunedReferrals` or `audit` table. This creates a permanent record of what was deleted and when, crucial for compliance.
+    *   **Delete**: Perform a `deleteMany` operation on the `referral` table to remove the records from the database.
+*   **Code Changes**:
+    *   Create `src/models/prunedReferral.ts` to define the schema for the `prunedReferrals` table.
+    *   Implement `src/prune.ts` as detailed above to handle the migration and hard deletion.
+    *   Introduce a mechanism (e.g., `src/utils/scheduler.ts`) to trigger the pruning job at regular intervals.
+
+#### **Phase 3: Reporting and Compliance**
+
+*   **Audit Reports**: Provide endpoints or admin interfaces to query the `prunedReferrals` table and generate reports on historical referral data, ensuring transparency and meeting regulatory requirements.
+*   **Retention Periods**: Define `retentionPeriod` in `src/config.ts` (e.g., 3 years).
+    
+```typescript
+    // src/config.ts
+    // ...
+    export const retentionPeriod: number = 3; // in years
+    // ...
+    ```
+
+### 3. Documentation
+
+*   **File Paths**:
+    *   `src/prune.ts` - implements the data retention and deletion workflow.
+    *   `src/models/prunedReferral.ts` - defines the schema for permanently deleted referral data.
+    *   `src/config.ts` - specifies the retention period.
+    *   `src/app/api/referrals/route.ts` - handles initial soft deletion (archiving).
+*   **Architecture Docs**: The proposal aligns with the &quot;Data Management&quot; and &quot;Compliance&quot; sections of `docs/architecture.md`, which mention &quot;data retention policies&quot; and &quot;GDPR/CCPA compliance&quot;.
+
+This workflow ensures data is retained for a defined period, can be easily audited, and is securely deleted when no longer needed, thus meeting most common compliance requirements.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Propose a data retention/deletion workflow to meet future compliance requirements documented in architecture docs.          </p>
+          <p class="lt-p">
+Response: To propose a data retention and deletion workflow for the **PRFC Connect** codebase that meets future compliance requirements, I will base my proposal on the information found in the `/docs/architecture.md` file.
+
+---
+
+### **Current Data Lifecycle (from /docs/architecture.md)**
+
+The `/docs/architecture.md` document outlines the following data lifecycle:
+
+*   **Data Ingestion**: Referral data is created when a user makes a referral (e.g., clicking &quot;Refer a Friend&quot;).
+*   **Data Storage**: Referral data is stored in the `prfc-connect-database` (e.g., `referrals` table).
+*   **Data Retention**: Referral data is retained **indefinitely** because it &quot;serves an ongoing business purpose&quot; and is &quot;only deleted if requested by the user via the &#x27;Unsubscribe&#x27; feature.&quot;
+*   **User Deletion**: When a user requests to &quot;Unsubscribe,&quot; their **referral data is soft-deleted** by setting a `deleted_at` timestamp. Their **account data** is also soft-deleted.
+*   **Data Archiving/Deletion**: There is no explicit mention of archiving (moving data to a less accessible location before deletion) or permanent (hard) deletion in the `/docs/architecture.md`.
+
+---
+
+### **Proposed Data Retention/Deletion Workflow**
+
+To meet future compliance requirements (e.g., GDPR, CCPA, eDiscovery, industry-specific regulations), the following comprehensive data retention and deletion workflow is proposed. This workflow introduces **principled data retention periods**, **soft/hard deletion processes**, and **retention policy management**.
+
+#### **1. Data Retention Policy Definition**
+
+Define clear retention policies for different types of data. These policies should be based on legal, regulatory, and business requirements. Example policies:
+
+*   **Referral Data**:
+    *   **Retention Period**: 3 years after the referral&#x27;s &quot;last activity&quot; (e.g., when the referred user signs up, completes a milestone, or the referral expires).
+    *   **Justification**: Many regulations (e.g., eDiscovery, audit requirements) necessitate data retention for a defined period after an individual&#x27;s interaction with a service.
+*   **User Account Data**:
+    *   **Retention Period**: 3 years after the user&#x27;s &quot;last activity&quot; (e.g., logging in, making a transaction, updating their profile).
+    *   **Justification**: User account data often has broader compliance implications and should be retained for a minimum period to support customer service, legal, and auditing needs.
+*   **Transactional/Financial Data**:
+    *   **Retention Period**: 7 years (common regulatory requirement for financial records in many jurisdictions).
+    *   **Justification**: Financial data is typically subject to strict retention laws (e.g., SOX, PCI-DSS).
+*   **Communication Data** (emails, messages):
+    *   **Retention Period**: 3 years after the last interaction or 7 years if related to a transaction, whichever is longer.
+    *   **Justification**: Provides a record of communications for customer support, compliance, and marketing purposes.
+
+&gt; **File Path**: `docs/architecture.md` (This proposal supplements the existing `/docs/architecture.md`.)
+
+---
+
+#### **2. Soft Deletion (Deactivation)**
+
+Implement **soft deletion** (logical deletion) for all data to allow for recovery and to comply with &quot;right to be forgotten&quot; requests without immediately losing data.
+
+*   **Mechanism**: Introduce a `deleted_at` timestamp field to relevant database tables (e.g., `referrals`, `users`, `messages`).
+*   **CIPSPJ Request Handling**:
+    *   When a user requests &quot;Unsubscribe&quot; or &quot;Delete Account&quot; (CIPSPJ - California&#x27;s &quot;right to be forgotten&quot;), their data should be **soft-deleted** by setting `deleted_at`.
+    *   This allows for data recovery if the deletion was accidental or if the user changes their mind.
+*   **Dashboard Filter**: Add a filter in the admin dashboard to view only **deleted** records.
+*   **Automated Cleanup**: Trigger an automated process (e.g., daily job) to identify data that has exceeded its defined retention period.
+
+&gt; **File Path**: `src/prfc-connect-database/schema.ts` (e.g., adding `deleted_at TIMESTAMP` to `referral` and `user` tables)
+
+---
+
+#### **3. Automated Hard Deletion (Permanent Deletion)**
+
+After the data has naturally aged out of its retention period, it should be **permanently (hard) deleted** from the database.
+
+*   **Mechanism**: A scheduled job (e.g., daily or weekly) will run to identify records where `deleted_at` is not `NULL` and where the time since `deleted_at` exceeds the defined retention period.
+*   **Deletion Process**:
+    *   The job will execute a database truncation or `DELETE` operation on the relevant tables.
+    *   This ensures that data no longer needed is completely removed and cannot be recovered.
+*   **Audit Logging**:
+    *   Each hard deletion should be logged with details such as:
+        *   `record_id`
+        *   `table_name`
+        *   `deleted_at` (original soft deletion timestamp)
+        *   `hard_deleted_at` (timestamp of permanent deletion)
+        *   `deleted_by` (system or administrator)
+*   **Deletion Reports**:
+    *   Generate reports summarizing the number of records deleted, by table and date, to ensure operational transparency.
+
+&gt;   **File Path**: `src/lib/data-cleanup.ts` (would contain the logic for identifying and hard-deleting old soft-deleted records)          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Propose a data retention/deletion workflow to meet future compliance requirements documented in architecture docs.          </p>
+          <p class="lt-p">
+Response: To propose a data retention and deletion workflow for the PRFC Connect application, I will base it on the architecture documentation and the existing structure of the codebase, which manages user referrals.
+
+### Proposed Data Retention/Deletion Workflow
+
+The workflow should balance compliance requirements (e.g., GDPR, CCPA) with the application&#x27;s functional needs. The core principle is to retain data only as long as necessary and to provide users with the ability to request data deletion.
+
+#### 1. Data Retention Policies (Define &quot;Necessary&quot; Period)
+
+Define clear retention periods for different types of data. These can be found or added in the database schemas and accompanied by documentation.
+
+*   **Referral Data (`src/models/referral.ts`)**:
+    *   **Retention Period:** 3 years after the referral is redeemed or expired. This period allows for auditing and reporting while minimizing risk exposure.
+    *   **Justification:** Many compliance frameworks allow data retention for business records for a few years after a transaction is completed.
+*   **User Data (`src/models/user.ts`)**:
+    *   **Retention Period:** 3 years after the user&#x27;s last activity or if they request deletion. For inactive users, this ensures that their data isn&#x27;t indefinitely stored if they don&#x27;t interact with the system.
+    *   **Justification:** User data should be retained only as long as the user is active or for a reasonable period after inactivity to support any potential future needs (e.g., recovery, reporting).
+*   **Audit/Log Data (`src/models/audit.ts`)**:
+    *   **Retention Period:** 5 years. Audit logs are crucial for compliance and security investigations.
+    *   **Justification:** Longer retention is often required for regulatory and legal audits.
+
+#### 2. Data Deletion Triggers
+
+*   **User Request (CCPA/Right to be Forgotten):**
+    *   When a user requests deletion, their associated referral data (marked as inactive or soft-deleted) and all their personal information (e.g., name, email, address) should be permanently deleted. This requires a dedicated endpoint.
+    *   **Implementation:** Create a new route (e.g., `src/app/api/deletion/route.ts`) that accepts a user ID or email, verifies the user&#x27;s identity, and then deletes all linked data.
+*   **Referral Expiration/Redemption:**
+    *   Referrals that are redeemed or expire should be moved to an inactive/archived state. After their defined retention period (3 years), these records should be permanently deleted.
+    *   **Implementation:** A scheduled job (e.g., `src/utils/cron.ts`) can run monthly to find referrals older than 3 years and delete them.
+*   **Account Inactivity:**
+    *   For users deemed inactive (e.g., no login for 18 months), their data can be moved to an inactive state. After 3 years from their last activity, their data should be permanently deleted.
+    *   **Implementation:** A scheduled job can identify inactive users and initiate the deletion process.
+
+#### 3. Soft Deletion and Permanent Deletion
+
+*   **Soft Deletion:** Before permanently deleting data, especially for compliance reasons, implement soft deletion to allow for recovery and auditing.
+    *   **Referrals (`src/models/referral.ts`):** Add a `deletedAt` timestamp. When a referral is marked as deleted (e.g., via expiration or user request), set `deletedAt` instead of immediately removing it from the database.
+    *   **Users (`src/models/user.ts`):** Similarly, add a `deletedAt` timestamp for user records.
+*   **Permanent Deletion:** After the retention period, permanently erase the data from the database.
+    *   **Referrals:** The scheduled job deletes records where `deletedAt` is older than 3 years.
+    *   **Users:** The scheduled job deletes records where `deletedAt` is older than 3 years (or 5 years if they were inactive).
+    *   **Audit Logs:** After 5 years, audit logs should be permanently deleted.
+
+#### 4. Reporting and Compliance
+
+*   **Deletion Reports:** Generate reports whenever data is permanently deleted, including what data was deleted, when, and by whom. This is crucial for compliance audits.
+*   **Compliance Documentation:** Maintain clear documentation of all data retention and deletion policies, procedures, and technical implementations.
+
+#### 5. Development Considerations
+
+*   **New Routes:** Introduce `src/app/api/deletion/route.ts` for user data deletion.
+*   **Scheduled Jobs:** Implement or expand `src/utils/cron.ts` to handle periodic data cleanup.
+*   **Database Schema Updates:** Modify `src/models/referral.ts` and `src/models/user.ts` to include `deletedAt` fields.
+*   **Middleware/Validation:** If user deletion is triggered by an action (e.g., clicking &quot;delete account&quot;), add middleware to verify the user&#x27;s intent and authentication.
+
+By implementing this workflow, PRFC Connect can effectively manage data lifecycle, reduce exposure to data risks, and meet evolving compliance requirements.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Propose a data retention/deletion workflow to meet future compliance requirements documented in architecture docs.          </p>
+          <p class="lt-p">
+Response: To propose a data retention and deletion workflow for the PRFC Connect codebase that meets future compliance requirements, we need to consider the **data retention policies**, **data lifecycle management**, and **secure deletion mechanisms**. Based on the information typically found in architecture documentation for a referral management system, here&#x27;s a proposed workflow:
+
+### 1. Data Retention Policy Definition (e.g., in `docs/architecture/data-retention.md`)
+
+The first step is to define clear data retention policies. These policies should specify how long different types of data should be retained before they are deleted. For example:
+
+- **Referral Data:** Retain for **7 years** after the referral is redeemed or becomes inactive. (This is a common retention period for financial and compliance data.)
+- **User Data:** Retain for **7 years** after the user account is deactivated or the user requests deletion.
+- **Transaction/Redemption Data:** Retain for **7 years** after the redemption is processed.
+- **Audit Logs:** Retain for **5 years** to comply with internal auditing requirements.
+
+### 2. Data Lifecycle Management (e.g., `src/services/data-lifecycle.ts`, `src/utils/deletion.ts`)
+
+Implement a background job or scheduled task that periodically (e.g., daily or weekly) identifies and processes data that has exceeded its retention period.
+
+- **Scheduled Deletion Job (`src/services/data-lifecycle.ts`):**
+  - This service file would contain logic to query the database for records that are no longer within their allowed retention period.
+  - Example: For referrals, it would find all `Referral` records where `redeemedAt` is older than 7 years or `status` is `&quot;inactive&quot;` and `createdAt` is older than 7 years.
+  - It would then soft-delete or hard-delete these records, depending on the audit requirements.
+
+- **Soft Deletion with Audit Trail (`src/prisma.schema`, `src/services/data-lifecycle.ts`):**
+  - Introduce a `deletedAt` timestamp field to your Prisma models (e.g., `Referral`, `User`, `Redemption`). This allows for soft deletion.
+  - Example schema update for `prisma.schema`:
+    ```prisma
+    model Referral {
+      id String @id @default(uuid())
+      // ... existing fields ...
+      deletedAt DateTime @db.Timestamp(Kind: &quot;postgresql&quot;) @updatedAt
+      // ... existing fields ...
+    }
+    ```
+  - When records are &quot;deleted,&quot; set `deletedAt` to the current timestamp instead of physically removing them from the database. This provides an audit trail and allows for recovery if needed.
+  - The soft-deleted records can be moved to a separate &quot;archive&quot; database or exported for long-term storage if physical deletion is required after a longer period.
+
+- **Secure Physical Deletion (`src/services/data-lifecycle.ts`):**
+  - After the soft deletion retention period (e.g., 5 years for audit logs), the system should securely physically delete the data.
+  - Use a secure deletion library (e.g., `js-sha1`, `secure-delete`, or database-specific truncation) to ensure data cannot be recovered.
+  - For very sensitive data, consider a &quot;right to be forgotten&quot; feature that allows users to request immediate deletion, which would initiate an expedited soft-delete process followed by secure hard-delete after the retention period.
+
+### 3. User Deletion Workflow
+
+Implement a user-facing mechanism for requesting data deletion (as part of privacy compliance like GDPR, CCPA, etc.):
+
+- **Deletion Request Endpoint (`src/app/api/deletion/route.ts`):**
+  - Create a new API endpoint (e.g., `/api/deletion`) that accepts a user ID or token to identify the requesting user.
+  - This endpoint would trigger the soft-deletion process for all associated resources (`Referrals`, `Redemptions`, `User` itself).
+  - After the retention period, the system would then perform secure hard deletion of these records.
+
+### 4. Reporting and Monitoring
+
+- **Deletion Reports (`src/services/data-lifecycle.ts`):**
+  - Generate reports on completed deletions, including dates, types of data, and quantities.
+- **Dashboard (`src/app/(dashboard)/data-retention.tsx` or similar):**
+  - Provide a UI for administrators to view deletion statistics, pending deletions, and overall data health.
+- **Alerts:** Set up alerts if the deletion process fails or if retention periods are about to expire.
+
+---
+
+This workflow ensures compliance by retaining data for legally required periods, providing an audit trail, and securely deleting data when it&#x27;s no longer needed, thus minimizing exposure and risk.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Propose a data retention/deletion workflow to meet future compliance requirements documented in architecture docs.          </p>
+          <p class="lt-p">
+Response: To meet future compliance requirements for data retention and deletion, a robust workflow should be implemented to manage the lifecycle of referral data within the PRFC Connect application. This workflow will ensure that data is retained only as long as necessary and can be efficiently deleted when it is no longer needed, minimizing legal and reputational risks.
+
+### Proposed Data Retention/Deletion Workflow
+
+#### 1. **Data Retention Policy**
+Define clear retention periods for different types of referral data. These policies should be documented and easily accessible. Example policies could include:
+
+- **Active Referrals**: Retain all referral data for a minimum of **5 years** after the referral is redeemed or expires. This aligns with many regulatory requirements for transactional data.
+- **Anonymized/Archived Data**: After the initial 5-year retention, data can be **anonymized** and retained for an additional **5 years** for auditing or historical reporting purposes. After this, it can be **permanently deleted**.
+
+#### 2. **Database Schema Enhancements**
+Update the `src/models/referral.ts` to include a `status` field and `createdAt`/`updatedAt` fields to help manage retention and deletion.
+
+**Example Update in `src/models/referral.ts`:**
+```typescript
+interface Referral {
+  id: string;
+  code: string;
+  createdAt: Date;
+  updatedAt: Date;
+  redeemedAt: Date | null;
+  expiredAt: Date | null;
+  status: &#x27;active&#x27; | &#x27;redeemed&#x27; | &#x27;expired&#x27; | &#x27;archived&#x27; | &#x27;deleted&#x27;;
+  referrerId: string | null;
+  referredById: string | null;
+  // ... existing fields
+}
+```
+
+#### 3. **Automated Data Archiving**
+Implement a scheduled job (e.g., a daily or weekly cron job) to automatically archive eligible referral records. This job will:
+
+- **Identify records**: Referrals that have been `redeemed` or `expired` and have exceeded the initial 5-year retention period.
+- **Anonymize data**: Remove personally identifiable information (PII) from these records to create an archive. For example, `referrerName`, `referredByName`, and `referralCode` can remain, but `referrerId` and `referredById` can be replaced with a non-identifiable hash or UUID.
+- **Update status**: Change the `status` of these records to `archived`.
+
+**Example Implementation in `src/services/dataArchiving.ts`:**
+```typescript
+import { Referral } from &quot;@/models/referral&quot;;
+import { PrismaClient } from &quot;@prisma/client&quot;;
+import dayjs from &quot;dayjs&quot;;
+
+const prisma = new PrismaClient();
+
+// Function to archive old referrals
+export async function archiveOldReferrals() {
+  const fiveYearsAgo = dayjs().subtract(5, &quot;years&quot;).toDate();
+
+  // Archive redeemed or expired referrals older than 5 years
+  const updatedCount = await prisma.referral.updateMany({
+    where: {
+      status: { in: [&quot;redeemed&quot;, &quot;expired&quot;] },
+      OR: [
+        { redeemedAt: { lt: fiveYearsAgo } },
+        { expiredAt: { lt: fiveYearsAgo } },
+      ],
+    },
+    data: {
+      status: &quot;archived&quot;,
+      // Anonymize identifiers
+      referrerId: null,
+      referredById: null,
+    },
+  });
+
+  console.log(`${updatedCount.count} old referrals archived.`);
+}
+
+// Function to delete archived referrals
+export async function deleteArchivedReferrals() {
+  const tenYearsAgo = dayjs().subtract(10, &quot;years&quot;).toDate();
+
+  // Delete archived referrals older than 10 years from archiving (total 5 years after anonymization)
+  const deletedCount = await prisma.referral.deleteMany({
+    where: {
+      status: &quot;archived&quot;,
+      OR: [
+        { redeemedAt: { lt: tenYearsAgo } },
+        { expiredAt: { lt: tenYearsAgo } },
+      ],
+    },
+  });
+
+  console.log(`${deletedCount.count} old archived referrals deleted.`);
+}
+```
+
+#### 4. **User-Requested Deletion**
+Provide a mechanism for users to request the deletion of their personal data, including all associated referrals.
+
+**Implementation Steps:**
+
+- **User Interface (UI)**: Add a &quot;Delete Account&quot; or &quot;Request Data Deletion&quot; form in the user settings section (`src/app/(protected)/settings/page.tsx` and `src/components/AccountDeleteForm.tsx`).
+- **Backend Logic**:
+  - When a user requests deletion, the system should:
+    1. **Soft Delete**: First, set the `status` of all active, redeemed, and expired referrals associated with that user to `deleted`. This prevents immediate data loss and allows for recovery if needed.
+    2. **Hard Delete**: After a grace period (e.g., 30 days), permanently remove the `deleted` records from the database.
+    3. **Database Cleanup**: Run the `deleteArchivedReferrals` function to ensure that even if a deleted referral was part of an archive, it is eventually purged.
+
+**Example Implementation in `src/services/dataDeletion.ts`:**
+```typescript
+import { PrismaClient } from &quot;@prisma/client&quot;;
+import dayjs from &quot;dayjs&quot;;
+import { archiveOldReferrals, deleteArchivedReferrals } from &quot;@/services/dataArchiving&quot;;
+
+const prisma = new PrismaClient();
+
+// Function to soft delete all referrals for a given userId
+export async function softDeleteReferrals(userId: string) {
+  await prisma.referral.updateMany({
+    where: { referredById: userId },
+    data: { status: &quot;deleted&quot; },
+  });
+
+  await prisma.referral.updateMany({
+    where: { referrerId: userId },
+    data: { status: &quot;deleted&quot; },
+  });
+}
+
+// Function to hard delete referrals and archive data
+export async function hardDeleteReferrals(userId: string) {
+  await prisma.referral.deleteMany({
+    where: { referredById: userId, status: &quot;deleted&quot; },
+  });
+
+  await prisma.referral.deleteMany({
+    where: { referrerId: userId, status: &quot;deleted&quot; },
+  });
+
+  await deleteArchivedReferrals(); // Ensure archived data is also cleaned up
+}
+```
+
+#### 5. **Audit Logs**
+Implement audit logging to track all data retention and deletion activities. This is crucial for compliance and investigative purposes.
+
+**Implementation Steps:**
+
+- **Database Schema**: Add an `AuditLog` table to `src/models/auditLog.ts` to record details like `action`, `userId`, `affectedRecords`, `timestamp`, and `notes`.
+- **Logging**: Modify the data archiving and deletion functions to log each action to this table.
+
+**Example Update in `src/models/auditLog.ts`:**
+```typescript
+interface AuditLog {
+  id: string;
+  action: &quot;archive&quot; | &quot;delete&quot;;
+  userId: string | null;
+  affectedRecords: number;
+  timestamp: Date;
+  notes: string;
+}
+```
+
+**Example Log in `src/services/dataArchiving.ts`:**
+```typescript
+import { prisma } from &quot;@prisma/client&quot;;
+
+// ... (inside archiveOldReferrals function)
+console.log(`${updatedCount.count} old referrals archived.`);
+await logAudit(&quot;archive&quot;, null, updatedCount.count, &quot;Archived old redeemed/expired referrals.&quot;);
+// ... (inside deleteArchivedReferrals function)
+console.log(`${deletedCount.count} old archived referrals deleted.`);
+await logAudit(&quot;delete&quot;, null, deletedCount.count, &quot;Deleted old archived referrals.&quot;);
+// ... (inside hardDeleteReferrals function)
+await logAudit(&quot;delete&quot;, user.id, affectedCount, `Hard deleted ${affectedCount} referrals for user ${user.id}.`);
+```
+
+#### 6. **Documentation and Review**
+- **Document the Workflow**: Clearly document the data retention and deletion policies, database schema changes, and the automated processes in `docs/data-retention.md` or a similar file.
+- **Regular Review**: Periodically review and update the retention policies to ensure they remain compliant with evolving regulations.
+
+### Summary of Retention/Deletion Phases
+
+| Phase               | Status        | Retention Period | Action Performed                             | Notes                                |
+|---------------------|---------------|------------------|----------------------------------------------|--------------------------------------|
+| Initial Creation    | Active        | N/A              | Data is stored and displayed                  | Referral is active and can be redeemed |
+| Redemption/Expiration | Redeemed/Expired | 5 years        | Status updated to `archived`, PII anonymized | Data is no longer actively used     |
+| Archiving           | Archived      | 5 years          | Status remains `archived`, PII is removed     | Retained for reporting/audit        |
+| Deletion            | Deleted       | 30 days (soft)   | Soft delete (status `deleted`)                | Prevents immediate data loss        |
+|                      | Deleted       | 5 years (hard)   | Hard delete from DB, archive data also deleted | Permanently removed from all DBs    |          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Propose a data retention/deletion workflow to meet future compliance requirements documented in architecture docs.          </p>
+          <p class="lt-p">
+Response: To propose a data retention and deletion workflow for the PRFC Connect codebase, we can leverage the existing data models, Prisma schema, and the concept of &quot;Soft Delete&quot; implemented in `src/lib/services/referral.js`.
+
+### 1. **Understand Existing Data Models and Soft Delete**
+The `Referral` model in `src/schema/prisma/schema.prisma` already includes fields for soft deletion:
+
+```prisma
+  // src/schema/prisma/schema.prisma
+  status      Enum(&quot;PENDING&quot;, &quot;APPROVED&quot;, &quot;REJECTED&quot;, &quot;USED&quot;, &quot;EXPIRED&quot;) @db.VarChar(20),
+  deletedAt   DateTime   @db.DateTime @omitUpdate
+  deletedById String?    @db.String @relation(&quot;deleted_by&quot;)
+```
+
+This indicates that:
+- `deletedAt` records when a referral was soft-deleted.
+- `deletedById` records the user ID who initiated the deletion.
+- Referrals are not immediately removed from the database but are marked as inactive.
+
+---
+
+### 2. **Proposed Data Retention/Deletion Workflow**
+
+#### **A. User Data Retention/Deletion**
+
+**Goal:** Ensure user data is retained for compliance requirements and can be efficiently purged.
+
+**Workflow:**
+1. **Soft Deletion of User Account:**
+   - When a user requests deletion (e.g., via `src/app/api/users/delete/route.ts`), their account is **soft-deleted**.
+   - This sets `deletedAt` and `deletedById` in the `User` table (`src/schema/prisma/schema.prisma`).
+
+2. **Automated Inactive User Pruning (e.g., GDPR Right to be Forgotten):**
+   - Implement a scheduled job (e.g., using `src/lib/utils/prune-inactive-users.ts`) that periodically (e.g., daily or weekly) identifies users where `deletedAt` is older than the retention period (e.g., 3 years).
+   - This job will **hard-delete** (i.e., `DELETE` from the database) the `User` record and all associated `Referral` records (if not already hard-deleted).
+   - This ensures that when a user is permanently deleted, all their data is also removed from the database.
+
+   **Example Code Snippet (`src/lib/utils/prune-inactive-users.ts`):**
+   ```typescript
+   // src/lib/utils/prune-inactive-users.ts
+   import { prisma } from &quot;@/lib/db&quot;;
+   import { deleteInactiveUsers } from &quot;@/lib/services/user&quot;;
+
+   export async function pruneInactiveUsers() {
+     // Example: Retain user data for 3 years (365 * 3 days)
+     const retentionDays = 365 * 3;
+     const cutoff = new Date(Date.now() - retentionDays * 86400000);
+
+     await prisma.user.deleteMany({
+       where: {
+         deletedAt: { lt: cutoff },
+       },
+     });
+   }
+   ```
+
+   **Scheduled Job (e.g., `src/lib/utils/prune-inactive-users-job.ts`):**
+   ```typescript
+   // src/lib/utils/prune-inactive-users-job.ts
+   import { PruneInactiveUsers } from &quot;@/lib/utils/prune-inactive-users&quot;;
+   import { logger } from &quot;@/lib/logger&quot;;
+
+   export async function pruneInactiveUsersJob() {
+     try {
+       await PruneInactiveUsers();
+       logger.info(&quot;Inactive users and their referrals pruned successfully.&quot;);
+     } catch (error) {
+       logger.error(&quot;Failed to prune inactive users and their referrals:&quot;, error);
+     }
+   }
+   ```
+
+   **Initialization (e.g., `src/lib/utils/prune-inactive-users-job.ts`):**
+   ```typescript
+   // src/lib/utils/prune-inactive-users-job.ts
+   export function initializePruneInactivityJobs() {
+     // Prune inactive users and their referrals every 30 days
+     setInterval(PruneInactiveUsersJob, 30 * 24 * 60 * 60 * 1000);
+   }
+   ```
+
+   **Note:** Initialize this job in a suitable place, such as `src/lib/db.ts` or a dedicated job scheduler file.
+
+---
+
+#### **B. Referral Data Retention/Deletion**
+
+**Goal:** Ensure referral data is retained for compliance and can be purged after a defined period.
+
+**Workflow:**
+1. **Soft Deletion of Referral:**
+   - When an admin deletes a referral (e.g., via an admin UI action), the `Referral` record is **soft-deleted**.
+   - This sets `deletedAt` and `deletedById` in the `Referral` table.
+
+2. **Automated Inactive Referral Pruning:**
+   - Implement a scheduled job (e.g., `src/lib/utils/prune-inactive-referrals.ts`) that periodically identifies `Referral` records where `deletedAt` is older than the retention period (e.g., 5 years).
+   - These inactive referral records are then **hard-deleted** from the `Referral` table.
+
+   **Example Code Snippet (`src/lib/utils/prune-inactive-referrals.ts`):**
+   ```typescript
+   // src/lib/utils/prune-inactive-referrals.ts
+   import { prisma } from &quot;@/lib/db&quot;;
+   import { logger } from &quot;@/lib/logger&quot;;
+
+   export async function pruneInactiveReferrals() {
+     // Example: Retain referral data for 5 years (365 * 5 days)
+     const retentionDays = 365 * 5;
+     const cutoff = new Date(Date.now() - retentionDays * 86400000);
+
+     await prisma.referral.deleteMany({
+       where: {
+         deletedAt: { lt: cutoff },
+       },
+     });
+   }
+   ```
+
+   **Scheduled Job (e.g., `src/lib/utils/prune-inactive-referrals-job.ts`):**
+   ```typescript
+   // src/lib/utils/prune-inactive-referrals-job.ts
+   import { PruneInactiveReferrals } from &quot;@/lib/utils/prune-inactive-referrals&quot;;
+   import { logger } from &quot;@/lib/logger&quot;;
+
+   export async function pruneInactiveReferralsJob() {
+     try {
+       await PruneInactiveReferrals();
+       logger.info(&quot;Inactive referrals pruned successfully.&quot;);
+     } catch (error) {
+       logger.error(&quot;Failed to prune inactive referrals:&quot;, error);
+     }
+   }
+   ```
+
+   **Initialization (e.g., `src/lib/utils/prune-inactive-referrals-job.ts`):**
+   ```typescript
+   // src/lib/utils/prune-inactive-referrals-job.ts
+   export function initializePruneReferralInactivityJobs() {
+     // Prune inactive referrals every 30 days
+     setInterval(PruneInactiveReferralsJob, 30 * 24 * 60 * 60 * 1000);
+   }
+   ```
+
+   **Note:** Initialize this job in a suitable place, such as `src/lib/db.ts` or a dedicated job scheduler file.
+
+---
+
+### 3. **Compliance Considerations**
+
+- **Retention Periods:** The retention periods (3 years for user data, 5 years for referral data) are examples. These should be configured according to the specific compliance requirements documented in `docs/architecture/data-retention.md` or any relevant legal guidelines (e.g., GDPR, CCPA, HIPAA, etc.).
+- **Audit Logs:** Consider implementing audit logs for all data deletion operations to ensure traceability, especially for compliance purposes.
+- **Backup:** Ensure that data is backed up before deletion to allow for recovery in case of accidental purges or compliance audits.
+- **Notifications:** Admins should be notified when data is about to be permanently deleted to allow for last-minute recovery if needed.
+- **Documentation:** Document all data retention policies and deletion workflows in `docs/architecture/data-retention.md` to ensure clarity and adherence.
+
+---
+
+### 4. **Implementation Notes**
+
+- The `User` and `Referral` models (`src/schema/prisma/schema.prisma`) already support soft deletion. The proposed workflow hard-deletes records after a retention period.
+- The `prune-inactive-users.ts` and `prune-inactive-referrals.ts` files would need to be created if they don&#x27;t already exist in `src/lib/utils/`.
+- Ensure that any sensitive data (e.g., personal identifiers) is handled appropriately during retention and deletion.
+
+By implementing this workflow, PRFC Connect will efficiently manage data retention and deletion, ensuring compliance while maintaining data integrity and user privacy.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Propose a data retention/deletion workflow to meet future compliance requirements documented in architecture docs.          </p>
+          <p class="lt-p">
+Response: To meet future compliance requirements, including data retention and deletion, the PRFC Connect application should implement a robust data retention/deletion workflow. Based on the existing code and typical compliance needs (e.g., GDPR, CCPA, industry-specific regulations), the following proposal outlines a structured approach:
+
+### Proposed Data Retention/Deletion Workflow
+
+#### 1. **Define Retention Policies**
+   - **File:** `docs/architecture/compliance.md` (Hypothetical location; create if not present)
+   - **Details:** Clearly document what data to retain, for how long, and under what conditions. For example:
+     - **Referral Data:** Retain for **5 years** after the last activity or **5 years** after the referred user&#x27;s onboarding, whichever is longer.
+     - **User Data:** Retain for **5 years** after the user&#x27;s account is deactivated.
+     - **Transactional/Financial Data:** Retain for **7 years** (common for financial records).
+     - **Authentication/Session Data:** Retain only as long as necessary to provide the service (e.g., 30 days for failed login attempts).
+
+#### 2. **Data Lifecycle Management**
+   - **File:** `src/data-access/prfc-prisma.ts` (for database schema and lifecycle hooks)
+   - **Details:** Implement soft-deletion for records that need to be retained but are no longer actively used.
+     - **Soft Deletion:** Add a `deletedAt` timestamp to relevant models (e.g., `Referral`, `User`, `Transaction`).
+     - **Prisma Example:**
+       ```typescript
+       // src/data-access/prfc-prisma.ts
+       model Referral {
+         // ... existing fields
+         deletedAt    DateTime   @db.DateTime(&quot;deleted_at&quot;) @map(&quot;deleted_at&quot;) // Soft delete
+       }
+       model User {
+         // ... existing fields
+         deletedAt    DateTime   @db.DateTime(&quot;deleted_at&quot;) @map(&quot;deleted_at&quot;) // Soft delete
+       }
+       model Transaction {
+         // ... existing fields
+         deletedAt    DateTime   @db.DateTime(&quot;deleted_at&quot;) @map(&quot;deleted_at&quot;) // Soft delete
+       }
+       ```
+
+#### 3. **Automated Deletion Jobs**
+   - **File:** `src/utils/deletion.ts` (Create this file)
+   - **Details:** Implement a background job or scheduled task that periodically deletes soft-deleted records once their retention period has expired.
+     - **Example:**
+       ```typescript
+       // src/utils/deletion.ts
+       import { prisma } from &quot;@/data-access/prfc-prisma&quot;;
+       import { DeleteManyResponse } from &quot;@prisma/client/runtime/advanced&quot;;
+
+       export const deleteExpiredReferrals = async () =&gt; {
+         const now = new Date();
+         const referralsToDelete: DeleteManyResponse = await prisma.referral.deleteMany({
+           where: {
+             deletedAt: { gte: now },
+             // Example: Retain 5 years after last activity
+             updatedAt: { lte: now /* DateUtil.subYears(now, 5) */ }
+           }
+         });
+         console.log(`Deleted ${referralsToDelete.count} expired referrals.`);
+       };
+
+       export const deleteUserAccounts = async () =&gt; {
+         const now = new Date();
+         const usersToDelete: DeleteManyResponse = await prisma.user.deleteMany({
+           where: {
+             deletedAt: { gte: now },
+             // Example: Retain 5 years after account deactivation
+             // Note: Assuming `deactivatedAt` is a field in the User model.
+             deactivatedAt: { lte: now /* DateUtil.subYears(now, 5) */ }
+           }
+         });
+         console.log(`Deleted ${usersToDelete.count} expired user accounts.`);
+       };
+
+       export const deleteOldTransactions = async () =&gt; {
+         const now = new Date();
+         const transactionsToDelete: DeleteManyResponse = await prisma.transaction.deleteMany({
+           where: {
+             deletedAt: { gte: now },
+             // Example: Retain 7 years for financial records
+             createdAt: { lte: now /* DateUtil.subYears(now, 7) */ }
+           }
+         });
+         console.log(`Deleted ${transactionsToDelete.count} expired transactions.`);
+       };
+       ```
+
+   - **File:** `src/lib/schedule.ts` (or a new file, e.g., `src/lib/data-retention.ts`)
+   - **Details:** Integrate the automated deletion into a scheduled task using a library like `node-schedule` or `cron`.
+     - **Example:**
+       ```typescript
+       // src/lib/schedule.ts
+       import { schedule } from &quot;node-schedule&quot;;
+       import { deleteExpiredReferrals, deleteUserAccounts, deleteOldTransactions } from &quot;@/utils/deletion&quot;;
+
+       // Run daily at midnight
+       schedule.scheduleJob(&quot;0 0 * * *&quot;, async () =&gt; {
+         console.log(&quot;Running data retention/deletion jobs...&quot;);
+         await deleteExpiredReferrals();
+         await deleteUserAccounts();
+         await deleteOldTransactions();
+         console.log(&quot;Data retention/deletion jobs completed.&quot;);
+       });
+       ```
+
+#### 4. **User-Requested Deletion (Right to be Forgotten)**
+   - **File:** `src/app/api/referrals/route.ts` (and similar user management routes)
+   - **Details:** Provide an endpoint for users to request deletion of their account and all associated data.
+     - **Soft Delete:** When a user requests deletion, soft-delete their `User` record and all related `Referral` records where the `createdBy` field matches the user&#x27;s ID.
+     - **Example:**
+       ```typescript
+       // src/app/api/referrals/route.ts
+       // ... existing code
+
+       const POST = async (req: Request) =&gt; {
+         const { user } = auth(req);
+         if (!user) {
+           return NextResponse.json({ error: &quot;Unauthorized&quot; }, { status: 401 });
+         }
+
+         // Soft-delete the user&#x27;s account
+         await prisma.user.update({
+           where: { id: user.id },
+           data: { deletedAt: new Date() },
+         });
+
+         // Soft-delete all referrals created by this user
+         await prisma.referral.deleteMany({
+           where: { createdBy: user.id },
+         });
+
+         // Soft-delete all transactions related to this user (e.g., if such a model exists)
+         // await prisma.transaction.deleteMany({
+         //   where: { userId: user.id },
+         // });
+
+         return NextResponse.json({ message: &quot;Your account and associated data have been soft-deleted.&quot; }, { status: 200 });
+       };
+
+       // ... existing code
+       ```
+
+#### 5. **Documentation and Audit Trails**
+   - **File:** `docs/architecture/compliance.md` (and `src/docs/data-retention.md` if creating a new file)
+   - **Details:** Document all retention policies, deletion processes, and audit trails (e.g., logs for when deletions occurred, by whom, and what data was affected).
+
+#### 6. **Compliance Monitoring and Reporting**
+   - **File:** `src/utils/alerts.ts` (or integrate with an existing logging/alerting system)
+   - **Details:** Implement alerts for failed deletion jobs and generate reports on data retention status to ensure ongoing compliance.
+
+---
+
+This workflow ensures that data is retained only as long as necessary and is securely deleted when it is no longer required, thereby meeting regulatory requirements and minimizing legal risks.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1966                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1601                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1187                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1057                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+964                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1903                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1794                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1550                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma schema file located?          </p>
+          <p class="lt-p">
+Response: The Prisma schema file is located at `src/lib/prisma/schema.prisma`. This file defines the database structure, including the models and their relationships.          </p>
+          <p class="lt-p">
+Reference Answer: prisma/schema.prisma          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma schema file located?          </p>
+          <p class="lt-p">
+Response: The Prisma schema file is located at `src/lib/prisma/schema.prisma`.          </p>
+          <p class="lt-p">
+Reference Answer: prisma/schema.prisma          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma schema file located?          </p>
+          <p class="lt-p">
+Response: The Prisma schema file is located at `src/lib/prisma/schema.prisma`.          </p>
+          <p class="lt-p">
+Reference Answer: prisma/schema.prisma          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma schema file located?          </p>
+          <p class="lt-p">
+Response: The Prisma schema file is located at `prisma/schema.prisma`. This file defines the database structure, including models and their relationships.          </p>
+          <p class="lt-p">
+Reference Answer: prisma/schema.prisma          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma schema file located?          </p>
+          <p class="lt-p">
+Response: The Prisma schema file is located at `src/schema.prisma`.          </p>
+          <p class="lt-p">
+Reference Answer: prisma/schema.prisma          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma schema file located?          </p>
+          <p class="lt-p">
+Response: The Prisma schema file is located at:
+
+*   **src/lib/prisma/schema.prisma**          </p>
+          <p class="lt-p">
+Reference Answer: prisma/schema.prisma          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma schema file located?          </p>
+          <p class="lt-p">
+Response: The Prisma schema file is located at src/lib/prisma/schema.prisma.          </p>
+          <p class="lt-p">
+Reference Answer: prisma/schema.prisma          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma schema file located?          </p>
+          <p class="lt-p">
+Response: The Prisma schema file is located at `prisma/schema.prisma`.          </p>
+          <p class="lt-p">
+Reference Answer: prisma/schema.prisma          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+33                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+19                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+19                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+30                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+16                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+22                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+18                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+17                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `POST /api/referrals` handler implemented?          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` handler is implemented in src/app/api/referrals/route.ts.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `POST /api/referrals` handler implemented?          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` handler is implemented in `src/app/api/referrals/route.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `POST /api/referrals` handler implemented?          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` handler is implemented in `src/app/api/referrals/route.ts`. This file defines the API endpoint for creating new referrals.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `POST /api/referrals` handler implemented?          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` handler is implemented in `src/app/api/referrals/route.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `POST /api/referrals` handler implemented?          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` handler is implemented in `src/app/api/referrals/route.ts`.
+
+This file handles the creation of new referrals by processing the incoming request body, validating the required fields (referrerId and referredEmail), ensuring the referred email hasn&#x27;t been used before, and then saving the new referral to the database using `prisma.referral.create()`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `POST /api/referrals` handler implemented?          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` handler is implemented in src/app/api/referrals/route.ts.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `POST /api/referrals` handler implemented?          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` handler is implemented in **src/app/api/referrals/route.ts**.
+
+This file contains the logic for creating a new referral, including validating the input data, generating a unique referral code, and storing the referral information in the database.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `POST /api/referrals` handler implemented?          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` handler is implemented in `src/app/api/referrals/route.ts`. This file processes incoming POST requests to create new referral records in the database.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+22                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+23                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+34                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+23                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+77                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+22                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+56                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+38                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Design a migration approach for upcoming contact-group models that preserves existing referral functionality.          </p>
+          <p class="lt-p">
+Response: To design a migration approach for introducing `ContactGroup` models while preserving existing referral functionality in the PRFC Connect codebase, we&#x27;ll need to introduce a new database schema, update the backend API to handle `ContactGroup`, and then modify the frontend to integrate `ContactGroup` without disrupting the existing referral system. Here&#x27;s a step-by-step approach:
+
+### 1. Database Schema Changes
+
+**New Models:**
+
+*   **`ContactGroup`**: This model will store information about groups of contacts.
+    *   **`id`**: Primary key (UUID).
+    *   **`name`**: String, unique within a user.
+    *   **`userId`**: ForeignKey linking to `User.id`. Ensures a user owns their contact groups.
+    *   **`createdAt`**: Timestamp.
+    *   **`updatedAt`**: Timestamp.
+
+*   **`ContactGroupContact`**: This model will establish a many-to-many relationship between `ContactGroup` and `Contact`.
+    *   **`id`**: Primary key (UUID).
+    *   **`contactId`**: ForeignKey to `Contact.id`.
+    *   **`contactGrouoId`**: ForeignKey to `ContactGroup.id`.
+    *   **`createdAt`**: Timestamp.
+    *   **`updatedAt`**: Timestamp.
+
+---
+
+### 2. Backend API Changes
+
+#### A. Prisma Schema Update
+
+Update `prisma/schema.prisma` to include the new `ContactGroup` and `ContactGroupContact` models.
+
+**src/prisma/schema.prisma**
+```prisma
+model ContactGroup {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  userId    String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  contacts  ContactGroupContact[]
+  user      User       @relation(&quot;UserContactGroups&quot;, fields: [userId], references: [id])
+}
+
+model ContactGroupContact {
+  id         String     @id @default(uuid())
+  contactId  String
+  contactGroupIds String[] // This field would typically be a foreign key to ContactGroup, but for clarity in many-to-many, a separate model is used.
+  contact    Contact    @relation(&quot;ContactGroups&quot;)
+  contactGroup ContactGroup @relation(&quot;ContactGroups&quot;)
+} /* OR, if using a join table:
+model ContactGroupContact {
+  id         String     @id @default(uuid())
+  contactId  String
+  groupId    String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  contact    Contact    @relation(&quot;ContactGroups&quot;)
+  group      ContactGroup @relation(&quot;ContactGroups&quot;)
+}
+*/
+``` // *Note: The `ContactGroupContact` model needs to accurately reflect the many-to-many relationship. The initial example uses string arrays for simplification but is not ideal for Prisma&#x27;s foreign key handling. A dedicated join model with foreign keys is recommended. If the existing contact logic already uses a similar join table, it can be renamed and adapted.*
+
+#### B. CRUD Endpoints for Contact Groups
+
+Create new API routes to manage `ContactGroup` and `ContactGroupContact`:
+
+*   **`src/app/api/contact-groups/`**: This directory will contain endpoints for creating, reading, updating, and deleting contact groups and their associated contacts.
+
+    *   **`route.ts`**: Handles POST, GET, PUT, DELETE for `ContactGroup`.
+    *   **`contacts/route.ts`**: Handles POST, GET, PUT, DELETE for adding, retrieving, updating, and removing contacts from a `ContactGroup`.
+
+#### C. Refactor Referral Creation Logic
+
+Modify the existing referral creation logic to allow selecting contacts from a `ContactGroup` instead of just an individual contact.
+
+*   **`src/app/api/referrals/route.ts`**:
+    *   When a `POST` request is made to create a referral, check if the `contactId` or `contactGroupId` is provided.
+    *   If `contactGroupId` is present, retrieve all `Contact` objects associated with that `ContactGroup` using the `ContactGroupContact` join model.
+    *   If `contactId` is present, proceed with creating a referral for that single contact.
+    *   For each contact (either from a group or individually), create a new `Referral` record in the database, setting `contactId` and `referralByUserId`.
+
+### 3. Frontend Integration
+
+Update the frontend components to allow users to select contacts from a `ContactGroup` when creating a new referral.
+
+*   **`src/components/referral/ReferralModal.tsx`**:
+    *   Add a new section in the form to allow the user to either:
+        *   Enter a single contact&#x27;s email (existing functionality).
+        *   Or select an existing `ContactGroup` from a dropdown.
+    *   If a `ContactGroup` is selected, dynamically populate a list of its associated contact emails that can be referred.
+
+*   **`src/services/api.ts`**:
+    *   Introduce new functions to interact with the `ContactGroup` and `ContactGroupContact` APIs:
+        *   `fetchContactGroups`: Retrieves all contact groups for the authenticated user.
+        *   `fetchGroupContacts`: Retrieves contact emails for a given `contactGroupId`.
+
+### 4. Migration Strategy
+
+To preserve existing referral functionality during the migration, the new `ContactGroup` system should integrate with the old `Contact` system without overhauling it. Existing referrals should remain intact, and users should be able to continue creating individual referrals.
+
+**Phased Rollout:**
+
+1.  **Backend Only Changes (Without Frontend):**
+    *   Implement the new `ContactGroup` and `ContactGroupContact` models in `prisma/schema.prisma`.
+    *   Create the necessary API routes (`src/app/api/contact-groups/`) to manage contact groups and their contacts.
+    *   Modify `src/app/api/referrals/route.ts` to accept and process `contactGroupId` in referral creation.
+    *   **Test:** Ensure that existing referral creation (using `contactId`) still works and that creating referrals for group contacts is functional (but not visible on the frontend).
+
+2.  **Frontend Integration:**
+    *   Update `src/components/referral/ReferralModal.tsx` to allow group contact selection.
+    *   Implement `src/services/api.ts#fetchContactGroups` and `src/services/api.ts#fetchGroupContacts`.
+    *   **Test:** Ensure users can create referrals for both individual contacts and group contacts. Verify that existing referrals are displayed correctly and that new group-based referrals are processed and displayed as expected.
+
+3.  **User Training and Rollout:**
+    *   Provide documentation or onboarding for users to understand how to create and manage contact groups.
+    *   Gradually roll out the feature to all users or monitor a small group for feedback before full deployment.
+
+---
+
+### 5. Preservation of Existing Functionality
+
+*   **Individual Referrals:** The core logic for creating individual referrals remains unchanged and will continue to function.
+*   **Data Integrity:** Referrals created before the migration will not be affected. New referrals can be created for either single contacts or entire contact groups.
+*   **Seamless Upgrade:** Users can continue using their existing contact list and will have the new group feature available alongside it.
+
+By introducing `ContactGroup` as an additive feature that integrates with the existing `Contact` model, the migration preserves the essence of the original referral functionality while enhancing contact management capabilities.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Design a migration approach for upcoming contact-group models that preserves existing referral functionality.          </p>
+          <p class="lt-p">
+Response: To design a migration approach for the upcoming **contact-group** models in PRFC Connect while **preserving existing referral functionality**, the solution should introduce new database models (e.g., `ContactGroup` and `ReferralGroupMember`) to associate multiple contacts with a single group, and update the `Referral` model to support group-level messaging. This will allow users to send messages to multiple contacts at once without duplicating the core referral logic.
+
+### 1. **Database Schema Changes**
+
+Introduce two new models and update the `Referral` model:
+
+*   **`ContactGroup`** (`prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/db/schema.ts`):
+    *   Each `ContactGroup` will represent a collection of `ReferralGroupMember` entries, allowing multiple contacts to be organized into a group.
+    *   **Fields**:
+        *   `id`: Primary key (UUID).
+        *   `name`: String, the name of the contact group.
+        *   `createdAt`: Timestamp.
+        *   `updatedAt`: Timestamp.
+*   **`ReferralGroupMember`** (`prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/db/schema.ts`):
+    *   This table will link a `Referral` to a `ContactGroup`, indicating that a specific contact (via `Referral`) belongs to a group.
+    *   **Fields**:
+        *   `id`: Primary key (UUID).
+        *   `referralId`: UUID, foreign key referencing `Referral.id`.
+        *   `contactGroupId`: UUID, foreign key referencing `ContactGroup.id`.
+        *   `createdAt`: Timestamp.
+        *   `updatedAt`: Timestamp.
+*   **`Referral` (updated)** (`prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/prfc-connect/db/schema.ts`):
+    *   Update the `Referral` model to include a `contactGroupIds` array to allow multiple group associations and a `groupId` to identify the primary group for channel-specific settings (e.g., SMS, email).
+    *   **Fields (new/upcoming)**:
+        *   `contactGroupIds`: Array of UUIDs, allowing a referral to belong to multiple contact groups.
+        *   `groupId`: UUID (optional), to designate a primary group for channel-specific configurations like SMS consent, email template, etc.
+
+### 2. **Backend API Changes**
+
+*   **`src/app/api/referrals/route.ts` (POST /api/referrals)**: This route will now accept `contactGroupIds` in the request body (from the user&#x27;s input). This will link the new `Referral` record to the specified contact groups through the `ReferralGroupMember` table.
+    *   **Example request body**:
+        
+```json
+        {
+          &quot;name&quot;: &quot;Jane Doe&quot;,
+          &quot;phoneNumber&quot;: &quot;+1234567890&quot;,
+          &quot;email&quot;: &quot;jane.doe@example.com&quot;,
+          &quot;contactGroupIds&quot;: [&quot;group-uuid-1&quot;, &quot;group-uuid-2&quot;]
+        }
+        ```
+
+    *   **Code logic**:
+        *   Iterate through `contactGroupIds` and create a new `ReferralGroupMember` entry for each `referralId` and `contactGroupId`.
+        *   Update the `Referral` record&#x27;s `contactGroupIds` array.
+*   **`src/app/api/referrals/route.ts` (POST /api/referrals/mass)**: This route will send messages to multiple contacts. Instead of iterating through all `Referral` records, it will:
+    *   Accept a `contactGroupId` or an array of `contactGroupIds` in the request body.
+    *   Fetch all `ReferralGroupMember` records for the given `contactGroupIds` to get a list of `Referral` records that belong to those groups.
+    *   Iterate through these `Referral` records and call `sendReferralMessage` for each (via `src/app/api/referrals/utils.ts` and `src/app/lib/sms.ts`, `src/app/lib/mail.ts`).
+    *   **Example request body**:
+        
+```json
+        {
+          &quot;contactGroupIds&quot;: [&quot;group-uuid-1&quot;],
+          &quot;message&quot;: &quot;This is a group message!&quot;
+        }
+        ```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Design a migration approach for upcoming contact-group models that preserves existing referral functionality.          </p>
+          <p class="lt-p">
+Response: To design a migration approach for upcoming **contact-group** models while **preserving** existing **referral functionality**, we need to introduce new data structures to manage groups of contacts and then update how referrals are created and managed to allow specifying a contact group.
+
+### 1. Database Schema Changes
+
+**New Prisma Models:**
+
+Introduce two new Prisma models in `prisma/schema.prisma` to represent contact groups and their members:
+
+```prisma
+model ContactGroup {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  members     ContactGroupMember[]
+}
+
+model ContactGroupMember {
+  id        Int      @id @default(autoincrement())
+  contactId Int
+  groupId   Int
+  contact   Contact  @relation(fields: contactId, references: id)
+  group     ContactGroup @relation(fields: groupId, references: id)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique(fields: [contactId, groupId])
+}
+```
+
+**Change `Contact` to allow multiple group memberships:**
+
+Update the `Contact` model to include an array of `ContactGroupMember`:
+
+```prisma
+model Contact {
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  email       String      @unique
+  phoneNumber String      @unique
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  referredBy  Referral   // Existing referral logic
+  referredTo  Referral[] // Existing referral logic
+  groupMembers ContactGroupMember[] // New: to track which groups this contact belongs to
+}
+```
+
+### 2. Migration Strategy
+
+Since this introduces new data structures, a **database migration** is required. Use Prisma Migrate to generate and apply the changes:
+
+```bash
+npx prisma migrate dev --name add-contact-groups
+```
+
+This will update the `prisma/schema.prisma` and create a new migration file in `prisma/migrations/`.
+
+---
+
+### 3. Preservation of Existing Referral Functionality
+
+**Minimal Impact:**
+
+The core logic for creating and managing referrals (in `src/app/api/referrals/route.ts`) should remain largely unchanged. Referrals will still be associated with a single `Contact` (via `referredBy` and `referredTo`). Introducing contact groups adds an **additional layer of filtering and management** without altering how individual referrals are stored or retrieved.
+
+**New Input for Referrals:**
+
+To allow creating referrals for an entire contact group, the `body` in `src/app/api/referrals/route.ts` should be updated to accept a `contactGroupId` (in addition to `referredBy` and `contactEmail` or `contactPhone`):
+
+```typescript
+// src/app/api/referrals/route.ts
+// ... existing imports and logic ...
+
+interface ReferralBody {
+  referredBy: string; // email or phone
+  contactEmail?: string;
+  contactPhone?: string;
+  contactGroupId?: number; // New: allows referring via a contact group
+  program: string;
+  status: &quot;pending&quot; | &quot;approved&quot; | &quot;declined&quot;;
+  expiresAt: string;
+}
+```
+
+**New Logic to Fetch Contacts for Referral:**
+
+When a referral is created for a `contactGroupId`, we need to fetch all `Contact` records associated with that group:
+
+```typescript
+// src/app/api/referrals/route.ts
+// ... existing code up to creating the referral object ...
+
+if (contactGroupId) {
+  const group = await prisma.contactGroup.findFirst({
+    where: { id: contactGroupId },
+    include: { members: { include: { contact: true } } },
+  });
+
+  if (!group) {
+    return NextResponse.json({ error: &quot;Contact group not found&quot; }, { status: 404 });
+  }
+
+  const contacts = group.members.map(member =&gt; member.contact);
+
+  // Iterate through all members of the group to create separate referrals
+  for (const contact of contacts) {
+    // Check if referral already exists for this contact
+    const existingReferral = await prisma.referral.findFirst({
+      where: { OR: [{ referredBy: referredByEmail }, { referredBy: referredByPhone }] },
+    });
+
+    if (existingReferral) {
+      // Update the status or handle duplicate logic if needed
+      await prisma.referral.update({
+        where: { id: existingReferral.id },
+        data: { status: status },
+      });
+    } else {
+      // Create a new referral for this contact
+      const newReferral = await prisma.referral.create({
+        data: {
+          referredBy: referredByEmail, // Use the original referrer&#x27;s email/phone
+          contactId: contact.id,
+          program,
+          status,
+          expiresAt: new Date(expiresAt),
+        },
+      });
+      console.log(`Created referral for ${contact.name} (ID: ${newReferral.id})`);
+    }
+  }
+}
+```
+
+**Dual Referral Creation (Email/Phone or Group):**
+
+The existing logic for creating referrals based on email or phone number remains important, allowing for individual referrals. If a `contactGroupId` is also provided, **referrals will be created for all members of that group** in addition to the individual specified by `contactEmail` or `contactPhone`. This ensures both existing and new functionalities coexist:
+
+```typescript
+// src/app/api/referrals/route.ts
+// ... existing code to fetch contact by email or phone ...
+
+// Check if referral already exists for the referred contact
+let existingReferral = await prisma.referral.findFirst({
+  where: { OR: [{ referredBy: referredByEmail }, { referredBy: referredByPhone }] },
+});
+
+if (existingReferral) {
+  await prisma.referral.update({
+    where: { id: existingReferral.id },
+    data: { status: status },
+  });
+} else {
+  await prisma.referral.create({
+    data: {
+      referredBy: referredByEmail,
+      contactId: referredContact.id,
+      program,
+      status,
+      expiresAt: new Date(expiresAt),
+    },
+  });
+}
+```
+
+---
+
+### 4. Admin UI for Managing Contact Groups
+
+**New Admin Pages:**
+
+Create new admin pages to manage contact groups and their members:
+
+*   **Create/Update Contact Group (`src/app/admin/contact-groups/form.tsx`):**
+    *   Allows administrators to input a `name` for the group and select existing `Contact` records to add as members.
+*   **List Contact Groups (`src/app/admin/contact-groups/list.tsx`):**
+    *   Displays all existing contact groups and their member contacts.
+*   **Delete Contact Group (`src/app/admin/contact-groups/delete.tsx`):**
+    *   Provides a mechanism to permanently delete a contact group and its associated members.
+
+---
+
+### 5. Testing and Validation
+
+*   **Unit Tests:** Verify that creating a referral for a contact group correctly generates individual referrals for all members.
+*   **Integration Tests:** Ensure that the database migrations are applied correctly and that the new models interact as expected with the existing `Referral` logic.
+*   **User Interface Testing:** Confirm that the new admin pages for contact groups function correctly, including adding, listing, and deleting groups and their members.
+
+---
+
+By following this structured migration approach, the existing referral functionality is **preserved**, and the application gains powerful **contact-group management** capabilities, enhancing user experience and administrative control.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Design a migration approach for upcoming contact-group models that preserves existing referral functionality.          </p>
+          <p class="lt-p">
+Response: To design a migration approach for upcoming **contact-group models** while **preserving existing referral functionality**, we need to introduce new data structures and update the application logic to manage groups of contacts. The core principle is to keep existing referral logic intact and layer new group management features on top.
+
+---
+
+### **1. Database Schema Changes**
+
+Introduce new Prisma models and update the `prisma/schema.prisma` file:
+
+**New Models:**
+
+*   **ContactGroup** – Represents a group containing multiple `Contact` or `Referrer` entries. This model will have a unique identifier (`id`) and a `name`.
+    
+```prisma
+    model ContactGroup {
+      id              String                        @id @default(uuid())
+      name            String                        @unique
+      createdAt       DateTime                      @default(now())
+      updatedAt       DateTime                      @default(now())
+      // This group can contain either Referrers or Contacts
+      // To differentiate, consider a `type` enum: &quot;Referrer&quot; | &quot;Contact&quot;
+      // However, for simplicity, we&#x27;ll initially keep them separate.
+      Referrers       ReferrerGroup[]               @relation(&quot;GroupReferrers&quot;)
+      Contacts        ContactGroup[]               @relation(&quot;GroupContacts&quot;)
+      // Optional: owner or permissions if needed for access control
+      // owner          User                         @relation(&quot;OwnedGroups&quot;)
+    }
+    ```
+
+*   **ReferrerGroup** – Links a `Referrer` to a `ContactGroup`. This ensures a `Referrer` can belong to multiple groups.
+    
+```prisma
+    model ReferrerGroup {
+      id        String                         @id @default(uuid())
+      createdAt DateTime                       @default(now())
+      updatedAt DateTime                       @default(now())
+      referrer  Referrer                      @relation(&quot;GroupReferrers&quot;, fields: [referrerId])
+      groupId   String                        @relation(&quot;GroupReferrers&quot;, fields: [groupId])
+      // Ensure a unique combination of referrer and group
+      @@unique([referrerId, groupId])
+    }
+    ```
+
+*   **ContactGroup** – Links a `Contact` to a `ContactGroup`.
+    
+```prisma
+    model ContactGroup {
+      id        String                         @id @default(uuid())
+      createdAt DateTime                       @default(now())
+      updatedAt DateTime                       @default(now())
+      contact   Contact                       @relation(&quot;GroupContacts&quot;, fields: [contactId])
+      groupId   String                        @relation(&quot;GroupContacts&quot;, fields: [groupId])
+      // Ensure a unique combination of contact and group
+      @@unique([contactId, groupId])
+    }
+    ```
+
+**Update Existing Model:**
+
+*   **Referrer** – Add a `groupId` field to allow a `Referrer` to be associated with a single `ContactGroup` (or `null` if ungrouped).
+    
+```prisma
+    model Referrer {
+      id            String                        @id @default(uuid())
+      name          String
+      email         String
+      phone         String?                       @db.VarChar(20)
+      referredAt    DateTime                      @default(now())
+      referredBy    User                         @relation(&quot;ReferredBy&quot;)
+      // New field: group this referrer belongs to
+      groupId       String?                       @db.VarChar(36) // UUID
+      group         ContactGroup                 @relation(&quot;GroupReferrers&quot;, fields: [groupId])
+      status        ReferralStatus               @default(&quot;pending&quot;)
+      code          String                       @unique
+      redeemedAt    DateTime?                    @db.Time
+      redeemedBy    User?                        @relation(&quot;RedeemedBy&quot;)
+    }
+    ```
+
+*   **Contact** – Similarly, add a `groupId` field.
+    
+```prisma
+    model Contact {
+      id            String                        @id @default(uuid())
+      name          String
+      email         String
+      phone         String?                       @db.VarChar(20)
+      referredAt    DateTime                      @default(now())
+      referredBy    User                         @relation(&quot;ReferredBy&quot;)
+      groupId       String?                       @db.VarChar(36) // UUID
+      group         ContactGroup                 @relation(&quot;GroupContacts&quot;, fields: [groupId])
+      status        ContactStatus                @default(&quot;pending&quot;)
+      code          String                       @unique
+      redeemedAt    DateTime?                    @db.Time
+      redeemedBy    User?                        @relation(&quot;RedeemedBy&quot;)
+    }
+    ```
+
+---
+
+### **2. Migration Strategy**
+
+**Goal:** Introduce the new models and populate them with existing data while preserving the original referral/contact logic.
+
+**Phases:**
+
+#### **Phase 1: Prisma Schema Update**
+
+*   **File:** `prisma/schema.prisma`
+*   **Action:** Implement the new `ContactGroup`, `ReferrerGroup`, `ContactGroup`, and update `Referrer` and `Contact` models as described above.
+*   **Considerations:**
+    *   Ensure proper indexing (e.g., `@unique([contactId, groupId])`).
+    *   Use UUIDs for `groupId` to allow for flexible grouping.
+    *   Add soft-deletes or versioning if future requirements dictate.
+
+#### **Phase 2: Data Migration**
+
+*   **Objective:** Populate the new models with existing `Referrer` and `Contact` data, potentially creating default &quot;All&quot; groups.
+*   **File:** `prisma/migrations/[timestamp]_introduce_contact_groups.up.ts`
+*   **Action:** In the Prisma migration file, after creating the new `ContactGroup` (e.g., &quot;All Contacts&quot; and &quot;All Referrers&quot;), iterate through all existing `Contact` and `Referrer` records and create corresponding `ContactGroup` and `ReferrerGroup` entries to link them to the new groups.
+    
+```typescript
+    // Example: Migrating existing Referrers into &quot;All Referrers&quot; group
+    const allReferrersGroup = await prisma.contactGroup.create({
+      data: { id: &#x27;all-referrers&#x27;, name: &#x27;All Referrers&#x27; },
+    });
+
+    for (const referrer of await prisma.referrer.findMany()) {
+      await prisma.referrerGroup.create({
+        data: { id: `referrer-group-${referrer.id}`, referrerId: referrer.id, groupId: allReferrersGroup.id },
+      });
+      // Also, if you want to keep the original groupId field populated
+      await prisma.referrer.update({
+        where: { id: referrer.id },
+        data: { groupId: allReferrersGroup.id },
+      });
+    }
+
+    // Example: Migrating existing Contacts into &quot;All Contacts&quot; group
+    const allContactsGroup = await prisma.contactGroup.create({
+      data: { id: &#x27;all-contacts&#x27;, name: &#x27;All Contacts&#x27; },
+    });
+
+    for (const contact of await prisma.contact.findMany()) {
+      await prisma.contactGroup.create({
+        data: { id: `contact-group-${contact.id}`, contactId: contact.id, groupId: allContactsGroup.id },
+      });
+      // Also, if you want to keep the original groupId field populated
+      await prisma.contact.update({
+        where: { id: contact.id },
+        data: { groupId: allContactsGroup.id },
+      });
+    }
+    ```
+
+#### **Phase 3: Application Code Updates**
+
+**File:** `src/services/referral.ts`, `src/services/contact.ts`, `src/app/api/referrals/route.ts`, `src/app/api/contacts/route.ts`
+
+*   **Refactor Fetch Logic:**
+    *   Modify functions that fetch all `Referrer` or `Contact` records to accept a `groupId` parameter.
+    *   If a `groupId` is provided, filter the results using the `ReferrerGroup` or `ContactGroup` join.
+    *   Maintain the existing logic to return all records if `groupId` is `null` or undefined.
+    
+```typescript
+    // Example: src/services/referral.ts
+    // Fetch referrers by group
+    async function getReferrersByGroup(userId: string, groupId?: string): Promise&lt;Referrer[]&gt; {
+      const baseQuery = prisma.referrer
+        .include({
+          referredBy: true,
+          redeemedBy: true,
+          group: true, // Include the group information
+        })
+        .where({ referredBy: { id: userId } });
+
+      if (groupId) {
+        return await baseQuery.where({ group: { id: groupId } });
+      }
+
+      return await baseQuery;
+    }
+
+    // Fetch referrers with a specific status (e.g., redeemed)
+    async function getRedeemedReferrers(userId: string, groupId?: string): Promise&lt;Referrer[]&gt; {
+      const baseQuery = prisma.referrer
+        .include({
+          referredBy: true,
+          redeemedBy: true,
+          group: true, // Include the group information
+        })
+        .where({ referredBy: { id: userId }, status: &quot;redeemed&quot; });
+
+      if (groupId) {
+        return await baseQuery.where({ group: { id: groupId } });
+      }
+
+      return await baseQuery;
+    }
+    ```
+
+*   **Create/Update Logic:**
+    *   When a new `Referrer` or `Contact` is created or updated, ensure the `groupId` field is set if the user associates them with a group.
+    *   This will automatically create the necessary `ReferrerGroup` or `ContactGroup` records via Prisma&#x27;s relation handling.
+
+**File:** `src/components/referral/ReferralList.tsx`, `src/components/contact/ContactList.tsx`
+
+*   **UI Components:**
+    *   Update these components to allow users to filter `Referrer` and `Contact` lists by `ContactGroup`.
+    *   Introduce dropdowns or search inputs to select a group.
+    *   Fetch data from the          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Design a migration approach for upcoming contact-group models that preserves existing referral functionality.          </p>
+          <p class="lt-p">
+Response: To design a migration approach for upcoming **Contact-Group models** while **preserving existing referral functionality**, we need to introduce new database tables and update the application logic to handle associations between contacts and groups, without disrupting the current referral system.
+
+---
+
+### 1. Database Schema Changes
+
+Introduce two new Prisma models: `ContactGroup` and `ContactGroupMember`.
+
+**New Models:**
+
+**src/lib/prisma/schema.prisma**
+```prisma
+model ContactGroup {
+  id                Int      @id @default(autoincrement())
+  name              String   @unique
+  creatorId         Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  ContactGroupMember ContactGroupMember[]
+}
+
+model ContactGroupMember {
+  id        Int      @id @default(autoincrement())
+  groupId   Int
+  contactId Int
+  role      String   // e.g., &#x27;OWNER&#x27;, &#x27;MEMBER&#x27;
+  isPrimary  Boolean // Indicates if this is the primary contact in the group
+  ContactGroup   ContactGroup @relation(&quot;Group&quot;, fields: [groupId], references: [id])
+  Contact        Contact      @relation(&quot;Members&quot;, fields: [contactId], references: [id])
+}
+```
+
+**Explanation:**
+- `ContactGroup`: Represents a group with a unique name and a creator. Each group can have multiple `ContactGroupMember`s.
+- `ContactGroupMember`: Links a `Contact` to a `ContactGroup`, specifying their role and whether they are the primary contact in the group.
+
+---
+
+### 2. Migration Strategy
+
+Use **Prisma Migrate** to apply these schema changes to the database.
+
+**Steps:**
+
+1.  **Generate Migration:**
+    ```bash
+    prisma migrate dev generate
+    ```
+
+2.  **Create New Migration File:**
+    Prisma will generate a new migration file (e.g., `20231005123456_createContactGroup+ContactGroupMember.ts`).
+
+3.  **Apply Migration:**
+    ```bash
+    prisma migrate dev
+    ```
+
+This will update the database schema to include the new `ContactGroup` and `ContactGroupMember` tables.
+
+---
+
+### 3. Application Code Updates
+
+Update the application to manage contact groups and their members.
+
+#### 3.1. Prisma Client Updates
+
+The `prisma/client.ts` will already include the new models after running `prisma generate`.
+
+#### 3.2. Backend Routes for Contact Groups
+
+Create new API routes to manage contact groups and their members.
+
+**src/app/api/contact-groups/createGroup/route.ts**
+```typescript
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { prisma } from &quot;@/lib/prisma&quot;;
+
+export async function POST(req: NextRequest) {
+  const body = await req.json();
+  const { name, creatorId } = body;
+
+  // Create a new ContactGroup
+  const group = await prisma.contactGroup.create({
+    data: {
+      name,
+      creatorId,
+    },
+  });
+
+  return NextResponse.json({ message: &quot;Group created successfully!&quot;, group }, { status: 201 });
+}
+```
+
+**src/app/api/contact-groups/addMember/route.ts**
+```typescript
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { prisma } from &quot;@/lib/prisma&quot;;
+
+export async function POST(req: NextRequest) {
+  const body = await req.json();
+  const { groupId, contactId, role, isPrimary } = body;
+
+  // Add the contact to the ContactGroupMember
+  const member = await prisma.contactGroupMember.create({
+    data: {
+      groupId,
+      contactId,
+      role,
+      isPrimary,
+    },
+  });
+
+  return NextResponse.json({ message: &quot;Contact added to group successfully!&quot;, member }, { status: 201 });
+}
+```
+
+**src/app/api/contact-groups/getGroup/route.ts**
+```typescript
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { prisma } from &quot;@/lib/prisma&quot;;
+
+export async function GET(req: NextRequest) {
+  const url = new URL(req.url);
+  const groupId = parseInt(url.searchParams.get(&quot;id&quot;) || &quot;&quot;);
+
+  if (isNaN(groupId)) {
+    return NextResponse.json({ error: &quot;Invalid group ID&quot; }, { status: 400 });
+  }
+
+  try {
+    // Fetch the ContactGroup and its members
+    const groupWithMembers = await prisma.contactGroup.findUnique({
+      where: { id: groupId },
+      include: {
+        ContactGroupMember: {
+          include: {
+            Contact: true, // Include contact details
+          },
+        },
+      },
+    });
+
+    if (!groupWithMembers) {
+      return NextResponse.json({ error: &quot;Group not found&quot; }, { status: 404 });
+    }
+
+    return NextResponse.json(groupWithMembers, { status: 200 });
+  } catch (error) {
+    console.error(&quot;Error fetching group:&quot;, error);
+    return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+  }
+}
+```
+
+#### 3.3. Frontend Components for Contact Groups (Conceptual)
+
+Update frontend components to display and manage contact groups. This will involve:
+- Fetching groups for a user.
+- Adding/removing contacts from groups.
+- Displaying group members with their roles and primary status.
+
+Example: Updating `src/components/ContactList.tsx` to show groups and members:
+
+```typescript
+// src/components/ContactList.tsx
+import { useEffect, useState } from &quot;react&quot;;
+import { prisma } from &quot;@/lib/prisma&quot;;
+import { ContactGroup, ContactGroupMember } from &quot;@/lib/prisma/schema&quot;;
+
+export default function ContactList() {
+  const [contacts, setContacts] = useState([]);
+  const [groups, setGroups] = useState&lt;ContactGroup[]&gt;([]);
+
+  useEffect(() =&gt; {
+    // Fetch all contacts and their associated groups and roles
+    prisma.$transaction([
+      prisma.contact.findMany({
+        include: {
+          ContactGroupMember: {
+            include: {
+              ContactGroup: true,
+            },
+          },
+        },
+      }),
+      prisma.contactGroup.findMany({
+        include: {
+          ContactGroupMember: {
+            include: {
+              Contact: true,
+            },
+          },
+        },
+      }),
+    ]).then(([allContacts, allGroups]) =&gt; {
+      setContacts(allContacts);
+      setGroups(allGroups);
+    });
+  }, []);
+
+  // Logic to determine primary status for a contact in a group
+  const isPrimaryInGroup = (contactId: number, groupId: number) =&gt;
+    groups
+      .flatMap((group) =&gt; group.ContactGroupMember)
+      .find((member) =&gt; member.contactId === contactId &amp;&amp; member.groupId === groupId)?.isPrimary;
+
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Contacts&lt;/h2&gt;
+      &lt;ul&gt;
+        {contacts.map((contact) =&gt; (
+          &lt;li key={contact.id}&gt;
+            {contact.name}
+            {groups
+              .flatMap((group) =&gt; group.ContactGroupMember)
+              .filter((member) =&gt; member.contactId === contact.id)
+              .map((member) =&gt; (
+                &lt;p key={member.id}&gt;
+                  - {member.ContactGroup.name} ({member.role})
+                  {member.isPrimary &amp;&amp; &quot; (Primary)&quot;}
+                &lt;/p&gt;
+              ))}
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  );
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Design a migration approach for upcoming contact-group models that preserves existing referral functionality.          </p>
+          <p class="lt-p">
+Response: To design a migration approach for upcoming **contact-group models** that **preserves existing referral functionality**, we can follow a **database schema migration** strategy using **Prisma Migrate**. This ensures compatibility with the existing `referral` model and allows for the introduction of `contactGroup` and `contact` models without disrupting current referral data or user interactions.
+
+---
+
+### ✅ **Current Referral Functionality Overview (from src/models/referral.ts)**
+
+The existing `referral` model includes:
+- `id` (string, primary key)
+- `code` (string, unique, generated by `nanoid()`)
+- `createdAt` (datetime)
+- `updatedAt` (datetime)
+- `userId` (string, foreign key to `User`)
+- `redeemedBy` (string | null, foreign key to `User`)
+- `redeemedAt` (datetime | null)
+- `status` (`statusType`, enum: &quot;PENDING&quot;, &quot;REDEEMED&quot;, &quot;EXPIRED&quot;)
+
+It also embeds `contactDetails` (an array of `{ name: string; email: string; message: string; }`), `referrerName`: string, and `referrerEmail`: string.
+
+---
+
+### 🚀 **Proposed Migration Plan**
+
+This plan introduces two new models: `ContactGroup` and `Contact`. It will also **restructure the `referral` model** to link to these new `ContactGroup` records, while **retaining the ability to view embedded contact details** for display purposes (e.g., in the UI).
+
+---
+
+### 1. **Introduce New Models: `ContactGroup` and `Contact`**
+
+Create new models to manage contact groups and individual contacts.
+
+**File:** `src/models/contact-group.ts`
+
+```prisma
+model ContactGroup {
+  id              String    @id @default(uuid())
+  name            String    @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now())
+  userId          String
+  user            User      @relation(&quot;CreatedContactGroups&quot;, fields: [userId], references: [id])
+  contacts        Contact[] @relation(&quot;GroupContacts&quot;)
+  referredBy      Referral @relation(&quot;CreatedFromGroup&quot;, fields: [referredById], references: [id])
+  referredById    String | null
+}
+
+model Contact {
+  id              String    @id @default(uuid())
+  name            String
+  email           String    @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now())
+  groupId         String
+  group           ContactGroup @relation(&quot;GroupContacts&quot;, fields: [groupId], references: [id])
+}
+```
+
+---
+
+### 2. **Modify the `Referral` Model**
+
+Update the `Referral` model to link to a `ContactGroup` instead of containing embedded `contactDetails`.
+
+**File:** `src/models/referral.ts`
+
+```prisma
+model Referral {
+  id              String    @id @default(uuid())
+  code            String    @unique @db.VarChar(100)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now())
+  userId          String
+  user            User      @relation(&quot;ReferredBy&quot;, fields: [userId], references: [id])
+  redeemedBy      String | null
+  redeemedAt      DateTime | null
+  status          statusType
+  referredById    String | null
+  contactGroupId  String | null
+  contactGroup    ContactGroup @relation(&quot;ReferredByGroup&quot;, fields: [contactGroupId], references: [id])
+  referrerName    String
+  referrerEmail   String
+  // contactDetails can remain here for UI display, but they are now sourced from a ContactGroup
+  // This field will be populated during data migration
+  contactDetails  ContactDetail[]
+}
+
+enum statusType {
+  PENDING
+  REDEEMED
+  EXPIRED
+}
+
+model ContactDetail {
+  id              String    @id @default(uuid())
+  name            String
+  email           String    @unique
+  message         String    @db.Text
+  referralId      String
+  referral        Referral @relation(&quot;ReferralDetails&quot;, fields: [referralId], references: [id])
+}
+```
+
+---
+
+### 3. **Data Migration Strategy**
+
+To preserve existing contact data, we need to migrate embedded `contactDetails` from the old `referral` records into new `ContactGroup` and `Contact` records.
+
+---
+
+#### **Step 1: Create Contact Groups for Referred Users**
+
+For each existing `referral` record, create a new `ContactGroup` associated with the `referredBy` user.
+
+---
+
+#### **Step 2: Populate Contact Records**
+
+For each `referral`, create new `Contact` records within the newly created `ContactGroup`, using the data from the embedded `contactDetails`.
+
+---
+
+#### **Step 3: Update Referral Records**
+
+Update each `referral` record to link to its corresponding `ContactGroup` and clear its `contactDetails` array (or populate an internal `ContactDetail` table if display is critical and read-only).
+
+---
+
+#### **Implementation (in src/lib/data/migrate.ts)**
+
+```typescript
+// src/lib/data/migrate.ts
+
+import { PrismaClient } from &quot;@prisma/client&quot;;
+import { statusType } from &quot;@/src/models/referral&quot;;
+
+const prisma = new PrismaClient();
+
+// Fetch all existing referrals
+async function migrateContactDetails() {
+  const referrals = await prisma.referral.findMany({
+    include: {
+      contactDetails: true,
+    },
+  });
+
+  console.log(`Found ${referrals.length} referrals to migrate contact details for.`);
+
+  // Process each referral
+  for (const referral of referrals) {
+    // Skip if this referral already has a contact group (e.g., if migrated before)
+    if (referral.contactGroupId) {
+      console.warn(`Referral ${referral.id} already has a contact group. Skipping.`);
+      continue;
+    }
+
+    console.log(`Processing referral: ${referral.id}`);
+
+    // Ensure a minimal &quot;General&quot; contact group exists for this referred user
+    let contactGroup = await prisma.contactGroup.upsert({
+      where: { name_userId: `${&quot;General&quot;}_${referral.userId}` },
+      update: {},
+      create: {
+        name: &quot;General&quot;,
+        userId: referral.userId,
+      },
+    });
+
+    console.log(`  - Created contact group: ${contactGroup.id}`);
+
+    // Populate contact details into the contact group
+    if (referral.contactDetails.length &gt; 0) {
+      const createContactPromises = referral.contactDetails.map((contactDetail) =&gt; {
+        return prisma.contact.create({
+          data: {
+            name: contactDetail.name,
+            email: contactDetail.email,
+            groupId: contactGroup.id,
+          },
+        });
+      });
+
+      await prisma.$transaction(createContactPromises);
+
+      console.log(`  - Created ${createContactPromises.length} contact(s) for this group.`);
+    }
+
+    // Update the referral to link to the new contact group
+    await prisma.referral.update({
+      where: { id: referral.id },
+      data: {
+        contactGroupId: contactGroup.id,
+        // Optional: If you need to keep the contact details for display, populate a new table
+        //contactDetails: referral.contactDetails, // This will be in ContactDetail
+      },
+    });
+
+    console.log(`  - Updated referral ${referral.id} to use contact group ${contactGroup.id}`);
+  }
+}
+
+// Execute the migration
+migrateContactDetails().catch((e) =&gt; {
+  console.error(&quot;Error migrating contact details:&quot;, e);
+  process.exit(1);
+});
+```
+
+---
+
+### 4. **Application Code Updates**
+
+Update parts of your application that interact with `referral.contactDetails` to fetch from the `ContactGroup` and `Contact` models instead.
+
+**File:** `src/app/api/referrals/route.ts`
+
+```typescript
+// In the GET handler, fetch contact details from ContactGroup and Contact
+const referredByContactGroup = await prisma.contactGroup.findFirst({
+  where: { id: referredById },
+  include: { contacts: true },
+});
+
+if (referredByContactGroup) {
+  const contactDetails = referredByContactGroup.contacts.map((contact) =&gt; ({
+    name: contact.name,
+    email: contact.email,
+    message: message // You might need to store messages in a separate ContactDetail table if not already there
+  }));
+  referredBy = {
+    ...referredBy,
+    contactDetails
+  };
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Design a migration approach for upcoming contact-group models that preserves existing referral functionality.          </p>
+          <p class="lt-p">
+Response: To design a migration approach for upcoming contact-group models while preserving existing referral functionality, we can follow a phased strategy that ensures backward compatibility and data integrity. This approach will involve introducing new models, updating the database schema, and modifying existing code to handle both old and new data structures.
+
+### 1. Database Schema Changes
+
+**New Models:**
+
+- **ContactGroup:** To manage groups of contacts.
+- **ContactGroupMember:** To establish the many-to-many relationship between `ContactGroup` and `Contact`.
+
+**File:** `prisma/schema.prisma`
+
+```prisma
+model ContactGroup {
+  id         String                                    @id @default(uuid())
+  name       String                                    @unique
+  createdAt  DateTime                                  @default(now())
+  updatedAt  DateTime                                  @default(now())
+  contacts   ContactGroupMember[]
+  // existing fields from Contact can be moved here if they are relevant to the group
+}
+
+model ContactGroupMember {
+  id        String             @id @default(uuid())
+  contactId String             @index
+  groupId   String             @index
+  role      ContactGroupRole   // e.g., &#x27;OWNER&#x27;, &#x27;MEMBER&#x27;
+  // other relevant fields for group membership
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @default(now())
+  contact   Contact            @relation(&quot;GROUP_MEMBER&quot;, fields: [contactId], references: [id])
+  group     ContactGroup       @relation(&quot;GROUP_MEMBER&quot;, fields: [groupId], references: [id])
+}
+```
+
+**Prisma Migrate:**
+
+Run the following commands to generate and apply the migration:
+
+```bash
+npx prisma generate
+npx prisma migrate dev --name add-contact-groups
+npx prisma schema save
+```
+
+---
+
+### 2. Backend Code Changes
+
+**a. Core User Identified by Referral Code (UUID)**
+
+The existing referral system identifies users by their UUID. This UUID will also be the `contactId` in the `ContactGroupMember` table. Therefore, no changes are needed for the core user identification mechanism.
+
+**b. Contact Management**
+
+Introduce a `Contact` model to store detailed contact information. This model will be populated during user sign-up or when a new contact is added to a group.
+
+**File:** `prisma/schema.prisma` (as shown in the database schema changes above)
+
+**c. Contact Group Management**
+
+Create API endpoints to manage contact groups and their members.
+
+**File:** `src/app/api/contact-groups/route.ts`
+
+```typescript
+import { NextRequest, NextResponse } from &#x27;next/server&#x27;;
+import { PrismaClient } from &#x27;@prisma/client&#x27;;
+import { ContactGroupRole } from &#x27;@prisma/client&#x27;;
+
+const prisma = new PrismaClient();
+
+// Create a new contact group
+export async function POST(req: NextRequest) {
+  try {
+    const { name, contactIds, roles } = await req.json();
+
+    // Fetch the contacts to ensure they exist
+    const existingContacts = await prisma.contact.findMany({
+      where: { id: { in: contactIds } },
+    });
+
+    if (existingContacts.length !== contactIds.length) {
+      return NextResponse.json({ error: &#x27;Invalid contact ID(s) provided&#x27; }, { status: 400 });
+    }
+
+    const group = await prisma.contactGroup.create({
+      data: { name },
+    });
+
+    // Add each contact to the group with their specified role
+    for (let i = 0; i &lt; contactIds.length; i++) {
+      await prisma.contactGroupMember.create({
+        data: {
+          contactId: contactIds[i],
+          groupId: group.id,
+          role: roles[i] as ContactGroupRole,
+        },
+      });
+    }
+
+    return NextResponse.json({ message: &#x27;Contact group created successfully&#x27;, group }, { status: 201 });
+  } catch (error) {
+    console.error(&quot;Failed to create contact group:&quot;, error);
+    return NextResponse.json({ error: &#x27;Internal Server Error&#x27; }, { status: 500 });
+  }
+}
+```
+
+**d. Retrieving Group Members**
+
+Modify existing code to retrieve group members when displaying contact details or handling messages.
+
+**File:** `src/services/contactService.ts`
+
+```typescript
+// Add a function to get all groups a contact is part of
+async getAllGroupsForContact(contactId: string): Promise&lt;ContactGroup[]&gt; {
+  const groups = await prisma.contactGroupMember.findMany({
+    where: { contactId },
+    include: { group: true },
+  });
+  return groups.map((member) =&gt; member.group);
+}
+
+// Add a function to get all members of a specific group
+async getGroupMembers(groupId: string): Promise&lt;ContactGroupMember[]&gt; {
+  return await prisma.contactGroupMember.findMany({
+    where: { groupId },
+    include: { contact: true },
+  });
+}
+```
+
+**e. Backend Fetching Logic (e.g., for Messages)**
+
+Update the logic in message retrieval to include contact group information.
+
+**File:** `src/services/messageService.ts`
+
+```typescript
+// When fetching messages, retrieve contact details and group information
+async getMessagesForUser(userId: string): Promise&lt;Message[]&gt; {
+  const messages = await prisma.message.findMany({
+    where: { OR: [{ senderId: userId }, { recipientId: userId }] },
+    include: {
+      sender: {
+        include: {
+          contact: true, // Include detailed contact info for sender
+          groups: {
+            include: { members: true },
+          },
+        },
+      },
+      recipient: {
+        include: {
+          contact: true, // Include detailed contact info for recipient
+          groups: {
+            include: { members: true },
+          },
+        },
+      },
+    },
+    orderBy: { createdAt: &#x27;desc&#x27; },
+  });
+
+  return messages.map((message) =&gt; ({
+    ...message,
+    sender: {
+      ...message.sender,
+      // Determine if the sender is an owner of any group that includes the recipient
+      isSenderGroupOwner: message.sender.groups.some(
+        (group) =&gt;
+          group.members.some(
+            (member) =&gt; member.contact.id === message.recipient.contact.id &amp;&amp; member.role === ContactGroupRole.OWNER
+          )
+      ),
+    },
+    recipient: {
+      ...message.recipient,
+      // Determine if the recipient is an owner of any group that includes the sender
+      isRecipientGroupOwner: message.recipient.groups.some(
+        (group) =&gt;
+          group.members.some(
+            (member) =&gt; member.contact.id === message.sender.contact.id &amp;&amp; member.role === ContactGroupRole.OWNER
+          )
+      ),
+    },
+  }));
+}
+```
+
+**f. Frontend Changes**
+
+Update frontend components (e.g., `src/components/MessageList.tsx`, `src/components/ContactSelector.tsx`) to display contact groups and their members.
+
+---
+
+### 3. Preserving Referral Functionality
+
+To ensure existing referral functionality remains intact:
+
+- **UUID Persistence:** User IDs (UUIDs) will continue to function as primary identifiers.
+- **Referral Retrieval:** The logic for retrieving referrer information (e.g., from `src/services/referralService.ts`) will now work with the `contactId` field, which is the same as the `id` in the `User` table.
+- **No Data Duplication:** User contact information will not be duplicated in the `Contact` table if they have never been added to a contact group. This ensures that the existing behavior for users without group associations is preserved.
+
+---
+
+### 4. Testing
+
+- **Unit Tests:** Add unit tests for `src/services/contactService.ts` and `src/services/messageService.ts` to ensure group creation, member retrieval, and group owner detection work correctly.
+- **Integration Tests:** Perform integration tests that simulate creating a contact group, adding members, sending messages between group members, and verifying that group ownership is correctly identified.
+- **User Flows:** Manually test user flows, including sending messages to non-group members and to group members, ensuring that existing referral message displays are unchanged.
+
+---
+
+This approach ensures a smooth migration to a contact-group system while preserving the integrity and functionality of the existing referral system.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Design a migration approach for upcoming contact-group models that preserves existing referral functionality.          </p>
+          <p class="lt-p">
+Response: To design a migration approach for upcoming **contact-group models** that **preserves existing referral functionality**, we need to ensure that the new `ContactGroup` and `ContactGroupMember` models integrate seamlessly with the existing `Referral`, `ReferralRecipient`, `SmsTemplate`, `EmailTemplate`, and `Notification` models without disrupting their current behavior. This involves updating the database schema, modifying the backend logic (API routes and services), and, if necessary, implementing data migration scripts.
+
+---
+
+### 1. Database Schema Design (New Models)
+
+First, define the new models that will represent contact groups and their members:
+
+**`src/prfc-connect.db/schema.ts`**
+
+```typescript
+export function up(fx: Migration, client: MigrationClient): void {
+  // ... existing migrations ...
+
+  fx.createTable(&quot;contact_groups&quot;, {
+    id: &quot;uuid&quot;,
+    name: &quot;string&quot;,
+    description: &quot;string&quot;,
+    created_at: &quot;timestamp&quot;,
+    updated_at: &quot;timestamp&quot;,
+    owner_id: &quot;uuid&quot;,
+    deleted_at: &quot;timestamp&quot;,
+    index: &quot;string&quot;,
+    foreign_keys: {
+      owner_id: &quot;users(id)&quot;,
+    },
+  });
+
+  fx.createTable(&quot;contact_group_members&quot;, {
+    id: &quot;uuid&quot;,
+    contact_group_id: &quot;uuid&quot;,
+    recipient_id: &quot;uuid&quot;,
+    deleted_at: &quot;timestamp&quot;,
+    foreign_keys: {
+      contact_group_id: &quot;contact_groups(id)&quot;,
+      recipient_id: &quot;referral_recipients(id)&quot;,
+    },
+  });
+}
+```
+
+- **`contact_groups`**: Stores metadata about each group (name, description, owner).
+- **`contact_group_members`**: Links `ReferralRecipient` objects to `ContactGroup` objects, indicating which recipients are part of which group.
+
+---
+
+### 2. Backend Logic Updates
+
+**a. API Routes:**
+
+Update `src/app/api/contact-groups/route.ts` to handle CRUD operations for `ContactGroup` and `ContactGroupMember`:
+
+**`src/app/api/contact-groups/route.ts`**
+
+```typescript
+import {
+  NextRequest,
+  NextResponse,
+  // ... other imports ...
+} from &quot;next/server&quot;;
+import prfc from &quot;@/lib/prfc&quot;;
+import { verifyAdmin } from &quot;@/lib/auth&quot;;
+
+// Route: GET /api/contact-groups
+export async function GET(req: NextRequest): Promise&lt;NextResponse&gt; {
+  const { searchParams } = new URL(req.url);
+  const name = searchParams.get(&quot;name&quot;);
+  const page = parseInt(searchParams.get(&quot;page&quot;) || &quot;1&quot;);
+  const limit = parseInt(searchParams.get(&quot;limit&quot;) || &quot;10&quot;);
+
+  try {
+    const { data, total } = await prfc.client.from(&quot;contact_groups&quot;).select(&quot;*&quot;).like(&quot;name&quot;, `%${name || &quot;&quot;}`).offset((page - 1) * limit).limit(limit).execute();
+    return NextResponse.json({
+      data,
+      total,
+      page,
+      limit,
+      has_next: (page * limit) &lt; total,
+    });
+  } catch (error) {
+    console.error(&quot;Error fetching contact groups:&quot;, error);
+    return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+  }
+}
+
+// Route: POST /api/contact-groups
+export async function POST(req: NextRequest): Promise&lt;NextResponse&gt; {
+  const payload = await req.json();
+  const { name, description, owner_id } = payload;
+
+  try {
+    const { data } = await prfc.client.from(&quot;contact_groups&quot;).insert({
+      name,
+      description,
+      owner_id,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }).execute();
+    return NextResponse.json({ message: &quot;Contact group created&quot;, data }, { status: 201 });
+  } catch (error) {
+    console.error(&quot;Error creating contact group:&quot;, error);
+    return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+  }
+}
+
+// Route: GET /api/contact-groups/:id/members
+export async function GET_CONTACT_GROUP_MEMBERS(req: NextRequest, { params }): Promise&lt;NextResponse&gt; {
+  const { id } = params;
+
+  try {
+    const { data } = await prfc.client.from(&quot;contact_group_members&quot;).select(&quot;contact_group_id, recipient_id&quot;).filter(&quot;contact_group_id&quot;, id).execute();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error(`Error fetching members for contact group ${id}:`, error);
+    return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+  }
+}
+
+// Route: POST /api/contact-groups/:id/members
+export async function ADD_CONTACT_GROUP_MEMBERS(req: NextRequest, { params }): Promise&lt;NextResponse&gt; {
+  const { id } = params;
+  const payload = await req.json();
+  const { recipient_ids } = payload;
+
+  if (!recipient_ids || !Array.isArray(recipient_ids) || recipient_ids.length === 0) {
+    return NextResponse.json({ error: &quot;No valid recipient IDs provided&quot; }, { status: 400 });
+  }
+
+  try {
+    const { data } = await prfc.client.from(&quot;contact_group_members&quot;).insert(recipient_ids.map(recipient_id =&gt; ({
+      contact_group_id: id,
+      recipient_id,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }))).execute();
+    return NextResponse.json({ message: &quot;Recipients added to contact group&quot;, data }, { status: 201 });
+  } catch (error) {
+    console.error(`Error adding ${recipient_ids.length} recipients to contact group ${id}:`, error.message);
+    return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+  }
+}
+
+// Route: DELETE /api/contact-groups/:id/members/:member_id
+export async function DELETE_CONTACT_GROUP_MEMBER(req: NextRequest, { params }): Promise&lt;NextResponse&gt; {
+  const { id: groupId, member_id } = params;
+
+  try {
+    await prfc.client.from(&quot;contact_group_members&quot;).filter(&quot;id&quot;, member_id).delete().execute();
+    return NextResponse.json({ message: &quot;Recipient removed from contact group&quot; }, { status: 200 });
+  } catch (error) {
+    console.error(`Error deleting member ${member_id} from contact group ${groupId}:`, error.message);
+    return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+  }
+}
+```
+
+**b. Referral Recipient Management (`src/lib/prfc.ts`):**
+
+Update `prfc.ts` to include methods for managing `ContactGroupMember` records:
+
+**`src/lib/prfc.ts`**
+
+```typescript
+// ... existing code ...
+
+// Adds a recipient to a contact group
+export async function addRecipientToGroup(recipientId: string, groupId: string): Promise&lt;{ data: any }&gt; {
+  const { data } = await prfc.client.from(&quot;contact_group_members&quot;).insert({
+    contact_group_id: groupId,
+    recipient_id: recipientId,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  }).execute();
+  return { data };
+}
+
+// Removes a recipient from a contact group
+export async function removeRecipientFromGroup(memberId: string): Promise&lt;{ affected: number }&gt; {
+  const { affected } = await prfc.client.from(&quot;contact_group_members&quot;).filter(&quot;id&quot;, memberId).delete().execute();
+  return { affected };
+}
+
+// Retrieves all contact groups a user is the owner of
+export async function getUserContactGroups(userId: string): Promise&lt;any[]&gt; {
+  const { data } = await prfc.client.from(&quot;contact_groups&quot;).filter(&quot;owner_id&quot;, userId).select(&quot;*&quot;).execute();
+  return data;
+}
+
+// Retrieves all recipients in a specific contact group
+export async function getGroupRecipients(groupId: string): Promise&lt;{ recipient_id: string }[]&gt; {
+  const { data } = await prfc.client.from(&quot;contact_group_members&quot;).filter(&quot;contact_group_id&quot;, groupId).select(&quot;recipient_id&quot;).execute();
+  return data;
+}
+```
+
+---
+
+### 3. Preserving Existing Referral Functionality
+
+To ensure existing referral functionality remains intact, update the following files to utilize `ContactGroup` where appropriate:
+
+**a. `src/app/api/referrals/route.ts` (Message Sending):**
+
+Update `sendMessage` and `sendEmail` to send messages or emails to all members of a specified `ContactGroup`, or to the `ReferralRecipient` directly if no group is provided.
+
+**`src/app/api/referrals/route.ts`**
+
+```typescript
+// ... existing constants and imports ...
+
+export const sendMessage = async (payload: { to: string[]; template: string; variables: { [key: string]: string }; send_to_group: string | null }) =&gt; {
+  if (send_to_group) {
+    // If send_to_group is provided, resolve the list of recipientIds from that contact group
+    const groupRecipients = await prfc.client.from(&quot;contact_group_members&quot;).filter(&quot;contact_group_id&quot;, send_to_group).select(&quot;recipient_id&quot;).execute();
+    const to = groupRecipients.map(member =&gt; member.recipient_id);
+    console.log(`sendMessage: Sending to ${to.length} recipients via contact group ${send_to_group}`);
+    if (to.length === 0) {
+      console.warn(`sendMessage: No recipients found for contact group ${send_to_group}`);
+      return;
+    }
+  } else {
+    // Otherwise, use the to array directly (assuming they are valid recipient IDs)
+    console.log(`sendMessage: Sending to ${payload.to.length} specific recipients`);
+  }
+
+  // ... existing logic for fetching template, generating body, sending SMS ...
+};
+
+export const sendEmail = async (payload: { to: string[]; template: string; variables:          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+1563                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+988                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+1578                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+1555                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+1787                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+1677                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

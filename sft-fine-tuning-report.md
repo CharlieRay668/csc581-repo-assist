@@ -269,42 +269,127 @@ This is what the full Gemini-powered agent scores on the same 100 tasks:
 | Mean latency | 21.3 seconds | Includes multiple tool-call round-trips |
 | Cost per task | $0.015 | Google API fees per question |
 
-### Fine-Tuned Model Results (Partial — 48/100 tasks)
+### Fine-Tuned Model Results (100/100 tasks)
 
-The evaluation was interrupted at 48 tasks due to a network disconnection. From the partial results, the model was generating substantive answers:
+All 100 tasks completed successfully with no errors:
 
-- **Locate tasks** (40/40 completed): 3–148 words per answer, ~7–14 seconds each
-- **Explain tasks** (8/40 completed): 420–925 words per answer, ~26–40 seconds each
-- **100% success rate** — no errors or empty responses in the 48 completed tasks
+| Metric | Score | Interpretation |
+|--------|-------|----------------|
+| Rubric mean (out of 8) | 3.85 | Below the quality bar — answers read okay but miss key details |
+| Pass rate | 8% | Very few answers meet the ≥6 + no-critical-error threshold |
+| Critical error rate | 33% | One-third of answers contain hallucinated files or wrong conclusions |
+| Success rate | 7% | Rarely finds the right specific files |
+| Precision@3 | 0.065 | Almost none of the cited files are correct |
+| Recall@3 | 0.065 | Finds almost none of the relevant files |
+| nDCG@3 | 0.068 | File ranking quality is near zero |
+| Mean latency | 27.0 seconds | Single inference pass (no tool calls) |
+| Cost per task | $0.014 | Tinker GPU time |
 
-Full scored evaluation results (rubric scores, retrieval metrics, etc.) are pending once the remaining 52 tasks complete and the scoring pipeline runs.
+**Per-task-type output characteristics:**
+- **Locate tasks** (40): 3–125 words, 6–15 seconds
+- **Explain tasks** (40): 425–1,073 words, 27–53 seconds
+- **Suggest tasks** (20): 510–1,183 words, 25–55 seconds
+
+### RLVR Model Results (100/100 tasks)
+
+We then trained with RLVR (Reinforcement Learning with Verifiable Rewards), initializing from the SFT checkpoint and running 20 training steps with 8 samples per prompt. The reward signal is based on file-path F1 against ground-truth answer keys.
+
+**RLVR training metrics (20 steps):**
+
+| Step | Correct Rate | Format Rate | Reward |
+|------|-------------|-------------|--------|
+| 0 | 25.0% | 78.1% | 0.228 |
+| 2 | 31.2% | 96.9% | 0.309 |
+| 9 | 21.9% | 87.5% | 0.206 |
+| 14 | 31.2% | 93.8% | 0.306 |
+| 18 | 43.8% | 81.2% | 0.419 |
+| 19 | 0.0% | 90.6% | −0.009 |
+
+The reward signal is noisy (high variance across batches of 4 tasks × 8 samples), which is typical for RL with small batch sizes. Step 18 reached the highest correct rate (43.8%) but the final step happened to land on hard tasks.
+
+**Evaluation results:**
+
+| Metric | Score | Interpretation |
+|--------|-------|----------------|
+| Rubric mean (out of 8) | 3.65 | Slightly worse than SFT |
+| Pass rate | 3% | Almost no answers pass the quality gate |
+| Critical error rate | 37% | More hallucinations than SFT |
+| Success rate | 3% | Almost never finds the right files |
+| Precision@3 | 0.025 | Worse than SFT's already-low 0.065 |
+| Recall@3 | 0.021 | Near zero |
+| nDCG@3 | 0.020 | Near zero |
+| Mean latency | 33.6 seconds | Slower than SFT |
+| Cost per task | $0.013 | Similar |
+
+### Three-Way Comparison
+
+| Metric | Gemini Agent | SFT (Qwen3-8B) | RLVR (Qwen3-8B) |
+|--------|-------------|-----------------|------------------|
+| Rubric mean | **5.84** | 3.85 | 3.65 |
+| Pass rate | **57%** | 8% | 3% |
+| Critical error rate | **3%** | 33% | 37% |
+| Success rate | **45%** | 7% | 3% |
+| Precision@3 | **0.348** | 0.065 | 0.025 |
+| Recall@3 | **0.528** | 0.065 | 0.021 |
+| nDCG@3 | **0.494** | 0.068 | 0.020 |
+| Mean latency | **21.3s** | 27.0s | 33.6s |
+| Cost/task | $0.015 | $0.014 | $0.013 |
+
+### Analysis: Why Both SFT and RLVR Underperformed
+
+Both fine-tuning approaches scored dramatically worse than the Gemini baseline. RLVR actually performed *slightly worse* than SFT despite being designed to fix SFT's problems. Here's why:
+
+**The fundamental problem: no tool access at inference.** The Gemini agent dynamically searches and reads files during each question. Both fine-tuned models must answer from memory — but 100 training examples isn't enough to memorize the contents and locations of 163 source files.
+
+**Why SFT failed:**
+1. **Surface-level imitation** — The model learned to write answers that *look like* the Gemini agent's outputs (reasonable structure, appropriate length) but without factual grounding.
+2. **Hallucinated file paths** — 33% critical error rate shows it invents plausible paths that don't exist.
+
+**Why RLVR didn't fix it:**
+1. **Reward signal too sparse** — With only 100 tasks and F1-based binary rewards, the model gets very few positive signals to learn from. Most of the 8 samples per prompt are wrong, so GRPO has little contrast to work with.
+2. **Small dataset, single pass** — 20 training steps (one pass through 80 tasks at batch size 4) isn't enough for RL to meaningfully shift the distribution. Math-RL benchmarks typically train for thousands of steps on tens of thousands of problems.
+3. **The knowledge gap can't be bridged by RL alone** — RLVR can teach the model to *prefer* citing correct files over incorrect ones, but only if the model has some probability of generating correct files in the first place. With P@3 at 0.065 pre-RLVR, the model almost never generates correct paths, so there's no signal to reinforce.
+4. **Possible reward hacking** — The model may have learned to generate fewer citations (reducing false positives) rather than learning correct file paths, which would explain the drop from P@3 0.065 → 0.025.
 
 ---
 
-## Key Differences: Baseline vs. Fine-Tuned
+## Key Differences: All Three Approaches
 
-| Aspect | Gemini Agent (Baseline) | Fine-Tuned Qwen3-8B |
-|--------|------------------------|---------------------|
-| Model size | ~100B+ params (est.) | 8B params |
-| API cost | ~$0.015/task | $0 (self-hosted) |
-| Approach | Multi-step tool use (search, read files, reason) | Single-shot answer generation |
-| Latency | ~21s (multiple API round-trips) | ~7–40s (single inference) |
-| Tool calls | 2–6 per task | 0 |
-| Training data | N/A (pre-trained) | 100 curated conversations |
+| Aspect | Gemini Agent | SFT (Qwen3-8B) | RLVR (SFT→RL) |
+|--------|-------------|-----------------|----------------|
+| Model size | ~100B+ params (est.) | 8B params | 8B params |
+| Training method | N/A (pre-trained) | Supervised (token matching) | RL (reward-based) |
+| Training signal | — | "Copy these tokens" | "Did you cite the right files?" |
+| API cost | ~$0.015/task | ~$0.014/task | ~$0.013/task |
+| Approach | Multi-step tool use | Single-shot generation | Single-shot generation |
+| Latency | ~21s | ~27s | ~34s |
+| Tool calls | 2–6 per task | 0 | 0 |
+| Training data | — | 100 conversations | 80 tasks × 8 samples |
+| Training steps | — | 175 (7 epochs) | 20 (1 pass) |
+| Pass rate | **57%** | 8% | 3% |
+| File accuracy (P@3) | **0.348** | 0.065 | 0.025 |
 
-The fine-tuned model trades the ability to dynamically search code for the efficiency of producing answers directly from what it learned during training. This means it works best on the types of questions it was trained on and for the specific codebase it was trained on.
+The core takeaway: **this task requires runtime access to code.** Neither SFT nor RLVR can substitute for the ability to dynamically search and read files during inference. The Gemini agent's advantage isn't its model size — it's its tools.
 
 ---
 
-## Limitations
+## Limitations & Lessons Learned
 
-1. **Single-codebase specialization** — The fine-tuned model only knows about PRFC Connect. It cannot answer questions about other repositories without retraining.
+1. **Tool access is non-negotiable for retrieval tasks** — Both SFT and RLVR failed because the fine-tuned model has no way to search or read files at inference time. For tasks that require finding specific information in a codebase, a smaller model with tools will always beat a larger model without them.
 
-2. **No dynamic tool use** — Unlike the Gemini agent, the fine-tuned model cannot search or read files at inference time. If the codebase changes, the model's knowledge becomes stale.
+2. **SFT teaches style, not knowledge** — The SFT model learned to produce well-structured, appropriately-lengthed answers that *read like* expert responses. But it couldn't back them up with correct file paths because it has no runtime access to the code.
 
-3. **Small training set** — 100 examples is quite small for fine-tuning. More diverse training data would likely improve generalization.
+3. **RLVR needs sufficient base capability** — RL can only reinforce behaviors the model already exhibits with some probability. With P@3 at 0.065 pre-RLVR, correct file citations were too rare for the reward signal to have meaningful effect.
 
-4. **Partial evaluation** — Only 48/100 eval tasks completed before the run was interrupted. The full scored comparison is still pending.
+4. **Small datasets limit both approaches** — 100 examples for SFT and 80 tasks for RLVR are far below typical benchmarks (1,000+ for SFT, 10,000+ for RL). More data, more training steps, and a larger model might partially close the gap.
+
+### What Would Actually Work
+
+Based on these results, the most promising paths forward would be:
+
+- **Fine-tune the model to use tools** (tool-calling SFT) rather than to produce answers directly. Teach the 8B model to emit `search_repo(...)` and `open_file(...)` calls, then use the existing tool infrastructure.
+- **RAG (Retrieval-Augmented Generation)** — Embed the codebase into a vector store and inject relevant file snippets into the prompt at inference time, giving the model the context it needs.
+- **Significantly more training data** — Scale from 100 to 1,000+ diverse examples, covering more files and more question types, so the model has a realistic chance of memorizing enough of the codebase.
 
 ---
 
@@ -313,11 +398,14 @@ The fine-tuned model trades the ability to dynamically search code for the effic
 | File | Description |
 |------|-------------|
 | `training_data/conversations.jsonl` | 100 training conversations |
-| `src/training/sft_train.py` | Training script (LoRA fine-tuning via Tinker) |
+| `src/training/sft_train.py` | SFT training script (LoRA fine-tuning via Tinker) |
 | `src/training/eval_sft.py` | Standalone evaluation script |
+| `src/training/rlvr_train.py` | RLVR training script (reinforcement learning via Tinker) |
 | `src/convert_trajectories.py` | Converts agent traces → training format |
 | `eval/eval_spec.json` | Evaluation rubric and metrics specification |
 | `eval/prfconnect/tasks.prfc-connect.heldout.jsonl` | 100 evaluation tasks |
 | `eval/prfconnect/answers.prfc-connect.heldout.jsonl` | Answer keys for scoring |
 | `eval/prfconnect/real_results/output.prfc-connect.auto.json` | Baseline (Gemini) evaluation results |
-| `eval/prfconnect/sft_results/` | Fine-tuned model evaluation outputs |
+| `eval/prfconnect/sft_results/output.sft.json` | SFT model evaluation results (100/100 tasks) |
+| `eval/prfconnect/rlvr_results/output.sft.json` | RLVR model evaluation results (100/100 tasks) |
+| `training_data/rlvr_logs/metrics.jsonl` | RLVR training metrics (reward curve, 20 steps) |

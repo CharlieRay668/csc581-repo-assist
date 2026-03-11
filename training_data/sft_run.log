@@ -1,0 +1,190 @@
+Loaded 100 conversations from training_data/conversations.jsonl
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Prepared 100 training examples (0 skipped)
+  [Step 10] loss=0.5721
+  [Step 20] loss=0.5202
+Epoch 1/7 — avg_loss=0.8975 (25 batches)
+  Saved checkpoint: sft-epoch-1 → tinker://c65528a5-7fed-51a8-aa2e-fc96769bd988:train:0/weights/sft-epoch-1
+  [Step 30] loss=0.6443
+  [Step 40] loss=0.5161
+  [Step 50] loss=0.8473
+Epoch 2/7 — avg_loss=0.5986 (25 batches)
+  Saved checkpoint: sft-epoch-2 → tinker://c65528a5-7fed-51a8-aa2e-fc96769bd988:train:0/weights/sft-epoch-2
+Retrying due to status code 502. text=
+  [Step 60] loss=0.3667
+  [Step 70] loss=0.3591
+Epoch 3/7 — avg_loss=0.4814 (25 batches)
+  Saved checkpoint: sft-epoch-3 → tinker://c65528a5-7fed-51a8-aa2e-fc96769bd988:train:0/weights/sft-epoch-3
+  [Step 80] loss=0.4252
+  [Step 90] loss=0.2982
+  [Step 100] loss=0.4289
+Epoch 4/7 — avg_loss=0.3404 (25 batches)
+  Saved checkpoint: sft-epoch-4 → tinker://c65528a5-7fed-51a8-aa2e-fc96769bd988:train:0/weights/sft-epoch-4
+  [Step 110] loss=0.1790
+  [Step 120] loss=0.1639
+Epoch 5/7 — avg_loss=0.2020 (25 batches)
+  Saved checkpoint: sft-epoch-5 → tinker://c65528a5-7fed-51a8-aa2e-fc96769bd988:train:0/weights/sft-epoch-5
+  [Step 130] loss=0.2686
+  [Step 140] loss=0.1565
+  [Step 150] loss=0.1883
+Epoch 6/7 — avg_loss=0.1881 (25 batches)
+  Saved checkpoint: sft-epoch-6 → tinker://c65528a5-7fed-51a8-aa2e-fc96769bd988:train:0/weights/sft-epoch-6
+  [Step 160] loss=0.2402
+  [Step 170] loss=0.1171
+Epoch 7/7 — avg_loss=0.2016 (25 batches)
+  Saved checkpoint: sft-epoch-7 → tinker://c65528a5-7fed-51a8-aa2e-fc96769bd988:train:0/weights/sft-epoch-7
+  (persistent — no TTL)
+SFT training complete.
+Final checkpoint path: tinker://c65528a5-7fed-51a8-aa2e-fc96769bd988:train:0/weights/sft-epoch-7
+Checkpoint path saved to training_data/last_checkpoint.txt
+
+============================================================
+POST-TRAINING EVALUATION
+============================================================
+Loaded 100 eval tasks
+Creating sampling client from trained weights...
+Sampling client ready.
+Tool gateway loaded: 163 files indexed
+  [1/100] PRFC-E001 (locate)... ok (11 words, 0 tool calls, 7740ms)
+  [2/100] PRFC-E002 (locate)... ok (11 words, 1 tool calls, 16897ms)
+  [3/100] PRFC-E003 (locate)... ok (32 words, 0 tool calls, 8428ms)
+  [4/100] PRFC-E004 (locate)... ok (7 words, 0 tool calls, 7033ms)
+  [5/100] PRFC-E005 (locate)... ok (30 words, 0 tool calls, 8711ms)
+  [6/100] PRFC-E006 (locate)... ok (16 words, 0 tool calls, 7152ms)
+  [7/100] PRFC-E007 (locate)... ok (15 words, 0 tool calls, 7280ms)
+  [8/100] PRFC-E008 (locate)... ok (25 words, 0 tool calls, 11977ms)
+  [9/100] PRFC-E009 (locate)... ok (16 words, 0 tool calls, 7172ms)
+  [10/100] PRFC-E010 (locate)... ok (18 words, 0 tool calls, 7023ms)
+  [11/100] PRFC-E011 (locate)... ok (24 words, 0 tool calls, 7677ms)
+  [12/100] PRFC-E012 (locate)... ok (34 words, 0 tool calls, 10281ms)
+  [13/100] PRFC-E013 (locate)... ok (22 words, 0 tool calls, 7630ms)
+  [14/100] PRFC-E014 (locate)... ok (18 words, 0 tool calls, 7721ms)
+  [15/100] PRFC-E015 (locate)... ok (20 words, 0 tool calls, 6999ms)
+  [16/100] PRFC-E016 (locate)... ok (25 words, 0 tool calls, 8573ms)
+  [17/100] PRFC-E017 (locate)... ok (35 words, 0 tool calls, 9393ms)
+  [18/100] PRFC-E018 (locate)... ok (47 words, 0 tool calls, 7810ms)
+  [19/100] PRFC-E019 (locate)... ok (40 words, 0 tool calls, 10236ms)
+  [20/100] PRFC-E020 (locate)... ok (28 words, 0 tool calls, 7682ms)
+  [21/100] PRFC-E021 (locate)... ok (12 words, 0 tool calls, 7167ms)
+  [22/100] PRFC-E022 (locate)... ok (38 words, 0 tool calls, 9425ms)
+  [23/100] PRFC-E023 (locate)... ok (13 words, 0 tool calls, 7231ms)
+  [24/100] PRFC-E024 (locate)... ok (16 words, 0 tool calls, 8455ms)
+  [25/100] PRFC-E025 (locate)... ok (19 words, 0 tool calls, 30088ms)
+  [26/100] PRFC-E026 (locate)... ok (175 words, 0 tool calls, 19861ms)
+  [27/100] PRFC-E027 (locate)... ok (119 words, 0 tool calls, 12288ms)
+  [28/100] PRFC-E028 (locate)... ok (49 words, 0 tool calls, 9418ms)
+  [29/100] PRFC-E029 (locate)... ok (16 words, 0 tool calls, 7570ms)
+  [30/100] PRFC-E030 (locate)... ok (29 words, 0 tool calls, 7790ms)
+  [31/100] PRFC-E031 (locate)... ok (12 words, 0 tool calls, 7010ms)
+  [32/100] PRFC-E032 (locate)... ok (93 words, 0 tool calls, 12328ms)
+  [33/100] PRFC-E033 (locate)... ok (64 words, 0 tool calls, 10541ms)
+  [34/100] PRFC-E034 (locate)... ok (44 words, 0 tool calls, 8569ms)
+  [35/100] PRFC-E035 (locate)... ok (45 words, 0 tool calls, 8454ms)
+  [36/100] PRFC-E036 (locate)... ok (39 words, 0 tool calls, 7643ms)
+  [37/100] PRFC-E037 (locate)... ok (32 words, 0 tool calls, 7228ms)
+  [38/100] PRFC-E038 (locate)... ok (30 words, 0 tool calls, 7818ms)
+  [39/100] PRFC-E039 (locate)... ok (37 words, 0 tool calls, 7789ms)
+  [40/100] PRFC-E040 (locate)... ok (34 words, 0 tool calls, 9100ms)
+  [41/100] PRFC-M001 (explain)... ok (885 words, 0 tool calls, 62223ms)
+  [42/100] PRFC-M002 (explain)... ok (323 words, 0 tool calls, 20430ms)
+  [43/100] PRFC-M003 (explain)... ok (506 words, 0 tool calls, 26036ms)
+  [44/100] PRFC-M004 (explain)... ok (419 words, 0 tool calls, 38401ms)
+  [45/100] PRFC-M005 (explain)... ok (515 words, 0 tool calls, 31708ms)
+  [46/100] PRFC-M006 (explain)... ok (607 words, 0 tool calls, 47923ms)
+  [47/100] PRFC-M007 (explain)... ok (162 words, 0 tool calls, 18026ms)
+  [48/100] PRFC-M008 (explain)... ok (749 words, 0 tool calls, 66351ms)
+  [49/100] PRFC-M009 (explain)... ok (472 words, 0 tool calls, 26016ms)
+  [50/100] PRFC-M010 (explain)... ok (811 words, 0 tool calls, 46209ms)
+  [51/100] PRFC-M011 (explain)... ok (153 words, 0 tool calls, 7084ms)
+  [52/100] PRFC-M012 (explain)... ok (820 words, 0 tool calls, 31749ms)
+  [53/100] PRFC-M013 (explain)... ok (613 words, 0 tool calls, 37986ms)
+  [54/100] PRFC-M014 (explain)... ok (930 words, 0 tool calls, 48440ms)
+  [55/100] PRFC-M015 (explain)... ok (646 words, 0 tool calls, 82441ms)
+  [56/100] PRFC-M016 (explain)... ok (986 words, 0 tool calls, 51914ms)
+  [57/100] PRFC-M017 (explain)... ok (422 words, 0 tool calls, 23999ms)
+  [58/100] PRFC-M018 (explain)... ok (228 words, 0 tool calls, 68319ms)
+  [59/100] PRFC-M019 (explain)... ok (1042 words, 0 tool calls, 47863ms)
+  [60/100] PRFC-M020 (explain)... ok (57 words, 0 tool calls, 11268ms)
+  [61/100] PRFC-M021 (explain)... ok (568 words, 0 tool calls, 27819ms)
+  [62/100] PRFC-M022 (explain)... ok (872 words, 0 tool calls, 56043ms)
+  [63/100] PRFC-M023 (explain)... ok (1021 words, 0 tool calls, 70518ms)
+  [64/100] PRFC-M024 (explain)... ok (554 words, 0 tool calls, 50146ms)
+  [65/100] PRFC-M025 (explain)... ok (366 words, 0 tool calls, 25906ms)
+  [66/100] PRFC-M026 (explain)... ok (310 words, 0 tool calls, 33955ms)
+  [67/100] PRFC-M027 (explain)... ok (1047 words, 0 tool calls, 55982ms)
+  [68/100] PRFC-M028 (explain)... ok (897 words, 0 tool calls, 41974ms)
+  [69/100] PRFC-M029 (explain)... ok (652 words, 0 tool calls, 40208ms)
+  [70/100] PRFC-M030 (explain)... ok (119 words, 0 tool calls, 10519ms)
+  [71/100] PRFC-M031 (explain)... ok (480 words, 0 tool calls, 84091ms)
+  [72/100] PRFC-M032 (explain)... ok (789 words, 0 tool calls, 80662ms)
+  [73/100] PRFC-M033 (explain)... ok (485 words, 0 tool calls, 44266ms)
+  [74/100] PRFC-M034 (explain)... ok (809 words, 0 tool calls, 66219ms)
+  [75/100] PRFC-M035 (explain)... ok (625 words, 0 tool calls, 44329ms)
+  [76/100] PRFC-M036 (explain)... ok (745 words, 0 tool calls, 92712ms)
+  [77/100] PRFC-M037 (explain)... ok (274 words, 0 tool calls, 25821ms)
+  [78/100] PRFC-M038 (explain)... ok (824 words, 0 tool calls, 72240ms)
+  [79/100] PRFC-M039 (explain)... ok (402 words, 0 tool calls, 23574ms)
+  [80/100] PRFC-M040 (explain)... ok (800 words, 0 tool calls, 40714ms)
+  [81/100] PRFC-H001 (suggest)... ok (372 words, 0 tool calls, 21682ms)
+  [82/100] PRFC-H002 (suggest)... ok (192 words, 0 tool calls, 13616ms)
+  [83/100] PRFC-H003 (suggest)... ok (986 words, 0 tool calls, 49970ms)
+  [84/100] PRFC-H004 (suggest)... ok (45 words, 0 tool calls, 8260ms)
+  [85/100] PRFC-H005 (suggest)... ok (817 words, 0 tool calls, 75592ms)
+  [86/100] PRFC-H006 (suggest)... ok (49 words, 0 tool calls, 12400ms)
+  [87/100] PRFC-H007 (suggest)... ok (1114 words, 0 tool calls, 76149ms)
+  [88/100] PRFC-H008 (suggest)... ok (582 words, 0 tool calls, 31859ms)
+  [89/100] PRFC-H009 (suggest)... ok (79 words, 0 tool calls, 10180ms)
+  [90/100] PRFC-H010 (suggest)... ok (838 words, 0 tool calls, 40248ms)
+  [91/100] PRFC-H011 (suggest)... ok (484 words, 0 tool calls, 42058ms)
+  [92/100] PRFC-H012 (suggest)... ok (1171 words, 0 tool calls, 90698ms)
+  [93/100] PRFC-H013 (suggest)... ok (47 words, 0 tool calls, 9586ms)
+  [94/100] PRFC-H014 (suggest)... ok (110 words, 0 tool calls, 11600ms)
+  [95/100] PRFC-H015 (suggest)... ok (1064 words, 0 tool calls, 114382ms)
+  [96/100] PRFC-H016 (suggest)... ok (663 words, 0 tool calls, 41997ms)
+  [97/100] PRFC-H017 (suggest)... ok (762 words, 0 tool calls, 48128ms)
+  [98/100] PRFC-H018 (suggest)... ok (631 words, 0 tool calls, 46386ms)
+  [99/100] PRFC-H019 (suggest)... ok (948 words, 0 tool calls, 62203ms)
+  [100/100] PRFC-H020 (suggest)... ok (742 words, 0 tool calls, 32090ms)
+
+Agent outputs: eval/prfconnect/sft_results/agent_outputs.sft.jsonl
+Generating eval artifacts...
+{
+  "tasks_total": 100,
+  "matched_agent_outputs": 100,
+  "missing_agent_outputs": 0,
+  "ratings_out": "eval/prfconnect/sft_results/ratings.sft.jsonl",
+  "retrieval_out": "eval/prfconnect/sft_results/retrieval.sft.jsonl",
+  "run_results_out": "eval/prfconnect/sft_results/run_results.sft.jsonl",
+  "difficulty_counts": {
+    "easy": 40,
+    "medium": 40,
+    "hard": 20
+  }
+}
+Computing scorecard...
+Scorecard: eval/prfconnect/sft_results/output.sft.json
+
+============================================================
+SFT MODEL EVALUATION RESULTS
+============================================================
+  Pass rate:        0.09
+  Rubric mean:      4.12
+  Critical errors:  0.32
+    correctness: 0.19
+    grounding: 0.87
+    relevance: 1.5
+    clarity: 1.56
+  Success rate:     0.08
+  Exact match:      0.08
+  P@3:              0.07166666666666667
+  R@3:              0.0775
+  nDCG@3:           0.0741808435656243
+
+  Δ vs Baseline (Gemini agent):
+    quality.pass_rate: -0.4800
+    quality.rubric_mean_total: -1.7200
+    task_success.success_rate: -0.3700
+    retrieval.p@3: -0.2767
+    retrieval.r@3: -0.4503
+    retrieval.ndcg@3: -0.4201
+============================================================

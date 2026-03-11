@@ -10,6 +10,7 @@ load_dotenv()
 from src.tool_gateway import ToolGateway
 from src.session_manager import SessionManager
 from src.agent_orchestrator import AgentOrchestrator, OrchestratorResult
+from src.model_backend import create_backend
 
 
 def _print_text(result: OrchestratorResult, session_id: str, verbose: bool = False):
@@ -164,6 +165,14 @@ Examples:
     parser.add_argument("--chat", action="store_true", help="Start interactive chat mode")
     parser.add_argument("--model", default="gemini-2.5-flash",
                         help="Gemini model name (default: gemini-2.5-flash)")
+    parser.add_argument("--backend", choices=["gemini", "qwen"], default="gemini",
+                        help="LLM backend: 'gemini' (API) or 'qwen' (Tinker checkpoint) (default: gemini)")
+    parser.add_argument("--checkpoint", default=None,
+                        help="tinker:// checkpoint path or file (required for --backend qwen)")
+    parser.add_argument("--base-model", default="Qwen/Qwen3-8B",
+                        help="Base model name for Qwen backend (default: Qwen/Qwen3-8B)")
+    parser.add_argument("--max-tokens", type=int, default=2048,
+                        help="Max generation tokens for Qwen backend (default: 2048)")
 
     return parser
 
@@ -171,6 +180,7 @@ Examples:
 def run_chat(orchestrator: AgentOrchestrator, session_mgr: SessionManager, args):
     print("Repo Assist — Interactive Chat")
     print(f"Repository : {args.repo_path}")
+    print(f"Backend    : {args.backend} ({orchestrator.backend.model_name})")
     print(f"Session    : {session_mgr.session_id}")
     print(f"Mode       : {args.mode}  |  Scope: {args.scope}")
     print("Type 'quit' or 'exit' to end. Type 'mode <name>' to switch modes.")
@@ -277,11 +287,34 @@ def main():
     session_mgr = SessionManager()
     session_id = _setup_session(args, session_mgr)
 
+    # Build backend
+    try:
+        if args.backend == "qwen":
+            if not args.checkpoint:
+                print("Error: --checkpoint is required when using --backend qwen", file=sys.stderr)
+                sys.exit(1)
+            backend = create_backend(
+                "qwen",
+                checkpoint=args.checkpoint,
+                base_model=args.base_model,
+                max_tokens=args.max_tokens,
+            )
+        else:
+            backend = create_backend(
+                "gemini",
+                model=args.model,
+            )
+        if args.verbose:
+            print(f"[Backend] {backend.model_name}")
+    except Exception as e:
+        print(f"Error creating backend: {e}", file=sys.stderr)
+        sys.exit(1)
+
     try:
         orchestrator = AgentOrchestrator(
             gateway=gateway,
             session=session_mgr,
-            model=args.model,
+            backend=backend,
         )
     except ValueError as e:
         print(f"Error: {e}", file=sys.stderr)

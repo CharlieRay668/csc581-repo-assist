@@ -43,7 +43,12 @@ def build_system_message(row: dict) -> str:
 
 
 def convert_raw_turns(raw_turns: list[dict]) -> list[dict]:
-    """Convert raw_turns (serialized Gemini contents) to chat messages."""
+    """Convert raw_turns (serialized Gemini contents) to chat messages.
+
+    Tool calls are formatted using Qwen3's native <tool_call> / <tool_response>
+    protocol so the resulting training data teaches the model the actual
+    tool-calling syntax.
+    """
     messages = []
     for turn in raw_turns:
         role = turn.get("role", "user")
@@ -57,9 +62,14 @@ def convert_raw_turns(raw_turns: list[dict]) -> list[dict]:
                 messages.append({"role": chat_role, "content": part["text"]})
 
             elif ptype == "function_call":
+                # Format as both the structured field AND Qwen3 <tool_call> tags
+                tc_json = json.dumps({
+                    "name": part["name"],
+                    "arguments": part.get("args", {}),
+                })
                 messages.append({
                     "role": "assistant",
-                    "content": None,
+                    "content": f"<tool_call>\n{tc_json}\n</tool_call>",
                     "tool_calls": [{
                         "name": part["name"],
                         "arguments": part.get("args", {}),
@@ -72,6 +82,7 @@ def convert_raw_turns(raw_turns: list[dict]) -> list[dict]:
                 resp_str = json.dumps(resp, default=str)
                 if len(resp_str) > 2000:
                     resp_str = resp_str[:2000] + "...(truncated)"
+                # Use <tool_response> tags (Qwen3 native format)
                 messages.append({
                     "role": "tool",
                     "name": part["name"],
@@ -85,9 +96,13 @@ def convert_from_tool_calls(row: dict) -> list[dict]:
     """Fallback: build messages from tool_calls + answer when raw_turns is absent."""
     messages = []
     for tc in row.get("tool_calls", []):
+        tc_json = json.dumps({
+            "name": tc["tool_name"],
+            "arguments": tc.get("args", {}),
+        })
         messages.append({
             "role": "assistant",
-            "content": None,
+            "content": f"<tool_call>\n{tc_json}\n</tool_call>",
             "tool_calls": [{
                 "name": tc["tool_name"],
                 "arguments": tc.get("args", {}),

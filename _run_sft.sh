@@ -12,6 +12,7 @@ python -m src.training.sft_train \
     --lr 1e-4 \
     --batch-size 4 \
     --lora-rank 32 \
+    --repo-path hack4impact-repos/prfc-connect \
     --eval-tasks eval/prfconnect/tasks.prfc-connect.heldout.jsonl \
     --eval-answers eval/prfconnect/answers.prfc-connect.heldout.jsonl \
     --eval-spec eval/eval_spec.json \

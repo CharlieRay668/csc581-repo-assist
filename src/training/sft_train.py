@@ -42,61 +42,78 @@ def load_conversations(path: str) -> list[dict]:
 def messages_to_renderer_format(messages: list[dict]) -> list[dict]:
     """Convert our message format to the renderer's expected format.
 
+    Uses Qwen3's native tool-calling protocol so the model learns the
+    actual tool-call syntax (<tool_call> / <tool_response> tags) instead
+    of seeing tool calls collapsed into plain text.
+
     The renderer expects: [{role: "system"|"user"|"assistant", content: str}, ...]
-    We collapse tool calls/responses into assistant/user turns.
     """
+    from src.model_backend import _build_qwen_tool_block, TOOL_SCHEMAS
+
     out = []
+    has_injected_tools = False
+
     for msg in messages:
         role = msg["role"]
         content = msg.get("content", "")
 
         if role == "system":
-            out.append({"role": "system", "content": content})
+            # Inject Qwen3 tool definitions into the system prompt
+            tool_block = _build_qwen_tool_block(TOOL_SCHEMAS)
+            combined = tool_block + "\n\n" + content
+            out.append({"role": "system", "content": combined})
+            has_injected_tools = True
         elif role == "user":
             out.append({"role": "user", "content": content})
         elif role == "assistant":
             if msg.get("tool_calls"):
+                # Format as Qwen3 <tool_call> block
                 tc = msg["tool_calls"][0]
-                tc_str = json.dumps({"name": tc["name"], "arguments": tc["arguments"]})
-                out.append({"role": "assistant", "content": tc_str})
+                tc_json = json.dumps({
+                    "name": tc["name"],
+                    "arguments": tc["arguments"],
+                })
+                out.append({
+                    "role": "assistant",
+                    "content": f"<tool_call>\n{tc_json}\n</tool_call>",
+                })
             else:
                 out.append({"role": "assistant", "content": content or ""})
         elif role == "tool":
-            # Tool response → user turn with tool context
+            # Tool response → user turn with <tool_response> tags
             tool_content = msg.get("content", "")
-            tool_name = msg.get("name", "tool")
-            out.append({"role": "user", "content": f"[{tool_name}]: {tool_content}"})
+            # Truncate large tool results
+            if len(tool_content) > 4000:
+                tool_content = tool_content[:4000] + "...(truncated)"
+            out.append({
+                "role": "user",
+                "content": f"<tool_response>\n{tool_content}\n</tool_response>",
+            })
 
     return out
 
 
-def messages_to_datum(
-    messages: list[dict], renderer: renderers.Renderer, max_length: int | None = None
+def _convo_to_datum(
+    convo: list[dict], renderer: renderers.Renderer, max_length: int | None = None
 ) -> types.Datum | None:
-    """Convert a message list to a Tinker Datum for SFT."""
-    convo = messages_to_renderer_format(messages)
-
+    """Convert a single (system, ..., assistant) conversation to a Datum."""
     if len(convo) < 2:
         return None
-
-    # Ensure the last message is from assistant (what we're training on)
     if convo[-1]["role"] != "assistant":
         return None
 
     try:
         tokens, weights = renderer.build_supervised_example(convo)
-    except Exception as e:
+    except Exception:
         return None
 
     if len(tokens) < 2:
         return None
 
-    # Truncate if needed
     if max_length is not None:
         tokens = tokens[:max_length]
         weights = weights[:max_length]
 
-    # Standard SFT: predict next token (shift by 1)
     input_tokens = tokens[:-1]
     target_tokens = tokens[1:]
     weights = weights[1:]
@@ -118,6 +135,37 @@ def messages_to_datum(
     )
 
 
+def conversation_to_datums(
+    messages: list[dict], renderer: renderers.Renderer, max_length: int | None = None
+) -> list[types.Datum]:
+    """Split a multi-turn conversation into one training example per assistant turn.
+
+    The qwen3 renderer only puts training weights on the *last* assistant
+    message.  To teach the model to produce <tool_call> blocks (which are
+    intermediate assistant turns, not the final answer), we create a
+    separate training example for each assistant turn.
+
+    For a conversation:  S, U, A1(tool_call), U2(tool_response), A2(answer)
+    we produce two Datums:
+        1. [S, U, A1]            → trains on tool_call
+        2. [S, U, A1, U2, A2]   → trains on final answer
+    """
+    convo = messages_to_renderer_format(messages)
+    if len(convo) < 2:
+        return []
+
+    datums: list[types.Datum] = []
+    # Walk through and find each assistant turn
+    for i, msg in enumerate(convo):
+        if msg["role"] == "assistant":
+            sub = convo[: i + 1]  # everything up to & including this assistant turn
+            d = _convo_to_datum(sub, renderer, max_length)
+            if d is not None:
+                datums.append(d)
+
+    return datums
+
+
 def run_post_training_eval(
     training_client,
     tokenizer,
@@ -128,10 +176,24 @@ def run_post_training_eval(
     eval_spec_path: str,
     eval_output_dir: str,
     eval_baseline_path: str | None,
+    repo_path: str | None = None,
 ) -> None:
-    """Run evaluation immediately after training using the live training session."""
+    """Run evaluation immediately after training using the live training session.
+
+    If repo_path is provided, uses a tool-calling ReAct loop via ToolGateway
+    (the model can call search_repo, open_file, etc.).  Otherwise falls back
+    to single-shot generation.
+    """
     import re
     import time as _time
+    from src.model_backend import (
+        QwenTinkerBackend,
+        tool_schemas_for_scope,
+        _parse_qwen_tool_calls,
+        _build_qwen_tool_block,
+        TOOL_SCHEMAS,
+        ToolResult,
+    )
 
     print("\n" + "=" * 60)
     print("POST-TRAINING EVALUATION")
@@ -153,11 +215,51 @@ def run_post_training_eval(
     sampling_client = training_client.save_weights_and_get_sampling_client()
     print("Sampling client ready.")
 
-    sampling_params = types.SamplingParams(
+    # Build backend
+    backend = QwenTinkerBackend(
+        sampling_client=sampling_client,
+        tokenizer=tokenizer,
+        model_label=f"{model_name}+LoRA({checkpoint_name})",
         max_tokens=2048,
-        temperature=0.3,
-        stop=["<|im_end|>"],
+        disable_thinking=True,
     )
+
+    # Set up tool gateway if repo_path is available
+    gateway = None
+    if repo_path:
+        from src.tool_gateway import ToolGateway
+        try:
+            gateway = ToolGateway(repo_path=repo_path)
+            print(f"Tool gateway loaded: {gateway.stats().get('total_files', 0)} files indexed")
+        except Exception as e:
+            print(f"Warning: Could not load tool gateway: {e}")
+            gateway = None
+
+    # Tool execution helper
+    def execute_tool(tool_name: str, args: dict) -> dict:
+        if gateway is None:
+            return {"error": "No tool gateway available"}
+        try:
+            if tool_name == "search_repo":
+                results = gateway.search_repo(args.get("query"), top_k=args.get("top_k", 5))
+                return {"results": results, "count": len(results)}
+            elif tool_name == "open_file":
+                return gateway.open_file(args.get("path"), args.get("start_line"), args.get("end_line"))
+            elif tool_name == "list_files":
+                files = gateway.list_files(path_prefix=args.get("path_prefix"), extensions=args.get("extensions"))
+                return {"files": files, "count": len(files)}
+            elif tool_name == "get_repo_stats":
+                return gateway.stats()
+            elif tool_name == "get_issues":
+                results = gateway.get_issues(query=args.get("query"), state=args.get("state", "open"), limit=args.get("limit", 10))
+                return {"issues": results, "count": len(results)}
+            elif tool_name == "get_pull_requests":
+                results = gateway.get_pull_requests(query=args.get("query"), state=args.get("state", "open"), limit=args.get("limit", 10))
+                return {"pull_requests": results, "count": len(results)}
+            else:
+                return {"error": f"Unknown tool: {tool_name}"}
+        except Exception as e:
+            return {"error": str(e)}
 
     mode_instructions = {
         "explain": "Provide a thorough explanation with code citations. Reference specific file paths and line numbers.",
@@ -167,6 +269,9 @@ def run_post_training_eval(
     }
 
     agent_outputs = []
+    tools = tool_schemas_for_scope("include-pr") if gateway else []
+    max_tool_turns = 8
+
     for idx, task in enumerate(tasks, 1):
         task_id = task["task_id"]
         question = task.get("question", "")
@@ -178,33 +283,54 @@ def run_post_training_eval(
             f"Always cite specific files and line numbers."
         )
 
-        # Pre-fill assistant turn with closed <think> block to skip thinking
-        prompt_text = (
-            f"<|im_start|>system\n{system_msg}<|im_end|>\n"
-            f"<|im_start|>user\n{question}<|im_end|>\n"
-            f"<|im_start|>assistant\n<think>\n</think>\n\n"
-        )
-        prompt_tokens = tokenizer.encode(prompt_text)
-        prompt = types.ModelInput.from_ints(tokens=prompt_tokens)
-
         print(f"  [{idx}/{len(tasks)}] {task_id} ({mode})...", end=" ", flush=True)
         start_ms = _time.time() * 1000
 
         try:
-            result = sampling_client.sample(prompt, 1, sampling_params).result()
-            seq = result.sequences[0]
-            answer_tokens = seq.tokens
-            answer_text = tokenizer.decode(answer_tokens).strip()
-            # Strip Qwen3 thinking blocks if present (closed or unclosed)
-            answer_text = re.sub(r'<think>.*?</think>', '', answer_text, flags=re.DOTALL).strip()
-            answer_text = re.sub(r'<think>.*', '', answer_text, flags=re.DOTALL).strip()
-            for stop_tok in ["<|im_end|>", "<|endoftext|>"]:
-                if answer_text.endswith(stop_tok):
-                    answer_text = answer_text[:-len(stop_tok)].strip()
+            # Build conversation
+            messages = [
+                backend.format_system_message(system_msg),
+                backend.format_user_message(question),
+            ]
+
+            answer_text = ""
+            total_tool_calls = 0
+
+            # ReAct loop: generate → parse tool calls → execute → feed back
+            for t in range(max_tool_turns):
+                model_turn = backend.generate(messages, tools, temperature=0.3)
+
+                if model_turn.has_tool_calls and gateway is not None:
+                    # Execute tool calls
+                    messages.append(backend.format_assistant_message(model_turn))
+                    tool_results = []
+                    for tc in model_turn.tool_calls:
+                        result = execute_tool(tc.name, tc.arguments)
+                        tool_results.append(ToolResult(name=tc.name, result=result))
+                        total_tool_calls += 1
+                    formatted = backend.format_tool_results(tool_results)
+                    if isinstance(formatted, list):
+                        messages.extend(formatted)
+                    else:
+                        messages.append(formatted)
+                else:
+                    # Final text answer (or no tool calls)
+                    answer_text = model_turn.text or ""
+                    break
+
+            if not answer_text.strip():
+                # Force a final answer
+                messages.append(backend.format_user_message(
+                    "Please provide your final answer based on the evidence gathered."
+                ))
+                final_turn = backend.generate(messages, tools=[], temperature=0.3)
+                answer_text = final_turn.text or ""
+
             status = "ok"
             error = None
         except Exception as e:
             answer_text = ""
+            total_tool_calls = 0
             status = "error"
             error = str(e)
 
@@ -235,7 +361,7 @@ def run_post_training_eval(
             "citations": citations,
             "patch_diff": None,
             "next_actions": [],
-            "tool_call_count": 0,
+            "tool_call_count": total_tool_calls,
             "latency_ms": elapsed_ms,
             "started_at": "",
             "finished_at": "",
@@ -244,7 +370,7 @@ def run_post_training_eval(
         agent_outputs.append(row)
         wc = len(answer_text.split())
         status_str = "ok" if status == "ok" else f"ERR: {error}"
-        print(f"{status_str} ({wc} words, {elapsed_ms}ms)")
+        print(f"{status_str} ({wc} words, {total_tool_calls} tool calls, {elapsed_ms}ms)")
 
     # Write agent outputs
     agent_out_path = out_dir / "agent_outputs.sft.jsonl"
@@ -337,6 +463,7 @@ def main():
     parser.add_argument("--eval-spec", default=None, help="eval_spec.json for post-training eval")
     parser.add_argument("--eval-output-dir", default=None, help="Output dir for eval results")
     parser.add_argument("--eval-baseline", default=None, help="Baseline output.json for delta comparison")
+    parser.add_argument("--repo-path", default=None, help="Path to repo for tool-calling eval (enables ReAct loop)")
     args = parser.parse_args()
 
     # --- Load data ---
@@ -368,13 +495,13 @@ def main():
     datums = []
     skipped = 0
     for entry in entries:
-        d = messages_to_datum(entry["messages"], renderer)
-        if d is not None:
-            datums.append(d)
+        ds = conversation_to_datums(entry["messages"], renderer)
+        if ds:
+            datums.extend(ds)
         else:
             skipped += 1
 
-    print(f"Prepared {len(datums)} training examples ({skipped} skipped)")
+    print(f"Prepared {len(datums)} training examples from {len(entries)} conversations ({skipped} skipped)")
     if not datums:
         print("No valid training data — exiting.")
         return
@@ -456,6 +583,7 @@ def main():
             eval_spec_path=args.eval_spec,
             eval_output_dir=args.eval_output_dir or "eval/prfconnect/sft_results",
             eval_baseline_path=args.eval_baseline,
+            repo_path=args.repo_path,
         )
 
 

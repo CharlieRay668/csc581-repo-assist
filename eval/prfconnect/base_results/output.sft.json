@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "spec_name": "repo-assist-eval-v1",
+    "n_ratings": 100,
+    "n_results": 100,
+    "n_retrieval": 100
+  },
+  "quality": {
+    "rubric_mean_total": 4.69,
+    "pass_rate": 0.24,
+    "critical_error_rate": 0.23,
+    "by_criterion": {
+      "correctness": {
+        "mean": 0.46,
+        "count": 100
+      },
+      "grounding": {
+        "mean": 1.04,
+        "count": 100
+      },
+      "relevance": {
+        "mean": 1.66,
+        "count": 100
+      },
+      "clarity": {
+        "mean": 1.53,
+        "count": 100
+      }
+    },
+    "rubric_mean_total_ci": {
+      "mean": 4.69,
+      "ci_low": 4.37,
+      "ci_high": 5.03
+    },
+    "pass_rate_ci": {
+      "mean": 0.24,
+      "ci_low": 0.16,
+      "ci_high": 0.32
+    }
+  },
+  "grounding": {
+    "citation_precision": 0.0,
+    "substring_overlap_mean": 0.0,
+    "source_coverage": 0.31596091205211724
+  },
+  "retrieval": {
+    "p@3": 0.22666666666666666,
+    "r@3": 0.20285714285714285,
+    "ndcg@3": 0.1994065569098819,
+    "p@5": 0.2285,
+    "r@5": 0.2239047619047619,
+    "ndcg@5": 0.20833747368936056,
+    "p@10": 0.2246904761904762,
+    "r@10": 0.2309047619047619,
+    "ndcg@10": 0.21478446404840523
+  },
+  "task_success": {
+    "success_rate": 0.19,
+    "exact_match_rate": 0.17,
+    "unit_test_pass_rate": 0.5025000000000001,
+    "pass@1": 0.19,
+    "pass@3": 0.19,
+    "pass@5": 0.19
+  },
+  "performance": {
+    "latency_ms": {
+      "mean": 64896.58,
+      "p50": 56787.5,
+      "p90": 109912.10000000002,
+      "p99": 140299.28000000006
+    },
+    "throughput_tasks_per_min": {
+      "mean": 1.15437
+    },
+    "cost_usd": {
+      "mean": 0.01328011,
+      "total": 1.328011
+    },
+    "completion_time_s": {
+      "mean": 64.89658,
+      "p90": 109.91210000000001
+    }
+  },
+  "agreement": {
+    "note": "No exactly-two-rater overlaps found."
+  },
+  "delta_vs_baseline": {
+    "meta.n_ratings": 0.0,
+    "meta.n_results": 0.0,
+    "meta.n_retrieval": 0.0,
+    "quality.rubric_mean_total": -1.1499999999999995,
+    "quality.pass_rate": -0.32999999999999996,
+    "quality.critical_error_rate": 0.2,
+    "quality.by_criterion.correctness.mean": -0.6100000000000001,
+    "quality.by_criterion.correctness.count": 0.0,
+    "quality.by_criterion.grounding.mean": -0.4099999999999999,
+    "quality.by_criterion.grounding.count": 0.0,
+    "quality.by_criterion.relevance.mean": -0.09000000000000008,
+    "quality.by_criterion.relevance.count": 0.0,
+    "quality.by_criterion.clarity.mean": -0.040000000000000036,
+    "quality.by_criterion.clarity.count": 0.0,
+    "quality.rubric_mean_total_ci.mean": -1.1499999999999995,
+    "quality.rubric_mean_total_ci.ci_low": -1.0999999999999996,
+    "quality.rubric_mean_total_ci.ci_high": -1.17,
+    "quality.pass_rate_ci.mean": -0.32999999999999996,
+    "quality.pass_rate_ci.ci_low": -0.30999999999999994,
+    "quality.pass_rate_ci.ci_high": -0.35000000000000003,
+    "grounding.citation_precision": -1.0,
+    "grounding.substring_overlap_mean": -0.194697,
+    "grounding.source_coverage": -0.08143322475570036,
+    "retrieval.p@3": -0.12166666666666667,
+    "retrieval.r@3": -0.3249047619047619,
+    "retrieval.ndcg@3": -0.29491390516942023,
+    "retrieval.p@5": -0.07699999999999999,
+    "retrieval.r@5": -0.340095238095238,
+    "retrieval.ndcg@5": -0.3028310087009936,
+    "retrieval.p@10": -0.06548809523809526,
+    "retrieval.r@10": -0.36926190476190474,
+    "retrieval.ndcg@10": -0.3105605457950953,
+    "task_success.success_rate": -0.26,
+    "task_success.exact_match_rate": -0.19999999999999998,
+    "task_success.unit_test_pass_rate": -0.17899999999999994,
+    "task_success.pass@1": -0.26,
+    "task_success.pass@3": -0.26,
+    "task_success.pass@5": -0.26,
+    "performance.latency_ms.mean": 43597.75,
+    "performance.latency_ms.p50": 41747.5,
+    "performance.latency_ms.p90": 73356.1,
+    "performance.latency_ms.p99": 17008.08999999943,
+    "performance.throughput_tasks_per_min.mean": -4.4138399999999995,
+    "performance.cost_usd.mean": -0.00130132,
+    "performance.cost_usd.total": -0.13013199999999991,
+    "performance.completion_time_s.mean": 43.597750000000005,
+    "performance.completion_time_s.p90": 73.3561
+  }
+}

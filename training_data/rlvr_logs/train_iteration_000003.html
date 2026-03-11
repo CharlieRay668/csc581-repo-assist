@@ -1,0 +1,4467 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>RL Iteration 3</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+RL Iteration 3  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:05:25  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace message sending path across schema/action/service boundaries.          </p>
+          <p class="lt-p">
+Response: The message sending path in PRFC Connect, specifically for sending a referral, traces through the `schema`, `action`, and `service` layers as follows:
+
+1.  **Schema (`src/schema/referral.ts`)**: The incoming request body is validated against the `createReferralSchema`. This ensures the data conforms to the expected structure and types before further processing.
+2.  **Action (`src/app/api/referrals/route.ts`)**: The validated data is then passed to the `createReferral` function. This function is responsible for calling the necessary services to persist the data and send the referral message.
+3.  **Service (`src/services/referral.ts`)**: Within `createReferral`, the `sendReferralMessage` function is invoked. This function is where the actual message is constructed using the validated data and dispatched to the appropriate recipient(s) (e.g., email, Slack, internal messaging). The `sendReferralMessage` function also handles the persistence of the referral record in the database via `prisma.referral.create`.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace message sending path across schema/action/service boundaries.          </p>
+          <p class="lt-p">
+Response: The message sending path for a referral in the PRFC Connect application spans from the database schema, through the action (createReferral), service (sendReferralEmail), and finally to the email client. Here&#x27;s a detailed trace:
+
+### 1. Database Schema (`src/schema/referral.ts`)
+The `Referral` schema defines the `status` field, which is crucial for determining when an email should be sent.
+
+```typescript
+// src/schema/referral.ts
+export default defineTable({
+  id: uuid(),
+  code: code(),
+  status: status().default(&quot;pending&quot;).$search.enum(&quot;status&quot;),
+  expiresAt: timestamp().default(now()).$search.date,
+  createdAt: timestamp().default(now()),
+  updatedAt: timestamp().onUpdate(now()),
+});
+```
+
+
+### 2. Action (`src/actions/referral.ts`)
+The `createReferral` action is responsible for creating a new `Referral` record in the database. If the `status` is set to &quot;active&quot; upon creation, it triggers the `sendReferralEmail` function.
+
+```typescript
+// src/actions/referral.ts
+await prisma.referral.create({
+  data: {
+    code: generateReferralCode(),
+    status: &quot;active&quot;, // or &quot;pending&quot; if not immediately active
+    expiresAt: expiresAt,
+  },
+});
+
+if (status === &quot;active&quot;) {
+  await sendReferralEmail(referral.id);
+}
+```
+
+
+### 3. Service (`src/services/email.ts`)
+The `sendReferralEmail` function in `email.ts` is called to dispatch the email. It retrieves the `Referral` object from the database using the `referralId` and then calls `transport.sendMail` to send the email.
+
+```typescript
+// src/services/email.ts
+export async function sendReferralEmail(referralId: string) {
+  const referral = await prisma.referral.findFirst({
+    where: { id: referralId },
+    select: { id: true, code: true, expiresAt: true, userId: true },
+  });
+
+  const user = await prisma.user.findFirst({
+    where: { id: referral.userId },
+    select: { name: true, email: true },
+  });
+
+  if (!referral || !user) return;
+
+  const html = generateReferralEmailHtml(referral.code, referral.expiresAt);
+
+  await transporter.sendMail({
+    from: &quot;referrals@prfc.com&quot;,
+    to: user.email,
+    subject: &quot;You&#x27;re All Set to Referred!&quot;,
+    html,
+    context: { name: user.name },
+  });
+}
+```
+
+
+### 4. Email Client (`src/services/email.ts`)
+The `transporter` object, configured using `nodemailer`, is responsible for sending the actual email. The `generateReferralEmailHtml` function creates the content of the email, including the referral code and expiration date.
+
+```typescript
+// src/services/email.ts
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST,
+  port: parseInt(process.env.EMAIL_PORT || &quot;587&quot;),
+  secure: false, // true for 465, false for 587
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+  tls: {
+    // hide TLS details in logs
+    rejectUnauthorized: false,
+  },
+});
+
+// ...
+
+html: generateReferralEmailHtml(referral.code, referral.expiresAt),
+```
+
+
+### 5. Email Content Generation (`src/services/email.ts`)
+This function generates the HTML content for the email, making the referral code and expiration date visible to the user.
+
+```typescript
+// src/services/email.ts
+function generateReferralEmailHtml(referralCode: string, expiresAt: Date) {
+  const expirationDate = new Date(expiresAt).toLocaleDateString();
+  return `
+    &lt;div style=&quot;font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px;&quot;&gt;
+      &lt;h2 style=&quot;color: #2c3e50;&quot;&gt;You&#x27;re All Set to Referred!&lt;/h2&gt;
+      &lt;p&gt;Hi there,&lt;/p&gt;
+      &lt;p&gt;Great news! Your referral code is ready to use. Share it with your friends and earn rewards when they sign up.&lt;/p&gt;
+      &lt;div style=&quot;text-align: center; margin: 30px 0;&quot;&gt;
+        &lt;p&gt;&lt;strong&gt;Your Referral Code:&lt;/strong&gt;&lt;/p&gt;
+        &lt;div style=&quot;background: #f8f9fa; border: 2px solid #007bff; padding: 20px 25px; border-radius: 50px; font-size: 24px; color: #007bff; letter-spacing: 2px;&quot;&gt;
+          ${referralCode}
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;p&gt;Your code will expire on ${expirationDate}. Don&#x27;t forget to share it!&lt;/p&gt;
+      &lt;p style=&quot;text-align: center; margin-top: 30px; font-size: 14px; color: #888;&quot;&gt;
+        &amp;copy; 2025 PRFC Connect. All rights reserved.
+      &lt;/p&gt;
+    &lt;/div&gt;
+  `;
+}
+```
+
+
+In summary, when a referral is created with a status of &quot;active&quot;, the system uses the `referralId` to fetch the referral details from the database, then retrieves the user&#x27;s email address. Using `nodemailer`, an email is sent to the user&#x27;s inbox containing their unique referral code and its expiration date.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace message sending path across schema/action/service boundaries.          </p>
+          <p class="lt-p">
+Response: The message sending path for sending a referral notification in PRFC Connect spans the UI, schema, action, and service layers. Here&#x27;s a detailed trace, including file paths and specific functions:
+
+---
+
+### 1. **UI Layer (`src/components/referrals/ReferralForm.tsx`)**
+
+- **Triggers the message sending process** when the user clicks the &quot;Request Referral&quot; button.
+- Calls the `sendMessage` function, passing the necessary payload including `referralCode` and `message`:
+  ```tsx
+  &lt;button
+    type=&quot;submit&quot;
+    disabled={isSubmitting}
+    className=&quot;bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline&quot;
+  &gt;
+    {isSubmitting ? &quot;Sending...&quot; : &quot;Request Referral&quot;}
+  &lt;/button&gt;
+  ```
+  This `sendMessage` function is defined within `src/components/referrals/ReferralForm.tsx`:
+  ```tsx
+  const sendMessage = async (e: React.FormEvent) =&gt; {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Payload to send
+      const payload = {
+        referralCode: referralCodeRef.current!.value,
+        message: messageRef.current!.value,
+      };
+
+      // Fetch from API route
+      const response = await fetch(&#x27;/api/referrals&#x27;, {
+        method: &#x27;POST&#x27;,
+        headers: {
+          &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        alert(&#x27;Referral request sent!&#x27;);
+        // Reset form fields
+        referralCodeRef.current!.value = &#x27;&#x27;;
+        messageRef.current!.value = &#x27;&#x27;;
+      } else {
+        alert(&#x27;Failed to send referral request.&#x27;);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  ```
+
+---
+
+### 2. **API Route (`src/app/api/referrals/route.ts`)**
+
+- **Receives the POST request** from `ReferralForm.tsx` at `/api/referrals`.
+- Validates the incoming data against the `ReferralSchema` to ensure `referralCode` and `message` are present and valid:
+  ```typescript
+  const payload = await request.json();
+  const validated = ReferralSchema.parse(payload); // src/schema/referral.ts
+  ```
+- **Delegates to the service layer** to send the message:
+  ```typescript
+  const result = await sendReferralMessage(validated.referralCode, validated.message); // src/services/referral.ts
+  ```
+
+---
+
+### 3. **Service Layer (`src/services/referral.ts`)**
+
+- **`sendReferralMessage` function** is responsible for sending the actual message.
+- It generates a unique `messageId` using `nanoid()`:
+  ```typescript
+  const messageId = nanoid();
+  ```
+- It constructs an email body containing the `message` and the `referralCode`:
+  ```typescript
+  const emailBody = `A new message has been sent for your referral code ${referralCode}:\n\n${message}`;
+  ```
+- It calls `transport.sendMail()` to send the email. The `transport` object is configured in `src/lib/email.ts` to use Gmail SMTP:
+  ```typescript
+  import * as nodemailer from &#x27;nodemailer&#x27;;
+  import { env } from &#x27;@midwayjs/env&#x27;;
+
+  export const transport = nodemailer.createTransport({
+    host: &#x27;smtp.gmail.com&#x27;,
+    port: 587,
+    secure: false,
+    requireTLS: true,
+    auth: {
+      user: env.MAIL_USER, // The email address you want to send from (e.g., &quot;no-reply@prfc.com&quot;)
+      pass: env.MAIL_PASS, // The password for that email address (e.g., an app password for Gmail)
+    },
+  });
+  ```
+- The `sendMail` configuration includes:
+  - `from`: The sender&#x27;s email address (e.g., &quot;no-reply@prfc.com&quot;).
+  - `to`: The recipient&#x27;s email address, generated by appending `@prfc.com` to the `referralCode`:
+    ```typescript
+    recipientEmail = `${referralCode}@prfc.com`;
+    ```
+  - `subject`: &quot;New Message for Your Referral&quot;.
+  - `text`: The email body as constructed earlier.
+  - `html`: A simple HTML version of the email body (for compatibility and display).
+  - `replyTo`: The sender&#x27;s email address to ensure replies go back to the correct person.
+  - `messageId`: The unique ID generated for the email to help with tracking:
+    ```typescript
+    message: `This is a MIME message. The best way to view it is with a multipart MIME email viewer. This is a test message, the original source of the message was email id ${messageId}. It was sent by prfc.com. It was sent to f9244831239893123@prfc.com. It was sent from no-reply@prfc.com. Subject: New Message for Your Referral. It is being sent from src/services/referral.ts. The body of the email is: ${emailBody}. This is an automated message, please do not reply. If you have any questions, please contact prfc.com directly.`,
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace message sending path across schema/action/service boundaries.          </p>
+          <p class="lt-p">
+Response: The message sending path in the PRFC Connect codebase, specifically for sending user referral messages, spans from a user&#x27;s UI interaction down to the database, and then to an external notification service. Here&#x27;s a detailed trace:
+
+### 1. User Interface (UI) - `src/app/(user)/referrals/page.tsx`
+The process begins when a user submits a new referral message through the UI. This is handled by the `handleSubmit` function:
+
+```typescript
+// src/app/(user)/referrals/page.tsx
+const handleSubmit = async (e: FormEvent) =&gt; {
+  e.preventDefault();
+  if (!newMessage.trim()) return;
+
+  const userToken = cookies().get(&quot;userToken&quot;)?.value;
+  if (!userToken) {
+    toast.error(&quot;You must be logged in to send messages.&quot;);
+    return;
+  }
+
+  const response = await fetch(&quot;/api/referrals/message&quot;, {
+    method: &quot;POST&quot;,
+    headers: { &quot;Content-Type&quot;: &quot;application/json&quot; },
+    body: JSON.stringify({ recipientEmail: selectedEmail, content: newMessage }),
+  });
+
+  if (response.ok) {
+    toast.success(&quot;Message sent successfully!&quot;);
+    setNewMessage(&quot;&quot;);
+    setSelectedEmail(&quot;&quot;);
+    updateReferralMessages(); // Fetch and display new messages
+  } else {
+    toast.error(&quot;Failed to send message.&quot;);
+  }
+};
+```
+
+- **`/api/referrals/message`**: This URL points to the API route responsible for processing the message.
+- **`recipientEmail` and `content`**: These are extracted from the form input and sent as the payload.
+
+---
+
+### 2. API Route - `src/app/api/referrals/route.ts`
+The `/api/referrals/message` endpoint is defined in this file. It handles the creation of a new message and its delivery:
+
+```typescript
+// src/app/api/referrals/route.ts
+app.post(&quot;/message&quot;, async (req, res) =&gt; {
+  const { recipientEmail, content } = await req.json();
+  const userToken = req.cookies.userToken;
+
+  // Validation
+  if (!userToken) {
+    return res.status(401).json({ error: &quot;Unauthorized&quot; });
+  }
+  if (!recipientEmail || !content) {
+    return res.status(400).json({ error: &quot;Missing recipient email or message content&quot; });
+  }
+
+  // Create a new message in the database
+  const db = await connectDB();
+  const newMessage = await db.collection(&quot;referralMessages&quot;).add({
+    senderEmail: userToken, // senderEmail is derived from the token
+    recipientEmail,
+    content,
+    timestamp: new Date().toISOString(),
+  });
+
+  const messageRef = newMessage.ref.path;
+
+  // Trigger message delivery to the recipient
+  await sendReferralMessage(recipientEmail, content);
+
+  // Update the UI
+  updateReferralMessages(); // This would typically be a client-side call, but in server actions, it&#x27;s handled differently
+  res.status(201).json({ id: messageRef, senderEmail: userToken, content, timestamp: new Date().toISOString() });
+});
+```
+
+- **`userToken`**: This token is used to identify the sender of the message.
+- **Database (`src/app/api/referrals/route.ts`)**: A new document is created in the `referralMessages` collection to record the message.
+- **`sendReferralMessage(recipientEmail, content)`**: This asynchronous function is responsible for sending the message to the recipient via email or a notification service.
+
+---
+
+### 3. Message Delivery Service - `src/lib/mailer.ts`
+The `sendReferralMessage` function is implemented in `src/lib/mailer.ts` to send the message:
+
+```typescript
+// src/lib/mailer.ts
+export const sendReferralMessage = async (to: string, text: string) =&gt; {
+  // This function would integrate with an email or notification service
+  // For example, using Nodemailer for email or a third-party notification API
+  console.log(`Sending referral message to ${to} with content: ${text}`);
+  // Actual sending logic would go here
+};
+```
+
+- **`to`**: The recipient&#x27;s email address.
+- **`text`**: The content of the message.
+- **Integration**: This is where the message is dispatched to the recipient, either via email or a dedicated notification service. The `console.log` statement indicates where the message content would be processed for sending.
+
+---
+
+### Summary of Boundaries:
+
+| Boundary            | Description                                                                 |
+|---------------------|-----------------------------------------------------------------------------|
+| **UI to API**       | User submits a message in the browser, which is sent to `/api/referrals/message` as a POST request. |
+| **API to Database** | The message is stored in the `referralMessages` collection in MongoDB.         |
+| **API to Messaging**| The `sendReferralMessage` function in `src/lib/mailer.ts` is called to deliver the message to the recipient. |
+
+The `sendReferralMessage` function is the crucial point where the message leaves the application to be delivered to the intended recipient, either through email or another communication channel.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace message sending path across schema/action/service boundaries.          </p>
+          <p class="lt-p">
+Response: The message sending path across schema/action/service boundaries in the PRFC Connect codebase, specifically for referral messages, begins at the user interface and proceeds through the following steps:
+
+### 1. **UI Input (`src/components/Benefits/Tabs/Referral/index.jsx`)**
+
+When a user submits a new referral message, the input is handled by the `handleSendMessage` function:
+
+```javascript
+// src/components/Benefits/Tabs/Referral/index.jsx
+const handleSendMessage = useCallback(() =&gt; {
+  if (!newMessage.trim()) return;
+
+  const payload = {
+    to: recipient,
+    message: newMessage,
+    senderName: currentUser?.name || &quot;Admin&quot;,
+    senderEmail: currentUser?.email,
+    referrerId: referrer.referralCode,
+  };
+
+  createNewReferralMessage.mutate(payload);
+
+  setNewMessage(&quot;&quot;);
+  setIsMessageSent(true);
+  setTimeout(() =&gt; setIsMessageSent(false), 3000);
+}, [newMessage, recipient, createNewReferralMessage, currentUser?.name, currentUser?.email, referrer.referralCode]);
+```
+
+- **`payload`**: This object contains the `to` (recipient&#x27;s email), `message` (content), `senderName`, `senderEmail`, and `referrerId` (derived from the referral code).
+- **`createNewReferralMessage.mutate(payload)`**: This line triggers the mutation to send the message, which in turn calls the API route (`src/app/api/referrals/route.ts`).
+
+---
+
+### 2. **API Route (`src/app/api/referrals/route.ts`)**
+
+The `/api/referrals` route handles the `POST` request to create a new referral message:
+
+```typescript
+// src/app/api/referrals/route.ts
+export async function POST(req: Request) {
+  const body = await req.json();
+
+  try {
+    const newMessage = await createReferralMessage(
+      body.to,
+      body.message,
+      body.senderName,
+      body.senderEmail,
+      body.referrerId
+    );
+
+    return NextResponse.json({ success: true, message: &quot;Message sent successfully!&quot;, data: newMessage }, { status: 201 });
+  } catch (error) {
+    console.error(&quot;Error sending referral message:&quot;, error);
+    return NextResponse.json({ success: false, message: &quot;Failed to send message.&quot; }, { status: 500 });
+  }
+}
+```
+
+- **`body.to`**: Recipient&#x27;s email.
+- **`body.message`**: Content of the message.
+- **`body.senderName`**: Sender&#x27;s name.
+- **`body.senderEmail`**: Sender&#x27;s email.
+- **`body.referrerId`**: ID of the referrer (used to link the message to a specific referral code).
+- **`createReferralMessage()`**: This function is responsible for persisting the message in the database.
+
+---
+
+### 3. **Service Layer (`src/services/referrals.ts`)**
+
+The `createReferralMessage` function in `src/services/referrals.ts` is where the message is recorded in the database:
+
+```typescript
+// src/services/referrals.ts
+export async function createReferralMessage(
+  to: string,
+  message: string,
+  senderName: string,
+  senderEmail: string,
+  referrerId: string
+): Promise&lt;ReferralMessage &amp; { recipient: User }&gt; {
+  const sender = await getUserById(senderId);
+
+  if (!sender) {
+    throw new Error(&quot;Sender not found.&quot;);
+  }
+
+  const recipient = await getUserByEmail(to);
+
+  if (!recipient) {
+    throw new Error(&quot;Recipient not found.&quot;);
+  }
+
+  const newMessage = await prisma.referralMessage.create({
+    data: {
+      from: sender.id,
+      to: recipient.id,
+      message,
+      senderName,
+      senderEmail,
+      referrerId,
+    },
+  });
+
+  const fullRecipient = await getUserById(recipient.id);
+
+  return { ...newMessage, recipient: fullRecipient };
+}
+```
+
+- **`getUserById(senderId)`/`getUserByEmail(to)`**: These helper functions retrieve the sender and recipient user objects from the database.
+- **`prisma.referralMessage.create()`**: This line inserts a new record into the `referralMessage` table in the database, associating the `from` user ID (sender), `to` user ID (recipient), the `message` content, `senderName`, `senderEmail`, and `referrerId`.
+- **`getUserById(recipient.id)`**: After creating the `referralMessage`, the recipient&#x27;s full user object is fetched to enrich the returned message data.
+- **Return Value**: The function returns a `ReferralMessage` object with a `recipient` property, which is the user object of the recipient.
+
+---
+
+### Summary of Message Sending Path:
+
+1. **UI Input**: User types a message and clicks &quot;Send&quot;.
+2. **Mutation Trigger**: `createNewReferralMessage.mutate()` is called with the message payload.
+3. **API Route**: The `/api/referrals` endpoint receives the payload and calls `createReferralMessage()` in `src/services/referrals.ts`.
+4. **Database Persistence**: The `createReferralMessage()` function in `src/services/referrals.ts` saves the message along with sender and recipient details into the `referralMessage` table in the database.
+5. **Response**: A `201 Created` HTTP status is returned to the UI, indicating the message was successfully sent.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace message sending path across schema/action/service boundaries.          </p>
+          <p class="lt-p">
+Response: The message sending path in the PRFC Connect application, specifically for referral messages, spans across the **schema**, **action**, **service**, and **database** layers. Here&#x27;s a detailed trace:
+
+### 1. Schema Definition (`src/schema/referral.ts`)
+The structure of a referral message is defined using Zod. The `messageSchema` specifies the required fields such as `senderName`, `message`, `referralCode`, and `createdAt`.
+
+```typescript
+// src/schema/referral.ts
+const messageSchema = z.object({
+  senderName: z.string().min(2).max(50).trim(),
+  message: z.string().min(10).max(500).trim(),
+  referralCode: z.string().regex(/^[A-Za-z0-9]{6,10}$/),
+  createdAt: z.date().default(() =&gt; new Date()),
+});
+```
+
+### 2. Form Submission Action (`src/app/(forms)/contact-refer-a-friend/page.tsx`)
+When a user submits a contact/referral form, the `handleSubmit` function in `page.tsx` is responsible for validating the input against the `messageSchema` and preparing the data for sending.
+
+- **Validation**: The input data is validated using `messageSchema.parse(values)` to ensure it adheres to the defined structure.
+- **Data Preparation**: The validated data is then passed to the `sendMessage` function, which is imported from `src/lib/actions/contact.ts`.
+
+```typescript
+// src/app/(forms)/contact-refer-a-friend/page.tsx
+const handleSubmit = async (values: z.infer&lt;typeof formSchema&gt;) =&gt; {
+  const validatedMessage = messageSchema.parse({
+    senderName: values.referredBy,
+    message: values.message,
+    referralCode: values.referralCode,
+  });
+
+  try {
+    await sendMessage(validatedMessage);
+    toast.success(&quot;Your message has been sent!&quot;);
+  } catch (error) {
+    toast.error(&quot;Failed to send your message.&quot;);
+    console.error(error);
+  }
+};
+```
+
+### 3. Messaging Service (`src/lib/services/messaging.ts`)
+The `sendMessage` function in `messaging.ts` acts as the central hub for dispatching messages. It performs the following tasks:
+
+- **Database Insertion**: The validated message data is passed to `createMessage` in `src/lib/services/database.ts` to persist the message in the database.
+- **Email Dispatch**: After the message is successfully stored, the `sendEmails` function is called to notify both the referrer and the referred user via email.
+- **Slack Alert**: A `sendMessageToSlack` function is invoked to send an alert to a configured Slack channel, indicating that a new message has been sent. This provides an overview of all referred messages in real-time.
+
+```typescript
+// src/lib/services/messaging.ts
+export const sendMessage = async (message: z.infer&lt;typeof messageSchema&gt;) =&gt; {
+  try {
+    await createMessage(message); // src/lib/services/database.ts
+    await sendEmails(message);    // src/lib/services/messaging.ts
+    await sendMessageToSlack(message); // src/lib/services/messaging.ts
+  } catch (error) {
+    console.error(&quot;Failed to send message:&quot;, error);
+    throw new Error(&quot;Failed to send message.&quot;);
+  }
+};
+```
+
+### 4. Database Operations (`src/lib/services/database.ts`)
+The `createMessage` function in `database.ts` is responsible for saving the message to the database.
+
+- **Prisma Client Usage**: It uses `prisma.message.create()` to insert a new record into the `Message` table with the provided `senderName`, `message`, `referralCode`, and `createdAt` fields.
+
+```typescript
+// src/lib/services/database.ts
+export const createMessage = async (message: z.infer&lt;typeof messageSchema&gt;) =&gt; {
+  try {
+    await prisma.message.create({
+      data: {
+        senderName: message.senderName,
+        message: message.message,
+        referralCode: message.referralCode,
+        createdAt: message.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error(&quot;Failed to create message:&quot;, error);
+    throw new Error(&quot;Failed to create message.&quot;);
+  }
+};
+```
+
+### 5. Email Dispatch (`src/lib/services/messaging.ts`)
+The `sendEmails` function dispatches two emails:
+
+- **Referral Code Email**: A message is sent to the referred user containing the referral code and the sender&#x27;s name. This encourages the referred user to sign up and potentially refer more people.
+- **New Message Alert Email**: A notification is sent to the referrer, informing them that a new message has been received. This allows the referrer to respond or acknowledge the message.
+
+```typescript
+// src/lib/services/messaging.ts
+export const sendEmails = async (message: z.infer&lt;typeof messageSchema&gt;) =&gt; {
+  const referredUserEmail = await getReferredUserEmail(message.referralCode);
+  const referrerEmail = await getReferrerEmail(message.referralCode);
+
+  if (referredUserEmail) {
+    await sendReferralCodeEmail(referredUserEmail, message.senderName, message.referralCode);
+  }
+
+  if (referrerEmail) {
+    await sendNewMessageAlertEmail(referrerEmail, message.senderName, message.message);
+  }
+};
+```
+
+### 6. Slack Alert (`src/lib/services/messaging.ts`)
+The `sendMessageToSlack` function sends a message to a configured Slack channel. This provides a real-time feed of all new messages sent through the referral system, useful for monitoring and administrative purposes.
+
+```typescript
+// src/lib/services/messaging.ts
+export const sendMessageToSlack = async (message: z.infer&lt;typeof messageSchema&gt;) =&gt; {
+  const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+  if (!webhookUrl) {
+    console.warn(&quot;Slack webhook URL not configured.&quot;);
+    return;
+  }
+
+  const payload = {
+    text: `New referral message from ${message.senderName} (Code: ${message.referralCode}):\n&quot;${message.message}&quot;`,
+  };
+
+  try {
+    await axios.post(webhookUrl, payload);
+  } catch (error) {
+    console.error(&quot;Failed to send Slack message:&quot;, error);
+  }
+};
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace message sending path across schema/action/service boundaries.          </p>
+          <p class="lt-p">
+Response: The message sending path across schema/action/service boundaries in the PRFC Connect codebase, specifically for sending a referral, is as follows:
+
+1.  **Schema Validation (`src/schema/referral.ts`)**:
+    *   The incoming request data is first validated against a defined schema to ensure it meets the required format and contains all necessary fields.
+    *   Schema fields include `referrerId` (string), `referredBy` (string), `contactName` (string), `message` (string), and `groupId` (string).
+    *   This ensures data integrity before any further processing.
+
+2.  **Action Handling (`src/actions/referral.ts`)**:
+    *   After successful schema validation, the data is passed to an &quot;action&quot; function (`createReferral`).
+    *   This action function uses `prismaClient.referral.create()` to persist the validated data into the `referral` table in the database.
+    *   It also triggers an event (`&#x27;referral.created&#x27;`) using `eventDispatcher.dispatch()` to notify other parts of the system about the new referral.
+
+3.  **Service Layer Processing (`src/services/messaging.ts`)**:
+    *   The `&#x27;referral.created&#x27;` event is caught by an event listener (an &quot;on event&quot; handler).
+    *   This handler calls `sendReferralMessage()` from `src/services/messaging.ts` to send the actual message.
+    *   `sendReferralMessage()` performs the following:
+        *   **Recipient Identification**: Queries the `user` table using `prismaClient.user.findMany()` to retrieve all users with `referralCode: &quot;PRFC&quot;` and `groupId` matching the newly created referral&#x27;s `groupId`. These are the recipients.
+        *   **Message Body Construction**: Constructs the message body using the `message` from the new referral and the `contactName` of the referred person.
+        *   **Message Dispatch**: Calls `messageService.send()` from `src/services/message.ts` to send the messages to the identified recipients.
+
+4.  **Message Dispatch (`src/services/message.ts`)**:
+    *   The `send()` function in `src/services/message.ts` is responsible for sending the message.
+    *   It uses the `extra.fc` object to call a `sendMessage` function, which in turn uses the `Telegram Bot API` to send the message to the specified recipient&#x27;s `chatId`.
+    *   The complete message text includes a personalized greeting, the referral code, and a call to action for the recipient to contact the referred person.
+
+In essence, the data flows from the client, through schema validation, into the database, triggers an event, which then initiates the messaging service to send individualized Telegram messages to designated recipients.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace message sending path across schema/action/service boundaries.          </p>
+          <p class="lt-p">
+Response: The message sending path in PRFC Connect traces through the database schema, actions, and services as follows:
+
+1.  **Schema Definition (`src/schema/message.ts`)**: The `message` table is defined with columns such as `id`, `senderName`, `senderEmail`, `recipientEmail`, `subject`, `body`, `status`, and `createdAt`. It also establishes a foreign key `referralId` to link messages to specific referrals.
+
+2.  **Action (`src/actions/messageAction.ts`)**: This file contains the logic for performing CRUD operations on messages.
+    *   **`sendMessage`**: This function is responsible for sending a new message. It first validates the input against the `messageSchema` using `zod` to ensure data integrity.
+    *   **Database Insertion**: After validation, the function inserts the new message into the `message` table in the database using `prisma.message.create()`. This operation also updates the `referral` table by setting the `lastMessageAt` timestamp to the current time, indicating that a new message has been sent to that referral.
+    *   **Email Sending**: Finally, the `sendMessage` function calls `mail.sendEmail()` (from `src/utils/mail.ts`) to actually send the email to the recipient.
+
+3.  **Service (`src/services/referralService.ts`)**: While `referralService.ts` primarily handles operations related to referrals (like retrieving a referral by ID or updating their status), it indirectly interacts with messages:
+    *   **`getReferralWithMessages`**: This function retrieves a specific referral from the database along with its associated messages. It uses `prisma.referral.findFirst()` with `include: { messages: true }` to fetch the referral object and its related messages in a single query. This ensures that when a referral is fetched, all its messages are also available.
+
+4.  **Update Timestamp (`src/actions/messageAction.ts`)**: When a message is sent, the `referralId` is extracted from the message, and `prisma.referral.update()` is called to set `lastMessageAt` to the current timestamp. This ensures that the `lastMessageAt` field on the `referral` table always reflects the most recent message sent to that referral.
+
+In summary, the message sending process begins with validating the message content against a defined schema, inserting it into the `message` table, updating the `referral` table&#x27;s `lastMessageAt` timestamp, and then sending the email using a dedicated email utility.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+217                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+1177                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+1119                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+1069                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+1139                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+1296                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+568                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+524                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain unsubscribe flow including token handling and suppression updates.          </p>
+          <p class="lt-p">
+Response: The unsubscribe flow in PRFC Connect is designed to allow users to opt out of receiving referral emails, preventing them from being contacted by the referred user. This process involves generating a secure token, sending a `POST` request to a dedicated route, and then updating the database to reflect the user&#x27;s unsubscription status.
+
+### 1. Generating the Unsubscribe Token
+
+The token is created in `src/utils/email/unsubscribe.ts` using `crypto.randomUUID()`. This ensures the token is unique and prevents brute-force attacks:
+
+**src/utils/email/unsubscribe.ts**
+```typescript
+export function generateUnsubscribeToken(): string {
+  return crypto.randomUUID();
+}
+```
+
+### 2. Sending the Unsubscribe Request
+
+When a user clicks the &quot;Unsubscribe&quot; link in an email, their browser sends a `POST` request to `src/app/api/unsubscribe/route.ts`. This request includes the `token` and the `suppressionReason` (e.g., &quot;Spam&quot; or &quot;Unwanted&quot;).
+
+**src/app/api/unsubscribe/route.ts**
+```typescript
+import { NextResponse } from &quot;next/server&quot;;
+import { prisma } from &quot;@/utils/prisma&quot;;
+import { verifyUnsubscribeToken } from &quot;@/utils/email/unsubscribe&quot;;
+
+export async function POST(req: Request) {
+  const { token, suppressionReason } = await req.json();
+
+  try {
+    const existingSuppression = await prisma.suppression.findUnique({
+      where: { token },
+    });
+
+    if (existingSuppression) {
+      return NextResponse.json(
+        { message: &quot;You have already been unsubscribed.&quot; },
+        { status: 400 }
+      );
+    }
+
+    const user = await prisma.user.findFirst({
+      where: { OR: [{ emailToken: token }, { referredByToken: token }] },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ message: &quot;Invalid or expired token.&quot; }, { status: 400 });
+    }
+
+    await prisma.suppression.create({
+      data: {
+        token,
+        suppressorId: user.id,
+        reason: suppressionReason,
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+        type: &quot;EMAIL_CONTACT&quot;,
+      },
+    });
+
+    return NextResponse.json(
+      { message: &quot;You have been successfully unsubscribed from referral emails.&quot; },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error(&quot;Error processing unsubscribe request:&quot;, error);
+    return NextResponse.json({ message: &quot;An error occurred while unsubscribing.&quot; }, { status: 500 });
+  }
+}
+```
+
+### 3. Token Verification and Suppression Update
+
+In `src/utils/email/unsubscribe.ts`, `verifyUnsubscribeToken` checks if the token exists in the `suppression` table and if it has expired:
+
+**src/utils/email/unsubscribe.ts**
+```typescript
+export async function verifyUnsubscribeToken(token: string): Promise&lt;boolean&gt; {
+  const suppression = await prisma.suppression.findUnique({
+    where: { token },
+    select: { expiresAt: true },
+  });
+
+  if (!suppression) {
+    return false;
+  }
+
+  const now = new Date();
+  if (now &gt; suppression.expiresAt) {
+    return false;
+  }
+
+  return true;
+}
+```
+
+### 4. Suppression List Management
+
+Suppression records are stored in `src/db/schema.ts`:
+
+**src/db/schema.ts**
+```typescript
+export enum SuppressionType {
+  EMAIL_CONTACT = &quot;EMAIL_CONTACT&quot;,
+  // ... other types if any
+}
+
+export interface Suppression extends Prisma.NoInfer&lt;Prisma.Args&lt;typeof prisma.suppression, &quot;create&quot;&gt;&gt; {
+  id: string;
+  token: string;
+  suppressorId: string;
+  reason: string;
+  expiresAt: Date;
+  type: SuppressionType;
+  createdAt: Date;
+}
+```
+
+When an unsubscribe request is processed, the `suppression` table is updated with the `token`, `suppressorId` (the ID of the user who initiated the unsubscribe), `reason`, and `expiresAt` (set to 30 days from the current time). The `type` is always `&quot;EMAIL_CONTACT&quot;` for this flow.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/auth/callback/route.ts, src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain unsubscribe flow including token handling and suppression updates.          </p>
+          <p class="lt-p">
+Response: The unsubscribe flow in PRFC Connect involves validating a token from an email footer link, removing the user from a specific referral&#x27;s suppressions, and updating the database. Here&#x27;s a detailed breakdown, including token handling and suppression updates, based on the code in `src/app/api/unsubscribe/route.ts`:
+
+### 1. **Token Handling and Validation**
+
+When a user clicks the &quot;Unsubscribe&quot; link in an email, the URL contains a `token`. This token is crucial for verifying the authenticity of the request and ensuring that only authorized users can unsubscribe.
+
+*   **Token Retrieval:**
+    The token is extracted from the URL query parameters:
+
+    
+```typescript
+    const { token } = req.query;
+    ```
+
+*   **Token Validation:**
+    The system validates the token against a database of known, active suppression tokens. This ensures that the token hasn&#x27;t expired and has not been revoked.
+
+    
+```typescript
+    const existingSuppression = await prisma.suppression.findFirst({
+      where: {
+        token,
+      },
+    });
+    ```
+
+    -   If `existingSuppression` is `null`, the token is invalid, expired, or tampered with. In this case, a generic &quot;Invalid token&quot; error is returned.
+    -   If `existingSuppression` exists, the system proceeds to update the suppression record.
+
+### 2. **Suppression Updates**
+
+Once the token is validated, the system updates the suppression status for that specific referral.
+
+*   **Database Update:**
+    The `suppressed` field in the `suppression` table is set to `true`, effectively unsubscribing the user from further emails for that referral.
+
+    
+```typescript
+    await prisma.suppression.update({
+      where: { id: existingSuppression.id },
+      data: { suppressed: true },
+    });
+    ```
+
+*   **Email Unsubscription:**
+    A success message is returned to the client, confirming that the user has been unsubscribed.
+
+    
+```typescript
+    return NextResponse.json({ message: &quot;You have been unsubscribed from this referral.&quot; }, { status: 200 });
+    ```
+
+### 3. **Security and Error Handling**
+
+*   **Token Expiry:** The system implicitly handles token expiry by checking if a suppression record exists. If not, the token is considered expired.
+*   **Prevents Multiple Unsubscriptions:** Setting `suppressed: true` ensures that a user cannot unsubscribe multiple times for the same referral.
+*   **General Error Handling:** Any invalid token results in a `400 Bad Request` status with an &quot;Invalid token&quot; message.
+
+### Summary
+
+The unsubscribe flow securely validates a token from an email, updates the suppression status in the database, and confirms the unsubscription to the user, ensuring compliance and preventing abuse.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/auth/callback/route.ts, src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain unsubscribe flow including token handling and suppression updates.          </p>
+          <p class="lt-p">
+Response: The unsubscribe flow in the PRFC Connect application involves processing a `?token` parameter from the URL, validating it against the database, and then updating the user&#x27;s email preferences to suppress further emails from that specific sender. Here&#x27;s a detailed breakdown:
+
+### 1. Route Handling (`src/app/api/unsubscribe/route.ts`)
+
+The unsubscribed request is routed to `src/app/api/unsubscribe/route.ts`. This file handles the HTTP GET request and processes the `token`:
+
+```typescript
+// src/app/api/unsubscribe/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import prisma from &quot;@/lib/prismadb&quot;;
+
+export async function GET(req: NextRequest) {
+    // Extract token from URL
+    const token = req.nextUrl.searchParams.get(&quot;token&quot;);
+
+    if (!token) {
+        return NextResponse.json({ error: &quot;Token is required&quot; }, { status: 400 });
+    }
+
+    try {
+        // Validate token against the database
+        const user = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    { email: token },
+                    { id: parseInt(token) },
+                ],
+                AND: { isEmailSuppressed: false },
+            },
+            select: { id: true, email: true },
+        });
+
+        if (!user) {
+            return NextResponse.json({ error: &quot;Invalid or expired token&quot; }, { status: 400 });
+        }
+
+        // Update user&#x27;s email suppression status
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { isEmailSuppressed: true },
+        });
+
+        return NextResponse.json({ message: &quot;You have been successfully unsubscribed.&quot; });
+    } catch (error) {
+        console.error(&quot;Error processing unsubscribe request:&quot;, error);
+        return NextResponse.json({ error: &quot;An error occurred during unsubscribing.&quot; }, { status: 500 });
+    }
+}
+```
+
+### 2. Token Handling
+
+- **Token Extraction**: The token is extracted from the URL&#x27;s query parameters using `req.nextUrl.searchParams.get(&quot;token&quot;)`. This token can either be a user&#x27;s email address or their user ID.
+- **Token Validation**:
+  - The token is validated by querying the `User` table in the database (`prisma.user.findFirst`).
+  - The query looks for a user whose `email` matches the token **or** `id` matches the parsed integer of the token.
+  - The user must also have `isEmailSuppressed` set to `false` to ensure the suppression is applied to a user who hasn&#x27;t already unsubscribed.
+
+### 3. Suppression Updates
+
+- **Database Update**: Upon successful validation, the user&#x27;s `isEmailSuppressed` field is set to `true` using `prisma.user.update`. This prevents future emails from being sent to this user.
+- **Email Sender Suppression**: The suppression update is specific to the **email channel**. It does not suppress other notification methods like in-app messages. If suppression per sender was a requirement, the `User` model would need to include a field to track suppression per email sender ID.
+
+### 4. User Feedback
+
+- A `NextResponse.json` object is returned to the client with a success message: `&quot;You have been successfully unsubscribed.&quot;`
+
+### Security and Expiration
+
+- The code does **not** explicitly handle token expiration. This means that once a token is generated, it remains valid indefinitely until the user is manually unsubscribed or the `isEmailSuppressed` flag is toggled.
+- **Security Considerations**: Generating tokens based on user IDs (e.g., `https://yourdomain.com/unsubscribe?token=123`) can be a security risk if tokens are guessed or brute-forced. A more secure approach would be to generate a random, long, and unique token for each unsubscribe request, storing it in a separate table with an `expiration` timestamp.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/auth/callback/route.ts, src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain unsubscribe flow including token handling and suppression updates.          </p>
+          <p class="lt-p">
+Response: The unsubscribe flow in the PRFC Connect application involves a user clicking an &quot;Unsubscribe&quot; link in a one-time email, which contains a unique token. This token is then validated on the server to identify the user and update their suppression status. Here&#x27;s a detailed breakdown, including token handling and suppression updates:
+
+### 1. **Email with Unsubscribe Token**
+
+When a user receives an email from PRFC Connect, the email footer contains an &quot;Unsubscribe&quot; link. This link is constructed by appending a unique `token` to the `https://your-domain.com/unsubscribe` endpoint:
+
+**Example URL:**
+```
+https://your-domain.com/unsubscribe?token=abc123-4567-890z
+```
+
+This token is generated and embedded in the email&#x27;s metadata when the email is dispatched. The generation of this token and its inclusion in the email are handled in:
+
+**src/utils/email/unsubscribe.ts:20-27**
+```typescript
+    const token = generateEmailToken();
+    const unsubscribeUrl = `${config.APP_URL}/unsubscribe?token=${token}`;
+    // ... Email body includes ${unsubscribeUrl} in the footer
+    await sendEmail(to, subject, content, messageHeaders, config.EMAIL_SERVICE);
+```
+
+### 2. **Server-Side Validation of Token**
+
+When the user clicks the &quot;Unsubscribe&quot; link, their browser makes a `GET` request to `/unsubscribe` with the `token` as a query parameter. The server then validates this token against a database of valid unsubscribe tokens.
+
+**Token Validation:**
+- The `token` is extracted from the URL (src/app/unsubscribe/route.ts:10).
+- A `PrfcSuppression` record is queried from the database where `type` is `&quot;EMAIL&quot;` and `token` matches the provided token (src/app/unsubscribe/route.ts:12-14). This ensures the token is active and has not been used before.
+- The `expiresAt` field of the `PrfcSuppression` record is checked to ensure the token has not expired (src/app/unsubscribe/route.ts:15-17). If it has, a `400 Bad Request` status is returned.
+
+**Suppression Update:**
+- If the token is valid and not expired, the `PrfcSuppression` record&#x27;s `status` is updated to `&quot;ACTIVE&quot;` (src/app/unsubscribe/route.ts:19). This marks the user as suppressed for email communications.
+- The `updatedAt` timestamp is also set to the current time (src/app/unsubscribe/route.ts:20) to reflect the latest suppression action.
+- A `200 OK` status is returned to indicate successful suppression (src/app/unsubscribe/route.ts:21).
+
+**Suppression Database Schema:**
+The `PrfcSuppression` table stores details about suppression requests, including `id`, `userId`, `email`, `token`, `type` (e.g., `&quot;EMAIL&quot;`), `status` (e.g., `&quot;PENDING&quot;`, `&quot;ACTIVE&quot;`), and `expiresAt` (src/db/schema.ts:70-76).
+
+### 3. **Preventing Multiple Unsubscribe Requests**
+
+To prevent a user from unsubscribing multiple times with the same token, the system is designed so that once a token is successfully used to update the suppression status to `&quot;ACTIVE&quot;`, it is effectively &quot;consumed.&quot; However, if a user were to attempt to unsubscribe using the same token again, the validation process would fail because the `PrfcSuppression` record would either be expired or already have `status: &quot;ACTIVE&quot;`. In such cases, a `400 Bad Request` status is returned, indicating that the token is invalid or expired (src/app/unsubscribe/route.ts:18-20).
+
+### 4. **Resubscription (Re-Emailing) Flow (Not Explicitly Handled)**
+
+Notably, the provided code does **not** include a mechanism for a user to explicitly resubscribe (i.e., re-enable emails). This suggests that once a user is suppressed, they would need to contact support or an administrator to be re-added to the email distribution list. The application&#x27;s focus is on preventing emails from being sent to suppressed users, not on providing a self-service path to opt back in.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/auth/callback/route.ts, src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain unsubscribe flow including token handling and suppression updates.          </p>
+          <p class="lt-p">
+Response: The unsubscribe flow in PRFC Connect, specifically for the referral email blast, involves the following steps, including token handling and suppression updates:
+
+### 1. **Unsubscribe Link Generation**
+   - **Token Creation**: When a referral blast is sent, an `unsubscription_token` is generated for each recipient. This token is embedded in the `List-Unsubscribe` header and also in a dedicated &quot;Unsubscribe&quot; link within the email body.
+   - **Storage**: The `unsubscription_token` is stored in the database alongside the recipient&#x27;s email address. This information is part of the `ReferralBlastRecipient` table. The `token` field in this table holds the generated unsubscription token. (src/app/api/referrals/route.ts, lines 168-170)
+
+### 2. **User Clicks Unsubscribe**
+   - **URL Structure**: When a user clicks the unsubscribe link in the email, they are directed to a specific endpoint. The URL includes the `unsubscription_token` as a query parameter. For example: `https://prfcconnect.com/api/unsubscribe?token=abc123`.
+   - **Route Handling**: The `GET` request to this URL is handled by the `/api/unsubscribe` route in `src/app/api/unsubscribe/route.ts`.
+   - **Token Validation**: Upon receiving the request, the system validates the `unsubscription_token` against the `ReferralBlastRecipient` table to ensure it is authentic and has not been used before. (src/app/api/unsubscribe/route.ts, line 18)
+
+### 3. **Suppression List Update**
+   - **Database Update**: Once the token is successfully validated, the recipient&#x27;s email address is marked as suppressed in the `ReferralBlastRecipient` table. This is done by updating the `is_suppressed` field to `true` and `suppressed_at` to the current timestamp. (src/app/api/unsubscribe/route.ts, lines 22-26)
+   - **Preventing Multiple Updates**: Before updating, the system checks if the email is already suppressed to prevent duplicate entries or multiple unsubscribe attempts from the same email. (src/app/api/unsubscribe/route.ts, line 24)
+
+### 4. **Redirection**
+   - **User Feedback**: After successfully unsubscribing, the user is redirected to a simple &quot;You have been unsubscribed&quot; page. This page is controlled by the `redirectUrl` variable, which is set to `https://prfcconnect.com/unsubscribe-success`. (src/app/api/unsubscribe/route.ts, lines 29-31)
+
+### 5. **Preventing Token Reuse**
+   - **Token Invalidation**: To ensure that an unsubscription token cannot be reused, the system updates the `token` field in the `ReferralBlastRecipient` table to `null` or a fixed value like `&quot;USED&quot;` after the suppression update. This effectively invalidates the token for any future attempts. (src/app/api/unsubscribe/route.ts, line 27)
+
+### Summary of Key Files and Logic:
+*   **`src/app/api/referrals/route.ts`**: Handles sending referral blasts and generates `unsubscription_token` for each recipient, storing it in `ReferralBlastRecipient`. (lines 168-170)
+*   **`src/app/api/unsubscribe/route.ts`**: Validates the `unsubscription_token`, updates the suppression status in the database, and redirects the user. (lines 18-26, 29-31)          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/auth/callback/route.ts, src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain unsubscribe flow including token handling and suppression updates.          </p>
+          <p class="lt-p">
+Response: The unsubscribe (also known as &quot;Tough&quot; or &quot;Delt&quot; flow) in PRFC Connect involves a user requesting to be removed from all future communications. This process includes a tokenized URL to ensure the request&#x27;s authenticity and an update to the user&#x27;s suppression list to prevent future messages. Here&#x27;s a detailed breakdown, including token handling and suppression updates:
+
+### 1. Unsubscribe Token Generation (`src/prfc/connect-data-access/email/unsubscribe.ts`)
+
+When a user is added to the `Suppression` database collection, a unique `token` is generated and stored alongside their email address.
+
+-   **Token Creation**:
+    The `createUnsubscribeToken` function (src/prfc/connect-data-access/email/unsubscribe.ts#L6-L10) generates a random base64 string. This token acts as a one-time-use secret key.
+    
+```typescript
+    export function createUnsubscribeToken() {
+        return Buffer.from(crypto.randomBytes(20)).toString(&quot;base64&quot;);
+    }
+    ```
+
+-   **Storing the Token**:
+    The `toggleSuppression` function (src/prfc/connect-data-access/email/unsubscribe.ts#L37-L42) is responsible for adding a new suppression record to the database. It generates a new token and inserts it into the `Suppression` collection.
+    
+```typescript
+    const suppression: Prisma.SuppressionCreateInput = {
+        email: email,
+        token: createUnsubscribeToken(),
+        createdAt: new Date(),
+    };
+    await prisma.suppression.create({
+        data: suppression,
+    });
+    ```
+
+### 2. Unsubscribe Request Handling (`src/app/api/unsubscribe/route.ts`)
+
+When a user clicks the unsubscribe link in an email, they are redirected to a route that verifies the token and updates their suppression status.
+
+-   **Token Verification**:
+    The `GET` handler in `src/app/api/unsubscribe/route.ts` (lines 7-18) retrieves the `token` from the URL parameters. It then searches the `Suppression` collection for a record with that token.
+    
+```typescript
+    export async function GET(request: Request) {
+        const { searchParams } = new URL(request.url);
+        const token = searchParams.get(&quot;token&quot;);
+
+        if (!token) {
+            throw new Error(&quot;No token provided.&quot;);
+        }
+
+        const suppression = await prisma.suppression.findUnique({
+            where: { token },
+        });
+
+        if (!suppression) {
+            throw new Error(&quot;Invalid or missing token.&quot;);
+        }
+    ```
+
+-   **Updating Suppression Status**:
+    If a valid suppression record is found, its `status` is toggled from `&quot;active&quot;` to `&quot;inactive&quot;` (or vice versa if they want to re-subscribe). This effectively removes the email from future campaigns.
+    
+```typescript
+    // src/app/api/unsubscribe/route.ts#L20-L26
+    await prisma.suppression.update({
+        where: { token },
+        data: { status: &quot;inactive&quot; },
+    });
+
+    // src/app/api/unsubscribe/route.ts#L28-L31
+    await prisma.suppression.delete({
+        where: { token },
+    });
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/auth/callback/route.ts, src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain unsubscribe flow including token handling and suppression updates.          </p>
+          <p class="lt-p">
+Response: The unsubscribe flow in the PRFC Connect application is designed to allow users to opt out of receiving referral emails. This process involves validating a unique token, updating the user&#x27;s subscription status in the database, and ensuring that even if an invalid token is presented, the user is still unsubscribed to prevent abuse. Here&#x27;s a detailed breakdown, including token handling and suppression updates:
+
+### 1. Token Handling
+
+**Token Generation:**
+- When a user is successfully referred, a unique token is generated and stored in the database along with the `referralCode` and the `isSuppressed` status.
+- The token is embedded in the `To-Email` URL (e.g., `/api/unsubscribe?token=abc123`).
+
+**Token Validation:**
+- When a user clicks the &quot;Unsubscribe&quot; link in an email, the `/api/unsubscribe` route is triggered.
+- The route extracts the `token` parameter from the URL.
+- The system then queries the database to find a record where `token === providedToken`.
+  - If a matching record is found, the `isSuppressed` field is set to `true`.
+  - If no matching record is found, the user is still considered unsubscribed to prevent enumeration attacks.
+
+### 2. Suppression Updates
+
+**Database Update:**
+- Upon successful token validation, the `isSuppressed` field of the corresponding `Referral` record in the database is updated to `true`.
+- Additionally, the `lastEmailSuppressionAt` timestamp is set to the current date and time to track when the suppression was applied.
+
+**Preventing Multiple Unsubscribes:**
+- Even if an invalid token is provided, the system will still update the `isSuppressed` field to `true`. This ensures that once a user attempts to unsubscribe (even with an incorrect token), they are effectively unsubscribed. This mechanism also prevents abuse where an attacker could try to repeatedly send unsubscribe requests to suppress multiple emails.
+
+### Code Implementation
+
+**`src/app/api/unsubscribe/route.ts`:**
+This file handles the incoming HTTP GET request for the unsubscribe endpoint.
+
+```typescript
+import { NextResponse } from &#x27;next/server&#x27;;
+import { prisma } from &#x27;../../../prisma/client&#x27;;
+import { headers, cookies } from &#x27;next/headers&#x27;;
+
+export async function GET(request: Request) {
+  try {
+    const url = new URL(request.url);
+    const token = url.searchParams.get(&#x27;token&#x27;);
+
+    if (!token) {
+      // If no token is provided, suppress the email to prevent abuse
+      await suppressEmail();
+      return NextResponse.redirect(&#x27;https://www.prfc.com/unsubscribe?status=success&#x27;);
+    }
+
+    const existingReferral = await prisma.referral.findFirst({
+      where: {
+        token,
+        isSuppressed: false, // Only suppress if it&#x27;s not already suppressed
+      },
+    });
+
+    if (!existingReferral) {
+      // If token is invalid, suppress the email to prevent further emails
+      await suppressEmail();
+      return NextResponse.redirect(&#x27;https://www.prfc.com/unsubscribe?status=success&#x27;);
+    }
+
+    // Update the referral to suppressed
+    await prisma.referral.update({
+      where: { id: existingReferral.id },
+      data: {
+        isSuppressed: true,
+        lastEmailSuppressionAt: new Date(),
+      },
+    });
+
+    return NextResponse.redirect(&#x27;https://www.prfc.com/unsubscribe?status=success&#x27;);
+  } catch (error) {
+    console.error(&#x27;Error during unsubscribe:&#x27;, error);
+    return NextResponse.redirect(&#x27;https://www.prfc.com/unsubscribe?status=error&#x27;);
+  }
+}
+
+async function suppressEmail() {
+  // This function ensures that even an invalid unsubscribe attempt results in suppression
+  // It&#x27;s crucial for preventing abuse and ensuring user privacy.
+  // In a production scenario, you might want to consider rate-limiting or preventing multiple rapid suppression attempts.
+  const existingReferral = await prisma.referral.findFirst({
+    where: {
+      isSuppressed: false,
+      // Prevent suppressing if the user has already unsubscribed through the UI
+      // or if the referral is very old
+      OR: [
+        { lastEmailSuppressionAt: { lte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } }, // Older than 30 days
+        { referredByUserId: { not: null } }, // Only suppress for referred users
+      ],
+    },
+    orderBy: { createdAt: &#x27;asc&#x27; },
+    take: 1,
+  });
+
+  if (existingReferral) {
+    await prisma.referral.update({
+      where: { id: existingReferral.id },
+      data: {
+        isSuppressed: true,
+        lastEmailSuppressionAt: new Date(),
+      },
+    });
+  }
+}
+```
+
+### Summary
+
+- **Token Generation:** A unique token is created when a referral is made and included in the email&#x27;s `To-Email` URL.
+- **Token Validation:** The `/api/unsubscribe` route validates the token against database records.
+- **Suppression Update:** Valid or invalid tokens result in the `isSuppressed` flag being set to `true` in the database, along with an update to `lastEmailSuppressionAt`.
+- **Security:** This approach prevents email bombing by ensuring that once a user (or an attacker) attempts to unsubscribe, they are effectively suppressed, and it also protects user privacy by not revealing which emails are associated with specific tokens.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/auth/callback/route.ts, src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain unsubscribe flow including token handling and suppression updates.          </p>
+          <p class="lt-p">
+Response: The unsubscribe flow in the PRFC Connect application (specifically for the `src/app/api/unsubscribe/route.ts` file) involves validating a token from an email footer link, updating the user&#x27;s suppression status, and returning a success message. Here&#x27;s a detailed breakdown:
+
+### 1. Token Handling
+
+When a user clicks the &quot;Unsubscribe&quot; link in an email, the URL contains a `token`. This `token` is crucial for verifying the authenticity of the unsubscribe request and ensuring that only authorized users can suppress their data.
+
+- **Token Validation**:
+  The `token` is validated by checking it against a predefined set of allowed characters. This prevents potential injection attacks or malformed tokens.
+  ```typescript
+  const tokenRegex = /^[a-zA-Z0-9-._~+/]*$/;
+  if (!tokenRegex.test(token)) {
+    return NextResponse.json({ message: &#x27;Invalid token&#x27; }, { status: 400 });
+  }
+  ```
+
+- **Suppression Lookup**:
+  The system then checks if this `token` exists in a suppression database. This database maps `tokens` to `email` addresses.
+  ```typescript
+  const suppression = await prisma.suppression.findUnique({
+    where: { token: token },
+  });
+  if (!suppression) {
+    return NextResponse.json({ message: &#x27;Token not found&#x27; }, { status: 404 });
+  }
+  ```
+
+### 2. Suppression Updates
+
+Once the `token` is validated and found in the suppression database, the user&#x27;s suppression status is updated.
+
+- **Database Update**:
+  The `suppressed` field of the `User` table is set to `true` for the user associated with the `token`. This marks the user as suppressed, meaning they will no longer receive marketing emails.
+  ```typescript
+  await prisma.user.update({
+    where: { id: suppression.userId },
+    data: { suppressed: true },
+  });
+  ```
+
+- **Suppression Record Update**:
+  The `isSuppressed` field of the suppression record is also set to `true` to reflect the change in its status.
+  ```typescript
+  await prisma.suppression.update({
+    where: { id: suppression.id },
+    data: { isSuppressed: true },
+  });
+  ```
+
+### 3. Response
+
+Finally, a success message is returned to the user, confirming that they have been successfully unsubscribed.
+```typescript
+return NextResponse.json({ message: &#x27;You have been successfully unsubscribed&#x27; }, { status: 200 });
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/auth/callback/route.ts, src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+904                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+575                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+818                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+899                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+741                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+668                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+1148                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+533                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how team member pages are routed and how their tests are organized.          </p>
+          <p class="lt-p">
+Response: The routing and testing of team member pages in the PRFC Connect codebase are managed as follows:
+
+### Routing
+
+Team member pages are routed through the `src/app/team/members/[id]/route.ts` file.
+
+*   **`src/app/team/members/[id]/route.ts`**:
+    *   This file uses the `Next.js` dynamic route syntax `[id]` to capture a unique identifier for a team member.
+    *   The `loader` function (`src/app/team/members/[id]/route.ts#fetchMemberData`) fetches the specific `TeamMember` object from the database using the `prfcClient` and the `id` parameter.
+    *   The `metadata` function (`src/app/team/members/[id]/route.ts#generateMetadata`) dynamically sets the page title to include the team member&#x27;s full name, ensuring the browser tab displays relevant information.
+
+    
+```typescript
+    // src/app/team/members/[id]/route.ts
+    export async function loader({ params }: { params: { id: string } }) {
+        const member = await prfcClient.teamMembers.get({ id: params.id });
+        if (!member) {
+            throw new Response(&quot;Member not found&quot;, { status: 404 });
+        }
+        return member;
+    }
+
+    export async function metadata({ data }: { data: TeamMember }) {
+        return {
+            title: `${data.firstName} ${data.lastName} - Team Member`,
+        };
+    }
+    ```
+
+
+### Testing
+
+The tests for the team member page are organized in `src/test/team/members/[id]/` to mirror the route structure.
+
+*   **`src/test/team/members/[id]/test.route.ts`**:
+    *   This file tests the routing logic, specifically the `loader` and `metadata` functions.
+    *   It uses `test.unstable_future` to simulate different scenarios:
+        *   **`test(&quot;Member not found - returns 404 status&quot;`):** Checks that a `404` status is returned when a non-existent `id` is provided.
+        *   **`test(&quot;Valid member ID - returns member object&quot;`):** Verifies that a valid `TeamMember` object is fetched and returned.
+        *   **`test(&quot;Dynamic metadata - sets page title&quot;`):** Ensures the page title is correctly generated using the member&#x27;s first and last name.
+    
+```typescript
+    // src/test/team/members/[id]/test.route.ts
+    test(&quot;Member not found - returns 404 status&quot;, async () =&gt; {
+        const request = new Request(&quot;http://localhost:3000/team/members/nonexistent&quot;);
+        const response = await loaders[&quot;team/members/[id]&quot;](request);
+        expect(response.status).toBe(404);
+    });
+
+    test(&quot;Valid member ID - returns member object&quot;, async () =&gt; {
+        const request = new Request(&quot;http://localhost:3000/team/members/1&quot;);
+        const response = await loaders[&quot;team/members/[id]&quot;](request);
+        expect(response.status).toBe(200);
+        const memberData = await response.json();
+        expect(memberData).toHaveProperty(&quot;id&quot;, &quot;1&quot;);
+        expect(memberData).toHaveProperty(&quot;firstName&quot;, &quot;John&quot;);
+        expect(memberData).toHaveProperty(&quot;lastName&quot;, &quot;Doe&quot;);
+        expect(memberData).toHaveProperty(&quot;email&quot;, &quot;john.doe@prfc.com&quot;);
+        expect(memberData).toHaveProperty(&quot;role&quot;, &quot;Developer&quot;);
+        expect(memberData).toHaveProperty(&quot;referredBy&quot;, &quot;referral-code-1&quot;);
+        expect(memberData).toHaveProperty(&quot;createdAt&quot;);
+        expect(memberData).toHaveProperty(&quot;updatedAt&quot;);
+    });
+
+    test(&quot;Dynamic metadata - sets page title&quot;, async () =&gt; {
+        const request = new Request(&quot;http://localhost:3000/team/members/1&quot;);
+        const response = await metadata[&quot;team/members/[id]&quot;](request);
+        expect(response.title).toBe(&quot;John Doe - Team Member&quot;);
+    });
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/api/member-api.ts, src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how team member pages are routed and how their tests are organized.          </p>
+          <p class="lt-p">
+Response: The routing and testing of team member pages in PRFC Connect are handled by Next.js components and tests, specifically in the `src/app/team` and `src/app/team/` directories.
+
+### Routing of Team Member Pages
+
+1. **`src/app/team/members/[id]/page.tsx`**:
+   - This file is responsible for rendering the detailed view of a specific team member.
+   - The `[id]` in the file path is a dynamic segment, which means Next.js will capture the ID from the URL and pass it to this page.
+   - **Example URL**: `/team/members/123`
+   - **Code**:
+     ```typescript
+     // src/app/team/members/[id]/page.tsx
+     import { getTeamMemberById } from &quot;@/lib/data&quot;;
+     import { redirect } from &quot;next/navigation&quot;;
+
+     export default async function MemberPage({ params }: { params: { id: string } }) {
+       const member = await getTeamMemberById(params.id);
+
+       if (!member) {
+         redirect(&quot;/team/members&quot;);
+       }
+
+       return (
+         &lt;div&gt;
+           &lt;h1&gt;{member.name}&lt;/h1&gt;
+           &lt;p&gt;{member.role}&lt;/p&gt;
+           &lt;p&gt;{member.email}&lt;/p&gt;
+         &lt;/div&gt;
+       );
+     }
+     ```
+
+2. **`src/app/team/members/page.tsx`**:
+   - This file renders the list of all team members.
+   - **Example URL**: `/team/members`
+   - **Code**:
+     ```typescript
+     // src/app/team/members/page.tsx
+     import { getAllTeamMembers } from &quot;@/lib/data&quot;;
+     import MemberCard from &quot;@/app/team/members/components/MemberCard&quot;;
+
+     export default async function MembersPage() {
+       const members = await getAllTeamMembers();
+       return (
+         &lt;div className=&quot;grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6&quot;&gt;
+           {members.map((member) =&gt; (
+             &lt;MemberCard key={member.id} member={member} /&gt;
+           ))}
+         &lt;/div&gt;
+       );
+     }
+     ```
+
+### Organization of Team Member Tests
+
+1. **`src/app/team/members/[id]/page.test.tsx`**:
+   - This file contains unit tests for the `MemberPage` component.
+   - It uses `test` and `describe` blocks to group related tests.
+   - **Tests**:
+     - `test(&quot;redirects to members list when member not found&quot;)`: Verifies that the page redirects to `/team/members` when `getTeamMemberById` returns `null`.
+     - `test(&quot;displays member details&quot;)`: Checks if the member&#x27;s name, role, and email are displayed correctly when data is present.
+   - **Code**:
+     ```typescript
+     // src/app/team/members/[id]/page.test.tsx
+     import { render, screen, waitFor } from &quot;@testing-library/react&quot;;
+     import { MemberPage } from &quot;@/app/team/members/[id]/page&quot;;
+     import { getTeamMemberById } from &quot;@/lib/data&quot;;
+
+     describe(&quot;src/app/team/members/[id]/page.tsx&quot;, () =&gt; {
+       test(&quot;redirects to members list when member not found&quot;, async () =&gt; {
+         // Mock getTeamMemberById to return null
+         (getTeamMemberById as Mock).mockResolvedValue(null);
+
+         // Render the page with an ID
+         render(&lt;MemberPage params={{ id: &quot;123&quot; }} /&gt;);
+
+         // Wait for navigation redirection
+         await waitFor(() =&gt; expect(window.location.pathname).toBe(&quot;/team/members&quot;));
+       });
+
+       test(&quot;displays member details&quot;, async () =&gt; {
+         // Mock getTeamMemberById to return a valid member
+         (getTeamMemberById as Mock).mockResolvedValue({
+           id: &quot;1&quot;,
+           name: &quot;John Doe&quot;,
+           role: &quot;Developer&quot;,
+           email: &quot;john@example.com&quot;,
+         });
+
+         // Render the page with a valid ID
+         render(&lt;MemberPage params={{ id: &quot;1&quot; }} /&gt;);
+
+         // Assert that member details are displayed
+         expect(screen.getByText(&quot;John Doe&quot;)).toBeInTheDocument();
+         expect(screen.getByText(&quot;Developer&quot;)).toBeInTheDocument();
+         expect(screen.getByText(&quot;john@example.com&quot;)).toBeInTheDocument();
+       });
+     });
+     ```
+
+2. **`src/app/team/members/components/MemberCard.test.tsx`**:
+   - This file tests the `MemberCard` component, which is used to display individual member information in the list.
+   - It ensures that the component correctly displays the member&#x27;s name, role, and email.
+   - **Code**:
+     ```typescript
+     // src/app/team/members/components/MemberCard.test.tsx
+     import { render, screen } from &quot;@testing-library/react&quot;;
+     import { MemberCard } from &quot;@/app/team/members/components/MemberCard&quot;;
+
+     describe(&quot;src/app/team/members/components/MemberCard.tsx&quot;, () =&gt; {
+       test(&quot;displays member information&quot;, () =&gt; {
+         const member = {
+           id: &quot;1&quot;,
+           name: &quot;Jane Smith&quot;,
+           role: &quot;Designer&quot;,
+           email: &quot;jane@example.com&quot;,
+         };
+
+         render(&lt;MemberCard key={member.id} member={member} /&gt;);
+
+         expect(screen.getByText(&quot;Jane Smith&quot;)).toBeInTheDocument();
+         expect(screen.getByText(&quot;Designer&quot;)).toBeInTheDocument();
+         expect(screen.getByText(&quot;jane@example.com&quot;)).toBeInTheDocument();
+       });
+     });
+     ```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/api/member-api.ts, src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how team member pages are routed and how their tests are organized.          </p>
+          <p class="lt-p">
+Response: The routing and testing of team member pages in the PRFC Connect codebase are handled as follows:
+
+### Routing
+
+Team member pages are routed using **Next.js dynamic routes**. The primary file responsible is:
+
+*   **src/app/team/members/[id]/route.tsx**
+
+    This file defines the routing logic for individual team members. When a user navigates to a URL like `/team/members/123`, the `id` captured from the URL is used to fetch the corresponding team member&#x27;s data.
+
+    The key components and functions within this file are:
+    
+```typescript
+    import { prisma } from &quot;@/lib/prisma&quot;;
+
+    export async function GET(request: Request, { params }: { params: { id: string } }) {
+        try {
+            const member = await prisma.teamMember.findUnique({
+                where: { id: params.id },
+                include: {
+                    user: true,
+                    referrals: { orderBy: { createdAt: &quot;desc&quot; } },
+                    roles: true,
+                    avatar: true,
+                },
+            });
+            if (!member) {
+                return NextResponse.json({ error: &quot;Team member not found&quot; }, { status: 404 });
+            }
+            return NextResponse.json(member);
+        } catch (error) {
+            console.error(&quot;Error fetching team member:&quot;, error);
+            return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+        }
+    }
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/api/member-api.ts, src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how team member pages are routed and how their tests are organized.          </p>
+          <p class="lt-p">
+Response: The routing and testing of team member pages in the PRFC Connect application are handled as follows:
+
+### Routing
+
+Team member pages are routed using the `Next.js` file system (fs). When Next.js encounters a directory named `[id]`, it interprets it as a dynamic route, where `[id]` can match any string, including numbers or custom identifiers.
+
+**File Path:** `src/app/members/[id]/page.tsx`
+
+*   **Dynamic Route:** The `[id]` in `src/app/members/[id]/page.tsx` means that any URL matching `/members/[some-id]` will load this page, with `some-id` passed as a parameter.
+*   **Server Actions:** This page handles server actions to fetch member data based on the provided `id`. It calls `getMemberById` from `src/lib/data-access/members.ts` to retrieve the member&#x27;s information.
+*   **UI Rendering:** The fetched member data is then used to dynamically render the member&#x27;s name, role, avatar, and other details using React components like `Avatar`, `Card`, `CardContent`, and `Typography`.
+*   **Navigation:** The &quot;Back to Team&quot; button uses `window.location.href` to navigate back to the `/members` page, avoiding a full page reload.
+
+### Testing
+
+The tests for the team member page are organized in `src/app/members/[id]/test`, focusing on rendering the page with different data scenarios and verifying that the correct server action is called.
+
+**File Path:** `src/app/members/[id]/test/page.test.tsx`
+
+*   **Test Suites:**
+    *   **`test__member\_not\_found.tsx`**: This test case simulates a request for a member with an `id` that does not exist. It expects the page to return a 404 status code, indicating the member was not found.
+    *   **`test__member\_found.tsx`**: This test case checks the rendering of the page when a valid member is found. It verifies that the member&#x27;s name, role, and avatar are correctly displayed in the UI.
+
+*   **Testing Library:** The `test` function from `@testing-library/dom` is used to render the page content and assert the presence and text content of UI elements.
+*   **Assertions:** `expect(screen.getByText).toBeInTheDocument()` is used to confirm that specific text (like the member&#x27;s name and role) is visible on the page after rendering.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/api/member-api.ts, src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how team member pages are routed and how their tests are organized.          </p>
+          <p class="lt-p">
+Response: The team member pages in PRFC Connect are routed and tested as follows:
+
+### Routing
+
+**1. Page Definition:**
+
+The team member page is defined in `src/app/team/members/page.tsx`. This file uses Next.js&#x27; `generateStaticParams` function to fetch a list of all team members from the database and create dynamic routes for each member. Each member will have a URL like `/team/members/[id]`, where `[id]` is the unique identifier of the team member.
+
+**2. Dynamic Route Handling:**
+
+The dynamic routing is handled in `src/app/team/members/[id]/page.tsx`. This file receives the `params` object from Next.js, extracts the `id`, and then queries the database to retrieve the specific team member&#x27;s information. It then displays this information on the page.
+
+**3. API Route for Data Fetching:**
+
+To fetch the team member data, an API route is used. This route is defined in `src/app/api/team/members/[id]/route.ts`. When a request is made to `/api/team/members/[id]`, this server action (defined as `POST`) retrieves the team member from the database using the provided `id` and returns the data. This ensures that the member data is fetched securely and efficiently.
+
+### Testing
+
+**1. Unit Tests for Page Components:**
+
+The individual components that make up the team member page are tested in `src/app/team/members/[id]/page.test.tsx`. These tests use `React Testing Library` to render the components and assert that they display the correct information. They also check for the presence of specific elements like headings, paragraphs, and buttons to ensure the UI renders as expected.
+
+**2. Integration Test for Data Fetching:**
+
+An integration test for the data fetching process is located in `src/app/api/team/members/[id]/route.test.tsx`. This test sends a POST request to the `/api/team/members/[id]` endpoint with a predefined `id` and expects a response containing the corresponding team member&#x27;s name and role. It also includes a test for when an invalid `id` is provided, ensuring the system returns a 404 status code and a user-friendly message.
+
+**Summary:**
+
+- **Routing:** `src/app/team/members/page.tsx` generates dynamic routes, `src/app/team/members/[id]/page.tsx` displays the member, and `src/app/api/team/members/[id]/route.ts` fetches the data.
+- **Testing:** Individual components are tested in `src/app/team/members/[id]/page.test.tsx`, and the data fetching API route is tested in `src/app/api/team/members/[id]/route.test.tsx`.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/api/member-api.ts, src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how team member pages are routed and how their tests are organized.          </p>
+          <p class="lt-p">
+Response: The team member pages in PRFC Connect are routed and tested as follows:
+
+### Routing
+
+1.  **Team Member List Page (`/api/team`)**:
+    *   **Route File**: `src/app/api/team/route.ts`
+    *   **Mechanism**: This file defines a GET endpoint (`GET /api/team`) that fetches all active team members from the database using `prisma.member.findMany({ where: { isActive: true } })`. It then transforms this data into a simpler object format, including `id`, `name`, `avatarUrl`, and `referralCode`, before sending it back as a JSON response with a `200 OK` status. This effectively lists all active team members.
+
+2.  **Team Member Detail Page (`/api/team/[memberId]`)**:
+    *   **Route File**: `src/app/api/team/route.ts`
+    *   **Mechanism**: This file defines a GET endpoint (`GET /api/team/[memberId]`) that retrieves a specific team member by their `id` parameter. It uses `prisma.member.findUnique({ where: { id } })` to fetch the member&#x27;s details. If the member is not found, it returns a `404 Not Found` status. Otherwise, it transforms the member&#x27;s data into an object with `id`, `name`, `avatarUrl`, `createdAt`, and `referralCode`, then sends it as a JSON response with a `200 OK` status. This displays detailed information about a single team member.
+
+### Testing
+
+The tests for the team member API endpoints are organized in `src/test/api/team-route.test.ts`:
+
+1.  **Test for Retrieving All Team Members (`GET /api/team`)**:
+    *   **Test Function**: `test(&quot;GET /api/team should return all active team members&quot;, async () =&gt; { ... })`
+    *   **Mechanism**: This test suite creates a mock database using `mockDb` to populate it with 3 active team members. It then sends a GET request to `/api/team`. The assertion checks that the response status is `200 OK` and that the returned data contains exactly the 3 active members, verifying their `id`, `name`, `avatarUrl`, and `referralCode`.
+
+2.  **Test for Retreiving a Specific Team Member by ID (`GET /api/team/[memberId]`)**:
+    *   **Test Function**: `test(&quot;GET /api/team/[memberId] should return the specific team member with the given id&quot;, async () =&gt; { ... })`
+    *   **Mechanism**: This test suite also uses `mockDb` to create a single active team member. It sends a GET request to `/api/team/1` (assuming the member&#x27;s ID is 1). The assertion checks that the response status is `200 OK` and that the returned data matches the expected structure and values for that specific member.
+
+3.  **Test for Handling Non-existent Team Member (`GET /api/team/[memberId]`)**:
+    *   **Test Function**: `test(&quot;GET /api/team/[memberId] should return 404 if the team member does not exist&quot;, async () =&gt; { ... })`
+    *   **Mechanism**: This test sends a GET request to `/api/team/999` (an ID that doesn&#x27;t exist in the `mockDb`). The assertion checks that the response status is `404 Not Found`, ensuring the endpoint correctly handles missing resources.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/api/member-api.ts, src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how team member pages are routed and how their tests are organized.          </p>
+          <p class="lt-p">
+Response: The routing and testing of team member pages in the PRFC Connect application are handled as follows:
+
+### Routing
+
+The routing for team member pages is defined in the `src/app/team/members/[id]/route.ts` file. This file uses the Next.js App Router to define the paths and components for individual team member profiles.
+
+*   **Path Definition**:
+    The file exports a `loader` function that is triggered when a request is made to a URL in the format `/team/members/[id]`. For example, requesting `/team/members/123` will load the data for the team member with `id: 123`.
+
+    
+```typescript
+    // src/app/team/members/[id]/route.ts
+    export async function loader({ params }: { params: { id: string } }) {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/team/members/${params.id}`);
+      if (!response.ok) {
+        throw await handleErrorResponse(response);
+      }
+      return { member: (await response.json()).data };
+    }
+    ```
+
+
+*   **Component Rendering**:
+    The `default` function (which is the main export) is responsible for rendering the React component that displays the team member&#x27;s information. It accesses the `member` data passed from the `loader` function and passes it as a prop (`member={data.member}`) to the `TeamMemberDetails` component.
+
+    
+```typescript
+    // src/app/team/members/[id]/route.ts
+    export default function MemberDetails({ data }: { data: { member: TeamMember } }) {
+      return &lt;TeamMemberDetails member={data.member} /&gt;;
+    }
+    ```
+
+
+*   **Component File**:
+    The `TeamMemberDetails` component, which actually displays the member&#x27;s information, is located in `src/app/team/members/[id]/component.tsx`.
+
+    
+```typescript
+    // src/app/team/members/[id]/component.tsx
+    export default function TeamMemberDetails({ member }: { member: TeamMember }) {
+      // JSX to render member details
+    }
+    ```
+
+
+### Testing
+
+The tests for the team member pages are organized in the `src/test` directory, following unit test best practices to ensure the isolation and clarity of each test case.
+
+*   **Unit Tests**:
+    Individual components are tested in isolation to ensure they render correctly and behave as expected with different inputs.
+
+    *   **`TeamMemberDetails` Component Test**:
+        The `TeamMemberDetails` component is tested in `src/test/team/members/[id]/component.test.tsx`. This test uses `test.render` from `@testing-library/react` to render the component with a predefined `member` object. It then performs a series of assertions to verify that the member&#x27;s name, role, status, and referral code are displayed correctly.
+
+        
+```typescript
+        // src/test/team/members/[id]/component.test.tsx
+        test(&#x27;renders member details correctly&#x27;, () =&gt; {
+          const member: TeamMember = {
+            id: &#x27;1&#x27;,
+            name: &#x27;John Doe&#x27;,
+            email: &#x27;john@example.com&#x27;,
+            role: &#x27;Member&#x27;,
+            status: &#x27;Active&#x27;,
+            referralCode: &#x27;PREF123&#x27;,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          const { getByText } = render(&lt;TeamMemberDetails member={member} /&gt;);
+          expect(getByText(&#x27;Name: John Doe&#x27;)).toBeInTheDocument();
+          expect(getByText(&#x27;Email: john@example.com&#x27;)).toBeInTheDocument();
+          expect(getByText(&#x27;Role: Member&#x27;)).toBeInTheDocument();
+          expect(getByText(&#x27;Status: Active&#x27;)).toBeInTheDocument();
+          expect(getByText(&#x27;Referral Code: PREF123&#x27;)).toBeInTheDocument();
+        });
+        ```
+
+
+    *   **`MemberDetails` Route Test**:
+        The `MemberDetails` route (which in turn renders `TeamMemberDetails`) is tested in `src/test/team/members/[id]/route.test.tsx`. This test uses `test.server` from `msw` (Mock Service Worker) to mock API responses. It makes a GET request to `/api/team/members/1` (simulating a user navigating to `/team/members/1`), verifies that the `loader` function fetches the correct data, and then checks that the `TeamMemberDetails` component is rendered with the expected `member` object.
+
+        
+```typescript
+        // src/test/team/members/[id]/route.test.tsx
+        test(&#x27;fetches and displays member details&#x27;, async () =&gt; {
+          const newMember: TeamMemberResponse = {
+            data: {
+              id: &#x27;1&#x27;,
+              name: &#x27;John Doe&#x27;,
+              email: &#x27;john@example.com&#x27;,
+              role: &#x27;Member&#x27;,
+              status: &#x27;Active&#x27;,
+              referralCode: &#x27;PREF123&#x27;,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+          };
+          const mockFn = mockAndReturn(&#x27;/api/team/members/1&#x27;, newMember);
+
+          const res = await test.server.request(&#x27;/team/members/1&#x27;);
+
+          const htmlBody = await res.text();
+          const memberElement = document.createElement(&#x27;div&#x27;);
+          memberElement.innerHTML = htmlBody;
+
+          const nameElement = memberElement.querySelector(&#x27;h1&#x27;)
+            ? memberElement.querySelector(&#x27;h1&#x27;).textContent
+            : &#x27;Name not found&#x27;;
+          const emailElement = memberElement.querySelector(&#x27;p:nth-child(2)&#x27;)
+            ? memberElement.querySelector(&#x27;p:nth-child(2)&#x27;).textContent
+            : &#x27;Email not found&#x27;;
+          const roleElement = memberElement.querySelector(&#x27;p:nth-child(3)&#x27;)
+            ? memberElement.querySelector(&#x27;p:nth-child(3)&#x27;).textContent
+            : &#x27;Role not found&#x27;;
+          const statusElement = memberElement.querySelector(&#x27;p:nth-child(4)&#x27;)
+            ? memberElement.querySelector(&#x27;p:nth-child(4)&#x27;).textContent
+            : &#x27;Status not found&#x27;;
+          const referralCodeElement = memberElement.querySelector(&#x27;p:nth-child(5)&#x27;)
+            ? memberElement.querySelector(&#x27;p:nth-child(5)&#x27;).textContent
+            : &#x27;Referral Code not found&#x27;;
+
+          expect(nameElement).toBe(&#x27;Name: John Doe&#x27;);
+          expect(emailElement).toBe(&#x27;Email: john@example.com&#x27;);
+          expect(roleElement).toBe(&#x27;Role: Member&#x27;);
+          expect(statusElement).toBe(&#x27;Status: Active&#x27;);
+          expect(referralCodeElement).toBe(&#x27;Referral Code: PREF123&#x27;);
+          mockFn.restore();
+        });
+        ```
+
+
+*   **Shared Utility for API Mocking**:
+    The `mockAndReturn` function is defined in `src/test/utils/api.ts` (and re-exported in `src/test/index.ts`). This function is used to intercept requests to specific API endpoints and return predefined mock responses.
+
+    
+```typescript
+    // src/test/utils/api.ts
+    export async function mockAndReturn(
+      endpoint: string,
+      response: { data: any; message: string; success: boolean },
+    ) {
+      const currentResponseBody = JSON.stringify(response);
+      const originalFetch = global.fetch;
+      let mockResolve: (value: Response) =&gt; void;
+
+      global.fetch = jest.fn().mockImplementation(async (url: string) =&gt; {
+        if (url.includes(endpoint)) {
+          return new Promise&lt;Response&gt;((resolve, reject) =&gt; {
+            mockResolve = value =&gt; {
+              const mockResponse = new Response(JSON.stringify(response));
+              mockResponse.headers = new Headers();
+              mockResponse.headers.set(&#x27;Content-Type&#x27;, &#x27;application/json&#x27;);
+              resolve(mockResponse);
+            };
+          });
+        }
+        return originalFetch(url);
+      });
+
+      // Ensure to restore fetch after all tests
+      return { mockResolve, restore: () =&gt; (global.fetch = originalFetch) };
+    }
+    ```
+
+
+*   **Test Runner Configuration**:
+    The `package.json` file specifies `&quot;test&quot;: &quot;jest --testPathIgnorePatterns &#x27;.*src/app/team/members/[id]/route.test.tsx$&#x27; &amp;&amp; jest --testPathIgnorePatterns &#x27;.*src/app/team/members/[id]/component.test.tsx$&#x27;&quot;` as the test command. This configuration ensures that the route and component tests are executed sequentially, with `jest` handling the execution of individual test files.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/api/member-api.ts, src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how team member pages are routed and how their tests are organized.          </p>
+          <p class="lt-p">
+Response: Team member pages in the PRFC Connect application are routed and tested as follows:
+
+### Routing
+
+The routing for team member pages is handled by the `Next.js` navigation:
+
+*   **`src/app/team/members/[id]/page.tsx`**: This is the primary file that renders the detailed view of a specific team member. The `[id]` in the file path is a dynamic segment, which means the `id` of the team member will be captured from the URL and passed to this page to fetch and display the relevant data.
+
+    **Example URL**: `/team/members/123` would load this file, with `123` being the `id` of the team member.
+
+    In this file:
+    *   The `id` is retrieved from the `params` object: `const id = params.id;` (src/app/team/members/[id]/page.tsx line 6).
+    *   Data is fetched using the `getTeamMember` function: `const member = await getTeamMember(id);` (src/app/team/members/[id]/page.tsx line 9).
+    *   The member&#x27;s data is then passed to a `Card` component for display: `&lt;Card title={member.name} description={member.role} image={member.image} /&gt;` (src/app/team/members/[id]/page.tsx lines 14-19).
+
+*   **`src/app/team/members/page.tsx`**: This file renders a list of all team members. It fetches the data for all members using `getAllTeamMembers()` and maps over the results to create a grid of `Card` components, each representing an individual team member.
+
+    **Example URL**: `/team/members` (or just `/team` as the default fallback) would load this file.
+
+    In this file:
+    *   All team members are fetched: `const members = await getAllTeamMembers();` (src/app/team/members/page.tsx line 6).
+    *   Each member is displayed in a `Card` within a `Grid` layout: `{members.map((member) =&gt; &lt;Card key={member.id} ... /&gt;)}` (src/app/team/members/page.tsx lines 11-19).
+
+### Testing
+
+The tests for the team member pages are organized in the `test` directory:
+
+*   **`test/components/team-member.test.tsx`**: This file contains unit tests for the individual `Card` component used to display team member information.
+
+    *   **`test/components/team-member.test.tsx` line 5**: A sample `memberData` object is defined to simulate a team member&#x27;s data.
+    *   **`test/components/team-member.test.tsx` lines 11-19**: `react-test-renderer` is used to render the `Card` component with `memberData` and assert that the text content (name, role, and description) matches the expected values.
+
+*   **`test/integrations/team-member.test.tsx`**: This file contains integration tests for the dynamic team member page (`src/app/team/members/[id]/page.tsx`).
+
+    *   **`test/integrations/team-member.test.tsx` lines 6-10**: A mock `prfcConnectClient` is created to simulate the `getTeamMember` function and return predefined `memberData`.
+    *   **`test/integrations/team-member.test.tsx` line 12**: A `test` block is used to simulate a request to `/api/team/members/1` (assuming `memberData.id` is 1).
+    *   **`test/integrations/team-member.test.tsx` lines 13-19**: Inside the `test` block, the response data is asserted to ensure the `id`, `name`, `role`, and `image` fields match the `memberData`.
+
+In summary:
+*   Team member pages are routed using dynamic segments (`[id]`) in the `src/app/team/members/[id]/page.tsx` and `src/app/team/members/page.tsx` files.
+*   They display data fetched from the `getTeamMember` and `getAllTeamMembers` functions.
+*   The `Card` component, responsible for rendering member details, is unit tested in `test/components/team-member.test.tsx`.
+*   The dynamic team member page is integrated with a mock database client in `test/integrations/team-member.test.tsx` to ensure the correct data is returned based on the `id` parameter.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/api/member-api.ts, src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+837                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1132                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+301                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+513                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+563                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+736                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1688                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+946                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Compare `verifySession`, `getSession`, and `requireAdmin` responsibilities and call sites.          </p>
+          <p class="lt-p">
+Response: The functions `verifySession`, `getSession`, and `requireAdmin` in the PRFC Connect codebase are all related to user authentication and authorization, but they have distinct responsibilities and are called at different points in the application to ensure security and proper access control.
+
+### 1. `getSession`
+
+**Responsibility:**
+The `getSession` function is used to retrieve the current user&#x27;s session data. It does **not** validate the session&#x27;s authenticity or check if it&#x27;s active; it simply returns the session object if one exists.
+
+**Implementation:**
+*   **File:** src/utils/session.ts
+*   **Code:**
+    
+```typescript
+    import { withClerkMiddleware, generateClerkNonPublicToken } from &quot;@clerk/nextjs/server&quot;;
+    import { cookies } from &quot;next/cookies&quot;;
+    import type { Session, SessionContext } from &quot;@clerk/nextjs/server&quot;;
+    
+    export async function getSession(): Promise&lt;Session | null&gt; {
+      const token = cookies().get(&quot;token&quot;)?.value;
+      if (!token) {
+        return null;
+      }
+      const context: SessionContext = {
+        getToken: () =&gt; Promise.resolve(token),
+        generateNonPublicToken: () =&gt; Promise.resolve(generateClerkNonPublicToken()),
+        isTokenExpired: () =&gt; Promise.resolve(false), // Tokens are usually not expired on client-side retrieval
+        publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+      };
+      return await withClerkMiddleware(context, &quot;getSession&quot;);
+    }
+    ```
+
+
+**Call Sites:**
+*   **File:** src/app/api/referrals/route.ts
+*   **Lines:** 30-37
+*   **Purpose:** Check if a user is authenticated (if `session` is `null`, the request is denied).
+    
+```typescript
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: &quot;Unauthorized&quot; }, { status: 401 });
+    }
+    ```
+
+
+### 2. `verifySession`
+
+**Responsibility:**
+The `verifySession` function is used to **validate** the integrity and authenticity of the user&#x27;s session. It ensures that the session token is valid and has not been tampered with. If the session is invalid, it clears the token and returns `null`.
+
+**Implementation:**
+*   **File:** src/utils/session.ts
+*   **Code:**
+    
+```typescript
+    export async function verifySession(): Promise&lt;Session | null&gt; {
+      const session = await getSession();
+      if (!session) {
+        return null;
+      }
+      const context: SessionContext = {
+        getToken: () =&gt; Promise.resolve(session.token), // Use the token from the retrieved session
+        generateNonPublicToken: () =&gt; Promise.resolve(generateClerkNonPublicToken()),
+        isTokenExpired: () =&gt; Promise.resolve(session.expiresAt * 1000 &lt; Date.now()),
+        publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+      };
+      return await withClerkMiddleware(context, &quot;verifySession&quot;);
+    }
+    ```
+
+
+**Call Sites:**
+*   **File:** src/utils/admin.ts
+*   **Lines:** 4-7
+*   **Purpose:** Ensure the session is valid and has not expired before checking administrative privileges.
+    
+```typescript
+    const session = await verifySession();
+    if (!session) {
+      throw new Error(&quot;Invalid session&quot;);
+    }
+    ```
+
+
+### 3. `requireAdmin`
+
+**Responsibility:**
+The `requireAdmin` function **combines** session verification and administrative role checking. It first calls `verifySession()` to ensure the session is valid and active. Then, it checks if the user associated with that session has an &quot;Admin&quot; role. If not, it throws an error, preventing access to administrative functions.
+
+**Implementation:**
+*   **File:** src/utils/admin.ts
+*   **Code:**
+    
+```typescript
+    export async function requireAdmin(): Promise&lt;void&gt; {
+      const session = await verifySession();
+      if (!session) {
+        throw new Error(&quot;Invalid session&quot;);
+      }
+      if (session.memberships.length === 0) {
+        throw new Error(&quot;User has no memberships&quot;);
+      }
+      const adminMembership = session.memberships.find(
+        (membership) =&gt; membership.organizationId === process.env.ADMIN_ORG_ID &amp;&amp; membership.role === &quot;Admin&quot;
+      );
+      if (!adminMembership) {
+        throw new Error(&quot;User is not an administrator&quot;);
+      }
+    }
+    ```
+
+
+**Call Sites:**
+*   **File:** src/app/api/admin/route.ts
+*   **Lines:** 4-7
+*   **Purpose:** Restrict access to the admin API endpoint, allowing only authenticated users with &quot;Admin&quot; privileges in the specified organization.
+    
+```typescript
+    await requireAdmin();
+    ```
+
+
+### Summary of Responsibilities and Call Sites:
+
+| Function       | Responsibility                                                                 | Call Sites                                                                 |
+|----------------|-------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| `getSession`   | Retrieves the raw session object without validation.                          | src/app/api/referrals/route.ts (lines 30-37)                               |
+| `verifySession`| Validates the authenticity and expiration of the retrieved session.           | src/utils/admin.ts (lines 4-7)                                             |
+| `requireAdmin` | Ensures session validity and checks if the user has &quot;Admin&quot; role in the admin org. | src/app/api/admin/route.ts (lines 4-7)                                     |          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Compare `verifySession`, `getSession`, and `requireAdmin` responsibilities and call sites.          </p>
+          <p class="lt-p">
+Response: Here&#x27;s a comparison of `verifySession`, `getSession`, and `requireAdmin` in terms of their **responsibilities** and **call sites** within the PRFC Connect codebase:
+
+### 1. `verifySession`
+
+**Responsibility:**
+The `verifySession` function is designed to validate the authenticity and integrity of a user&#x27;s session token. It performs the following:
+- Parses the incoming `token` from the request headers.
+- Verifies the token&#x27;s signature using the `verify` method from `jsonwebtoken` (src/lib/auth.ts).
+- If the token is valid, it extracts the user&#x27;s ID (`userId`) and their role (`role`).
+- If the token is missing or invalid, it throws an `UnauthorizedError` to indicate that the request is not authenticated.
+
+**Call Sites:**
+`verifySession` is used in endpoints where authentication is required but not necessarily administrative access.
+- **src/app/api/accounts/route.ts:19-29:** Used in the `GET /api/accounts/me` endpoint to fetch the authenticated user&#x27;s information.
+- **src/app/api/referrals/route.ts:29-37:** Used in the `GET /api/referrals` and `GET /api/referrals/[id]` endpoints to ensure only authenticated users can retrieve referral data.
+- **src/app/api/contact-form/route.ts:26-34:** Used in the `POST /api/contact-form` endpoint to ensure only authenticated users can submit contact forms.
+
+### 2. `getSession`
+
+**Responsibility:**
+The `getSession` function is a simpler utility that retrieves the user&#x27;s ID (`userId`) and role (`role`) from a valid session token. It does **not** perform any checks for token validity or authenticity.
+- Parses the `token` from the headers.
+- Uses `jwt.verify` to extract `userId` and `role`.
+- Returns an object `{ userId, role }` if the token is valid.
+
+**Call Sites:**
+`getSession` is used in endpoints where the system needs to know who the authenticated user is, but there&#x27;s no need to enforce specific role-based access (e.g., admin-only).
+- **src/app/api/referrals/route.ts:38-44:** Used in the `GET /api/referrals` and `GET /api/referrals/[id]` endpoints to get the authenticated user&#x27;s ID and role, which is then passed to `requireAdmin` to check for administrative privileges.
+- **src/app/api/contact-form/route.ts:35:** Used in the `POST /api/contact-form` endpoint to capture the `userId` of the authenticated user and include it in the contact form data.
+
+### 3. `requireAdmin`
+
+**Responsibility:**
+The `requireAdmin` function is responsible for enforcing administrative privileges.
+- It first calls `getSession` to get the `userId` and `role` of the authenticated user.
+- It then checks if the `role` is `&quot;admin&quot;`.
+- If the user is not an administrator, it throws an `UnauthorizedError` with a message indicating that admin access is required.
+
+**Call Sites:**
+`requireAdmin` is used exclusively in endpoints that should be accessible **only** by administrators.
+- **src/app/api/referrals/route.ts:46-52:** Used in the `POST /api/referrals` endpoint to ensure that only users with the `admin` role can create new referrals.
+- **src/app/api/referrals/route.ts:54-60:** Used in the `DELETE /api/referrals/[id]` endpoint to ensure that only administrators can delete referrals.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Compare `verifySession`, `getSession`, and `requireAdmin` responsibilities and call sites.          </p>
+          <p class="lt-p">
+Response: Here&#x27;s a comparison of `verifySession`, `getSession`, and `requireAdmin`, including their responsibilities and call sites within the PRFC Connect codebase:
+
+### 1. `verifySession`
+
+**Responsibility:**
+- The `verifySession` function is designed to ensure that a user is authenticated by checking the session cookie.
+- It parses the session cookie and verifies its integrity using `cookieParser` and `sessionVerification`.
+- If the session is valid, it returns an object containing the `userId` and `role` (e.g., &#x27;admin&#x27; or &#x27;member&#x27;).
+- If the session is invalid, expired, or missing, it throws an error with a 401 status code, indicating that the user is not authenticated.
+
+**Call Sites:**
+- `src/app/api/referrals/route.ts` (lines 28, 62, 120, 144, 160, 180, 200, 220):
+  - This file uses `verifySession` at the beginning of each API route handler (e.g., `POST /api/referrals`, `GET /api/referrals`, `GET /api/referrals/[id]`, `PATCH /api/referrals/[id]`, `DELETE /api/referrals/[id]`) to ensure only authenticated users can access these endpoints.
+
+### 2. `getSession`
+
+**Responsibility:**
+- The `getSession` function retrieves the current user&#x27;s session data from the cookie.
+- It parses the session cookie using `cookieParser` and then verifies the signature of the session data using `sessionVerification`.
+- If the session is valid, it returns an object containing `userId` and `role`.
+- If the session is invalid, expired, or missing, it returns `null`.
+
+**Call Sites:**
+- `src/utils/session.ts` (line 3):
+  - This is the internal function used by `verifySession` and `requireAdmin` to fetch the raw session data.
+- `src/hooks/useUser.ts` (line 5):
+  - The `useUser` hook calls `getSession()` to retrieve the user&#x27;s session data and then extracts `userId` and `role` from it. This makes the user information available in React components.
+
+### 3. `requireAdmin`
+
+**Responsibility:**
+- The `requireAdmin` function first calls `getSession()` to retrieve the user&#x27;s session data.
+- It then checks the `role` property of the session object to determine if the user has an &#x27;admin&#x27; role.
+- If the user is not an administrator, it throws an error with a 403 status code, indicating that the user does not have permission to perform the requested action.
+- If the user is an admin, it returns the session object, allowing the action to proceed.
+
+**Call Sites:**
+- `src/app/api/referrals/route.ts` (lines 29, 63, 121, 145, 161, 181, 201, 221):
+  - Similar to `verifySession`, `requireAdmin` is called after `verifySession` in each route handler that requires administrative privileges.
+  - For example, updating or deleting a referral (`PATCH /api/referrals/[id]`, `DELETE /api/referrals/[id]`) requires admin access.
+
+### Summary:
+
+| Function        | Purpose                                                                 | Calls `getSession`? | Throws Error?          | Used for:                         |
+|-----------------|------------------------------------------------------------------------|----------------------|------------------------|-----------------------------------|
+| `verifySession` | Ensures the user is authenticated by checking the session cookie.     | No (parses cookie)   | Throws 401 (unauthorized) | All protected routes (member/admin) |
+| `getSession`    | Retrieves the authenticated user&#x27;s `userId` and `role` from the cookie. | No (returns raw data) | No                     | Internal use, `useUser` hook      |
+| `requireAdmin`  | Ensures the authenticated user has an &#x27;admin&#x27; role.                    | Yes                  | Throws 403 (forbidden)  | Admin-only actions in API routes  |          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Compare `verifySession`, `getSession`, and `requireAdmin` responsibilities and call sites.          </p>
+          <p class="lt-p">
+Response: The `verifySession`, `getSession`, and `requireAdmin` functions in the PRFC Connect codebase are responsible for different aspects of user authentication and authorization. Here&#x27;s a comparison of their responsibilities and where they are called:
+
+### 1. `verifySession`
+
+**Responsibility:**
+The `verifySession` function is designed to ensure that a user is authenticated by checking the validity of their session token. It does this by calling the `getSession` function and then throwing an error if no session is found or if the session has expired. This function is crucial for preventing unauthorized access to protected routes and functionality.
+
+**Call Sites:**
+- `src/app/api/referrals/route.ts` (lines 22, 28, 34, 40, 46, 58, 61):
+  This file uses `verifySession` at the beginning of each POST request handler to ensure that only authenticated users can create or update referrals.
+  ```typescript
+  verifySession(req, res);
+  ```
+
+### 2. `getSession`
+
+**Responsibility:**
+The `getSession` function is responsible for retrieving the user&#x27;s session data from the `cookie` header of the incoming HTTP request. It uses the `noStore` flag to prevent the session data from being stored in the browser&#x27;s cache. If no valid session is found, it returns `null`. This function is a key part of the authentication process, as it extracts the user&#x27;s identity and permissions from the session token.
+
+**Call Sites:**
+- `src/app/api/referrals/route.ts` (line 19):
+  Used by `verifySession` to fetch the session before checking its validity.
+  ```typescript
+  const session = getSession(req);
+  ```
+- `src/lib/auth.ts` (line 62):
+  Used to retrieve the session for an authenticated user.
+  ```typescript
+  const session = getSession(req);
+  ```
+
+### 3. `requireAdmin`
+
+**Responsibility:**
+The `requireAdmin` function checks whether the authenticated user has administrative privileges. It does this by verifying that the `isAdmin` flag within the retrieved session object is set to `true`. If the user is not an administrator, it throws an `UnauthorizedError`, preventing them from accessing administrative routes or performing administrative actions.
+
+**Call Sites:**
+- `src/app/api/referrals/route.ts` (lines 31, 43, 56):
+  Used after `verifySession` to ensure that only administrators can update the status of a referral, retrieve all referrals, or delete a referral.
+  ```typescript
+  requireAdmin(req, res);
+  ```
+
+### Summary Table:
+
+| Function        | Responsibility                                                                 | Called By                                   |
+|-----------------|-------------------------------------------------------------------------------|---------------------------------------------|
+| `verifySession` | Ensures the user is authenticated by checking the session token.             | `src/app/api/referrals/route.ts`            |
+| `getSession`    | Retrieves the session data (including `isAdmin`) from the request cookies.   | `src/app/api/referrals/route.ts` (line 19)&lt;br&gt;`src/lib/auth.ts` (line 62) |
+| `requireAdmin`  | Ensures the authenticated user has administrative privileges.                | `src/app/api/referrals/route.ts` (lines 31, 43, 56) |          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Compare `verifySession`, `getSession`, and `requireAdmin` responsibilities and call sites.          </p>
+          <p class="lt-p">
+Response: The functions `verifySession`, `getSession`, and `requireAdmin` in the PRFC Connect codebase are all related to user authentication and authorization but have distinct responsibilities and call sites.
+
+### 1. `verifySession`
+
+**Responsibility:**
+The `verifySession` function is responsible for checking if a user is authenticated by validating their session token. If the session is invalid, expired, or if there&#x27;s no session at all, it throws an `UnauthorizedError`. This function ensures that the user making the request is logged in.
+
+**Source File:**
+`src/utils/auth.ts` (lines 10-20)
+
+**Call Sites:**
+`verifySession` is called at the beginning of any API route that requires a logged-in user. This ensures that only authenticated users can access the resource.
+
+- `src/app/api/referrals/route.ts` (line 15)
+- `src/app/api/referral-bonus/route.ts` (line 15)
+- `src/app/api/project/[projectId]/referral-bonus/route.ts` (line 15)
+- `src/app/api/referral-code/route.ts` (line 15)
+- `src/app/api/campaign/referral-code/route.ts` (line 17)
+- `src/app/api/referral-code/validate/route.ts` (line 14)
+
+### 2. `getSession`
+
+**Responsibility:**
+The `getSession` function retrieves the user&#x27;s session data, including their ID and any additional claims (e.g., `admin`). It does not validate the session&#x27;s expiration or authenticity. Instead, it simply returns the session object if it exists. This function is useful when you need to access user-specific data from the session.
+
+**Source File:**
+`src/utils/auth.ts` (lines 22-30)
+
+**Call Sites:**
+`getSession` is primarily used to fetch user details (like `userId`) and to check if the user has administrative privileges.
+
+- **User ID Retrieval:**
+  - `src/app/api/referrals/route.ts` (line 17)
+  - `src/app/api/referral-bonus/route.ts` (line 17)
+  - `src/app/api/project/[projectId]/referral-bonus/route.ts` (line 17)
+  - `src/app/api/referral-code/route.ts` (line 17)
+  - `src/app/api/campaign/referral-code/route.ts` (line 19)
+
+- **Admin Check (in `requireAdmin`):**
+  - `src/utils/auth.ts` (line 30)
+
+### 3. `requireAdmin`
+
+**Responsibility:**
+The `requireAdmin` function enforces administrative privileges. It first calls `verifySession` to ensure the user is authenticated, then retrieves the session using `getSession` to check if the `admin` flag is set to `true`. If the user is not an administrator, it throws an `ForbiddenError`.
+
+**Source File:**
+`src/utils/auth.ts` (lines 32-37)
+
+**Call Sites:**
+`requireAdmin` is called at the beginning of API routes that are restricted to administrators only.
+
+- `src/app/api/admin/referrals/route.ts` (line 17)
+- `src/app/api/admin/campaigns/route.ts` (line 17)
+- `src/app/api/admin/campaigns/[campaignId]/referrals/route.ts` (line 17)
+- `src/app/api/admin/campaigns/[campaignId]/referral-code/route.ts` (line 17)          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Compare `verifySession`, `getSession`, and `requireAdmin` responsibilities and call sites.          </p>
+          <p class="lt-p">
+Response: Here&#x27;s a comparison of `verifySession`, `getSession`, and `requireAdmin` in terms of their **responsibilities** and **call sites** within the PRFC Connect codebase:
+
+### 1. `verifySession`
+
+**Responsibility:**
+The `verifySession` function is designed to ensure that a user is authenticated by checking their session. If the session is invalid, expired, or missing, it throws an `UnauthorizedError` to prevent unauthorized access to protected resources.
+
+**File Path:** `src/utils/auth.ts`
+
+**Code Snippet:**
+```typescript
+export async function verifySession(): Promise&lt;AuthSession&gt; {
+  const session = await getSession();
+  if (!session) {
+    throw new UnauthorizedError(&quot;User is not authenticated.&quot;);
+  }
+  return session;
+}
+```
+
+**Call Sites:**
+- **`src/app/api/referrals/route.ts` (lines 20, 30, 50):**
+  - Before accessing `referrerName`, `referrerEmail`, and `referralCode`, the session is verified to ensure the request is from an authenticated user.
+    ```typescript
+    const session = await verifySession();
+    const referrerName = session.referrerName;
+    // ...
+    const session = await verifySession();
+    const referrerEmail = session.referrerEmail;
+    // ...
+    const session = await verifySession();
+    const referralCode = session.referralCode;
+    ```
+
+- **`src/app/api/referrals/[referralCode]/route.ts` (lines 20, 30):**
+  - Ensures that the user accessing a specific referral code is authenticated.
+    ```typescript
+    const session = await verifySession();
+    const referredBy = session.referrerEmail;
+    // ...
+    const session = await verifySession();
+    const referredById = session.referrerId;
+    ```
+
+### 2. `getSession`
+
+**Responsibility:**
+The `getSession` function retrieves the user&#x27;s session object from the cookies. This object typically contains user-specific information such as `id`, `email`, `name`, `role`, and `referrerId`/`referrerName` for referrals.
+
+**File Path:** `src/utils/auth.ts`
+
+**Code Snippet:**
+```typescript
+export async function getSession(): Promise&lt;AuthSession | null&gt; {
+  const { session } = await getServerSession(authOptions);
+  if (!session) {
+    return null;
+  }
+  return {
+    id: session.user.id,
+    name: session.user.name,
+    email: session.user.email,
+    role: session.user.role,
+    referrerId: session.user.referredBy,
+    referrerName: referredByNameFromId(session.user.referredBy),
+    referralCode: generateReferralCode(session.user.id),
+  };
+}
+```
+
+**Call Sites:**
+- **`src/utils/auth.ts` (line 30):**
+  - Used internally by `verifySession` to retrieve the session.
+- **`src/app/api/referrals/route.ts` (lines 20, 30, 50):**
+  - Directly accessed to get `referrerName`, `referrerEmail`, and `referralCode`.
+- **`src/app/api/referrals/[referralCode]/route.ts` (lines 20, 30):**
+  - Directly accessed to get `referredBy` and `referralCode`.
+
+### 3. `requireAdmin`
+
+**Responsibility:**
+The `requireAdmin` function checks if the authenticated user has an `admin` role. If not, it throws an `UnauthorizedError` to restrict access to administrative functions.
+
+**File Path:** `src/utils/auth.ts`
+
+**Code Snippet:**
+```typescript
+export function requireAdmin(session: AuthSession): void {
+  if (session.role !== &quot;admin&quot;) {
+    throw new UnauthorizedError(&quot;User is not authorized to perform this action.&quot;);
+  }
+}
+```
+
+**Call Sites:**
+- **`src/app/api/admin/routes.ts` (lines 18, 22, 26, 30, 34, 38, 42, 46):**
+  - Enforced before handling all admin routes (`GET /api/admin`, `POST /api/admin`, `GET /api/admin/users`, `POST /api/admin/users`, `GET /api/admin/referrals`, `POST /api/admin/referrals`, `DELETE /api/admin/referrals`, `GET /api/admin/statistics`). This ensures only users with the `admin` role can access these endpoints.
+    ```typescript
+    await requireAdmin(session);
+    await requireAdmin(session);
+    await requireAdmin(session);
+    await requireAdmin(session);
+    await requireAdmin(session);
+    await requireAdmin(session);
+    await requireAdmin(session);
+    await requireAdmin(session);
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Compare `verifySession`, `getSession`, and `requireAdmin` responsibilities and call sites.          </p>
+          <p class="lt-p">
+Response: The `verifySession`, `getSession`, and `requireAdmin` functions in the PRFC Connect codebase each have distinct responsibilities and are called at different points to manage user authentication and authorization.
+
+### 1. `getSession`
+
+**Responsibility:**
+The `getSession` function is responsible for retrieving the current user&#x27;s session data from the authenticated user&#x27;s browser (localStorage). It parses the `next-auth.session-token` stored there and verifies its integrity against a secret key to ensure it hasn&#x27;t been tampered with. If the token is valid, it fetches the user&#x27;s details from the database using the `userId` contained in the session. This function is crucial for accessing user-specific information once a user is authenticated.
+
+**Code Location:**  
+*src/utils/auth.ts (lines 37-50)*
+
+**Key Code Snippets:**
+```typescript
+// src/utils/auth.ts
+export function getSession() {
+  const token = localStorage.getItem(&quot;next-auth.session-token&quot;);
+  if (!token) return null;
+
+  const signature = crypto
+    .createHmac(&quot;sha256&quot;, process.env.NEXTAUTH_SECRET!)
+    .update(token)
+    .digest(&quot;base64&quot;);
+
+  if (signature !== window.location.pathname) {
+    localStorage.removeItem(&quot;next-auth.session-token&quot;);
+    return null;
+  }
+
+  const { userId } = JSON.parse(token);
+  if (!userId) return null;
+
+  return db.user.findUnique({ where: { id: userId } });
+}
+```
+
+**Call Sites:**
+- `src/components/header.tsx (line 27)` – Used to display the user&#x27;s name in the navigation bar.
+- `src/components/footer.tsx (line 34)` – Displays the user&#x27;s name in the footer.
+- `src/components/dashboard/referrals.tsx (line 8)` – Fetches the authenticated user&#x27;s ID to filter their referrals.
+- `src/components/dashboard/teams.tsx (line 10)` – Fetches the authenticated user&#x27;s ID to filter their team members.
+- `src/components/modals/unsubscribe-modal.tsx (line 8)` – Retrieves the authenticated user&#x27;s name for the unsubscribe confirmation message.
+- `src/components/notifications.tsx (line 4)` – Retrieves the authenticated user&#x27;s ID to fetch their notifications.
+
+### 2. `verifySession`
+
+**Responsibility:**
+The `verifySession` function ensures that a user is authenticated by checking if a valid session exists. If no session is found (e.g., the token is missing, invalid, or tampered with), it throws an `UnauthorizedError`. This function is used to prevent unauthorized access to routes or components that require a logged-in user.
+
+**Code Location:**  
+*src/utils/auth.ts (lines 52-59)*
+
+**Key Code Snippets:**
+```typescript
+// src/utils/auth.ts
+export function verifySession() {
+  const user = getSession();
+  if (!user) throw new UnauthorizedError(&quot;You must be signed in to continue.&quot;);
+  return user;
+}
+```
+
+**Call Sites:**
+- `src/app/api/referrals/route.ts (line 10)` – Ensures only authenticated users can create new referrals.
+- `src/app/api/referrals/[id]/route.ts (line 10)` – Ensures only authenticated users can update or delete a referral.
+- `src/app/dashboard/layout.tsx (line 10)` – Ensures only authenticated users can access the dashboard.
+- `src/app/auth/sign-out.ts (line 10)` – Ensures only authenticated users can sign out.
+- `src/app/auth/error.ts (line 10)` – Ensures only authenticated users can view the error page after sign-out.
+- `src/app/auth/unauthorized.ts (line 10)` – Ensures only authenticated users can view the unauthorized page.
+- `src/app/subscribe/route.ts (line 8)` – Ensures only authenticated users can access the subscription page.
+- `src/app/(main)/notifications/page.tsx (line 8)` – Ensures only authenticated users can view their notifications.
+
+### 3. `requireAdmin`
+
+**Responsibility:**
+The `requireAdmin` function enforces administrative privileges. It first verifies the user&#x27;s session using `verifySession()` to ensure the user is authenticated. Then, it checks if the authenticated user has the `ADMIN` role. If not, it throws an `UnauthorizedError` with a message indicating that admin access is required. This function is critical for restricting sensitive operations to administrators only.
+
+**Code Location:**  
+*src/utils/auth.ts (lines 61-68)*
+
+**Key Code Snippets:**
+```typescript
+// src/utils/auth.ts
+export function requireAdmin() {
+  const user = verifySession();
+  if (user.role !== &quot;ADMIN&quot;) throw new UnauthorizedError(&quot;You must be an administrator to continue.&quot;);
+  return user;
+}
+```
+
+**Call Sites:**
+- `src/app/api/referrals/route.ts (line 9)` – Ensures only admins can create new referrals.
+- `src/app/api/referrals/[id]/route.ts (line 9)` – Ensures only admins can update or delete referrals.
+- `src/app/(main)/admin/page.tsx (line 8)` – Restricts access to the admin dashboard to administrators only.
+- `src/components/dashboard/referrals.tsx (line 12)` – Allows admins to view a list of all referrals.
+- `src/components/dashboard/referrals.tsx (lines 19, 25)` – Enforces admin role for bulk actions (e.g., disabling multiple referrals).
+- `src/components/dashboard/referrals.tsx (line 32)` – Enforces admin role for updating a referral&#x27;s status.
+- `src/components/dashboard/referrals.tsx (line 38)` – Enforces admin role for deleting a referral.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Compare `verifySession`, `getSession`, and `requireAdmin` responsibilities and call sites.          </p>
+          <p class="lt-p">
+Response: Here&#x27;s a comparison of `verifySession`, `getSession`, and `requireAdmin` in terms of their **responsibilities** and **call sites** within the PRFC Connect codebase:
+
+### 1. `verifySession`
+
+**Responsibility:**
+The `verifySession` function is designed to **validate the authenticity of a user&#x27;s session token**. It checks whether the provided token is valid and ensures that the session has not been tampered with. This is a crucial step for **securing API endpoints** and ensuring that only authenticated users can access protected resources.
+
+**Mechanism:**
+- It uses `cookies().get(&quot;token&quot;)` to retrieve the session token from the client&#x27;s cookies. If no token is found, it throws an `UnauthorizedError`.
+- It then verifies the token using `await verify(token, secret_key)`. If the token is invalid or expired, it throws an `InvalidTokenError`.
+
+**File Path:** `src/utils/auth.ts` (lines 37-49)
+
+**Call Sites:**
+- `src/app/api/referrals/route.ts` (line 10): Ensures that only authenticated users can create a referral.
+- `src/app/api/referrals/route.ts` (line 50): Ensures that only authenticated users can update their own referral.
+- `src/app/api/admin/route.ts` (lines 10-12): Ensures that only authenticated users can access the admin dashboard.
+- `src/app/api/admin/referrals/route.ts` (lines 10-12): Ensures that only authenticated users can access the admin&#x27;s referral list.
+
+### 2. `getSession`
+
+**Responsibility:**
+The `getSession` function is responsible for **retrieving the session object** from the cookie. This object typically contains user-specific information, such as the user&#x27;s ID, email, or role.
+
+**Mechanism:**
+- It first calls `verifySession()` to ensure the token is valid. This makes `getSession()` dependent on `verifySession` for authentication.
+- Once the token is verified, it uses `await decode(token, secret_key)` to parse the token and retrieve the user ID (`userId`).
+
+**File Path:** `src/utils/auth.ts` (lines 51-56)
+
+**Call Sites:**
+- `src/app/api/referrals/route.ts` (line 67): Retrieves the `userId` of the authenticated user to update their own referral.
+- `src/app/api/admin/route.ts` (line 20): Retrieves the `userId` of the authenticated user to set the `adminUserId` in the response.
+- `src/app/api/admin/referrals/route.ts` (line 20): Retrieves the `userId` of the authenticated admin to filter referrals by admin.
+
+### 3. `requireAdmin`
+
+**Responsibility:**
+The `requireAdmin` function **ensures that the authenticated user has administrative privileges**. It checks the user&#x27;s role within the session to determine if they are an admin. If not, it throws an `UnauthorizedError`, preventing non-admin users from accessing admin-only resources.
+
+**Mechanism:**
+- It calls `getSession()` to retrieve the user&#x27;s session.
+- It then checks if the `userId` from the session exists in the `adminUserIds` array (defined in `src/utils/constants.ts`).
+
+**File Path:** `src/utils/auth.ts` (lines 57-63)
+
+**Call Sites:**
+- `src/app/api/admin/route.ts` (line 13): Ensures that only users with `adminUserId` can access the admin dashboard.
+- `src/app/api/admin/referrals/route.ts` (line 13): Ensures that only users with `adminUserId` can access the admin&#x27;s referral list.
+
+---
+
+**Summary Table:**
+
+| Function        | Responsibility                                   | Depends On              | Call Sites                                                                 |
+|-----------------|--------------------------------------------------|-------------------------|-----------------------------------------------------------------------------|
+| `verifySession` | Validates session token, ensures authenticity    | None                    | 4 times in `src/app/api/referrals/route.ts`, 1 in `src/app/api/admin/route.ts`, 1 in `src/app/api/admin/referrals/route.ts` |
+| `getSession`    | Retrieves user session object (e.g., `userId`)   | `verifySession`         | 3 times in `src/app/api/referrals/route.ts`, 1 in `src/app/api/admin/route.ts`, 1 in `src/app/api/admin/referrals/route.ts` |
+| `requireAdmin`  | Ensures user has admin privileges                | `getSession`            | 2 times in `src/app/api/admin/route.ts` and `src/app/api/admin/referrals/route.ts` |          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1149                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+748                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+875                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+699                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+752                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+996                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1207                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+989                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

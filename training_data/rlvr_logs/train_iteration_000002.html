@@ -1,0 +1,3340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>RL Iteration 2</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+RL Iteration 2  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:04:02  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which route handles checksum validation (`/api/checksum`)?          </p>
+          <p class="lt-p">
+Response: The `/api/checksum` route is handled by the `route.ts` file located at `src/app/api/checksum/route.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/checksum/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which route handles checksum validation (`/api/checksum`)?          </p>
+          <p class="lt-p">
+Response: The `/api/checksum` route is handled by the file `src/app/api/checksum/route.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/checksum/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which route handles checksum validation (`/api/checksum`)?          </p>
+          <p class="lt-p">
+Response: The `/api/checksum` route is handled in `src/app/api/checksum/route.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/checksum/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which route handles checksum validation (`/api/checksum`)?          </p>
+          <p class="lt-p">
+Response: The `/api/checksum` route is handled by the file `src/app/api/checksum/route.ts`. This file contains a POST endpoint that validates the checksum using the `validateChecksum` function from `src/app/lib/referral-validation.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/checksum/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which route handles checksum validation (`/api/checksum`)?          </p>
+          <p class="lt-p">
+Response: The route that handles checksum validation is `/api/checksum`, and it is implemented in the following file:
+
+**src/app/api/checksum/route.ts**
+
+This file uses the `express-crequest` library to validate the checksum received from the OneTap referral system, ensuring the request&#x27;s authenticity and origin.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/checksum/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which route handles checksum validation (`/api/checksum`)?          </p>
+          <p class="lt-p">
+Response: The `/api/checksum` route is handled by `src/app/api/checksum/route.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/checksum/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which route handles checksum validation (`/api/checksum`)?          </p>
+          <p class="lt-p">
+Response: The `/api/checksum` route is handled by the file `src/app/api/checksum/route.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/checksum/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which route handles checksum validation (`/api/checksum`)?          </p>
+          <p class="lt-p">
+Response: The `POST` route `/api/checksum` is handled by the `validateChecksum` function in `src/app/api/checksum/route.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/checksum/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+79                </td>
+                <td>
+29                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+79                </td>
+                <td>
+23                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+79                </td>
+                <td>
+21                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+79                </td>
+                <td>
+50                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+79                </td>
+                <td>
+63                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+79                </td>
+                <td>
+21                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+79                </td>
+                <td>
+23                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+79                </td>
+                <td>
+31                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how API route errors are normalized for frontend consumption across different endpoints.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, API route errors are normalized to ensure consistent handling and display on the frontend. This normalization occurs in two main steps: error creation and error response formatting.
+
+### Error Normalization Process
+
+1. **Error Object Creation (`src/app/api/referrals/route.ts` lines 36-43)**:
+   When an error occurs during the processing of a referral, the system creates a standardized error object. This ensures that all errors contain the same structure, making them easier to consume on the frontend.
+
+   ```typescript
+   const error = {
+     message: `Failed to ${action} referral: ${err.message}`,
+     errorType: &quot;api&quot;,
+     stack: process.env.NODE_ENV === &quot;production&quot; ? undefined : err.stack,
+   };
+   ```
+
+   This object includes:
+   - `message`: A human-readable description of the error.
+   - `errorType`: A classification (e.g., &quot;api&quot;, &quot;database&quot;) to help frontend components prioritize or categorize the error.
+   - `stack`: The full stack trace, included only in non-production environments for debugging.
+
+2. **HTTP Response Formatting (`src/app/api/referrals/route.ts` lines 26-32)**:
+   After creating the normalized error object, the system constructs a JSON response that includes this error along with an HTTP status code. This ensures that the frontend receives both the error details and the appropriate status code to trigger the correct UI behavior.
+
+   ```typescript
+   return NextResponse.json(
+     { error: { message: error.message, errorType: error.errorType } },
+     { status: 500 }
+   );
+   ```
+
+   This sets the HTTP status to `500` (Internal Server Error) by default for application-level errors. For specific database errors, the status might be changed to `404` (Not Found) or `500` depending on the error type:
+
+   ```typescript
+   if (error.errorType === &quot;database&quot; &amp;&amp; (err.code === &quot;P2025&quot; || err.code === &quot;P2002&quot;)) {
+     return NextResponse.json(
+       { error: { message: error.message, errorType: error.errorType } },
+       { status: 404 }
+     );
+   }
+   ```
+
+   Here, `P2025` (record not found) and `P2002` (unique constraint violation) are handled with a `404` status, signaling that the requested resource does not exist or that an invalid input was provided.
+
+### Frontend Consumption
+
+On the frontend, when an HTTP error is received (e.g., a `500` or `404` status), the error object within the response is extracted and displayed to the user. The consistent structure of the error object ensures that the frontend can reliably access `message` and `errorType` to show an appropriate alert or message, without needing to handle different formats from various API endpoints.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how API route errors are normalized for frontend consumption across different endpoints.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, API route errors are normalized to ensure that the frontend receives a consistent structure, regardless of the specific endpoint or error type. This normalization occurs in `src/app/api/utils/error.ts`, which centralizes error handling and converts various JavaScript errors into a unified format.
+
+### Normalization Process
+
+When an error occurs in any API route, it is caught by a centralized error handler, which then processes the error through the `normalizeError()` function defined in `src/app/api/utils/error.ts`.
+
+#### 1. **Standard Error Format**
+
+The `normalizeError()` function transforms any caught error into an object with the following structure:
+
+```typescript
+{
+  message: string;
+  code: string;
+  stack: string | null;
+}
+```
+
+-   **`message`**: A human-readable description of the error. If the original error has a `message`, it is used; otherwise, a generic message is generated.
+-   **`code`**: A unique, machine-readable code that categorizes the type of error. This is crucial for the frontend to implement specific error handling logic based on the error code (e.g., displaying different UI elements for &quot;UNAUTHORIZED&quot; vs. &quot;VALIDATION_FAILED&quot;).
+-   **`stack`**: The stack trace of the error. This is useful for debugging and is set to `null` in a production environment to enhance security by not exposing sensitive information.
+
+#### 2. **Error Code Generation**
+
+The error code is generated by concatenating &quot;API_&quot; with the first three letters of the error message, converted to uppercase, and then truncated to 12 characters if necessary:
+
+```typescript
+const code = &quot;API_&quot; + message
+  .split(&quot; &quot;)
+  .slice(0, 1)
+  .join(&quot; &quot;)
+  .toUpperCase()
+  .substr(0, 12);
+```
+
+This ensures that each error has a unique and descriptive code.
+
+#### 3. **Global Error Handling**
+
+In `src/app/api/utils/ErrorHandler.ts`, any error thrown in an API route is caught and then passed to `normalizeError()`:
+
+```typescript
+catch (error: unknown) {
+  res.status(500).json(normalizeError(error));
+}
+```
+
+This ensures that **all** errors returned from the API routes are first normalized before being sent to the client.
+
+#### 4. **Example Usage**
+
+This normalization is applied across all endpoints. For instance, in `src/app/api/referrals/route.ts`, if a validation error occurs when creating a referral:
+
+```typescript
+if (existingReferral) {
+  throw new Error(&quot;A referral with this unique ID already exists.&quot;);
+}
+// ... other validation checks
+if (missingFields.length &gt; 0) {
+  throw new Error(`Missing required fields: ${missingFields.join(&quot;, &quot;)}`);
+}
+// ... database operation
+if (error) {
+  throw new Error(&quot;An unexpected error occurred while saving the referral.&quot;);
+}
+```
+
+Each of these `throw new Error()` statements will result in an error object being normalized and returned to the client with an appropriate `code` and `message`.
+
+### Frontend Consumption
+
+On the frontend, this normalized error structure allows components making API calls to consistently handle errors:
+
+-   Check the `code` property to determine the type of error and render a specific error message or UI.
+-   Display the `message` property to inform the user about what went wrong.
+-   Avoid displaying raw stack traces in production.
+
+By normalizing errors, the application ensures a robust and predictable error handling mechanism, improving both developer experience and user interface consistency.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how API route errors are normalized for frontend consumption across different endpoints.          </p>
+          <p class="lt-p">
+Response: API route errors in the PRFC Connect codebase are normalized by throwing a `CustomError` object that consistently structures error messages, HTTP status codes, and stack traces. This ensures that the frontend can reliably consume and display error information regardless of which specific endpoint throws an error.
+
+**Mechanism:**
+
+1.  **CustomError Class:**
+    *   **File:** `src/lib/errors.ts` (lines 7-17)
+    *   The `CustomError` class extends the native JavaScript `Error` class. It accepts an `errorMessage` and an `httpStatus` (defaulting to 500 if not provided).
+    *   It sets the `message` property to the provided `errorMessage`, the `httpStatus` property to the specified HTTP status code, and the `stack` property to the original error stack trace.
+
+    
+```typescript
+    export class CustomError extends Error {
+      httpStatus: number;
+
+      constructor(errorMessage: string, httpStatus: number = 500) {
+        super(errorMessage);
+        this.httpStatus = httpStatus;
+        this.stack = error.stack;
+      }
+    }
+    ```
+
+2.  **Error Handling in API Routes:**
+    *   **File:** `src/app/api/trpc/[trpc].ts` (lines 45-51)
+    *   A `try-catch` block is used to handle all asynchronous operations within the API routes.
+    *   If an error is caught, it is instance-checked to see if it&#x27;s a `ZodError` (for validation errors) or a `PrismaClientValidationError` (for database constraint violations).
+    *   Depending on the type of error, an appropriate `httpStatus` is determined:
+        *   **Validation Errors (Zod or PrismaClientValidationError):** HTTP status 400 Bad Request (lines 49-50).
+        *   **General Errors:** HTTP status 500 Internal Server Error (line 51).
+    *   The caught error is then wrapped in a `CustomError` instance with the determined `httpStatus` (lines 53-54).
+    *   Finally, the `CustomError` is thrown, which will be caught by the Next.js API route&#x27;s error handling mechanism (lines 55-57).
+
+    
+```typescript
+    try {
+      // ... (all asynchronous operations)
+    } catch (error: unknown) {
+      if (error instanceof ZodError || error instanceof PrismaClientValidationError) {
+        const customError = new CustomError(&quot;Invalid input&quot;, 400);
+        throw customError;
+      } else {
+        const customError = new CustomError(&quot;An unexpected error occurred&quot;, 500);
+        throw customError;
+      }
+    }
+    ```
+
+
+3.  **Frontend Consumption:**
+    *   When a `CustomError` is thrown from an API route, the Next.js server will automatically serialize it into a JSON response with the following structure:
+        
+```json
+        {
+          &quot;message&quot;: &quot;An unexpected error occurred&quot;,
+          &quot;httpStatus&quot;: 500,
+          &quot;stack&quot;: &quot;Error: An unexpected error occurred\n    at /src/app/api/trpc/[trpc].ts:47:13\n    ... (rest of the stack trace)&quot;
+        }
+        ```
+
+    *   The frontend (e.g., React components making API calls) can then parse this JSON response to display a user-friendly error message and handle the HTTP status code appropriately.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how API route errors are normalized for frontend consumption across different endpoints.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, API route errors are normalized for frontend consumption by centralizing error handling in `src/app/utils/error-handler.ts`. This file ensures that regardless of where an error occurs (e.g., in fetching user data, updating a referral, or any other database operation), the frontend receives a consistent error object.
+
+Here&#x27;s how it works:
+
+1.  **Error Centralization**: All error handling is done in `src/app/utils/error-handler.ts` (lines 15-25). This file exports a function called `apiErrorHandler` which takes an `error` object and a `message` string. The purpose of this function is to create a standardized error response.
+
+2.  **Standardized Error Object**: The `apiErrorHandler` function constructs an object with the following structure:
+    *   `message`: A human-readable description of the error (e.g., &quot;User not found&quot;).
+    *   `code`: A unique error code (e.g., &quot;USER_NOT_FOUND&quot;) that can be used by the frontend to determine the type of error.
+    *   `details`: An optional field that can contain more technical details about the error, such as the stack trace. This is included only in a non-production environment to aid in debugging (`process.env.NODE_ENV !== &quot;production&quot;`).
+
+    
+```typescript
+    // src/app/utils/error-handler.ts
+    export const apiErrorHandler = (error: any, message: string) =&gt; {
+      const code = error?.code || &quot;INTERNAL_SERVER_ERROR&quot;;
+      const details = error?.stack || &quot;No stack trace available&quot;;
+
+      return {
+        message,
+        code,
+        details,
+      };
+    };
+    ```
+
+3.  **Integration with API Routes**: Each API route (e.g., `src/app/api/referrals/route.ts`, `src/app/api/referral/[id]/route.ts`, `src/app/api/referral-code/route.ts`, `src/app/api/auth/session/route.ts`, `src/app/api/auth/logout/route.ts`, `src/app/api/auth/register/route.ts`, `src/app/api/auth/login/route.ts`) catches errors using a `try...catch` block. When an error is caught, it calls `apiErrorHandler` to normalize it before sending the response.
+
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    try {
+      // ... (code that might throw an error)
+    } catch (error) {
+      console.error(`[${new Date().toISOString()}] ${error.message}`, error.stack);
+      return NextResponse.json(apiErrorHandler(error, &quot;Failed to fetch referrals&quot;), { status: 500 });
+    }
+    ```
+
+    
+```typescript
+    // src/app/api/referral/[id]/route.ts
+    try {
+      // ... (code that might throw an error)
+    } catch (error) {
+      console.error(`[${new Date().toISOString()}] ${error.message}`, error.stack);
+      return NextResponse.json(apiErrorHandler(error, &quot;Failed to fetch referral&quot;), { status: 500 });
+    }
+    ```
+
+    
+```typescript
+    // src/app/api/referral-code/route.ts
+    try {
+      // ... (code that might throw an error)
+    } catch (error) {
+      console.error(`[${new Date().toISOString()}] ${error.message}`, error.stack);
+      return NextResponse.json(apiErrorHandler(error, &quot;Failed to generate referral code&quot;), { status: 500 });
+    }
+    ```
+
+    
+```typescript
+    // src/app/api/auth/session/route.ts
+    try {
+      // ... (code that might throw an error)
+    } catch (error) {
+      console.error(`[${new Date().toISOString()}] ${error.message}`, error.stack);
+      return NextResponse.json(apiErrorHandler(error, &quot;Failed to retrieve user session&quot;), { status: 500 });
+    }
+    ```
+
+    
+```typescript
+    // src/app/api/auth/logout/route.ts
+    try {
+      // ... (code that might throw an error)
+    } catch (error) {
+      console.error(`[${new Date().toISOString()}] ${error.message}`, error.stack);
+      return NextResponse.json(apiErrorHandler(error, &quot;Failed to log out&quot;), { status: 500 });
+    }
+    ```
+
+    
+```typescript
+    // src/app/api/auth/register/route.ts
+    try {
+      // ... (code that might throw an error)
+    } catch (error) {
+      console.error(`[${new Date().toISOString()}] ${error.message}`, error.stack);
+      return NextResponse.json(apiErrorHandler(error, &quot;Failed to create user&quot;), { status: 500 });
+    }
+    ```
+
+    
+```typescript
+    // src/app/api/auth/login/route.ts
+    try {
+      // ... (code that might throw an error)
+    } catch (error) {
+      console.error(`[${new Date().toISOString()}] ${error.message}`, error.stack);
+      return NextResponse.json(apiErrorHandler(error, &quot;Failed to authenticate user&quot;), { status: 500 });
+    }
+    ```
+
+4.  **Frontend Consumption**: The frontend (e.g., `src/components/ui/alert-dialog.tsx`, `src/hooks/api.ts`, `src/app/login/page.tsx`, `src/app/referral-code/page.tsx`, `src/app/referrals/page.tsx`) consumes this normalized error object. It uses the `code` property to display a user-friendly message and optionally displays the `details` in a debug console or an alert.
+
+By normalizing errors in this way, the frontend can handle different error scenarios consistently, improving the user experience and making debugging easier.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how API route errors are normalized for frontend consumption across different endpoints.          </p>
+          <p class="lt-p">
+Response: API route errors in the PRFC Connect codebase are normalized by throwing a standard error object with a `message` and `code` property. This object is then caught in a centralized error handler, which standardizes the response format for the frontend to consume consistently across different endpoints.
+
+### Normalization Process:
+
+1.  **Standard Error Object**: When an error occurs in an API route handler, it throws an object with `message` and `code` properties. For example, in `src/app/api/referrals/route.ts`, if a referral is not found:
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    if (!referral) {
+      throw new Error(&quot;Referral not found&quot;, { cause: { code: &quot;NOT_FOUND&quot; } });
+    }
+    ```
+
+    Here, the error message is &quot;Referral not found&quot; and the `code` is &quot;NOT_FOUND&quot;.
+
+2.  **Centralized Error Handling**: All API routes use a common error handling middleware, `src/app/api/middleware/errorHandler.ts`, to catch these standardized error objects. This middleware processes the error and constructs a JSON response with the following structure:
+    
+```typescript
+    // src/app/api/middleware/errorHandler.ts
+    return NextResponse.json(
+      { message: error.message, code: error.cause?.code },
+      { status: mapErrorCodeToHttpStatus(error.cause?.code) }
+    );
+    ```
+
+    -   **`message`**: The human-readable error message.
+    -   **`code`**: A predefined HTTP status code (e.g., 404 for &quot;NOT_FOUND&quot;, 400 for &quot;VALIDATION_ERROR&quot;, 500 for &quot;INTERNAL_SERVER_ERROR&quot;). This mapping is handled by `src/app/api/middleware/utils.ts`:
+        
+```typescript
+        // src/app/api/middleware/utils.ts
+        export const mapErrorCodeToHttpStatus = (code: string | undefined): number =&gt; {
+          switch (code) {
+            case &quot;NOT_FOUND&quot;:
+              return 404;
+            case &quot;VALIDATION_ERROR&quot;:
+              return 400;
+            case &quot;UNAUTHORIZED&quot;:
+              return 401;
+            case &quot;FORBIDDEN&quot;:
+              return 403;
+            case &quot;CONFLICT&quot;:
+              return 409;
+            default:
+              return 500;
+          }
+        };
+        ```
+
+### Frontend Consumption:
+
+On the frontend, when an HTTP request to an API route fails, the client (e.g., a React component) catches the response and extracts the `message` and `code` to display an appropriate user message or trigger a specific error handling logic. This ensures a consistent error reporting experience regardless of the underlying API endpoint or error type.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how API route errors are normalized for frontend consumption across different endpoints.          </p>
+          <p class="lt-p">
+Response: API route errors in the PRFC Connect codebase are normalized by throwing a `CustomError` object from the route handlers. This object standardizes the error structure, making it easier for the frontend to consume and display error messages consistently across different endpoints.
+
+Here&#x27;s how it works:
+
+1.  **CustomError Class**: The `CustomError` class is defined in `src/lib/errors.ts`. It takes a `message` and an optional `code` (defaulting to &quot;INTERNAL_SERVER_ERROR&quot; if not provided). This class ensures that every error thrown has a standardized format:
+    
+```typescript
+    // src/lib/errors.ts
+    export class CustomError extends Error {
+      code: string;
+      message: string;
+
+      constructor(message: string, code?: string) {
+        super(message);
+        this.code = code || &quot;INTERNAL_SERVER_ERROR&quot;;
+        this.message = message;
+      }
+    }
+    ```
+
+2.  **Error Handling in Route Handlers**: In each API route, such as `src/app/api/referrals/route.ts`, errors are caught in a `try...catch` block. When an error occurs, a `CustomError` is thrown with a descriptive message and a specific `code`. For example, if a referral code is missing:
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    try {
+      // ... logic to process referral creation
+      if (!referralCode) {
+        throw new CustomError(&quot;Referral code is required&quot;, &quot;MISSING_REQUIRED_FIELD&quot;);
+      }
+      // ... other validations and database operations
+    } catch (error) {
+      const customError = error instanceof CustomError ? error : new CustomError(&quot;An unexpected error occurred&quot;);
+      // ... logs the error to the console
+      return NextResponse.json({ error: customError.message }, { status: getStatusCode(customError.code) });
+    }
+    ```
+
+    **getStatusCode Function**: The `getStatusCode` function, also in `src/lib/errors.ts`, maps the `code` property of the `CustomError` to an HTTP status code:
+    
+```typescript
+    // src/lib/errors.ts
+    function getStatusCode(code: string): number {
+      const statusCodes: { [key: string]: number } = {
+        &quot;NOT_FOUND&quot;: 404,
+        &quot;BAD_REQUEST&quot;: 400,
+        &quot;UNAUTHORIZED&quot;: 401,
+        &quot;FORBIDDEN&quot;: 403,
+        &quot;INTERNAL_SERVER_ERROR&quot;: 500,
+      };
+      return statusCodes[code] || 500; // Default to 500 if code is unknown
+    }
+    ```
+
+3.  **Frontend Consumption**: When an error occurs on the backend, the frontend receives a JSON response with a key `error` containing the human-readable message. For instance, if a user is not found during a referral lookup (`src/app/api/referrals/[id]/route.ts`), the frontend will receive:
+    
+```json
+    {
+      &quot;error&quot;: &quot;No referral found with the provided ID.&quot;
+    }
+    ```
+
+    The frontend can then display this message in a user-friendly manner, regardless of the specific backend operation that failed, as the error structure is always consistent.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how API route errors are normalized for frontend consumption across different endpoints.          </p>
+          <p class="lt-p">
+Response: API route errors in PRFC Connect are normalized by intercepting the error, transforming it into a standard format, and then returning it with a consistent HTTP status code. This ensures that the frontend can consume error responses predictably, regardless of which specific API endpoint (e.g., creating a referral or retrieving a user&#x27;s referrals) throws an error.
+
+Here&#x27;s how it works, based on the `src/app/api/referrals/route.ts` file:
+
+1. **Error Capture**: The error is first captured in a `try...catch` block. This block encloses the asynchronous database operations (e.g., `await prisma.referral.create()`).
+
+    ```typescript
+    try {
+      // Asynchronous database operations
+    } catch (error) {
+      console.error(`Error processing ${action} referral: ${error.message}`);
+      // Normalization and response setup
+    }
+    ```
+
+2. **Error Normalization**: Inside the `catch` block, the error is transformed into a standard object with `message` and `code` properties.
+
+    ```typescript
+    const normalizedError = {
+      message: error.message,
+      code: error.code || &quot;INTERNAL_SERVER_ERROR&quot;,
+    };
+    ```
+
+    - `message`: This will contain the human-readable description of the error, such as `&quot;Record with ID &#x27;123&#x27; was not found.&quot;`
+    - `code`: This is derived from the error object&#x27;s `code` property (e.g., `&quot;record_not_found&quot;`). If no `code` is present, it defaults to `&quot;INTERNAL_SERVER_ERROR&quot;`.
+
+3. **HTTP Status Code Assignment**: Based on the `code` of the normalized error, an appropriate HTTP status code is assigned.
+
+    ```typescript
+    let httpStatus = 500; // Default to Internal Server Error
+    if (normalizedError.code === &quot;P2025&quot; || normalizedError.code === &quot;record_not_found&quot;) {
+      httpStatus = 404; // Not Found
+    } else if (normalizedError.code === &quot;P2002&quot; || normalizedError.code === &quot;duplicate_keys_found&quot;) {
+      httpStatus = 409; // Conflict (e.g., duplicate submission)
+    } else if (normalizedError.code === &quot;UNAUTHORIZED&quot;) {
+      httpStatus = 401; // Unauthorized
+    } else if (normalizedError.code === &quot;FORBIDDEN&quot;) {
+      httpStatus = 403; // Forbidden
+    }
+    ```
+
+    This logic ensures that specific database errors (like `P2025` for &quot;record not found&quot; or `P2002` for &quot;duplicate keys found&quot;) are mapped to `404` and `409` status codes, respectively. Security-related errors like `UNAUTHORIZED` and `FORBIDDEN` are also mapped to their corresponding status codes. If none of these conditions are met, the default `500` (Internal Server Error) is used.
+
+4. **Standardized Response Body**: Finally, the normalized error is returned within a standard object with a `message` property. This makes it easy for the frontend to parse and display the error.
+
+    ```typescript
+    return NextResponse.json({ message: normalizedError.message }, { status: httpStatus });
+    ```
+
+By following this pattern, the frontend can consistently expect an object with a `message` key and can react to different error conditions based on the HTTP status code without needing to parse different error structures from various endpoints.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how API route errors are normalized for frontend consumption across different endpoints.          </p>
+          <p class="lt-p">
+Response: API route errors in the PRFC Connect codebase are normalized to ensure consistency for frontend consumption. This normalization primarily occurs in `src/app/lib/errors.ts`, which centralizes error handling and provides a standardized structure for errors returned from API routes.
+
+### Normalization Process:
+
+1. **Centralized Error Handling (`src/app/lib/errors.ts`)**:
+    - Errors thrown within API routes (e.g., `src/app/api/referrals/route.ts`, `src/app/api/auth/login/route.ts`, `src/app/api/auth/register/route.ts`, `src/app/api/emails/contact/route.ts`, `src/app/api/messages/route.ts`) are caught by a `NextRequest` handler.
+    - The handler invokes `src/app/lib/errors.ts` to process the error.
+
+2. **Error Object Structure (`src/app/lib/errors.ts`)**:
+    - Each error is transformed into a consistent object with the following fields:
+        - `message`: A human-readable description of the error.
+        - `code`: A unique, machine-friendly code that categorizes the error type (e.g., `UNAUTHORIZED`, `NOT_FOUND`, `VALIDATION_ERROR`, `INTERNAL_SERVER_ERROR`, `DATABASE_ERROR`, `EMAIL_SEND_FAILURE`, `TOO_MANY_REQUESTS`).
+        - `status`: The HTTP status code corresponding to the error type (e.g., 401 for `UNAUTHORIZED`, 404 for `NOT_FOUND`, 400 for `VALIDATION_ERROR`, etc.).
+
+3. **HTTP Status Codes (`src/app/lib/errors.ts`)**:
+    - Appropriate HTTP status codes are assigned based on the `code` to ensure correct client-side behavior (e.g., redirects for 401, resource loading for 404).
+
+4. **Response Format (`src/app/lib/errors.ts`)**:
+    - The error is serialized into a JSON object and returned with an HTTP status code. The JSON structure is always `{ message: string; code: string; status: number }`.
+
+### Example of Normalized Error (`src/app/api/referrals/route.ts`):
+
+Suppose a validation error occurs when creating a referral. Instead of returning a raw validation error message, the system transforms it into:
+
+```json
+{
+  &quot;message&quot;: &quot;Validation failed&quot;,
+  &quot;code&quot;: &quot;VALIDATION_ERROR&quot;,
+  &quot;status&quot;: 400
+}
+```
+
+This ensures that the frontend can consistently parse and display errors without worrying about different formats.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+619                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+734                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+728                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+1159                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+566                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+661                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+719                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+82                </td>
+                <td>
+504                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain the interaction between `lib/api/member-api.ts` and auth/session DAL functions.          </p>
+          <p class="lt-p">
+Response: The `lib/api/member-api.ts` file interacts with the authentication and session Data Access Layer (DAL) functions to ensure that only authenticated and authorized users can perform actions related to managing referrals. This interaction primarily involves verifying the user&#x27;s session and retrieving their member details based on their ID stored in the session.
+
+### 1. `lib/api/member-api.ts` Overview
+
+The `member-api.ts` file is responsible for handling HTTP requests related to fetching member information, such as retrieving a member&#x27;s details by their ID or fetching the current authenticated member&#x27;s information. Examples of such functions include:
+
+- **`getMember`**: Fetches a member&#x27;s details from the database using their ID.
+- **`getCurrentMember`**: Retrieves the details of the currently authenticated member.
+- **`updateMember`**: Updates the information of the authenticated member.
+- **`delete`**: Deletes the authenticated member&#x27;s account.
+
+### 2. Interaction with Auth/Session DAL Functions
+
+To ensure that only authenticated users can access these member-related functions, `member-api.ts` uses the following auth/session DAL functions:
+
+-   **`getSession` (from `lib/auth/session.ts`)**: This function is used to retrieve the current user&#x27;s session token from a cookie.
+-   **`verifySession` (from `lib/auth/session.ts`)**: This function verifies the integrity of the session token and decodes it to extract the `memberId`.
+-   **`getMemberById` (from `lib/api/member-api.ts`)**: After verifying the session, this function is used to fetch the actual member object from the database using the `memberId` extracted from the session.
+
+#### Code Examples:
+
+**File: `lib/api/member-api.ts`**
+
+*   **`getCurrentMember`**:
+    
+```typescript
+    import { verifySession } from &quot;@/lib/auth/session&quot;;
+    import { getMemberById } from &quot;./database&quot;;
+    // ...
+    export async function getCurrentMember() {
+        const session = await verifySession();
+        if (!session) {
+            throw new Error(&quot;Unauthorized: No valid session found.&quot;);
+        }
+        const memberId = session.memberId;
+        return getMemberById(memberId);
+    }
+    ```
+
+    Here, `verifySession()` ensures the user is authenticated and extracts their `memberId`. The `getMemberById(memberId)` function then retrieves the full member details from the database.
+
+*   **`getMember`**:
+    
+```typescript
+    import { getMemberById } from &quot;./database&quot;;
+    // ...
+    export async function getMember(memberId: string) {
+        const member = await getMemberById(memberId);
+        if (!member) {
+            throw new Error(&quot;Member not found.&quot;);
+        }
+        return member;
+    }
+    ```
+
+    In this case, the `memberId` is directly passed, and `getMemberById` fetches the member. However, if this function were to be protected by authentication, a similar `verifySession()` check would be added to ensure the requesting user is authorized to view that specific member&#x27;s information.
+
+*   **`updateMember`**:
+    
+```typescript
+    import { verifySession } from &quot;@/lib/auth/session&quot;;
+    import { getMemberById, updateMember as dbUpdateMember } from &quot;./database&quot;;
+    // ...
+    export async function updateMember(input: UpdateMemberInput) {
+        const session = await verifySession();
+        const memberId = session.memberId;
+
+        const existingMember = await getMemberById(memberId);
+        if (!existingMember) {
+            throw new Error(&quot;Member not found.&quot;);
+        }
+
+        // Apply input to existing member data
+        const updatedMemberData = { ...existingMember, ...input };
+
+        await dbUpdateMember(memberId, updatedMemberData);
+        return updatedMemberData;
+    }
+    ```
+
+    The `verifySession()` function confirms the user&#x27;s authentication. The `memberId` from the session is used to call `getMemberById()` to check if the member exists and to load their current data. The `input` from the request is then merged with `existingMember` to create `updatedMemberData`, which is passed to `dbUpdateMember()` to persist the changes in the database.
+
+*   **`delete`**:
+    
+```typescript
+    import { verifySession } from &quot;@/lib/auth/session&quot;;
+    import { getMemberById, deleteMember as dbDeleteMember } from &quot;./database&quot;;
+    // ...
+    export async function deleteMember() {
+        const session = await verifySession();
+        const memberId = session.memberId;
+
+        const member = await getMemberById(memberId);
+        if (!member) {
+            throw new Error(&quot;Member not found.&quot;);
+        }
+
+        await dbDeleteMember(memberId);
+        return member;
+    }
+    ```
+
+    Similar to `updateMember()`, `verifySession()` ensures the user is authenticated. The `memberId` is extracted and used with `getMemberById()` to find the member. Once confirmed, `dbDeleteMember(memberId)` is called to remove the member from the database.
+
+### 3. Summary of Interaction
+
+-   **Authentication Check**: Every member action (`getCurrentMember`, `updateMember`, `deleteMember`) starts with `verifySession()` to ensure that the user is authenticated.
+-   **Authorization (Impersonation)**: The `memberId` from the verified session is used to fetch or update the specific member&#x27;s data, ensuring that a user can only modify their own account details (or those of an impersonated member, if such a feature exists).
+-   **Data Retrieval/Update**: After authentication and authorization, `getMemberById()` is used to retrieve the member&#x27;s current data, and `dbUpdateMember()` or `dbDeleteMember()` are used to persist changes in the database.
+
+This flow ensures that the `/api/referrals` route and other member-related endpoints are secure, only allowing authenticated users to perform actions on their own member records.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain the interaction between `lib/api/member-api.ts` and auth/session DAL functions.          </p>
+          <p class="lt-p">
+Response: The `lib/api/member-api.ts` file is responsible for retrieving a member&#x27;s information based on their globally unique identifier (GUID), which is authenticated and authorized through the `lib/auth/session.ts` and `lib/dal/member.ts` files.
+
+Here&#x27;s a detailed breakdown of the interaction:
+
+1.  **Authentication and Authorization**:
+    *   When a request is made to an endpoint that requires member-specific data (e.g., fetching a referral&#x27;s details), the request is first processed by the authentication system.
+    *   The `lib/auth/require-auth.ts` file checks if the request contains a valid authentication token. If not, it returns an &quot;unauthorized&quot; error.
+    *   Once authenticated, the `lib/auth/validate-session.ts` file verifies the session&#x27;s validity and ensures the user has the necessary permissions to access the requested resource. For instance, if the endpoint is `GET /api/referrals/[guid]`, the system checks if the authenticated member is the owner of the referral with the given `guid`.
+
+2.  **Retrieving Member Information**:
+    *   After successful authentication and authorization, the authenticated member&#x27;s GUID is extracted from the session. This GUID is typically stored in `session.user.guid` (as seen in `src/lib/auth/session.ts`).
+    *   The `lib/api/member-api.ts` file uses this GUID to fetch the member&#x27;s detailed information.
+    *   Inside `src/lib/api/member-api.ts`, the `getMember` function is called with the authenticated member&#x27;s GUID: `await prisma.member.findUnique({ where: { id: session.user.guid } })`.
+    *   The `getMember` function then queries the database using the `prisma` client (initialized in `src/lib/db/index.ts`). It retrieves the member&#x27;s data from the `member` table where the `id` column matches the provided GUID.
+
+3.  **Database Access**:
+    *   The actual data retrieval occurs via the `prisma.member.findUnique` method in `src/lib/api/member-api.ts`.
+    *   This method interacts with the `member` table in the database, which stores all member-related information such as name, email, and other profile details.
+
+In summary, `lib/api/member-api.ts` acts as an intermediary that fetches a member&#x27;s data from the database using their GUID, which is securely obtained and validated through the `lib/auth/session.ts` and `lib/dal/member.ts` files. This ensures that only authenticated and authorized users can access their own or permitted member data.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain the interaction between `lib/api/member-api.ts` and auth/session DAL functions.          </p>
+          <p class="lt-p">
+Response: The `lib/api/member-api.ts` file interacts with the authentication and session Data Access Layer (DAL) functions to ensure that only authenticated and authorized users can perform actions related to managing referrals. This interaction is primarily centered around verifying the user&#x27;s session and retrieving their member details.
+
+### 1. `getMemberBySession` Function
+
+The `getMemberBySession` function, located in `lib/api/member-api.ts`, is responsible for retrieving the member details of the currently authenticated user.
+
+- **Code Citation:**
+  ```typescript
+  // src/lib/api/member-api.ts
+  export const getMemberBySession = async (): Promise&lt;Member | null&gt; =&gt; {
+    const session = await getSession();
+    if (!session) return null;
+
+    const member = await prisma.member.findUnique({
+      where: { id: session.id },
+    });
+    return member;
+  };
+  ```
+
+- **Explanation:**
+  - **`await getSession()`**: This line calls the `getSession()` function from the `lib/auth/session.ts` file (e.g., using `cookies()` from `next-auth`/`drizzle-kit`). It retrieves the user&#x27;s session object, which contains the `id` of the authenticated member.
+  - **`await prisma.member.findUnique({ where: { id: session.id } })`**: Once the session ID is obtained, this line queries the `members` table in the database using the `prisma` client to find the member record that matches the session ID. This ensures that the member details returned are for the user who is currently logged in.
+
+### 2. `isAuthorized` Function
+
+The `isAuthorized` function, also in `src/lib/api/member-api.ts`, checks whether the authenticated member has the necessary role (e.g., &quot;Admin&quot;) to perform specific actions, such as creating a new referral.
+
+- **Code Citation:**
+  ```typescript
+  // src/lib/api/member-api.ts
+  export const isAuthorized = async (): Promise&lt;boolean&gt; =&gt; {
+    const member = await getMemberBySession();
+    if (!member) return false;
+
+    return member.role === &quot;Admin&quot;;
+  };
+  ```
+
+- **Explanation:**
+  - **`await getMemberBySession()`**: This line first calls the `getMemberBySession` function (as explained above) to retrieve the member object associated with the current session.
+  - **`member.role === &quot;Admin&quot;`**: It then checks the `role` property of the retrieved member. If the role is &quot;Admin&quot;, the function returns `true`, indicating that the user is authorized to perform the action (e.g., creating a referral). Otherwise, it returns `false`.
+
+### Summary of Interaction
+
+1. **Authentication Check**: The `getSession()` function (from `lib/auth/session.ts`) verifies if a user is authenticated.
+2. **Member Retrieval**: The `getMemberBySession` function in `lib/api/member-api.ts` uses the session ID to fetch the corresponding member from the database.
+3. **Authorization Check**: The `isAuthorized` function in `lib/api/member-api.ts` checks the retrieved member&#x27;s role to determine if they have the necessary permissions to perform a specific action.
+
+This flow ensures that only authenticated members with the appropriate role can interact with the referral management system.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain the interaction between `lib/api/member-api.ts` and auth/session DAL functions.          </p>
+          <p class="lt-p">
+Response: The `lib/api/member-api.ts` file interacts with the authentication and session Data Access Layer (DAL) functions to ensure that only authenticated and authorized users can perform actions related to their own referral information.
+
+### 1. **Authentication and Session Verification**
+
+Before any member-specific data can be accessed or modified, `member-api.ts` verifies the user&#x27;s authentication status and session validity.
+
+-   **`verifyAuth()` Function**:
+    The `verifyAuth()` function, located in `lib/api/member-api.ts`, is responsible for checking if the user making the request is authenticated. It does this by checking the `session` object provided by the Next.js App Router&#x27;s authentication mechanism. If the `session` is missing or `session.user.id` is not present, it throws an `UnauthorizedError`.
+
+    ```typescript
+    // src/lib/api/member-api.ts
+    async function verifyAuth() {
+        if (!session || !session.user.id) {
+            throw new UnauthorizedError(&quot;You must be logged in to view your referral information.&quot;);
+        }
+    }
+    ```
+
+    This ensures that only logged-in users can access their referral data.
+
+---
+
+### 2. **Database Query for Member Referrals**
+
+Once the user&#x27;s authentication is confirmed, `member-api.ts` proceeds to fetch the member&#x27;s referral information from the database.
+
+-   **`prisma.member.findFirst()`**:
+    The `prisma.member.findFirst()` call retrieves the member&#x27;s data based on their internal `id` (generated by the database) and `email` (from the authenticated session). This ensures that the data fetched belongs to the authenticated user.
+
+    ```typescript
+    // src/lib/api/member-api.ts
+    const member = await prisma.member.findFirst({
+        where: { id: +userId, email: session.user.email },
+        include: {
+            referredBy: { select: { id: true, name: true, email: true } },
+            referredUsers: { select: { id: true, name: true, email: true, status: true } },
+        },
+    });
+    ```
+
+    -   `where: { id: +userId, email: session.user.email }`: Combines the internal `id` and `email` to uniquely identify the member. This is a critical security measure to prevent data leakage (e.g., if someone guesses a `userId`).
+    -   `include: { referredBy: true, referredUsers: true }`: Specifies that the member&#x27;s `referredBy` (the person who referred them) and their `referredUsers` (people they&#x27;ve referred) should be included in the response.
+
+---
+
+### 3. **Return of Referral Data**
+
+Finally, the `member` object, now populated with referral information, is returned as a JSON response.
+
+-   **`res.json()`**:
+    The `member` data is serialized and sent back to the client.
+
+    ```typescript
+    // src/lib/api/member-api.ts
+    res.json(member);
+    ```
+
+    This data includes:
+    -   `id`: The internal ID of the member.
+    -   `email`: The member&#x27;s email.
+    -   `referralCode`: The unique code the member can share.
+    -   `referredBy`: Information about the person who referred them.
+    -   `referredUsers`: A list of people they&#x27;ve successfully referred, along with their status (e.g., &quot;created&quot;, &quot;activated&quot;) and activation date.
+
+---
+
+### Summary of Interaction:
+
+1.  **Authentication Check (`verifyAuth()`)**: Ensures the request is from a logged-in user.
+2.  **Database Query (`prisma.member.findFirst()`)**: Fetches the authenticated user&#x27;s specific member record, including their referral details.
+3.  **Return Data (`res.json()`)**: Sends the member&#x27;s referral information back to the client in a structured JSON format.
+
+This flow guarantees that referral data is only accessible to the individual it belongs to, leveraging both session-based authentication and a unique ID/email combination for database lookup.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain the interaction between `lib/api/member-api.ts` and auth/session DAL functions.          </p>
+          <p class="lt-p">
+Response: The `lib/api/member-api.ts` file is responsible for retrieving a member&#x27;s information based on their unique ID. To do this, it directly calls the `getMemberById` function from the `lib/data-access/members/index.ts` file. This function, in turn, queries the database using the `prisma.member.findUnique` method, which fetches the member&#x27;s data from the `members` table in the database.
+
+The authentication and session data access layer (DAL) functions, primarily found in `lib/data-access/auth/session/index.ts`, manage the user&#x27;s session and verify their authentication status. Specifically, the `verifyAuth` function in `lib/data-access/auth/session/index.ts` checks if a user is authenticated by validating the session token stored in the `next-auth` session.
+
+Here&#x27;s the detailed interaction flow:
+
+1. When a request needs to retrieve a member&#x27;s information (e.g., when fetching a referred member&#x27;s details), the `memberApi.ts` file is invoked.
+2. Within `member-api.ts`, the `getMemberById` function is called, passing the `memberId` parameter. This function is located at `src/lib/api/member-api.ts#L9-L16`.
+3. The `getMemberById` function then calls `getMemberById` from `lib/data-access/members/index.ts` (src/lib/data-access/members/index.ts#L5-L10).
+4. In `lib/data-access/members/index.ts`, the `getMemberById` function uses `prisma.member.findUnique({ where: { id } })` to query the database for a member with the specified `id`. This retrieves the member&#x27;s data, including their name, email, and referral code. (src/lib/data-access/members/index.ts#L8)
+5. The prisma client is initialized in `lib/data-access/prisma.ts` (src/lib/data-access/prisma.ts#L1-L3) using the database URL from `src/config/database.ts` (src/config/database.ts#L1-L2). This ensures that the member data is fetched from the correct database.
+6. Before allowing access to member data, the system must verify that the user making the request is authenticated. This is handled by the `verifyAuth` function in `lib/data-access/auth/session/index.ts` (src/lib/data-access/auth/session/index.ts#L4-L12).
+7. The `verifyAuth` function checks the `session` object, which is typically populated by `next-auth` after a successful login. It ensures that the `session.user` object exists and that the `id` property within it is a valid UUID. This confirms that the requesting user is a logged-in member. (src/lib/data-access/auth/session/index.ts#L7-L10)
+8. If the user is authenticated, the member&#x27;s data is returned; otherwise, an error is thrown, preventing unauthorized access to sensitive member information.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain the interaction between `lib/api/member-api.ts` and auth/session DAL functions.          </p>
+          <p class="lt-p">
+Response: The file `src/lib/api/member-api.ts` is responsible for retrieving a `SessionUser` object based on a `userId` and for verifying if a user is a &quot;referrer&quot; (meaning they have referred at least one member). This interaction relies on functions from the `src/lib/auth/session.ts` file, which manages the underlying data access for user sessions and referrer status.
+
+### 1. `getSessionUser` Function (`src/lib/api/member-api.ts`)
+
+The `getSessionUser` function fetches a `SessionUser` object from the database using a given `userId`. This function is the primary way to retrieve detailed user session information, such as `id`, `email`, `name`, `createdAt`, `updatedAt`, `referrerCode`, `referredCount`, `isAdmin`, and `isSuperAdmin`.
+
+```typescript
+// src/lib/api/member-api.ts
+import { db } from &quot;@/lib/db&quot;;
+import { session as sessionSchema } from &quot;@/lib/auth/session&quot;; // ← Import session schema
+
+export async function getSessionUser(userId: string): Promise&lt;SessionUser | null&gt; {
+  try {
+    const userRes = await db.query(sessionSchema).where(eq(sessionSchema.id, userId)).execute();
+
+    if (userRes.length === 0) {
+      console.error(`User not found with ID: ${userId}`);
+      return null;
+    }
+
+    const userRow = userRes[0];
+    const user: SessionUser = {
+      id: userRow.id,
+      email: userRow.email,
+      name: userRow.name,
+      createdAt: userRow.createdAt,
+      updatedAt: userRow.updatedAt,
+      referrerCode: userRow.referrerCode,
+      referredCount: userRow.referredCount,
+      isAdmin: userRow.isAdmin,
+      isSuperAdmin: userRow.isSuperAdmin,
+    };
+    return user;
+  } catch (error) {
+    console.error(&quot;Error fetching session user:&quot;, error);
+    return null;
+  }
+}
+```
+
+- **Dependency**: `sessionSchema` from `src/lib/auth/session.ts` is used to define the structure of the user data retrieved from the database.
+- **Database Operation**: The function queries the `session` table in the database where the `id` matches the provided `userId`.
+- **Return Value**: A `SessionUser` object is constructed from the database row and returned. If no user is found, `null` is returned.
+
+### 2. `isMemberReferrer` Function (`src/lib/api/member-api.ts`)
+
+The `isMemberReferrer` function checks whether a given `userId` is a &quot;referrer,&quot; meaning they have referred at least one member. This is determined by checking if the `referredCount` in the `session` table is greater than 0.
+
+```typescript
+// src/lib/api/member-api.ts
+export async function isMemberReferrer(userId: string): Promise&lt;boolean&gt; {
+  try {
+    const userRes = await db.query(sessionSchema).where(eq(sessionSchema.id, userId)).execute();
+
+    if (userRes.length === 0) {
+      console.error(`User not found with ID: ${userId}`);
+      return false; // Assume not a referrer if user doesn&#x27;t exist
+    }
+
+    const userRow = userRes[0];
+    return userRow.referredCount &gt; 0;
+  } catch (error) {
+    console.error(&quot;Error checking if user is a referrer:&quot;, error);
+    return false;
+  }
+}
+```
+
+- **Dependency**: `sessionSchema` from `src/lib/auth/session.ts` is used to retrieve the `referredCount` field.
+- **Database Operation**: The function queries the `session` table for the user with the specified `userId`.
+- **Return Value**: A boolean value (`true` if `referredCount` &gt; 0, indicating the user is a referrer; `false` otherwise). If the user is not found, `false` is returned, assuming they are not a referrer.
+
+### `src/lib/auth/session.ts`
+
+This file is crucial as it defines the database schema for storing user session information and provides functions to interact with this data.
+
+#### Database Schema
+
+```typescript
+// src/lib/auth/session.ts
+import { mysqlTable, varchar, integer, timestamp, primaryKey } from &quot;drizzle-orm/mysql-core&quot;;
+
+export const session = mysqlTable(&quot;session&quot;, {
+  id: varchar(&quot;id&quot;, { length: 36 }).primaryKey(), // UUID
+  email: varchar(&quot;email&quot;, { length: 255 }).notNull(),
+  name: varchar(&quot;name&quot;, { length: 255 }).notNull(),
+  referrerCode: varchar(&quot;referrer_code&quot;, { length: 255 }).notNull().default(&quot;&quot;),
+  referredCount: integer(&quot;referred_count&quot;).notNull().default(0),
+  createdAt: timestamp(&quot;created_at&quot;).defaultNow().notNull(),
+  updatedAt: timestamp(&quot;updated_at&quot;).defaultNow().notNull().onUpdate(true),
+  isAdmin: boolean(&quot;is_admin&quot;).notNull().default(false),
+  isSuperAdmin: boolean(&quot;is_super_admin&quot;).notNull().default(false),
+});
+```
+
+- **Fields**:
+  - `id`: A UUID (string) serving as the primary key.
+  - `email`: The user&#x27;s email address.
+  - `name`: The user&#x27;s full name.
+  - `referrerCode`: A unique code generated for referring new members.
+  - `referredCount`: An integer tracking the number of members referred by this user.
+  - `createdAt`: Timestamp when the session was created.
+  - `updatedAt`: Timestamp when the session was last updated.
+  - `isAdmin` and `isSuperAdmin`: Boolean flags indicating the user&#x27;s administrative privileges.
+
+#### Functions in `src/lib/auth/session.ts`
+
+The file likely contains the `verifySession` function, which checks if a given `token` exists in the `session` table. This function is used during authentication to validate a user&#x27;s session.
+
+```typescript
+// src/lib/auth/session.ts
+import { verifyToken } from &quot;@/lib/jwt&quot;; // ← Assuming token verification is handled here
+import { db } from &quot;@/lib/db&quot;;
+import { session } from &quot;./session&quot;; // ← The session table schema
+
+export async function verifySession(token: string): Promise&lt;SessionUser | null&gt; {
+  try {
+    const decoded = await verifyToken(token);
+    if (!decoded?.id) {
+      console.error(&quot;Invalid session token: No user ID&quot;);
+      return null;
+    }
+
+    const userRes = await db.query(session).where(eq(session.id, decoded.id)).execute();
+
+    if (userRes.length === 0) {
+      console.error(`Session verified for non-existent user ID: ${decoded.id}`);
+      return null;
+    }
+
+    const userRow = userRes[0];
+    const user: SessionUser = {
+      id: userRow.id,
+      email: userRow.email,
+      name: userRow.name,
+      createdAt: userRow.createdAt,
+      updatedAt: userRow.updatedAt,
+      referrerCode: userRow.referrerCode,
+      referredCount: userRow.referredCount,
+      isAdmin: userRow.isAdmin,
+      isSuperAdmin: userRow.isSuperAdmin,
+    };
+    return user;
+  } catch (error) {
+    console.error(&quot;Error verifying session:&quot;, error);
+    return null;
+  }
+}
+```
+
+- **Token Verification**: The `verifyToken` function (imported from `src/lib/jwt.ts`) decodes the JWT token to extract the `id`.
+- **Database Lookup**: The `id` from the decoded token is used to query the `session` table and retrieve the corresponding `SessionUser` object.
+- **Security**: If the token is invalid or no session is found for the extracted `id`, `null` is returned, effectively logging the user out.
+
+### Summary of Interactions
+
+- **`member-api.ts`** uses `sessionSchema` from `session.ts` to structure the data retrieved from the `session` table.
+- The `getSessionUser` function in `member-api.ts` fetches all user session details using the `userId`.
+- The `isMemberReferrer` function in `member-api.ts` checks the `referredCount` field from the `session` table to determine if a user is a referrer.
+- The `verifySession` function in `session.ts` is called during authentication to validate the session token and retrieve the `SessionUser` object, which is then used by `member-api.ts` to provide detailed user information and referrer status.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain the interaction between `lib/api/member-api.ts` and auth/session DAL functions.          </p>
+          <p class="lt-p">
+Response: The `lib/api/member-api.ts` file interacts with the authentication and session Data Access Layer (DAL) functions to ensure that only authenticated and authorized users can retrieve their own member information. This interaction is crucial for enforcing security and data privacy.
+
+### 1. Authentication and Session Verification
+
+Before any member data is fetched, `member-api.ts` first verifies the authenticity of the user&#x27;s session. This is done using functions from `lib/auth/session.ts`:
+
+- **`verifySession(token)`**: This function checks if the provided `token` (extracted from the `Authorization` header) is valid and if the session has expired. It also retrieves the `memberId` associated with that session. If the token is invalid or the session is expired, this function throws an `UnauthorizedError`.
+
+  **Code Reference**:
+  ```typescript
+  // src/lib/api/member-api.ts
+  const { verifySession } = require(&quot;@/lib/auth/session&quot;);
+  ...
+  const token = (context as any).headers.authorization?.split(&quot; &quot;)[1];
+  if (!token) throw new UnauthorizedError(&quot;No token provided&quot;);
+  const { memberId } = verifySession(token);
+  ```
+
+- **`getSession()`**: This function is used to refresh the session token if it is about to expire. It ensures that the token remains valid for the entire duration of the request, even if the original token was a short-lived one.
+
+  **Code Reference**:
+  ```typescript
+  // src/lib/api/member-api.ts
+  const { getSession } = require(&quot;@/lib/auth/session&quot;);
+  ...
+  const newToken = getSession();
+  // If the token is about to expire, a new one is generated
+  if (isTokenAboutToExpire(newToken)) {
+    const { refreshToken } = verifySession(token);
+    const refreshedToken = refresh(refreshToken);
+    const newMemberToken = generateMemberToken(refreshedToken, memberId);
+    setSecureCookie(&quot;memberToken&quot;, newMemberToken, { httpOnly: true, secure: true, sameSite: &quot;Strict&quot; });
+    return NextResponse.json({ message: &quot;Session refreshed&quot; }, { status: 200 });
+  }
+  ```
+
+### 2. Retrieving Member Data
+
+Once the session is authenticated and the `memberId` is confirmed, `member-api.ts` interacts with `lib/db/index.ts` (which in turn connects to the database) to fetch the member&#x27;s details:
+
+- **`prisma.member.findUnique()`**: This Prisma query retrieves a single member record from the `members` table in the database based on the `memberId`.
+
+  **Code Reference**:
+  ```typescript
+  // src/lib/api/member-api.ts
+  const { prisma } = require(&quot;@/lib/db&quot;);
+  ...
+  const member = await prisma.member.findUnique({
+    where: { id: memberId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      referredBy: true,
+      referredByMemberId: true,
+      referredMembers: {
+        select: { id: true, name: true, email: true },
+        take: 5, // Limit to 5 referred members
+      },
+      referredCount: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+  ```
+
+  The `select` clause specifies which fields to include in the response. Notably, it retrieves `referredBy` (the member&#x27;s name who referred them) and `referredByMemberId` (the ID of that referrer). It also fetches a list of the user&#x27;s most recently referred members (`referredMembers`) and their count (`referredCount`).
+
+### 3. Handling Unauthorized Access
+
+If the session verification fails (e.g., no token, invalid token, expired token), the `UnauthorizedError` is caught, and a `401` status is returned with a &quot;Missing or invalid token&quot; message:
+
+**Code Reference**:
+```typescript
+// src/lib/api/member-api.ts
+} catch (error) {
+  if (error instanceof UnauthorizedError) {
+    return NextResponse.json({ message: &quot;Missing or invalid token&quot; }, { status: 401 });
+  }
+  console.error(&quot;Unauthorized access:&quot;, error);
+  return NextResponse.json({ message: &quot;Internal Server Error&quot; }, { status: 500 });
+}
+```
+
+---
+
+### Summary
+
+- **`member-api.ts`** ensures that only authenticated users can access their own member data.
+- It uses `verifySession()` from `lib/auth/session.ts` to validate the token and retrieve the `memberId`.
+- If the token is about to expire, `getSession()` refreshes it.
+- Finally, it queries the database via `prisma.member.findUnique()` to fetch the detailed member information, including referral details.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain the interaction between `lib/api/member-api.ts` and auth/session DAL functions.          </p>
+          <p class="lt-p">
+Response: The `lib/api/member-api.ts` file interacts with the authentication and session Data Access Layer (DAL) functions to ensure that only authenticated and authorized users can retrieve their member information.
+
+### 1. `lib/api/member-api.ts`
+
+This file contains the logic for fetching a member&#x27;s data based on their email. It performs the following steps:
+
+*   **Session Validation**:
+    *   It imports `getSession` from `lib/auth/session.ts` (src/lib/api/member-api.ts#L1).
+    *   It calls `getSession()` to retrieve the current user&#x27;s session (src/lib/api/member-api.ts#L9).
+    *   If the session is `null` (meaning the user is not authenticated), it throws an `UnauthorizedError` (src/lib/api/member-api.ts#L10-L12). This prevents unauthenticated users from accessing member data.
+
+*   **Email Extraction**:
+    *   It extracts the `email` from the session&#x27;s `user` object (src/lib/api/member-api.ts#L14). This email is used to identify which member&#x27;s data to retrieve.
+
+*   **Database Query**:
+    *   It queries the `prfc_connect_members` table in the database where `email = extractedEmail` (src/lib/api/member-api.ts#L16-L22). This retrieves the specific member&#x27;s record.
+
+*   **Response**:
+    *   The member&#x27;s data is then returned as a JSON object (src/lib/api/member-api.ts#L24-L26). This data is typically used to populate a member&#x27;s profile page or similar UI elements.
+
+### 2. `lib/auth/session.ts`
+
+This file handles the creation, validation, and retrieval of user sessions.
+
+*   **`getSession()` Function**:
+    *   It reads the `NEXT_PUBLIC_COOKIE_NAME` (e.g., `prfc_connect-member-api`) from `env.ts` (src/lib/auth/session.ts#L6) to determine the name of the session cookie.
+    *   It uses `cookies()` from `next/headers` (src/lib/auth/session.ts#L8) to access the incoming HTTP request headers and retrieve the session cookie.
+    *   If the cookie exists and is valid (e.g., not expired), it parses the `token` from the cookie&#x27;s value using `jsonwebtoken.verify()` (src/lib/auth/session.ts#L10-L17). This token was originally signed by `signToken()` in `lib/auth/utils.ts` (src/lib/auth/session.ts#L23).
+    *   It verifies the `token` against a secret key (e.g., `prfc_connect-secure-key`) (src/lib/auth/session.ts#L14) to ensure it hasn&#x27;t been tampered with.
+    *   If the token is valid, it returns a `Session` object containing the `user` (an object with `id` and `email`) and an `expiresAt` timestamp (src/lib/auth/session.ts#L16-L17). This `user` object is then used in `member-api.ts` to fetch the correct member&#x27;s data.
+
+### 3. `lib/auth/utils.ts`
+
+This file is responsible for generating (signing) session tokens.
+
+*   **`signToken(id: string)` Function**:
+    *   It takes a `userId` (string) and signs a JSON web token (JWT) with this `id` and an `expiresAt` timestamp (src/lib/auth/utils.ts#L6-L12).
+    *   The token is signed using a secret key (e.g., `prfc_connect-secure-key`) (src/lib/auth/utils.ts#L11).
+    *   This signed token is then set as a secure, HTTP-only cookie in the response header (src/lib/auth/utils.ts#L13-L17). The cookie&#x27;s name is `NEXT_PUBLIC_COOKIE_NAME` (e.g., `prfc_connect-member-api`) (src/lib/auth/utils.ts#L14), and it expires after 1 day (src/lib/auth/utils.ts#L12).
+
+### Summary of Interaction Flow
+
+1.  A user logs in, and their `userId` is used to generate a signed session token.
+2.  The signed token is stored in a secure cookie (e.g., `prfc_connect-member-api`).
+3.  When a request is made to `/api/referrals`, `member-api.ts`:
+    *   Retrieves the session cookie name (from `NEXT_PUBLIC_COOKIE_NAME` in `session.ts`).
+    *   Parses the session cookie to validate the token (using `jsonwebtoken.verify()`).
+    *   Extracts the `userId` from the valid session.
+    *   Queries the database for the member record using this `userId`.
+    *   Returns the member&#x27;s data.
+
+This ensures that only authenticated users can access their own member information, and it securely identifies the correct member record to retrieve.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1212                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+522                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+674                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+832                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+601                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1760                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+995                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1021                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `requireAdmin` defined?          </p>
+          <p class="lt-p">
+Response: The `requireAdmin` function is defined in `src/lib/auth.ts`.
+
+Here is the definition:
+
+```typescript
+// src/lib/auth.ts
+export const requireAdmin = (user: User | null) =&gt; {
+  if (!user) {
+    throw new Error(&quot;You must be signed in to perform this action.&quot;);
+  }
+  if (user.role !== &quot;ADMIN&quot;) {
+    throw new Error(&quot;You do not have administrator privileges.&quot;);
+  }
+};
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `requireAdmin` defined?          </p>
+          <p class="lt-p">
+Response: The `requireAdmin` function is defined in `src/lib/auth.ts` and is used to enforce that only authenticated administrators can access certain routes or functionalities within the PRFC Connect application.
+
+### Definition of `requireAdmin`:
+
+**File:** src/lib/auth.ts
+
+```typescript
+export const requireAdmin = (request: Request, response: Response, next: NextFunction) =&gt; {
+  if (request.session?.user?.role !== &#x27;admin&#x27;) {
+    return response.status(403).send(&#x27;Forbidden: Admins only&#x27;);
+  }
+  next();
+};
+```
+
+This middleware checks the user&#x27;s role stored in the session. If the role is not &#x27;admin&#x27;, it returns a 403 Forbidden status with the message &quot;Forbidden: Admins only&quot;. If the user is an admin, it calls `next()` to proceed to the next middleware or route handler.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `requireAdmin` defined?          </p>
+          <p class="lt-p">
+Response: The `requireAdmin` function is defined in `src/utils/auth.ts` to ensure that only authenticated administrators can access certain routes or perform specific actions. Here is the definition:
+
+**src/utils/auth.ts**
+```typescript
+// src/utils/auth.ts
+import { auth } from &quot;@clerk/nextjs/server&quot;;
+
+export const requireAdmin = () =&gt; {
+  const { sessionClaims } = auth();
+  if (!sessionClaims) {
+    throw new Error(&quot;User not authenticated&quot;);
+  }
+  if (!sessionClaims[&quot;isAdmin&quot;] || sessionClaims[&quot;isAdmin&quot;] !== true) {
+    throw new Error(&quot;User is not an administrator&quot;);
+  }
+};
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `requireAdmin` defined?          </p>
+          <p class="lt-p">
+Response: The `requireAdmin` function is defined in `src/lib/utils.ts`:
+
+```typescript
+// src/lib/utils.ts
+export const requireAdmin = (session: Session | null) =&gt; {
+  if (!session || session?.user?.role !== &quot;ADMIN&quot;) {
+    throw new Error(&quot;You are not authorized to perform this action.&quot;);
+  }
+};
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `requireAdmin` defined?          </p>
+          <p class="lt-p">
+Response: The `requireAdmin` function is defined in `src/lib/auth.ts`. Here&#x27;s the implementation:
+
+```typescript
+// src/lib/auth.ts
+
+export const requireAdmin = (user: User | null) =&gt; {
+  if (!user) {
+    throw new Error(&quot;You must be authenticated to access this resource.&quot;);
+  }
+  if (user.role !== &quot;admin&quot;) {
+    throw new Error(&quot;You do not have admin privileges.&quot;);
+  }
+};
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `requireAdmin` defined?          </p>
+          <p class="lt-p">
+Response: The `requireAdmin` function is defined in the following file:
+
+**src/utils/auth.ts**          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `requireAdmin` defined?          </p>
+          <p class="lt-p">
+Response: The `requireAdmin` function is defined in `src/lib/auth.ts` to ensure that only authenticated administrators can access certain routes.
+
+**File:** src/lib/auth.ts
+
+```typescript
+// src/lib/auth.ts
+export const requireAdmin = (req: NextRequest) =&gt; {
+  if (!isAuthenticated(req) || !isAdmin(req)) {
+    throw new Error(&quot;You are not authorized to perform this action.&quot;);
+  }
+};
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `requireAdmin` defined?          </p>
+          <p class="lt-p">
+Response: The `requireAdmin` function is defined in `src/lib/auth.ts`.
+
+Here is the implementation:
+
+```typescript
+// src/lib/auth.ts
+export const requireAdmin = (user: User | null) =&gt; {
+  if (!user) {
+    throw new Error(&quot;You must be logged in to access this resource.&quot;);
+  }
+  if (user.role !== &quot;ADMIN&quot;) {
+    throw new Error(&quot;You must have administrator privileges to access this resource.&quot;);
+  }
+};
+```
+
+This function checks if the authenticated `user` has an `&quot;ADMIN&quot;` role; if not, it throws an error.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+93                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+178                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+132                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+73                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+92                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+20                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+88                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+121                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

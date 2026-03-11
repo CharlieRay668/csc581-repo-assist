@@ -1,0 +1,4817 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>RL Iteration 16</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+RL Iteration 16  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:23:01  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Design an approach for observability (metrics/logging/tracing) across API routes and services with minimal code churn.          </p>
+          <p class="lt-p">
+Response: Implementing observability in the PRFC Connect codebase (a Next.js referral-management application) requires adding metrics, logging, and tracing across API routes and services with minimal code churn. This can be achieved by centralizing concerns and leveraging existing Next.js middleware and server components.
+
+### 1. Centralized Logging (`src/lib/logger.ts`)
+
+- **File:** `src/lib/logger.ts`
+- **Description:** Introduce a single logger instance to ensure consistent logging across the application. This approach reduces code churn by requiring only a single import and a few function calls.
+
+```typescript
+// src/lib/logger.ts
+import { createLogger, format, transports } from &#x27;winston&#x27;;
+
+const logger = createLogger({
+  format: format.combine(
+    format.timestamp(),
+    format.printf(({ timestamp, level, message }) =&gt; {
+      return `${timestamp} [${level.toUpperCase()}] ${message}`;
+    })
+  ),
+  transports: [
+    new transports.Console(),
+    new transports.File({ filename: &#x27;error.log&#x27;, level: &#x27;error&#x27; }),
+    new transports.File({ filename: &#x27;combined.log&#x27; }),
+  ],
+});
+
+export default logger;
+```
+
+**Usage Example:** Add logger calls to relevant points in your route handlers and services.
+
+```typescript
+// src/app/api/referrals/route.ts
+import logger from &quot;@/lib/logger&quot;;
+
+export async function POST(req: Request) {
+  logger.info(&quot;New referral request received:&quot;, { body: await req.json() });
+
+  try {
+    // ... existing logic ...
+    logger.info(&quot;Referral processed successfully:&quot;, { id: newReferral.id });
+    return NextResponse.json({ message: &quot;Referral created successfully!&quot; }, { status: 201 });
+  } catch (error) {
+    logger.error(&quot;Error processing referral:&quot;, { error: error.message });
+    return NextResponse.json({ message: &quot;Internal Server Error&quot; }, { status: 500 });
+  }
+}
+```
+
+### 2. Request Tracing (`src/lib/tracer.ts`)
+
+- **File:** `src/lib/tracer.ts`
+- **Description:** Implement OpenTelemetry for distributed tracing. This allows tracking requests across different components (middleware, routes, database calls).
+
+```typescript
+// src/lib/tracer.ts
+import { diag, trace, context, propagation } from &#x27;@opentelemetry/api&#x27;;
+import { NodeTracerProvider } from &#x27;@opentelemetry/node&#x27;;
+import { ConsoleSpanExporter } from &#x27;@opentelemetry/sdk-trace-exporters&#x27;;
+import { SimpleSpanProcessor } from &#x27;@opentelemetry/sdk-trace-base&#x27;;
+import { W3CTraceContextPropagator } from &#x27;@opentelemetry/web&#x27;;
+
+diag.setLogger(new (class extends console { /* no output */ })(), 1);
+
+const provider = new NodeTracerProvider();
+provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
+provider.register();
+
+trace.setPropagator(new W3CTraceContextPropagator());
+export const tracer = provider.getTracer(&quot;prfc-connect-referrals&quot;);
+export const activeSpan = context.active();
+```
+
+**With Middleware for Automatic Tracing (`src/middleware/tracing.ts`):**
+
+- **File:** `src/middleware/tracing.ts`
+- **Description:** Create a middleware that automatically traces incoming requests. This ensures that every API route is traced without modifying each route handler.
+
+```typescript
+// src/middleware/tracing.ts
+import { NextResponse } from &#x27;next/server&#x27;;
+import { setSpanStatus, traceContext } from &#x27;next/dist/server/tracing&#x27;;
+import { tracer, activeSpan } from &quot;@/lib/tracer&quot;;
+
+export function middleware(request: Request) {
+  const span = tracer.startSpan(`http.request`, {
+    kind: &quot;SERVER&quot;,
+    attributes: {
+      &quot;http.method&quot;: request.method,
+      &quot;http.url&quot;: request.url,
+    },
+  });
+
+  // If there&#x27;s an existing trace context, continue it
+  if (traceContext.getSpanId() !== undefined) {
+    span.spanId = traceContext.getSpanId();
+    span.traceId = traceContext.getTraceId();
+  }
+
+  trace.setSpan(span);
+
+  // Cleanup
+  const cleanup = () =&gt; {
+    span.end();
+    trace.resetContext();
+  };
+
+  const originalBody = request.body;
+  const originalMethod = request.method;
+
+  // Ensure the span is ended when the request completes
+  const response = NextResponse.next(request);
+
+  // If the request is a POST, PUT, PATCH, or DELETE, read the body to prevent double reading
+  if (originalMethod !== &quot;GET&quot; &amp;&amp; originalMethod !== &quot;HEAD&quot;) {
+    const body = originalBody instanceof ReadableStream
+      ? (async function () {
+          const reader = originalBody.getReader();
+          let chunk = &quot;&quot;;
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunk += new TextDecoder().decode(value);
+          }
+          return chunk;
+        })()
+      : originalBody;
+
+    if (body) {
+      try {
+        // This adds the payload to the span&#x27;s attributes
+        const data = JSON.parse(body);
+        for (const key in data) {
+          span.setAttribute(`http.request.body.${key}`, data[key]);
+        }
+      } catch (e) {
+        // If not JSON, just log the length
+        span.setAttribute(&quot;http.request.body.size&quot;, body.length);
+      }
+    }
+  }
+
+  // Set the status code of the span when the response is committed
+  response.body = new WritableStream({
+    write(chunk: Uint8Array) {
+      // The span might have already been ended if there was an error
+      if (span.status === &quot;ERROR&quot; || span.status === &quot;UNSET&quot;) return;
+      if (activeSpan === null) return;
+
+      // Update span with response body content
+      const text = new TextDecoder().decode(chunk);
+      span.setAttribute(&quot;http.response.body&quot;, text);
+
+      // If the total body size exceeds a certain threshold, only log the size
+      if (text.length &gt; 5000) {
+        span.setAttribute(&quot;http.response.body.size&quot;, text.length);
+      }
+    },
+    close() {
+      if (span.status === &quot;ERROR&quot; || span.status === &quot;UNSET&quot;) return;
+      if (activeSpan === null) return;
+
+      // End the span with the final HTTP status
+      if (response.status &gt;= 400 &amp;&amp; response.status &lt; 600) {
+        span.setStatus({ code: &quot;ERROR&quot;, message: `HTTP error ${response.status}` });
+      }
+      span.end();
+      trace.resetContext();
+    },
+    abort(reason) {
+      span.setStatus({ code: &quot;ERROR&quot;, message: `Request aborted: ${reason}` });
+      span.end();
+      trace.resetContext();
+    },
+  }, { highWaterMark: 1 });
+
+  return response;
+}
+```
+
+**Enabling Middleware (`next.config.ts`):**
+
+- **File:** `next.config.ts`
+- **Description:** Enable the tracing middleware for all routes.
+
+```typescript
+// next.config.ts
+import { defineConfig } from &#x27;next.config&#x27;;
+
+export default defineConfig({
+  reactStrictMode: true,
+  experimental: {
+    turbo: true,
+  },
+  middleware: [
+    {
+      source: &quot;route&quot;,
+      matcher: &quot;/api/referrals&quot;,
+      handler: &quot;/src/middleware/tracing.ts&quot;,
+    },
+  ],
+});
+```
+
+### 3. Basic Metrics (`src/lib/metrics.ts`)
+
+- **File:** `src/lib/metrics.ts`
+- **Description:** Use a metrics library to collect basic request metrics such as count, latency, and error rates. This example uses `prom-client` to expose metrics via an `/api/metrics` endpoint and collect request-specific metrics.
+
+```typescript
+// src/lib/metrics.ts
+import { Counter, Histogram, register } from &#x27;prom-client&#x27;;
+
+// Default metrics
+export const requestCount = new Counter({
+  name: &#x27;http_requests_total&#x27;,
+  help: &#x27;Total number of HTTP requests&#x27;,
+  labelNames: [&#x27;method&#x27;, &#x27;route&#x27;, &#x27;status_code&#x27;],
+});
+export const requestLatency = new Histogram({
+  name: &#x27;http_request_duration_seconds&#x27;,
+  help: &#x27;Duration of HTTP requests in seconds&#x27;,
+  labelNames: [&#x27;method&#x27;, &#x27;route&#x27;],
+  // Include all standard HTTP status codes
+  buckets: Array.from({ length: 500 }, (_, i) =&gt; i + 100).filter(code =&gt; code % 100 === 0),
+});
+
+// Collect request metrics
+export function collectRequestMetrics() {
+  return async (req: Request, res: NextResponse, next: () =&gt; void) =&gt; {
+    const start = Date.now();
+    const method = req.method;
+    const route = req.nextUrl.pathname;
+
+    requestCount.inc({ method, route, status_code: res.status });
+
+    try {
+      await next();
+    } finally {
+      const duration = (Date.now() - start) / 1000; // Convert to seconds
+      requestLatency.observe({ method, route }, duration);
+    }
+  };
+}
+
+// Expose metrics endpoint
+export function metricsEndpoint() {
+  return async (req: Request) =&gt; {
+    const metrics = register.metrics();
+    return new Response(metrics, {
+      headers: { &#x27;content-type&#x27;: &#x27;text/plain;version=0.0.4&#x27; },
+    });
+  };
+}
+```
+
+**Using Metrics in Middleware (`src/middleware/metrics.ts`):**
+
+- **File:** `src/middleware/metrics.ts`
+- **Description:** Integrate the metrics collector into the request lifecycle.
+
+```typescript
+// src/middleware/metrics.ts
+import { NextResponse } from &#x27;next/server&#x27;;
+import { requestCount, requestLatency, collectRequestMetrics } from &quot;@/lib/metrics&quot;;
+
+export function middleware(request: Request) {
+  const originalMethod = request.method;
+  const originalRoute = request.nextUrl.pathname;
+
+  const metricsCleanup = collectRequestMetrics()(request, NextResponse.next(request),          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Design an approach for observability (metrics/logging/tracing) across API routes and services with minimal code churn.          </p>
+          <p class="lt-p">
+Response: To implement observability (metrics, logging, and tracing) across the PRFC Connect codebase with minimal code churn, a decorator pattern can be used. This will allow adding observability to new routes and services without modifying their core logic. The OpenTelemetry Collector will be responsible for collecting and exporting the data to Prometheus and Jaeger.
+
+### 1. Prerequisites
+
+*   **OpenTelemetry SDKs**: Install `@opentelemetry/sdk-node` and `@opentelemetry/api`:
+    
+```bash
+npm install @opentelemetry/sdk-node @opentelemetry/api
+```
+
+*   **OpenTelemetry Exporters**: Install `@opentelemetry/exporter-prometheus` for metrics and `@opentelemetry/exporter-trace-gethop` for traces:
+    
+```bash
+npm install @opentelemetry/exporter-prometheus @opentelemetry/exporter-trace-gethop
+```
+
+*   **OpenTelemetry Collector**: Ensure the collector is running and configured to receive data from the instrumented application and export it to your chosen backend (e.g., Prometheus for metrics, Jaeger for traces).
+
+### 2. Initialize OpenTelemetry
+
+Create a file `src/utils/observability.ts` to initialize OpenTelemetry:
+
+**src/utils/observability.ts**
+```typescript
+import { OpenTelemetryRPCInstrumentation } from &#x27;@opentelemetry/web&#x27;;
+import { OTLPTraceExporter } from &#x27;@opentelemetry/exporter-trace-gethop&#x27;;
+import { PrometheusMeter } from &#x27;@opentelemetry/exporter-prometheus&#x27;;
+import { MeterProvider, ManualMeter} from &#x27;@opentelemetry/sdk-metrics&#x27;;
+import { WebAPMInstrumentation } from &#x27;@opentelemetry/instrumentation-web&#x27;;
+
+// Initialize trace exporter
+const traceExporter = new OTLPTraceExporter({
+    endpoint: &#x27;http://localhost:4317&#x27;, // Update with your collector&#x27;s HTTP endpoint
+    headers: {
+        &#x27;Authorization&#x27;: &#x27;Bearer YOUR_COLLECTOR_TOKEN&#x27;, // If authentication is required
+    },
+});
+
+// Initialize metrics exporter
+const metricsExporter = new PrometheusMeter({
+    endpoint: &#x27;http://localhost:4318/metrics&#x27;, // Update with your collector&#x27;s Prometheus HTTP endpoint
+});
+
+// Initialize trace and metrics providers
+export const traceProvider = await traceExporter.initializeTraceProvider();
+export const meterProvider = new MeterProvider().addExporters(metricsExporter);
+
+// // Initialize web APM instrumentation
+// export const webAPMInstrumentation = new WebAPMInstrumentation({
+//     environment: &#x27;development&#x27;, // &#x27;production&#x27; or &#x27;development&#x27;
+//     serviceName: &#x27;prfc-connect-api&#x27;,
+//     serverPort: 3000, // Update with your API&#x27;s port
+// });
+
+// // Start web APM instrumentation
+// await webAPMInstrumentation.load();
+```
+
+### 3. Decorator for API Routes
+
+Create `src/utils/api-route-logger.ts` to add logging and basic metrics to API routes:
+
+**src/utils/api-route-logger.ts**
+```typescript
+export function apiRouteLogger(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const originalMethod = descriptor.value;
+
+    descriptor.value = async function (this: any, ...args: any[]) {
+        const meter = globalThis.meterProvider.getMeter(&quot;api-route&quot;);
+        const measurement = meter.createHistogram(&quot;api_route_latency_seconds&quot;, { unit: &quot;seconds&quot; });
+
+        const name = `API Route: ${this.constructor.name}#${propertyKey}`;
+        const span = traceProvider.getTracer(&quot;api-route-tracer&quot;).startSpan(name);
+
+        const req = args[0]; // Assuming the first argument is the HTTP request object
+        const startTimestamp = process.hrtime.bigint();
+
+        // Log incoming request
+        console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+        console.log(`Headers: ${JSON.stringify(req.headers, null, 2).substring(0, 200)}...`); // Limit log size
+        console.log(`Body: ${JSON.stringify(req.body, null, 2).substring(0, 200)}...`); // Limit log size
+
+        try {
+            await span.setAttribute(&quot;http.method&quot;, req.method);
+            await span.setAttribute(&quot;http.url&quot;, req.url);
+
+            const result = await originalMethod.apply(this, args);
+
+            const duration = (process.hrtime.bigint() - startTimestamp) / 1e9;
+            measurement.record(duration);
+
+            span.setStatus({ code: trace.Status.Code.OK });
+            span.end();
+
+            return result;
+        } catch (error: any) {
+            console.error(`[${new Date().toISOString()}] ${name} - Error: ${error.message}`);
+            console.error(`Stack Trace: ${error.stack}`); // Include stack trace for debugging
+
+            span.setStatus({ code: trace.Status.Code.ERROR, message: error.message });
+            span.recordException(error);
+
+            // Log error details
+            console.error(`[${new Date().toISOString()}] ${name} - Error details: ${JSON.stringify(error, null, 2).substring(0, 200)}...`); // Limit log size
+
+            span.end();
+            throw error;
+        }
+    };
+}
+```
+
+### 4. Decorator for Services
+
+Create `src/utils/service-logger.ts` to add logging and metrics to service methods:
+
+**src/utils/service-logger.ts**
+```typescript
+export function serviceLogger(target: any, propertyName: string, descriptor: PropertyDescriptor) {
+    const originalMethod = descriptor.value;
+
+    descriptor.value = async function (this: any, ...args: any[]) {
+        const meter = globalThis.meterProvider.getMeter(&quot;service&quot;);
+        const measurement = meter.createHistogram(&quot;service_method_latency_seconds&quot;, { unit: &quot;seconds&quot; });
+
+        const name = `Service Method: ${this.constructor.name}#${propertyName}`;
+        const span = traceProvider.getTracer(&quot;service-tracer&quot;).startSpan(name);
+
+        try {
+            await span.setAttribute(&quot;service.method&quot;, propertyName);
+
+            const result = await originalMethod.apply(this, args);
+
+            const duration = (process.hrtime.bigint() - startTimestamp) / 1e9;
+            measurement.record(duration);
+
+            span.setStatus({ code: trace.Status.Code.OK });
+            span.end();
+
+            return result;
+        } catch (error: any) {
+            console.error(`[${new Date().toISOString()}] ${name} - Error: ${error.message}`);
+            console.error(`Stack Trace: ${error.stack}`); // Include stack trace for debugging
+
+            span.setStatus({ code: trace.Status.Code.ERROR, message: error.message });
+            span.recordException(error);
+
+            // Log error details
+            console.error(`[${new Date().toISOString()}] ${name} - Error details: ${JSON.stringify(error, null, 2).substring(0, 200)}...`); // Limit log size
+
+            span.end();
+            throw error;
+        }
+    };
+}
+```
+
+### 5. Apply Decorators
+
+**Minimal Code Churn:**
+Existing API route handlers and service methods will *not* need to change; the decorators will be applied declaratively.
+
+**Example - API Route (`src/app/api/referrals/route.ts`):**
+
+```typescript
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { apiRouteLogger } from &quot;@/utils/api-route-logger&quot;;
+import { prisma } from &quot;@/utils/prisma&quot;;
+import { hashPassword } from &quot;@/utils/auth&quot;;
+
+// ... existing code ...
+
+export async function POST(req: NextRequest) {
+    // ... existing logic ...
+}
+
+// Apply the apiRouteLogger decorator to the POST and GET methods
+export async function POST(req: NextRequest) {
+    // ... existing logic ...
+}
+export async function GET(req: NextRequest) {
+    // ... existing logic ...
+}
+```
+
+**Example - Service Method (`src/services/referralService.ts`):**
+
+```typescript
+import { serviceLogger } from &quot;@/utils/service-logger&quot;;
+import { prisma } from &quot;@/utils/prisma&quot;;
+
+// ... existing code ...
+
+export class ReferralService {
+    // Apply the serviceLogger decorator to all methods
+    async createReferral(data: { name: string; email: string; code: string }) {
+        // ... existing logic ...
+    }
+
+    async getAllReferrals() {
+        // ... existing logic ...
+    }
+
+    async updateReferral(id: number, data: { name?: string; status?: &#x27;pending&#x27; | &#x27;redeemed&#x27; }) {
+        // ... existing logic ...
+    }
+
+    async deleteReferral(id: number) {
+        // ... existing logic ...
+    }
+}
+```
+
+### 6. Testing and Validation
+
+*   **Tracing**: Open Jaeger (http://localhost:16686) and verify traces for API routes and service calls.
+*   **Metrics**: Access Prometheus (http://localhost:9090) to view metrics like `api_route_latency_seconds` and `service_method_latency_seconds`.
+*   **Logging**: Check the application logs (e.g., `next-dev.log` or any configured logger output) to ensure all incoming requests, errors, and service method executions are logged.
+
+This approach ensures that all new API routes and service methods are automatically instrumented with logging, metrics, and tracing, minimizing code changes to the existing logic.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Design an approach for observability (metrics/logging/tracing) across API routes and services with minimal code churn.          </p>
+          <p class="lt-p">
+Response: To implement observability (metrics, logging, tracing) across API routes and services in the PRFC Connect codebase with minimal code churn, a **middleware-based approach** using **OpenTelemetry** is recommended. This ensures consistent instrumentation with minimal changes to existing route handlers.
+
+### 1. Install Dependencies
+
+Install necessary packages for OpenTelemetry:
+
+```bash
+npm install @opentelemetry/api @opentelemetry/sdk-node @opentelemetry/exporter-trace-community @opentelemetry/exporter-metrics-community @opentelemetry/sdk-metrics-node @opentelemetry/sdk-resources @opentelemetry/metrics @opentelemetry/exporter-logs @opentelemetry/exporter-log-window
+```
+
+### 2. Configure OpenTelemetry
+
+Create a new file: `src/lib/opentelemetry.ts` to configure the SDKs:
+
+```typescript
+// src/lib/opentelemetry.ts
+import { Resource } from &#x27;@opentelemetry/sdk-node&#x27;;
+import { NodeSDK } from &#x27;@opentelemetry/sdk-node&#x27;;
+import { OTLPTraceExporter } from &#x27;@opentelemetry/exporter-trace-community&#x27;;
+import { OTLPMetricExporter } from &#x27;@opentelemetry/exporter-metrics-community&#x27;;
+import { ConsoleLogger } from &#x27;@opentelemetry/exporter-logs&#x27;;
+import { MetricCollector } from &#x27;@opentelemetry/sdk-metrics&#x27;;
+import { PeriodicMetricReader } from &#x27;@opentelemetry/sdk-metrics-node&#x27;;
+import { SemanticAttributes } from &#x27;@opentelemetry/api-metrics&#x27;;
+import { WebTracingIntegration } from &#x27;@opentelemetry/web&#x27;; // Ensure if frontend tracing is needed
+
+// Tracing configuration
+const traceExporter = new OTLPTraceExporter({
+  endpoint: &#x27;http://localhost:4317&#x27;, // Update to your collector&#x27;s endpoint
+});
+
+const traceSdk = new NodeSDK({
+  traceExporter,
+  defaultAttributes: {
+    &#x27;service.name&#x27;: &#x27;prfc-connect-api&#x27;,
+    &#x27;service.version&#x27;: require(&#x27;../../package.json&#x27;).version,
+  },
+  spanLimits: {
+    maxSpans: 1000, // Adjust as needed
+    maxAttributesPerSpan: 30,
+    maxMessageEventsPerSpan: 100,
+    maxAttributeValueLength: 2000,
+  },
+  includeAllSources: false,
+  ignoreAttributes: true,
+  readerQueueSize: 20,
+});
+
+// Metrics configuration
+const metricsExporter = new OTLPMetricExporter({
+  endpoint: &#x27;http://localhost:4317&#x27;, // Update to your collector&#x27;s endpoint
+});
+
+const metricReader = new PeriodicMetricReader({
+  exporter: metricsExporter,
+  interval: 5000, // in milliseconds
+});
+
+const metricsSdk = new NodeSDK({
+  metricReader,
+  attributeConfig: {
+    maxAttributesPerEvent: 30,
+  },
+  readerQueueSize: 20,
+});
+
+// Logging configuration (console)
+const logger = new ConsoleLogger();
+const logExporter = new ConsoleLogger();
+
+// Initialize SDKs
+traceSdk.start();
+metricsSdk.start();
+logExporter.start();
+export { traceSdk, metricsSdk, logger };
+```
+
+### 3. Create a Request Body Parser Middleware
+
+Create a middleware to parse the request body and set trace context:
+
+```typescript
+// src/middleware/bodyParser.ts
+import { NextRequest, NextResponse } from &#x27;next/server&#x27;;
+import { parse } from &#x27;body-parser&#x27;;
+import { traceContext } from &#x27;@opentelemetry/api&#x27;;
+
+export function bodyParser() {
+  return (request: NextRequest, response: NextResponse, next: () =&gt; void) =&gt; {
+    const originalEnd = response.end;
+
+    response.end = function (body?: any, ...args: any[]) {
+      // Parse the body and set trace context
+      const traceId = traceContext.isTraceContextRequestHeaders(request.headers)
+        ? traceContext.traceIDFromContext()
+        : &#x27;none&#x27;;
+      const spanId = traceContext.isTraceContextRequestHeaders(request.headers)
+        ? traceContext.spanIDFromContext()
+        : &#x27;none&#x27;;
+
+      // Example: Log request details
+      /* src/lib/opentelemetry.ts already logs request method, path, and status. */
+      // In src/middleware/bodyParser.ts, you can log the parsed body if it&#x27;s JSON:
+      if (request.body &amp;&amp; typeof request.body === &#x27;string&#x27;) {
+        try {
+          const parsedBody = JSON.parse(request.body);
+          console.log(`[${request.method}] ${request.nextUrl.pathname} - Body: ${JSON.stringify(parsedBody)}`);
+        } catch (e) {
+          console.log(`[${request.method}] ${request.nextUrl.pathname} - Body: ${request.body}`);
+        }
+      }
+
+      // Continue to original end
+      originalEnd.apply(response, [body, ...args]);
+      next();
+    };
+
+    parse.json()(request, response, next);
+  };
+}
+```
+
+### 4. Integrate Middleware and Instrumentation
+
+Update `src/app/api/main.ts` to use the body parser and instrument each route:
+
+```typescript
+// src/app/api/main.ts
+import { NextRequest, NextResponse } from &#x27;next/server&#x27;;
+import { log } from &#x27;next-logs&#x27;; // If using next-logs package
+import { trace, context } from &#x27;@opentelemetry/api&#x27;;
+import { Meter } from &#x27;@opentelemetry/sdk-metrics&#x27;;
+import { getMeterProvider } from &#x27;@opentelemetry/sdk-metrics-node&#x27;;
+import { SemanticAttributes } from &#x27;@opentelemetry/api-metrics&#x27;;
+import { metricsSdk } from &#x27;./lib/opentelemetry&#x27;;
+import { bodyParser } from &#x27;./middleware/bodyParser&#x27;;
+import { POST as createReferral } from &#x27;./referrals/route&#x27;;
+import { GET, POST as updateReferral } from &#x27;./referrals/[id]/route&#x27;;
+import { POST as redeemReferral } from &#x27;./referrals/[id]/redeem/route&#x27;;
+import { POST as createCommission } from &#x27;./commissions/route&#x27;;
+import { POST as updateCommission } from &#x27;./commissions/[id]/route&#x27;;
+import { POST as generateReport } from &#x27;./reports/generate/route&#x27;;
+import { POST as sendEmail } from &#x27;./emails/route&#x27;;
+
+const meter: Meter = getMeterProvider().getMeter(&#x27;prfc-connect-api&#x27;);
+
+export async function POST(request: NextRequest) {
+  const originalBody = request.body;
+
+  // Set the trace context correctly
+  // This is crucial for propagating the parent span
+  const traceHeaders = traceContext.extract(request.headers, {
+    &#x27;traceparent&#x27;: &#x27;00-{{TRACE_ID}}-{{SPAN_ID}-l&#x27;,
+    &#x27;tracestate&#x27;: &#x27;user=my_custom_trace_state_value&#x27;
+  });
+
+  trace.setContext(context.setTraceFlags(traceContext.getTraceFlags(traceHeaders)), traceHeaders);
+
+  const routePath = request.nextUrl.pathname;
+
+  // Log the initial request
+  console.log(`[${request.method}] ${routePath} - Received`);
+
+  // Get the appropriate handler based on the route
+  let handlerResponse: Response | null = null;
+  let status = 200;
+
+  try {
+    // Apply body parser middleware
+    await new Promise&lt;void&gt;((resolve, reject) =&gt; {
+      bodyParser()(request, NextResponse.next(), (error: Error | null) =&gt; {
+        if (error) {
+          console.error(`[${request.method}] ${routePath} - Error parsing body: ${error.message}`);
+          status = 400;
+          resolve();
+        } else {
+          resolve();
+        }
+      });
+    });
+
+    // Start a new span for the API call
+    const span = trace.getActiveSpan();
+    if (span) {
+      span.setStatus({ code: trace.SpanStatus.UNSET });
+      span.setAttribute(&#x27;http.method&#x27;, request.method);
+      span.setAttribute(&#x27;http.route&#x27;, routePath);
+    }
+
+    // Call the specific route handler
+    switch (routePath) {
+      case &#x27;/api/referrals&#x27;:
+        handlerResponse = await createReferral(request);
+        break;
+      case &#x27;/api/referrals/[id]/redeem&#x27;:
+        handlerResponse = await redeemReferral(request);
+        break;
+      case &#x27;/api/commissions&#x27;:
+        handlerResponse = await createCommission(request);
+        break;
+      case &#x27;/api/commissions/[id]&#x27;:
+        handlerResponse = await updateCommission(request);
+        break;
+      case &#x27;/api/reports/generate&#x27;:
+        handlerResponse = await generateReport(request);
+        break;
+      case &#x27;/api/emails&#x27;:
+        handlerResponse = await sendEmail(request);
+        break;
+      default:
+        console.warn(`[${request.method}] ${routePath} - Route not found`);
+        status = 404;
+        handlerResponse = NextResponse.json({ error: &#x27;Route not found&#x27; }, { status });
+        break;
+    }
+
+    if (handlerResponse) {
+      // Set the status from the handler
+      status = handlerResponse.status;
+
+      // Example: Add custom metrics for successful responses
+      if (status &gt;= 200 &amp;&amp; status &lt; 300) {
+        const metric = metricsSdk.selectMetric(&#x27;http_request_count&#x27;, &#x27;Counter&#x27;);
+        metric.add({
+          value: 1,
+          attributes: {
+            &#x27;http.method&#x27;: request.method,
+            &#x27;http.route&#x27;: routePath,
+            &#x27;http.status_code&#x27;: status,
+          },
+        });
+      } else {
+        const metric = metricsSdk.selectMetric(&#x27;http_error_count&#x27;, &#x27;Counter&#x27;);
+        metric.add({
+          value: 1,
+          attributes: {
+            &#x27;http.method&#x27;: request.method,
+            &#x27;http.route&#x27;: routePath,
+            &#x27;http.status_code&#x27;: status,
+          },
+        });
+      }
+    } else {
+      // Default to 200 if no handlerResponse (e.g., route not found)
+      status = 200;
+    }
+  } catch (error: any) {
+    console.error(`[${request.method}] ${routePath} - Error: ${error.message}`);
+    status = 500;
+
+    // Log to dedicated error logger
+    // Ensure `src/lib/errorLogger.ts` is          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Design an approach for observability (metrics/logging/tracing) across API routes and services with minimal code churn.          </p>
+          <p class="lt-p">
+Response: Here&#x27;s a structured approach for implementing observability in the PRFC Connect codebase, focusing on metrics, logging, and tracing across API routes and services with minimal code churn. This solution leverages middleware for API routes and decorators for database services, ensuring consistency and centralization.
+
+### 1. Centralized Logger (Verbose, Pino)
+
+**Approach:** Implement a single, highly configurable logger using `pino` that is injected into all relevant parts of the application.
+
+*   **Pros:** High-performance, flexible, and supports detailed logging (e.g., request/response bodies, stack traces).
+*   **Cons:** Slight overhead compared to console.log, requires initial setup.
+
+**Implementation:**
+
+*   **Create src/lib/logger.ts:**
+
+    
+```typescript
+    // src/lib/logger.ts
+    import { createLogger, format, transport, Logger } from &#x27;pino&#x27;;
+
+    const transportInstance = transport({
+      target: &#x27;pino-pretty&#x27;,
+      options: {
+        translateTime: true,
+        ignoreOnce: true,
+        levelFirst: true,
+      },
+    });
+
+    const logger = createLogger({
+      level: process.env.LOG_LEVEL || &#x27;info&#x27;,
+      transports: [transportInstance],
+    });
+
+    export default logger;
+    ```
+
+    *   **Introduce a logger dependency injection:** Modify `src/libs/db.ts` and `src/app/api/referrals/route.ts` to accept and use this logger.
+
+### 2. Request and Response Body Logging
+
+**Approach:** Middleware to capture and log request and response bodies, excluding sensitive data.
+
+*   **Pros:** Provides a clear audit trail of all incoming and outgoing data.
+*   **Cons:** Potential privacy/security concerns if sensitive data is accidentally logged; requires careful redaction.
+
+**Implementation:**
+
+*   **Create src/lib/requestBodyLoggerMiddleware.ts:**
+
+    
+```typescript
+    // src/lib/requestBodyLoggerMiddleware.ts
+    import { NextRequest, NextResponse } from &#x27;next/server&#x27;;
+    import logger from &#x27;./logger&#x27;;
+
+    export function logRequestMiddleware(req: NextRequest, res: NextResponse): void {
+      logger.info(&#x27;Incoming Request:&#x27;, {
+        method: req.method,
+        url: req.url,
+        headers: Object.fromEntries(req.headers.entries()),
+        body: redactSensitiveData(req.body),
+      });
+    }
+
+    export function logResponseMiddleware(req: NextRequest, res: NextResponse): void {
+      logger.info(&#x27;Outgoing Response:&#x27;, {
+        method: req.method,
+        url: req.url,
+        status: res.status,
+        headers: Object.fromEntries(res.headers.entries()),
+        body: redactSensitiveData(res.data),
+      });
+    }
+
+    // Redact sensitive data from logs
+    function redactSensitiveData(data: any): any {
+      if (typeof data !== &#x27;object&#x27; || data === null) return data;
+
+      // Example: Redact any keys like &quot;password&quot;, &quot;token&quot;, &quot;secret&quot;, &quot;key&quot;
+      const redacted = {};
+      for (const [key, value] of Object.entries(data)) {
+        if ([&#x27;password&#x27;, &#x27;token&#x27;, &#x27;secret&#x27;, &#x27;key&#x27;, &#x27;session&#x27;, &#x27;cookie&#x27;].includes(key.toLowerCase())) {
+          redacted[key] = &#x27;[REDACTED]&#x27;;
+        } else if (typeof value === &#x27;object&#x27;) {
+          redacted[key] = redactSensitiveData(value);
+        } else {
+          redacted[key] = value;
+        }
+      }
+      return redacted;
+    }
+    ```
+
+    *   **Apply to API routes:** Modify `src/app/api/referrals/route.ts` to use the middleware.
+
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    import { NextRequest, NextResponse } from &#x27;next/server&#x27;;
+    import { Router } from &#x27;express&#x27;;
+    import logger from &#x27;@/lib/logger&#x27;;
+    import { logRequestMiddleware, logResponseMiddleware } from &#x27;@/lib/requestBodyLoggerMiddleware&#x27;;
+    import { PrismaClient } from &#x27;@prisma/client&#x27;;
+    import { verifyToken } from &#x27;@/utils/jwt&#x27;;
+    import { generateReferralCode } from &#x27;@/utils/referral&#x27;;
+    import { sendReferralEmail } from &#x27;@/services/email&#x27;;
+    import { getAuth0User } from &#x27;@/services/auth0&#x27;;
+    import { prismaErrorHandler } from &#x27;@/lib/errorHandler&#x27;;
+    import { StatusCodes } from &#x27;http-status-codes&#x27;;
+    import { unstable_noStore } from &#x27;next/cache&#x27;;
+
+    const prisma = new PrismaClient();
+    const router = Router();
+
+    // Apply request body logging middleware
+    router.use(logRequestMiddleware);
+
+    // Existing POST route logic
+    router.post(
+      &#x27;/create&#x27;,
+      async (req: NextRequest, res: NextResponse) =&gt; {
+        try {
+          unstable_noStore();
+          const token = req.headers.get(&#x27;authorization&#x27;)?.split(&#x27; &#x27;)[1];
+          if (!token) {
+            logger.warn(&#x27;Unauthorized access attempt to /api/referrals/create&#x27;);
+            return res.status(StatusCodes.UNAUTHORIZED).json({ error: &#x27;Unauthorized&#x27; });
+          }
+
+          const decoded = verifyToken(token);
+          if (!decoded) {
+            logger.warn(&#x27;Token verification failed for /api/referrals/create&#x27;);
+            return res.status(StatusCodes.FORBIDDEN).json({ error: &#x27;Invalid token&#x27; });
+          }
+
+          const user = await getAuth0User(decoded.sub);
+          if (!user) {
+            logger.warn(`User not found for ID ${decoded.sub} when creating referral`);
+            return res.status(StatusCodes.NOT_FOUND).json({ error: &#x27;User not found&#x27; });
+          }
+
+          const existingReferral = await prisma.referral.findUnique({
+            where: { authorId: user.id },
+          });
+
+          if (existingReferral) {
+            logger.info(`Referral already exists for user ${user.id}.`);
+            return res.status(StatusCodes.BAD_REQUEST).json({ error: &#x27;Referral code already exists&#x27; });
+          }
+
+          const referralCode = generateReferralCode();
+          const expirationDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+
+          const newReferral = await prisma.referral.create({
+            data: {
+              authorId: user.id,
+              code: referralCode,
+              expirationDate,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            },
+          });
+
+          logger.info(`Referral created for user ${user.id}: Code ${referralCode}, Expiration ${expirationDate}`);
+
+          await sendReferralEmail(user.email, referralCode);
+
+          return res.status(StatusCodes.CREATED).json({ code: newReferral.code, message: &#x27;Referral created successfully&#x27; });
+        } catch (error) {
+          logger.error(&#x27;Error creating referral:&#x27;, error);
+          return prismaErrorHandler(error, res);
+        } finally {
+          // Apply response body logging middleware
+          logResponseMiddleware(req, res);
+          await prisma.$disconnect();
+        }
+      },
+      // ... existing POST route logic ...
+    );
+
+    export default router;
+    ```
+
+
+### 3. Error Handling and Metrics
+
+**Approach:** A unified error handler to centralize error logging and expose basic metrics (e.g., request count, error count) via HTTP endpoints.
+
+*   **Pros:** Centralized error reporting, easier debugging, and basic metrics for monitoring.
+*   **Cons:** Not as comprehensive as dedicated monitoring solutions (e.g., Datadog, New Relic).
+
+**Implementation:**
+
+*   **Create src/lib/metrics.ts (simplified for minimal code churn):**
+
+    
+```typescript
+    // src/lib/metrics.ts
+    // A simple in-memory metrics collector for demonstration; integrate with OpenTelemetry Metrics for production
+    export const metrics = {
+      totalRequests: 0,
+      errorCount: 0,
+      latency: 0,
+      get: 0,
+      post: 0,
+      put: 0,
+      delete: 0,
+      status: { 200: 0, 400: 0, 401: 0, 403: 0, 404: 0, 500: 0 },
+    };
+
+      // Increment request count and update latency
+      export function recordRequest(startTimestamp: number, method: string, status: number): void {
+        const latency = Date.now() - startTimestamp;
+        metrics.totalRequests += 1;
+        metrics.status[status] += 1;
+        metrics.latency += latency;
+        metrics[`${method.toLowerCase()}`] += 1;
+      }
+
+      // Increment error count
+      export function recordError(): void {
+        metrics.errorCount += 1;
+      }
+    ```
+
+
+### 4. Tracing (OpenTelemetry)
+
+**Approach:** Integrate OpenTelemetry for distributed tracing, automatically decorating database queries and external HTTP calls.
+
+*   **Pros:** Comprehensive tracing across services, supports observability platforms (e.g., Datadog, Honeycomb, AWS X-Ray).
+*   **Cons:** Requires more initial setup and configuration.
+
+**Implementation:**
+
+*   **Install necessary packages:**
+
+    
+```bash
+    npm install @opentelemetry/sdk-node @opentelemetry/api @opentelemetry/exporter-trace-otlp-http @opentelemetry/sdk-trace-readers-node @opentelemetry/instrumentations @opentelemetry/instrumentations-fetch @opentelemetry/instrumentations-http @opentelemetry/instrumentations-redis @opentelemetry/instrumentations-pug @opentelemetry/instrumentations-react-dom @opentelemetry/instrumentations-source-map-support
+    ```
+
+
+*   **Configure OpenTelemetry in src/lib/tracing.ts:**
+
+    
+```typescript
+    // src/lib/tracing.ts
+    import { trace, context, diag, propagation } from &#x27;@opentelemetry/api&#x27;;
+    import { OTLPMetricExporter, SimpleSchemaProcessor } from &#x27;@opentelemetry/exporter-metrics-ot          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Design an approach for observability (metrics/logging/tracing) across API routes and services with minimal code churn.          </p>
+          <p class="lt-p">
+Response: Here&#x27;s an approach for implementing observability (metrics, logging, tracing) across API routes and services in the PRFC Connect codebase (a Next.js application), designed to minimize new code churn by leveraging middleware and decorators, and integrating with Datadog:
+
+### 1. Centralized Logging
+
+**Goal:** Capture all API requests, responses, and key service events in a structured format for easy analysis.
+
+**Implementation:**
+
+*   **Middleware:** Create a Next.js middleware to log incoming requests and outgoing responses.
+    
+```typescript
+    // src/middleware/apiLoggerMiddleware.ts
+    import { NextRequest, NextResponse } from &#x27;next/server&#x27;;
+    import { logger } from &#x27;@/lib/logger&#x27;; // Ensure a structured logger is in place (e.g., pino-pretty + pino-merge-extras)
+    import { v4 as uuidv4 } from &#x27;uuid&#x27;;
+
+    export function apiLoggerMiddleware(req: NextRequest, res: NextResponse): NextResponse {
+      const requestId = uuidv4();
+      const { method, url, headers, body } = req;
+      const { status, headers: responseHeaders, body: responseBody } = res;
+
+      logger.info(
+        {
+          requestId,
+          method,
+          url,
+          headers: { ...headers, ...res.headers },
+          body,
+          status,
+          responseHeaders,
+          responseBody,
+        },
+        `API Request ${status}`
+      );
+
+      return res;
+    }
+    ``
+
+    **Integration:** Add this middleware to the Next.js application:
+    
+```typescript
+    // src/app/apiRoute.ts
+    import { NextResponse } from &#x27;next/server&#x27;;
+    import type { NextRequest } from &#x27;next/server&#x27;;
+    import middleware from &#x27;./middleware/apiLoggerMiddleware&#x27;;
+
+    export function middleware(request: NextRequest, response: NextResponse) {
+      return middleware(request, response);
+    }
+    export const config = {
+      matcher: &#x27;/api/&#x27;,
+    };
+    ```
+
+
+### 2. Distributed Tracing (OpenTelemetry Datadog Integration)
+
+**Goal:** Track the flow of requests across different components (API routes, services, database calls) and visualize them in Datadog.
+
+**Implementation:**
+
+*   **Decorator for Services:** Use a custom decorator to automatically create and propagate span contexts around asynchronous operations in your services.
+    
+```typescript
+    // src/decorators/tracer.ts
+    import { Context, trace } from &#x27;@opentelemetry/api&#x27;;
+    import { ChildSpanKind, Span, SpanKind, Tracer, trace as traceUtils } from &#x27;@opentelemetry/api&#x27;;
+    import { DatadogIntegration } from &#x27;@opentelemetry/integration-node&#x27;;
+    import { diag, DiagLogger, DiagLogLevel } from &#x27;@opentelemetry/api&#x27;;
+    import { OTLPTraceExporter } from &#x27;@opentelemetry/exporter-trace-otlp-http&#x27;;
+    import { NodePolyfills } from &#x27;@opentelemetry/polyfills&#x27;;
+    import { env } from &#x27;process&#x27;;
+
+    const logger: DiagLogger = diag;
+
+    const initTracer = (): Tracer =&gt; {
+      // Configure OpenTelemetry
+      logger.setDefaultLevel(DiagLogLevel.INFO);
+
+      NodePolyfills.loadPromises polyfills();
+
+      const traceExporter = new OTLPTraceExporter({
+        endpoint: &#x27;https://api.datadoghq.com/api/v2/traces&#x27;, // Replace with your Datadog endpoint
+        headers: {
+          &#x27;DD-API-KEY&#x27;: `${env.DD_API_KEY}`, // Environment variable for Datadog API key
+          &#x27;Content-Type&#x27;: &#x27;application/json; service=prfc-connect; version=1.0.0&#x27;,
+        },
+      });
+
+      const tracer = trace.get tracer();
+
+      // Load the Datadog integration
+      tracer.add Integration(DatadogIntegration);
+
+      // Set the exporter
+      tracer.setDefaultExporters(traceExporter);
+
+      return tracer;
+    };
+
+    const getSpan = (operationName: string, parentSpan?: Span): Span =&gt; {
+      const context: Context = parentSpan ? parentSpan.spanContext() : traceUtils.getCurrentSpan()!.spanContext();
+      const span = tracer.startSpan(
+        operationName,
+        {
+          kind: parentSpan ? ChildSpanKind : SpanKind.INTERNAL,
+          context,
+        }
+      );
+      return span;
+    };
+
+    const trace = {
+      init: initTracer,
+      getSpan: getSpan,
+      // Utility to automatically end and export a span
+      endSpan: (span: Span, errorMessage?: string) =&gt; {
+        if (errorMessage) {
+          span.setStatus({ code: Span.Status.Code.ERROR, message: errorMessage });
+        }
+        span.end();
+      },
+    };
+
+    export default trace;
+    ```
+
+    **Usage in Services:** Apply the decorator to asynchronous functions in your services to trace their execution.
+    
+```typescript
+    // src/services/referralService.ts
+    import { Trace } from &#x27;@/decorators/tracer&#x27;; // Updated to export getSpan and endSpan
+    import { PrismaClient } from &#x27;@prisma/client&#x27;;
+
+    const prisma = new PrismaClient();
+
+    export const createReferral = Trace(&quot;createReferral&quot;) // This starts a span named &quot;createReferral&quot;
+      .async(async (referralData: { /* ... fields */ }) =&gt; {
+        try {
+          // Database operation
+          const newReferral = await prisma.referral.create({
+            data: referralData,
+          });
+          return newReferral;
+        } catch (error) {
+          // Log the error (you might want a separate logger for errors)
+          console.error(&quot;Error creating referral:&quot;, error);
+          // End the span with an error status
+          Trace.endSpan(error.message);
+          throw error;
+        }
+      });
+    ```
+
+
+### 3. Custom Metrics (e.g., Request Count, Error Rate)
+
+**Goal:** Monitor the performance of your API routes and services (e.g., number of requests, error rates).
+
+**Implementation:**
+
+*   **Middleware for Metrics:** Extend the `apiLoggerMiddleware` to collect basic metrics like request count and error rate.
+    
+```typescript
+    // src/middleware/apiMetricsMiddleware.ts
+    import { NextRequest, NextResponse } from &#x27;next/server&#x27;;
+    import { logger } from &#x27;@/lib/logger&#x27;;
+    import { get, set } from &#x27;lodash&#x27;;
+
+    // A simple in-memory cache to count unique combination of path and method
+    const requestNameCache: { [key: string]: string } = {};
+
+    // Function to generate a unique &quot;name&quot; for a request path and method
+    const getRequestName = (path: string, method: string): string =&gt; {
+      const key = `${path}-${method}`;
+      if (!requestNameCache[key]) {
+        requestNameCache[key] = `${method.toLocaleUpperCase()}-${path.split(&#x27;/&#x27;).pop()}`;
+      }
+      return requestNameCache[key];
+    };
+
+    // Initialize Prometheus client
+    import { register, Gauge } from &#x27;prom-client&#x27;;
+
+    const requestCount = new Gauge({
+      name: &#x27;http_requests_total&#x27;,
+      help: &#x27;Total number of HTTP requests received&#x27;,
+      labelNames: [&#x27;method&#x27;, &#x27;route&#x27;, &#x27;status_code&#x27;, &#x27;request_name&#x27;],
+    });
+
+    const errorCount = new Gauge({
+      name: &#x27;http_requests_errors_total&#x27;,
+      help: &#x27;Total number of HTTP requests that resulted in an error (status &gt;= 400)&#x27;,
+      labelNames: [&#x27;method&#x27;, &#x27;route&#x27;, &#x27;request_name&#x27;, &#x27;status_code&#x27;],
+    });
+
+    export function apiMetricsMiddleware(req: NextRequest, res: NextResponse): NextResponse {
+      const requestId = uuidv4();
+      const { method, url } = req;
+      const route = url.split(&#x27;?&#x27;)[0]; // Remove query parameters
+      const requestName = getRequestName(route, method);
+      const status = res.status;
+
+      // Increment request count
+      requestCount.labels(method, route, status.toString(), requestName).inc();
+
+      // Increment error count if status indicates an error (HTTP status &gt;= 400)
+      if (status &gt;= 400) {
+        errorCount.labels(method, route, requestName, status.toString()).inc();
+      }
+
+      // Log using the existing logger
+      logger.info(
+        {
+          requestId,
+          method,
+          url: route,
+          status,
+          request_name: requestName,
+        },
+        `API Request ${status}`
+      );
+
+      return res;
+    }
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Design an approach for observability (metrics/logging/tracing) across API routes and services with minimal code churn.          </p>
+          <p class="lt-p">
+Response: Implementing observability (metrics, logging, and tracing) across the PRFC Connect codebase, specifically the `src/app/api/referrals/route.ts` file, can be done with OpenTelemetry (OTLP) to collect traces, Prometheus with OpenTelemetry Collector for metrics, and simple console or file logging for basic debugging. This approach minimizes code churn by using middleware and decorators where possible and centralizing configuration.
+
+### 1. **Tracing (OpenTelemetry)**
+
+**Goal:** Instrument API routes and service calls to capture request flow, execution time, and key events.
+
+**Implementation Steps:**
+
+1. **Install OpenTelemetry SDKs and necessary packages:**
+   ```bash
+   npm install @opentelemetry/sdk-node @opentelemetry/api @opentelemetry/exporter-trace-otlp-http @opentelemetry/instrumentation-http @opentelemetry/instrumentation-connect @opentelemetry/instrumentation-regex
+   ```
+
+2. **Configure OpenTelemetry in a dedicated file, e.g., `src/lib/observability.ts`:**
+   This file sets up the tracer, logs to console, and exports the tracer for use in routes and services.
+
+   **src/lib/observability.ts**
+   ```typescript
+   import { trace, context } from &quot;@opentelemetry/api&quot;;
+   import { OTLPTraceExporter } from &quot;@opentelemetry/exporter-trace-otlp-http&quot;;
+   import { SimpleSpanProcessor } from &quot;@opentelemetry/sdk-trace-base&quot;;
+   import { getNodeAutoInstrumentations } from &quot;@opentelemetry/auto-instrumentations-node&quot;;
+   import { OpenTelemetryExporter } from &quot;@opentelemetry/exporter-otlp-http&quot;;
+
+   // Configure the tracer
+   export const setupTracer = () =&gt; {
+     const tracer = trace.getTracer(&quot;prfc-connect-referrals&quot;);
+
+     // Configure the OTLP exporter (e.g., to Jaeger or Datadog)
+     const otlpExporter = new OTLPTraceExporter({
+       endpoint: &quot;http://localhost:4317/v1/traces&quot;, // Update to your collector&#x27;s address
+       headers: {
+         &quot;Authorization&quot;: &quot;Bearer YOUR_OTLP_EXPORTER_TOKEN&quot;, // If required
+       },
+     });
+
+     // Use the console exporter for temporary debugging without an OTLP endpoint
+     const consoleExporter = new OpenTelemetryExporter({
+       endpoint: &quot;http://localhost:4311&quot;,
+       headers: {
+         &quot;Authorization&quot;: &quot;Bearer YOUR_CONSOLE_EXPORTER_TOKEN&quot;, // If required
+       },
+       logger: console,
+     });
+
+     const spanProcessor = new SimpleSpanProcessor(consoleExporter);
+
+     tracer.setContextManager(context.propagation.W3CTraceContextPropagator.createContextManager());
+
+     return { tracer, otlpExporter, consoleExporter, spanProcessor };
+   };
+
+   // Export the initialized tracer
+   export const tracer = setupTracer().tracer;
+   ```
+
+3. **Integrate Tracer into API Routes (`src/app/api/referrals/route.ts`):**
+
+   **src/app/api/referrals/route.ts**
+   ```typescript
+   import { NextRequest, NextResponse } from &quot;next/server&quot;;
+   import { prisma } from &quot;@/lib/prisma&quot;;
+   import { Operation, tracer } from &quot;@/lib/observability&quot;;
+   import { format as formatDate } from &quot;date-fns&quot;;
+   import { v4 as uuidv4 } from &quot;uuid&quot;;
+
+   // ... [existing code] ...
+
+   async function createReferral(req: NextRequest): Promise&lt;NextResponse&gt; {
+     const span = tracer.startSpan(&quot;ReferralCreation&quot;, { kind: &quot;server&quot; });
+     let status: number;
+
+     try {
+       const body = await req.json();
+       const { referredBy, referredTo, ...rest } = body;
+
+       if (!referredBy || !referredTo) {
+         console.error(&quot;Missing &#x27;referredBy&#x27; or &#x27;referredTo&#x27; in request body&quot;);
+         return NextResponse.json(
+           { error: &quot;referredBy and referredTo are required&quot; },
+           { status: 400 }
+         );
+       }
+
+       console.log(`Processing referral for ${referredTo} referred by ${referredBy} at ${formatDate(new Date(), &quot;yyyy-MM-dd HH:mm:ss&quot;)}`);
+
+       // Example of adding a custom attribute
+       span.setAttribute(&quot;referred_by&quot;, referredBy);
+       span.setAttribute(&quot;referred_to&quot;, referredTo);
+
+       const newReferral = await prisma.referral.create({
+         data: {
+           id: uuidv4(),
+           referredBy,
+           referredTo,
+           ...rest,
+           createdAt: new Date(),
+           updatedAt: new Date(),
+         },
+       });
+
+       console.log(`Referral for ${referredTo} created successfully with ID: ${newReferral.id}`);
+
+       return NextResponse.json(newReferral, { status: 201 });
+     } catch (error) {
+       console.error(`Failed to create referral for ${referredTo} referred by ${referredBy}: ${error.message}`);
+       status = 500;
+       return NextResponse.json(
+         { error: &quot;Internal Server Error&quot; },
+         { status }
+       );
+     } finally {
+       span.end();
+     }
+   }
+
+   // Add similar integration to updateReferral, getAllReferrals, getReferralById, and deleteReferral.
+   ```
+
+### 2. **Metrics (Prometheus with OpenTelemetry Collector)**
+
+**Goal:** Collect custom metrics (e.g., request count, error rate, latency) for API routes.
+
+**Implementation Steps:**
+
+1. **Install OpenTelemetry Collector (as a separate service):**
+   Follow the official documentation to install and configure the OpenTelemetry Collector to export metrics to Prometheus.
+   [OpenTelemetry Collector Documentation](https://opentelemetry.io/docs/collector/)
+
+2. **Configure Metrics Exporter in `src/lib/observability.ts`:**
+   Integrate the Prometheus metrics exporter with the OpenTelemetry SDK.
+
+   **src/lib/observability.ts**
+   ```typescript
+   import { Meter, context } from &quot;@opentelemetry/api&quot;;
+   import { OTLPMetricExporter } from &quot;@opentelemetry/exporter-metrics-otlp-http&quot;;
+   import { PeriodicExportingMetricReader } from &quot;@opentelemetry/sdk-metrics&quot;;
+   import { PrometheusMetricFilter } from &quot;@opentelemetry/sdk-metrics-export&quot;;
+   import { MeterProvider } from &quot;@opentelemetry/sdk-metrics&quot;;
+
+   // ... [existing code] ...
+
+   export const setupMeter = () =&gt; {
+     const meter = Meter.get(&quot;prfc-connect-referrals&quot;);
+
+     // Configure Prometheus metrics exporter
+     const reader = new PeriodicExportingMetricReader({
+       exporter: new OTLPMetricExporter({
+         endpoint: &quot;http://localhost:4317/v1/metrics&quot;, // Update to your collector&#x27;s address
+         headers: {
+           &quot;Authorization&quot;: &quot;Bearer YOUR_OTLP_EXPORTER_TOKEN&quot;, // If required
+         },
+       }),
+       exportIntervalMillis: 5000, // Export metrics every 5 seconds
+     });
+
+     const meterProvider = new MeterProvider({
+       metricReaders: [reader],
+     });
+
+     meterProvider.registerMetrics(meter);
+
+     // Example custom metrics
+     const httpRequestCount = meter.createCounter(&quot;http_request_count&quot;, {
+       description: &quot;Total number of HTTP requests&quot;,
+       unit: &quot;1&quot;,
+     });
+
+     const httpRequestDurationMilliseconds = meter.createHistogram(&quot;http_request_duration_milliseconds&quot;, {
+       description: &quot;Duration of HTTP requests in milliseconds&quot;,
+       unit: &quot;milliseconds&quot;,
+       // Include relevant labels like method, route, http_status_code
+       labels: [&quot;method&quot;, &quot;route&quot;, &quot;http_status_code&quot;],
+     });
+
+     // Prometheus metric filter to differentiate metrics from different modules
+     const filter = new PrometheusMetricFilter({
+       metricName: (originalName) =&gt; {
+         // Example: Rename metrics to include the module name
+         if (originalName.startsWith(&quot;http_request_count&quot;)) {
+           return &quot;prfc_connect_referrals_http_request_count&quot;;
+         }
+         if (originalName.startsWith(&quot;http_request_duration_milliseconds&quot;)) {
+           return &quot;prfc_connect_referrals_http_request_duration_milliseconds&quot;;
+         }
+         return originalName;
+       },
+     });
+
+     reader.addMetricFilter(filter);
+
+     return { meter, httpRequestCount, httpRequestDurationMilliseconds };
+   };
+
+   // Export the initialized meter and metrics
+   export const meter = setupMeter().meter;
+   export const httpRequestCount = setupMeter().httpRequestCount;
+   export const httpRequestDurationMilliseconds = setupMeter().httpRequestDurationMilliseconds;
+   ```
+
+3. **Integrate Metrics into API Routes (`src/app/api/referrals/route.ts`):**
+   Observe the request and record count and duration.
+
+   **src/app/api/referrals/route.ts**
+   ```typescript
+   // ... [existing code] ...
+
+   async function createReferral(req: NextRequest): Promise&lt;NextResponse&gt; {
+     // ... [existing code] ...
+
+     try {
+       // Record the start time of the request
+       const startTime = process.hrtime.bigint();
+
+       // ... [existing logic to process referral] ...
+
+       console.log(`Referral for ${referredTo} created successfully with ID: ${newReferral.id}`);
+       // Record the end time and calculate duration
+       const duration = (process.hrtime.bigint() - startTime) / 1000000; // in milliseconds
+
+       // Increment request count
+       httpRequestCount.add(1, { method: &quot;POST&quot;, route: &quot;/api/referrals&quot; });
+
+       // Record request duration
+       httpRequestDurationMilliseconds.record(duration, { method: &quot;POST&quot;, route: &quot;/api/referrals&quot;, http_status_code: 201 });
+
+       return NextResponse.json(newReferral, { status: 201 });
+     } catch (error) {
+       console.error(`Failed to create referral for ${referred          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Design an approach for observability (metrics/logging/tracing) across API routes and services with minimal code churn.          </p>
+          <p class="lt-p">
+Response: To implement observability (metrics, logging, tracing) across API routes and services in the PRFC Connect codebase (Next.js, Node.js, TypeScript) with minimal code churn, we can leverage middleware and decorators (via `cls-hooked` for context). This approach centralizes observability logic, minimizing repetitive code in individual route handlers or service methods.
+
+---
+
+### 1. **Centralized Logging**
+
+**Goal:** Log incoming requests, outgoing HTTP calls from services, and any significant application events or errors.
+
+**Implementation:**
+- **Middleware:** Create a `src/middleware/loggerMiddleware.ts` to intercept incoming requests and outgoing HTTP responses.
+- **Winston:** Continue using `winston` for structured logging (e.g., `src/utils/logger.ts`).
+- **Contextual Logging:** Use `cls-hooked` (Context-Locking) to pass request-scoped data (like `requestId`) through asynchronous operations.
+
+**Example (`src/middleware/loggerMiddleware.ts`):**
+```typescript
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { v4 as uuidv4 } from &quot;uuid&quot;;
+import { logger } from &quot;@/utils/logger&quot;;
+import { asyncHooks, get } from &quot;cls-hooked&quot;;
+import { Timing } from &quot;@/utils/metrics&quot;;
+
+// Initialize context
+asyncHooks.createContext(&quot;request&quot;);
+
+export function loggerMiddleware(req: NextRequest, res: NextResponse, next: () =&gt; void) {
+  const requestId = uuidv4();
+  set(&quot;requestId&quot;, requestId);
+
+  const startTime = Date.now();
+  const timing = new Timing(`api_request_total_seconds`, `duration_seconds`, { requestId: requestId });
+
+  logger.info(`Incoming request`, {
+    method: req.method,
+    path: req.nextUrl.pathname,
+    requestId: requestId,
+    body: JSON.stringify(req.body),
+  });
+
+  res.on(&quot;finish&quot;, () =&gt; {
+    const duration = (Date.now() - startTime) / 1000;
+    timing.observe(duration);
+
+    logger.info(`Request completed`, {
+      method: req.method,
+      path: req.nextUrl.pathname,
+      requestId: requestId,
+      status: res.status,
+      duration: `${duration.toFixed(3)}s`,
+    });
+  });
+
+  next();
+}
+```
+
+**Usage:** Apply this middleware in `src/app/api/main.ts`:
+```typescript
+import { loggerMiddleware } from &quot;@/middleware/loggerMiddleware&quot;;
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+
+// Apply logger middleware to all /api routes
+export async function middleware(req: NextRequest, res: NextResponse) {
+  if (req.nextUrl.pathname.startsWith(&quot;/api/&quot;)) {
+    await loggerMiddleware(req, res, () =&gt; {});
+  }
+  return res;
+}
+```
+
+---
+
+### 2. **Request Tracing (OpenTelemetry)**
+
+**Goal:** Distribute unique trace IDs across all requests and propagate them through asynchronous operations to visualize the full request flow.
+
+**Implementation:**
+- **OpenTelemetry:** Initialize OpenTelemetry in `src/utils/tracing.ts` to create a tracer and exporter (e.g., `console` for development, `OTLP` for production).
+- **Context Propagation:** Use `cls-hooked` and `@opentelemetry/api` to propagate trace context consistently.
+
+**Example (`src/utils/tracing.ts`):**
+```typescript
+import { trace, context } from &quot;@opentelemetry/api&quot;;
+import { ConsoleSpanExporter } from &quot;@opentelemetry/sdk-trace-exporters&quot;;
+import { SimpleSpanProcessor } from &quot;@opentelemetry/sdk-trace-base&quot;;
+import { W3CTraceContextPropagator } from &quot;@opentelemetry/plugin-trace-context&quot;;
+import { OTLPTraceExporter } from &quot;@opentelemetry/exporter-trace-otlp-http&quot;;
+import { FastifyIntegration } from &quot;@opentelemetry/integration-fastify&quot;;
+import { NextjsIntegration } from &quot;@opentelemetry/integration-nextjs&quot;;
+import { NodeAutoInstrumentation } from &quot;@opentelemetry/node-auto-instrumentation&quot;;
+import { RequestBodyInstrumentation } from &quot;@opentelemetry/plugin-request-body&quot;;
+import { ResponseBodyInstrumentation } from &quot;@opentelemetry/plugin-response-body&quot;;
+import { environment } from &quot;@/utils/environment&quot;;
+import { logger } from &quot;@/utils/logger&quot;;
+import { asyncHooks, get, set } from &quot;cls-hooked&quot;;
+import { Context } from &quot;cls-hooked&quot;;
+
+// Initialize context
+asyncHooks.createContext(&quot;otel&quot;);
+
+// Initialize OpenTelemetry
+export const initTracing = () =&gt; {
+  const tracer = trace.getTracer(&quot;prfc-connect&quot;);
+
+  // In development, just log to console
+  if (environment.isDevelopment) {
+    const exporter = new ConsoleSpanExporter();
+    const processor = new SimpleSpanProcessor(exporter);
+    trace.getTracerProvider().addSpanProcessor(processor);
+  } else {
+    // In production, send to an observability platform (e.g., Datadog, New Relic, AWS X-Ray)
+    const exporter = new OTLPTraceExporter({
+      endpoint: environment.OTEL_EXPORTER_OTLP_ENDPOINT,
+      headers: {
+        &quot;Authorization&quot;: `Bearer ${environment.OTEL_EXPORTER_OTLP_HEADERS_AUTHORIZATION}`,
+      },
+    });
+    const processor = new SimpleSpanProcessor(exporter);
+    trace.getTracerProvider().addSpanProcessor(processor);
+  }
+
+  // Propagate trace headers using W3C Trace Context
+  trace.propagation tracing320, trace.Tracer, trace.SpanContext, trace.Span, context.Context;
+
+  // Integrate with Fastify and Next.js
+  // (Ensure Fastify is used if serving APIs with it, otherwise, manual instrumentation for HTTP calls)
+  // For Next.js API routes, integrate using middleware:
+  const nextjsIntegration = new NextjsIntegration();
+  nextjsIntegration.registerTraceContextMiddleware(&quot;prfc-connect&quot;, (req, res, next) =&gt; {
+    const traceContext = trace.getCurrentSpan().context().toTraceContextHeader();
+    res.headers[&quot;traceparent&quot;] = traceContext;
+    next();
+  });
+  nextjsIntegration.registerResponseBodyInstrumentation(&quot;prfc-connect&quot;, new ResponseBodyInstrumentation());
+  nextjsIntegration.registerRequestBodyInstrumentation(&quot;prfc-connect&quot;, new RequestBodyInstrumentation());
+  nextjsIntegration.register();
+};
+
+// Function to start a child span for an operation
+export function startSpan(name: string, attributes: { [key: string]: any } = {}): trace.Span {
+  const span = trace.getActiveSpan() ? trace.getActiveSpan().spanContext() : undefined;
+  const parentSpanContext = span ? trace.traceSpan(span) : undefined;
+
+  const newSpan = trace.startSpan(name, {
+    parent: parentSpanContext,
+    attributes: attributes,
+  });
+  return newSpan;
+}
+
+// Function to set the trace context for asynchronous operations
+export function setTraceContext(): () =&gt; void {
+  const context = trace.getActiveSpan().context();
+  return asyncHooks.bind(&quot;otel&quot;, context);
+}
+```
+
+**Usage:**
+- **At request entry point:** Inject a root span for the entire request.
+- **For internal operations:** Use `startSpan()` to create child spans for specific functions, and `setTraceContext()` to ensure asynchronous tasks inherit the parent span.
+
+**Example (`src/app/api/referrals/route.ts`):**
+```typescript
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { logger } from &quot;@/utils/logger&quot;;
+import { initTracing, startSpan, setTraceContext } from &quot;@/utils/tracing&quot;;
+import { retrieveReferrals } from &quot;@/services/referralService&quot;;
+
+export async function GET(req: NextRequest, res: NextResponse) {
+  await initTracing(); // Initialize tracing once per request
+  const rootSpan = startSpan(&quot;retrieveReferrals&quot;, { endpoint: &quot;GET /api/referrals&quot; });
+  setTraceContext(); // Propagate trace context to asynchronous operations
+
+  try {
+    const data = await retrieveReferrals(req);
+
+    // Set span status to &quot;OK&quot;
+    rootSpan.setStatus({ status: &quot;OK&quot; });
+    return NextResponse.json(data, { status: 200 });
+  } catch (error) {
+    logger.error(`Failed to retrieve referrals`, {
+      message: error.message,
+      stack: error.stack,
+      requestId: get(&quot;requestId&quot;),
+    });
+    // Set span status to &quot;Error&quot;
+    rootSpan.setStatus({ status: &quot;ERROR&quot;, message: error.message });
+    throw error;
+  } finally {
+    rootSpan.end();
+  }
+}
+```
+
+**Example (`src/services/referralService.ts`):**
+```typescript
+import { logger } from &quot;@/utils/logger&quot;;
+import { startSpan, setTraceContext } from &quot;@/utils/tracing&quot;;
+import { fetchDatabase } from &quot;@/utils/db&quot;;
+
+export const retrieveReferrals = async (req: NextRequest) =&gt; {
+  const parentSpan = trace.getActiveSpan();
+  const span = startSpan(&quot;fetchDatabase&quot;, { collection: &quot;Referrals&quot;, operation: &quot;find&quot; }, parentSpan);
+
+  let data;
+  try {
+    // Ensure asynchronous operations inherit the trace context
+    setTraceContext();
+    data = await fetchDatabase(&quot;Referrals&quot;);
+  } catch (error) {
+    logger.error(`Failed to fetch Referrals`, {
+      message: error.message,
+      stack: error.stack,
+      requestId: get(&quot;requestId&quot;),
+    });
+    span.setStatus({ status: &quot;ERROR&quot;, message: error.message });
+    throw error;
+  } finally {
+    span.end();
+  }
+
+  return data;
+};
+```
+
+---
+
+### 3. **Application Metrics**
+
+**Goal:** Track key performance indicators (e.g., request count, error rate, database query times).
+
+**Implementation:**
+- **Metrics Collector:** Use `prom-client` (e.g., `src/utils/metrics.ts`) to define counters and histograms.
+- **Middleware:** Integrate `src/middleware/metricsMiddleware.ts` to automatically collect request-specific metrics (e.g., `api_request_total          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Design an approach for observability (metrics/logging/tracing) across API routes and services with minimal code churn.          </p>
+          <p class="lt-p">
+Response: To implement observability (metrics, logging, and tracing) across API routes and services in the PRFC Connect codebase (a Next.js application) with minimal code churn, a **middleware-based approach** is ideal. This ensures that all incoming HTTP requests are automatically tracked, logged, and measured without altering the logic of existing API routes.
+
+### Key Components of the Observability Strategy
+
+1. **Middleware for HTTP Requests**:
+   Create a middleware that intercepts every incoming request, records start time, extracts relevant HTTP metadata, and injects a `traceparent` header for distributed tracing. It will also handle the reporting of metrics (e.g., request count, duration) and ensure proper error logging.
+
+2. **Environment Variables**:
+   Configure environment variables to control the behavior of observability (e.g., `NEXT_PUBLIC_LOG_LEVEL`, `TRACING_ENABLED`, `METRICS_EXPORT_URL`) so that these features can be toggled on or off without code changes.
+
+3. **Integration with Existing Infrastructure**:
+   Ensure that the observability data is exported to your existing monitoring solutions (e.g., Datadog, Prometheus) without requiring changes to individual API route handlers.
+
+---
+
+### Implementation Details
+
+#### 1. Middleware: `src/middleware/observability.ts`
+
+This file will contain the core logic for logging, tracing, and metrics.
+
+```typescript
+// src/middleware/observability.ts
+import type { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { NextResponse as NextResponseMiddleware } from &quot;next/server&quot;;
+import { trace, context } from &quot;@opentelemetry/api&quot;;
+import { FastifyRequest, FastifyReply } from &quot;fastify&quot;;
+import { request } from &quot;http&quot;;
+import { format } from &quot;date-fns&quot;;
+import { Writable } from &quot;stream&quot;;
+import { stdout } from &quot;tty&quot;;
+import { PrometheusHttpServerMetrics } from &quot;@w3f/pnpm-metrics&quot;;
+import { consoleStream } from &quot;prom-client&quot;;
+
+// In a production setup, these would be configured via environment variables
+const LOG_LEVEL = process.env.NEXT_PUBLIC_LOG_LEVEL || &quot;INFO&quot;;
+const TRACING_ENABLED = process.env.ENABLE_OTEL === &quot;true&quot;;
+const METRICS_EXPORT_URL = process.env.METRICS_EXPORT_URL;
+
+// Initialize Prometheus metrics
+const metrics = new PrometheusHttpServerMetrics({
+  hostname: request.gethost(),
+  port: +(request.getport() || 80),
+  path: &quot;/-/metrics&quot;,
+  requestIdleTimeout: 1000,
+  requestStream: stdout as unknown as Writable,
+  requestStreamOptions: {
+    json: false,
+    stdout: true,
+    stderr: false,
+    color: false,
+  },
+  server: consoleStream,
+});
+
+let requestCount = 0;
+
+// Define a logger function
+const logger = {
+  trace: (message: string, ...args: any[]) =&gt; {
+    console.log(`[${format(new Date(), &quot;HH:mm:ss.SSS&quot;)}] TRACE: ${message}`, ...args);
+  },
+  debug: (message: string, ...args: any[]) =&gt; {
+    console.log(`[${format(new Date(), &quot;HH:mm:ss.SSS&quot;)}] DEBUG: ${message}`, ...args);
+  },
+  info: (message: string, ...args: any[]) =&gt; {
+    console.log(`[${format(new Date(), &quot;HH:mm:ss.SSS&quot;)}] INFO: ${message}`, ...args);
+  },
+  warn: (message: string, ...args: any[]) =&gt; {
+    console.warn(`[${format(new Date(), &quot;HH:mm:ss.SSS&quot;)}] WARN: ${message}`, ...args);
+  },
+  error: (message: string, error: Error, ...args: any[]) =&gt; {
+    console.error(`[${format(new Date(), &quot;HH:mm:ss.SSS&quot;)}] ERROR: ${message}`, error, ...args);
+  },
+  verbose: (message: string, ...args: any[]) =&gt; {
+    console.log(`[${format(new Date(), &quot;HH:mm:ss.SSS&quot;)}] VERBOSE: ${message}`, ...args);
+  },
+  log: (message: string, ...args: any[]) =&gt; {
+    if (LOG_LEVEL === &quot;TRACE&quot;) logger.trace(message, ...args);
+    if (LOG_LEVEL === &quot;DEBUG&quot;) logger.debug(message, ...args);
+    if (LOG_LEVEL === &quot;INFO&quot;) logger.info(message, ...args);
+    if (LOG_LEVEL === &quot;WARN&quot;) logger.warn(message, ...args);
+    if (LOG_LEVEL === &quot;ERROR&quot;) logger.error(message, ...args);
+    if (LOG_LEVEL === &quot;VERBOSE&quot;) logger.verbose(message, ...args);
+  },
+};
+
+// Function to generate a unique trace ID for each request
+function generateTraceId(): string {
+  // In a real scenario, you might use a UUID library or a hashing function
+  // Based on the request&#x27;s ID or a combination of timestamp and random values
+  // For simplicity, we&#x27;ll use a unique incrementing counter here
+  requestCount += 1;
+  return `req-${requestCount}`;
+}
+
+// Fastify request type
+type FastifyNextResponse = FastifyReply &amp; { res: NextResponse };
+
+// Middleware function
+export function observabilityMiddleware(
+  request: NextRequest,
+  response: NextResponseMiddleware
+): FastifyNextResponse {
+  // For Next.js App Router, the `response` is a standard `NextResponse` object.
+  // To integrate with Fastify metrics, we convert it to a Fastify `Reply` object.
+  // This conversion is necessary to use `metricsServerRequest` properly.
+
+  // @ts-ignore: `res` property is part of FastifyNextResponse
+  response.res = response;
+
+  const traceId = generateTraceId();
+  const spanName = request.nextUrl.pathname;
+
+  // Set the trace context to propagate to child spans
+  const spanContext = trace.setSpanName(spanName);
+
+  // Create a span
+  const span = trace.startSpan(spanName, { traceId, parentSpanId: &quot;undefined&quot;, startTime: performance.now() });
+
+  // Inject TraceContext headers
+  const traceHeader = trace.formatTraceparent();
+  logger.log(`Request ${traceId} (Span ${span.id}): ${spanName}`);
+  logger.log(&quot;Headers:&quot;, request.headers);
+
+  // // Optionally, set a specific status for the span
+  // const httpStatus = 200; // Default to 200, will be updated on response
+  // span.setAttribute(&quot;http.status&quot;, httpStatus);
+
+  // // Set request body if it&#x27;s not too large
+  // const bodySize = request.body ? request.body.length : 0;
+  // if (bodySize &lt; 100000) { // 100KB
+  //   const bodyText = request.body ? request.body.toString() : &quot;&quot;;
+  //   span.setAttribute(&quot;http.body&quot;, bodyText);
+  // }
+
+  // Fastify metrics
+  const fastifyRequest: FastifyRequest = {
+    method: request.method ?? &quot;GET&quot;,
+    url: request.nextUrl.pathname,
+    headers: request.headers,
+    // Fastify does not directly expose raw body in request object, but you can get it via `request.body`
+    // For metrics, just the presence of a body can be significant
+    body: request.body,
+    // @ts-ignore: `res` property is part of FastifyNextResponse
+    res: response.res,
+  };
+
+  // @ts-ignore: `metricsServerRequest` is part of Fastify&#x27;s metrics package
+  metrics.metricsServerRequest(fastifyRequest);
+
+  // Store the span and trace ID in the response object for later use in error logging
+  // This is necessary because the error handling middleware needs to know which span to update
+  // and propagate the correct trace ID.
+  // @ts-ignore: `span` and `traceId` properties are added to FastifyNextResponse
+  response.res.span = span;
+  // @ts-ignore: `traceId` property is added to FastifyNextResponse
+  response.res.traceId = traceId;
+
+  // Continue to the next middleware or route handler
+  return response as FastifyNextResponse;
+}
+
+// Error handling middleware
+export function observabilityErrorMiddleware(error: Error, request: NextRequest, response: NextResponseMiddleware) {
+  const traceId = (response.res.traceId as string) || &quot;NO_TRACE_ID&quot;;
+  const span = (response.res.span as unknown as { updateSpanAttributes: (attributes: { [key: string]: unknown }) =&gt; void; endSpan: () =&gt; void }) || null;
+
+  logger.error(`Request ${traceId} failed`, error);
+
+  if (span) {
+    span.setStatus({ code: trace.StatusCode.ERROR, message: error.message });
+    span.setAttribute(&quot;error.message&quot;, error.message);
+    span.end();
+  }
+
+  // Log detailed stack trace to console (only in cases where the minimum log level is VERBOSE)
+  if (LOG_LEVEL === &quot;VERBOSE&quot;) {
+    console.error(`Stack trace for ${traceId}:\n`, error.stack);
+  }
+
+  // In a production environment, you would typically send this error to an error reporting service like Sentry, Datadog, etc.
+  // The `console.error` above will still be visible in the logs.
+
+  // Return a generic error response
+  return NextResponseMiddleware.json(
+    { error: &quot;Internal Server Error&quot; },
+    { status: 500, headers: { &quot;X-Trace-ID&quot;: traceId } }
+  );
+}
+```
+
+---
+
+#### 2. `src/app/middleware.ts`
+
+This file will apply the observability middleware to all incoming requests and handle errors.
+
+```typescript
+// src/app/middleware.ts
+import type { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { NextResponse as NextResponseMiddleware } from &quot;next/server&quot;;
+import { NextRequest as FastifyNextRequest, FastifyReply, RequestHandler }          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+1917                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+1730                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma client setup located?          </p>
+          <p class="lt-p">
+Response: The Prisma client is set up in the `prismaClient` file located at `src/lib/prismaClient.ts`. This file initializes and exports the Prisma client instance, which is then imported and used throughout the application to interact with the database.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/db.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma client setup located?          </p>
+          <p class="lt-p">
+Response: The Prisma client is set up in the **prisma/client.ts** file. This file is responsible for initializing and exporting the Prisma client instance, which is then used throughout the application to interact with the database.
+
+**src/prisma/client.ts**          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/db.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma client setup located?          </p>
+          <p class="lt-p">
+Response: The Prisma client setup is located in src/lib/prisma.ts.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/db.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma client setup located?          </p>
+          <p class="lt-p">
+Response: The Prisma client is set up in the `prismaClient` file located at `src/lib/prisma.ts`. This file initializes and exports an instance of the Prisma client, which is then imported and used throughout the application to interact with the database.
+
+### src/lib/prisma.ts
+```typescript
+import { PrismaClient } from &#x27;@prisma/client&#x27;;
+
+const prismaClient = new PrismaClient();
+
+export default prismaClient;
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/db.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma client setup located?          </p>
+          <p class="lt-p">
+Response: The Prisma client is set up in the following file:
+
+*   **src/lib/db.ts**: This file initializes the Prisma client using the environment variable `DATABASE_URL`. It also logs queries to the console if the environment is development or staging. Here&#x27;s a snippet from the file:
+
+```typescript
+// src/lib/db.ts
+import { PrismaClient } from &#x27;@prisma/client&#x27;;
+
+export const prisma = new PrismaClient({
+  log: [&#x27;query&#x27;],
+});
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/db.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma client setup located?          </p>
+          <p class="lt-p">
+Response: The Prisma client setup is located in src/lib/prismadb.ts.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/db.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma client setup located?          </p>
+          <p class="lt-p">
+Response: The Prisma client is set up in src/lib/prismadb.ts.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/db.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma client setup located?          </p>
+          <p class="lt-p">
+Response: The Prisma client is set up in the `prisma/client.ts` file. This file is responsible for initializing and exporting the Prisma client instance that is used throughout the application to interact with the database.
+
+**File Path:** `src/prisma/client.ts`          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/db.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+52                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+52                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+15                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+92                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+98                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+16                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+16                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+54                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace dependency boundaries between `lib`, `services`, `actions`, and `app/api` layers.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase establishes clear dependency boundaries to maintain separation of concerns and modularity. Here&#x27;s a trace of how `lib`, `services`, `actions`, and `app/api` layers interact:
+
+### 1. `app/api` Layer (Entry Point for API Requests)
+The `app/api` directory contains route handlers that receive HTTP requests, parse data, and delegate to the appropriate logic in `actions` or `services`.
+
+*   **`src/app/api/referrals/route.ts`**:
+    *   **Line 19-22**: Handles `POST` requests for creating a new referral.
+        *   The incoming `body` is parsed (Lines 20-21).
+        *   The parsed data is then passed to `createReferral` in `src/actions/referrals.ts` (Line 22).
+    *   **Line 30-33**: Handles `GET` requests for retrieving all referrals for an authenticated user.
+        *   The `userId` is extracted from the token in `src/lib/auth.ts` (Line 31).
+        *   `getAllReferrals` in `src/services/referrals.ts` is called with this `userId` (Line 32).
+    *   **Line 40-43**: Handles `GET` requests for retrieving a single referral by ID.
+        *   The `id` is extracted from the URL parameters (Line 41).
+        *   `getReferralById` in `src/services/referrals.ts` is called with this `id` (Line 42).
+    *   **Line 50-53**: Handles `PATCH` requests for updating the status of a referral.
+        *   The `id` and `status` are extracted from the URL and body (Lines 51-52).
+        *   `updateReferralStatus` in `src/services/referrals.ts` is called with these values (Line 53).
+    *   **Line 60-63**: Handles `DELETE` requests for removing a referral.
+        *   The `id` is extracted from the URL (Line 61).
+        *   `deleteReferral` in `src/services/referrals.ts` is called with this `id` (Line 62).
+
+*   **`src/app/api/referral-questions/route.ts`**:
+    *   **Line 21-25**: Handles `POST` requests for submitting an application.
+        *   The `referralId` and `answers` are parsed from the body (Lines 22-23).
+        *   `submitApplication` in `src/actions/referrals.ts` is called with these values (Line 24).
+    *   **Line 32-36**: Handles `GET` requests for retrieving application questions.
+        *   The `referralId` is extracted from the URL (Line 34).
+        *   `getApplicationQuestions` in `src/services/referrals.ts` is called with this `referralId` (Line 35).
+    *   **Line 43-47**: Handles `GET` requests for retrieving submitted answers.
+        *   The `referralId` is extracted from the URL (Line 45).
+        *   `getApplicationAnswers` in `src/services/referrals.ts` is called with this `referralId` (Line 46).
+    *   **Line 54-58**: Handles `GET` requests for retrieving a specific application answer by question ID.
+        *   Both `referralId` and `questionId` are extracted from the URL (Lines 55-56).
+        *   `getApplicationAnswerById` in `src/services/referrals.ts` is called with these values (Line 57).
+
+*   **`src/app/api/companies/route.ts`**:
+    *   **Line 23-27**: Handles `POST` requests for creating a new company.
+        *   The `name` and `domain` are parsed from the body (Lines 24-25).
+        *   `createCompany` in `src/actions/companies.ts` is called with these values (Line 26).
+    *   **Line 34-38**: Handles `GET` requests for retrieving all companies.
+        *   `getAllCompanies` in `src/services/companies.ts` is called (Line 35).
+    *   **Line 45-49**: Handles `GET` requests for retrieving a single company by ID.
+        *   The `id` is extracted from the URL (Line 47).
+        *   `getCompanyById` in `src/services/companies.ts` is called with this `id` (Line 48).
+    *   **Line 56-60**: Handles `PATCH` requests for updating a company&#x27;s status.
+        *   The `id` and `status` are extracted from the URL and body (Lines 57-58).
+        *   `updateCompanyStatus` in `src/services/companies.ts` is called with these values (Line 59).
+    *   **Line 67-71**: Handles `DELETE` requests for removing a company.
+        *   The `id` is extracted from the URL (Line 69).
+        *   `deleteCompany` in `src/services/companies.ts` is called with this `id` (Line 70).
+
+*   **`src/app/api/messages/route.ts`**:
+    *   **Line 23-28**: Handles `POST` requests for sending a new message.
+        *   The `to`, `from`, `message`, `referralId`, and `isRead` are parsed from the body (Lines 24-27).
+        *   `sendMessage` in `src/actions/messages.ts` is called with these values (Line 28).
+    *   **Line 38-43**: Handles `GET` requests for retrieving messages for a specific user.
+        *   The `userId` is extracted from the token in `src/lib/auth.ts` (Line 39).
+        *   The `referralId` is extracted from the URL (Line 41).
+        *   `getUserMessages` in `src/services/messages.ts` is called with `userId` and `referralId` (Line 42).
+    *   **Line 50-55**: Handles `GET` requests for retrieving all messages for an authenticated user.
+        *   The `userId` is extracted from the token in `src/lib/auth.ts` (Line 51).
+        *   `getAllUserMessages` in `src/services/messages.ts` is called with this `userId` (Line 52).
+    *   **Line 62-67**: Handles `GET` requests for retrieving a specific message by ID.
+        *   The `messageId` is extracted from the URL (Line 64).
+        *   `getMessageById` in `src/services/messages.ts` is called with this `messageId` (Line 65).
+    *   **Line 74-79**: Handles `PATCH` requests for updating a message&#x27;s read status.
+        *   The `messageId` is extracted from the URL (Line 76).
+        *   `toggleMessageReadStatus` in `src/services/messages.ts` is called with this `messageId` (Line 77).
+    *   **Line 86-91**: Handles `DELETE` requests for removing a message.
+        *   The `messageId` is extracted from the URL (Line 88).
+        *   `deleteMessage` in `src/services/messages.ts` is called with this `messageId` (Line 89).
+
+*   **`src/app/api/webhook/route.ts`**:
+    *   **Line 20-29**: Handles `POST` requests for processing the `/api/webhook` endpoint.
+        *   The raw body is parsed as JSON (Line 21).
+        *   The `event` type is extracted (Line 22).
+        *   The `data` object is extracted from the body (Line 23).
+        *   The `userId` is extracted from the token in `src/lib/auth.ts` (Line 24).
+        *   The `companyId` is extracted from the `data` object (Line 25).
+        *   The `status` is extracted from the `data` object (Line 26).
+        *   `processWebhook` in `src/services/webhooks.ts` is called with `event`, `data`, `userId`, and `companyId` (Line 28).
+
+---
+
+### 2. `actions` Layer (Business Logic for CRUD Operations)
+The `actions` directory contains functions that perform specific business operations, often interacting directly with `services` to retrieve or persist data.
+
+*   **`src/actions/referrals.ts`**:
+    *   **Line 7-11**: `createReferral` creates a new referral object, sets its status to &quot;pending&quot;, and calls `createReferralInDatabase` in `src/services/referrals.ts` (Line 9) to save it.
+    *   **Line 14-18**: `submitApplication` creates an application object with the provided `answers` and `referralId`, sets its status to &quot;submitted&quot;, and calls `submitApplicationInDatabase` in `src/services/referrals.ts` (Line 16) to save it. It also updates the referral&#x27;s status to &quot;application submitted&quot; (Line 15) and `submittedAt` timestamp (Line 17).
+    *   **          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace dependency boundaries between `lib`, `services`, `actions`, and `app/api` layers.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase follows a clear layer architecture, with distinct responsibilities for `lib`, `services`, `actions`, and `app/api` layers. Here&#x27;s a trace of the dependency boundaries:
+
+### 1. `app/api/` Layer
+
+The `app/api/` layer is responsible for handling incoming HTTP requests and responses. It directly interacts with the `services/` layer to perform business logic and data access.
+
+-   **`src/app/api/referrals/route.ts`**:
+    -   Receives POST requests to create a new referral.
+    -   Calls `createReferral` from `src/services/referral.ts` to process the creation.
+    -   Returns a JSON response with the newly created referral or an error message.
+
+    **Dependency**: `src/services/referral.ts`
+
+-   **`src/app/api/points/route.ts`**:
+    -   Receives PATCH requests to update a user&#x27;s points.
+    -   Calls `updatePoints` from `src/services/user.ts` to modify the points.
+    -   Returns a JSON response confirming the points update or an error message.
+
+    **Dependency**: `src/services/user.ts`
+
+### 2. `services/` Layer
+
+The `services/` layer contains the core business logic and directly interacts with the `lib/` layer (primarily `prismaClient.ts`) to perform database operations.
+
+-   **`src/services/referral.ts`**:
+    -   **`createReferral`**:
+        -   Validates the input using `zod` (e.g., `referralSchema` in `src/schema.ts`).
+        -   Generates a unique `referralCode` using `nanoid` from `src/lib/utils.ts`.
+        -   Persists the new referral data into the database using `prismaClient` from `src/lib/prisma.ts`.
+        -   Retrieves the `referrer` and `referredUser` details from the database using `prismaClient`.
+        -   Calculates the `referralEarned` based on the referred user&#x27;s points (`referralEarned = referredUserCurrentPoints * 0.1`) and updates the `referralRedeemed` status to `false` initially.
+
+    **Dependencies**:
+    -   `src/lib/prisma.ts` (for database operations)
+    -   `src/schema.ts` (for input validation)
+    -   `src/lib/utils.ts` (for `nanoid` generation)
+
+-   **`src/services/user.ts`**:
+    -   **`updatePoints`**:
+        -   Validates the input using `zod` (e.g., `updatePointsSchema` in `src/schema.ts`).
+        -   Ensures the `pointsToClaim` are positive.
+        -   Updates the user&#x27;s `points` and `referralRedeemed` status in the database using `prismaClient`.
+        -   Checks if the `referralRedeemed` status has changed from `false` to `true`, and if so, updates the referrer&#x27;s points.
+
+    **Dependencies**:
+    -   `src/lib/prisma.ts` (for database operations)
+    -   `src/schema.ts` (for input validation)
+
+### 3. `lib/` Layer
+
+The `lib/` layer provides reusable utilities and the primary access to the database (via `prismaClient.ts`). It is **only** depended upon by the `services/` layer and not directly by `app/api/` or `actions/`.
+
+-   **`src/lib/prisma.ts`**:
+    -   Initializes and exports the `prismaClient` for database interactions.
+    -   This client is used by `src/services/referral.ts` and `src/services/user.ts` to perform `create`, `update`, `findMany`, and `updateMany` operations on the `Referral` and `User` models.
+
+    **Depended by**: `src/services/referral.ts`, `src/services/user.ts`
+
+-   **`src/lib/utils.ts`**:
+    -   Provides `generateRandomString` (which uses `nanoid`) for creating unique referral codes.
+
+    **Depended by**: `src/services/referral.ts`
+
+### 4. `actions/` Layer
+
+The `actions/` layer handles server-side form submissions, typically triggered by client-side actions (e.g., using `fetch`). It orchestrates the calling of functions in the `services/` layer to perform specific tasks and then updates the UI by dispatching `state/actions`.
+
+-   **`src/actions/create-referral.ts`**:
+    -   Parses the `formData` to extract `referredEmail` and `referrerEmail`.
+    -   Calls `createReferral` from `src/services/referral.ts` to process the referral creation.
+    -   If successful, dispatches the `referrals/fetch` action to refresh the referrals list in the UI.
+
+    **Dependency**: `src/services/referral.ts`
+
+-   **`src/actions/claim-referral.ts`**:
+    -   Parses the `formData` to extract `referralCode` and `password`.
+    -   Calls `updatePoints` from `src/services/user.ts` to claim the referral points.
+    -   If successful, dispatches the `referrals/fetch` action to refresh the UI.
+
+    **Dependency**: `src/services/user.ts`
+
+### Summary of Dependency Boundaries:
+
+1.  **`app/api/` depends on `services/`**:
+    -   `src/app/api/referrals/route.ts` → `src/services/referral.ts`
+    -   `src/app/api/points/route.ts` → `src/services/user.ts`
+
+2.  **`services/` depends on `lib/`**:
+    -   `src/services/referral.ts` → `src/lib/prisma.ts`, `src/schema.ts`, `src/lib/utils.ts`
+    -   `src/services/user.ts` → `src/lib/prisma.ts`, `src/schema.ts`
+
+3.  **`actions/` depends on `services/`**:
+    -   `src/actions/create-referral.ts` → `src/services/referral.ts`
+    -   `src/actions/claim-referral.ts` → `src/services/user.ts`
+
+4.  **`lib/` is foundational and only depended upon by `services/`**:
+    -   `src/lib/prisma.ts` and `src/lib/utils.ts` → `src/services/referral.ts`, `src/services/user.ts`          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace dependency boundaries between `lib`, `services`, `actions`, and `app/api` layers.          </p>
+          <p class="lt-p">
+Response: Here&#x27;s the trace of dependency boundaries between `lib`, `services`, `actions`, and `app/api` layers in the PRFC Connect codebase:
+
+### `app/api/referrals/route.ts` (API Layer)
+This file handles incoming HTTP requests related to referrals and delegates the actual business logic to `actions` and `services`.
+
+*   **Depends on `actions`**: It directly imports and uses `toggleReferralRedeemed` from `src/lib/actions/referrals.ts` to update the `redeemed` status of a referral. It also imports `sendReferral` from `src/lib/actions/contact.ts` to send a referral email.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    import { toggleReferralRedeemed } from &quot;@/lib/actions/referrals&quot;; // Actions
+    import { sendReferral } from &quot;@/lib/actions/contact&quot;; // Actions
+    import { prisma } from &quot;@/lib/db&quot;; // Services (for database queries)
+    ```
+
+*   **Depends on `services` (via `prisma`)**: It uses `prisma` (imported from `src/lib/db.ts`) to perform direct database queries to fetch referral data and update the `redeemed` status.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    const db = prisma;
+    // ...
+    await db.referral.update({ where: { id }, data: { redeemed } });
+    // ...
+    const referrals = await db.referral.findMany({
+    // ...
+    ```
+
+### `src/lib/actions/contact.ts` (Actions Layer)
+This file handles sending emails for new referrals.
+
+*   **Depends on `services` (`react-email` and `next-smtp-mailer`)**: It imports `Email` from `src/lib/emails/contact.ts` (which defines the email template) and `emailTransport` from `src/lib/server.ts` (which is configured to send emails using `nodemailer`).
+    
+```typescript
+    // src/lib/actions/contact.ts
+    import { Email } from &quot;@/lib/emails/contact&quot;; // Services (Email template)
+    import { emailTransport } from &quot;@/lib/server&quot;; // Services (Email sender)
+    ```
+
+### `src/lib/actions/referrals.ts` (Actions Layer)
+This file handles toggling the `redeemed` status of a referral.
+
+*   **Depends on `services` (`prisma`)**: It imports `prisma` from `src/lib/db.ts` to directly update the `redeemed` field in the `referral` table.
+    
+```typescript
+    // src/lib/actions/referrals.ts
+    import { prisma } from &quot;@/lib/db&quot;; // Services
+    ```
+
+### `src/lib/db.ts` (Services Layer)
+This file is responsible for all database interactions using Prisma.
+
+*   **Depends on `lib` (`PrismaClient`)**: It initializes `prisma` using `PrismaClient` from `@prisma/client`, which is bundled with `package.json`.
+    
+```typescript
+    // src/lib/db.ts
+    import { PrismaClient } from &quot;@prisma/client&quot;; // Prisma library
+    // ...
+    export const prisma = new PrismaClient({
+    // ...
+    ```
+
+### `src/lib/emails/contact.ts` (Services Layer)
+This file defines the email template for sending referrals.
+
+*   **Depends on `react-email`**: It imports `Email,(html)` from `react-email`, which is a library for composing HTML emails.
+    
+```typescript
+    // src/lib/emails/contact.ts
+    import { Email, html } from &quot;react-email&quot;; // react-email library
+    ```
+
+### `src/lib/server.ts` (Services Layer)
+This file configures the email transport using `nodemailer`.
+
+*   **Depends on `nodemailer`**: It imports `nodemailer` from `nodemailer` to set up the SMTP transporter for sending emails.
+    
+```typescript
+    // src/lib/server.ts
+    import * as nodemailer from &quot;nodemailer&quot;; // nodemailer library
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace dependency boundaries between `lib`, `services`, `actions`, and `app/api` layers.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase follows a clear layer architecture, with distinct responsibility boundaries between `lib`, `services`, `actions`, and `app/api`. Here&#x27;s a trace of these dependencies:
+
+### 1. `app/api/referrals/route.ts` (Catalyst for API Requests)
+This file serves as the entry point for HTTP requests related to managing referrals. It handles different HTTP methods (`GET`, `POST`, `PUT`, `DELETE`) and routes them to the appropriate functions in the `actions` directory.
+
+- **`GET` requests** (to `/api/referrals`):
+  - Calls `getAllReferrals` from `src/app/api/actions/referrals.ts` to retrieve all referrals.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace dependency boundaries between `lib`, `services`, `actions`, and `app/api` layers.          </p>
+          <p class="lt-p">
+Response: Here&#x27;s a trace of the dependency boundaries between the `lib`, `services`, `actions`, and `app/api` layers in the PRFC Connect codebase:
+
+### 1. `app/api/referrals/route.ts` (API Layer)
+*   **Depends on:** `services/referralService.ts` (via `import { createReferral, updateReferralRedeemed, fetchReferrals, fetchUserReferrals, fetchTeamReferrals, fetchAllReferrals } from &quot;@/services/referralService&quot;;`)
+    *   This file handles incoming HTTP requests for referral-related operations (create, update, fetch).
+    *   It calls functions from `services/referralService.ts` to interact with the database.
+*   **Does not depend on:** `lib/`, `actions/`
+
+### 2. `services/referralService.ts` (Services Layer)
+*   **Depends on:** `lib/prfcConnectDB.ts` (via `import prfcConnectDB from &quot;@/lib/prfcConnectDB&quot;;`)
+    *   This file contains the business logic for creating, updating, and fetching referrals.
+    *   It uses `prfcConnectDB` to perform database queries and mutations.
+*   **Does not depend on:** `actions/`, `app/api/`
+
+### 3. `actions/referralActions.ts` (Actions Layer)
+*   **Depends on:** `services/referralService.ts` (via `import { createReferral, updateReferralRedeemed, fetchReferrals, fetchUserReferrals, fetchTeamReferrals, fetchAllReferrals } from &quot;@/services/referralService&quot;;`)
+    *   This file contains functions that are triggered by user interactions (e.g., through forms or buttons).
+    *   When a user redeems a referral, `toggleReferralRedeemed` is called, which in turn calls `updateReferralRedeemed` from `services/referralService.ts`.
+*   **Does not depend on:** `lib/`, `app/api/`
+
+### 4. `lib/prfcConnectDB.ts` (Lib Layer)
+*   **Depends on:** `prfcConnectPrismaClient.ts` (via `import prfcConnectPrismaClient from &quot;./prfcConnectPrismaClient&quot;;`)
+    *   This file abstracts database operations using Prisma.
+    *   It provides methods like `prfcConnectPrismaClient.referral.create`, `prfcConnectPrismaClient.referral.update`, and `prfcConnectPrismaClient.referral.findMany` to interact with the `referral` table.
+*   **Does not depend on:** `services/`, `actions/`, `app/api/`
+
+### Summary of Dependency Flow:
+```
+app/api/referrals/route.ts
+    ↳ services/referralService.ts
+        ↳ lib/prfcConnectDB.ts
+            ↳ prfcConnectPrismaClient.ts
+    ↳ actions/referralActions.ts
+        ↳ services/referralService.ts
+            ↳ lib/prfcConnectDB.ts
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace dependency boundaries between `lib`, `services`, `actions`, and `app/api` layers.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase establishes clear dependency boundaries, ensuring that data fetching, business logic, and API requests flow in a predictable and maintainable manner. The layers are `lib` (data access), `services` (business logic), `actions` (request handlers), and `app/api` (endpoint routing). Here&#x27;s the trace of these dependencies:
+
+### 1. `app/api/referrals/route.ts` (Endpoint Router) *depends on* `actions/referrals.ts`
+
+- **File:** `src/app/api/referrals/route.ts`
+- **Code:** This file routes incoming HTTP requests to the appropriate action in `actions/referrals.ts`.
+- **Dependency:** `app/api/referrals/route.ts` imports `actions/referrals` to handle the actual request logic.
+
+### 2. `actions/referrals.ts` (Request Handler) *depends on* `services/referrals.ts`
+
+- **File:** `src/actions/referrals.ts`
+- **Code:** This file contains the logic to process requests related to referrals. It interacts with the `services/referrals.ts` to perform data operations.
+- **Dependency:** `actions/referrals.ts` imports `services/referrals` to delegate data access and business logic.
+
+### 3. `services/referrals.ts` (Business Logic) *depends on* `lib/prfcConnectApiClient.ts` and `lib/db.ts`
+
+- **File:** `src/services/referrals.ts`
+- **Code:** This file handles the core business logic for referrals, such as creating, retrieving, and updating referral data.
+- **Dependencies:**
+  - `lib/prfcConnectApiClient.ts`: Used to fetch user data from an external API when a referral is created.
+  - `lib/db.ts`: Used to interact with the database to persist or retrieve referral information.
+
+### 4. `lib/prfcConnectApiClient.ts` and `lib/db.ts` (Data Access Layer)
+
+- **File:** `src/lib/prfcConnectApiClient.ts` and `src/lib/db.ts`
+- **Code:** These files are responsible for directly communicating with an external API and the database, respectively.
+- **Dependency:** They are imported by `services/referrals.ts` and have no dependencies on higher layers like `actions` or `app/api`.
+
+### Summary of Dependency Flow:
+
+1. **`app/api/referrals/route.ts`** ➔ **`actions/referrals.ts`**
+2. **`actions/referrals.ts`** ➔ **`services/referrals.ts`**
+3. **`services/referrals.ts`** ➔ **`lib/prfcConnectApiClient.ts`** and **`lib/db.ts`**
+
+This layered architecture ensures that the application is modular, with each layer responsible for a distinct concern: routing requests, processing them with business logic, accessing external data and the database, and ultimately returning responses to the client.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace dependency boundaries between `lib`, `services`, `actions`, and `app/api` layers.          </p>
+          <p class="lt-p">
+Response: Here&#x27;s a trace of dependency boundaries between `lib`, `services`, `actions`, and `app/api` layers in the PRFC Connect codebase:
+
+### 1. `app/api/referrals/route.ts` (API Layer) depends on:
+-   **`services/referralService.ts` (Services Layer)**: The API route imports and uses `prfcConnectReferralService` to perform database operations like creating, retrieving, and updating referrals.
+    *   **File paths**: `src/app/api/referrals/route.ts` (line 10) and `src/app/api/referrals/route.ts` (line 27)
+    *   **Code snippet**:
+        
+```typescript
+        import { prfcConnectReferralService } from &quot;@/services/referralService&quot;;
+        // ...
+        const data = await prfcConnectReferralService.create(input);
+        // ...
+        const data = await prfcConnectReferralService.get(id);
+        // ...
+        const data = await prfcConnectReferralService.update(id, input);
+        // ...
+        const data = await prfcConnectReferralService.list(input);
+        // ...
+        const data = await prfcConnectReferralService.delete(id);
+        ```
+
+### 2. `services/referralService.ts` (Services Layer) depends on:
+-   **`lib/prfcConnectClient.ts` (Lib Layer)**: The referral service uses `prfcConnectClient` to interact with the `prfc-connect` database through Prismic&#x27;s Headless CMS API.
+    *   **File path**: `src/services/referralService.ts` (line 5)
+    *   **Code snippet**:
+        
+```typescript
+        import { getPrismicClient } from &quot;@/lib/prfcConnectClient&quot;;
+        // ...
+        const prismicClient = getPrismicClient();
+        // ...
+        const response = await prismicClient.post(&quot;/api/prefetch&quot;, {
+          types: [&quot;referral&quot;],
+        });
+        // ...
+        const response = await prismicClient.post(&quot;/api/prefetch&quot;, {
+          types: [&quot;referral&quot;],
+        });
+        // ...
+        const response = await prismicClient.put(`/api/referral/${id}`, input);
+        // ...
+        const response = await prismicClient.get(&quot;/api/referrals?&quot; + stringify(input));
+        // ...
+        const response = await prismicClient.delete(`/api/referral/${id}`);
+        ```
+
+### 3. `lib/prfcConnectClient.ts` (Lib Layer) depends on:
+-   **`axios/axios.ts` (Lib Layer)**: `prfcConnectClient.ts` initializes an `axios` instance for making HTTP requests.
+    *   **File path**: `src/lib/prfcConnectClient.ts` (line 5)
+    *   **Code snippet**:
+        
+```typescript
+        import axios from &quot;@/lib/axios&quot;;
+        // ...
+        const prismicClient = axios.create({
+          baseURL: &quot;https://prfc-connect.cdn.prismic.io/api/v2&quot;,
+          headers: {
+            &quot;Authorization&quot;: `Token token=${process.env.PRFC_CONNECT_ACCESS_TOKEN}`,
+          },
+          timeout: 10000,
+        });
+        ```
+
+### 4. `actions/referralActions.ts` (Actions Layer) depends on:
+-   **`services/referralService.ts` (Services Layer)**: The action functions call the referral service to perform database operations.
+    *   **File paths**: `src/actions/referralActions.ts` (line 6), `src/actions/referralActions.ts` (line 14), `src/actions/referralActions.ts` (line 22), `src/actions/referralActions.ts` (line 30), `src/actions/referralActions.ts` (line 38)
+    *   **Code snippet**:
+        
+```typescript
+        import { prfcConnectReferralService } from &quot;@/services/referralService&quot;;
+        // ...
+        await prfcConnectReferralService.create(input);
+        // ...
+        await prfcConnectReferralService.update(id, input);
+        // ...
+        await prfcConnectReferralService.delete(id);
+        // ...
+        const referrals = await prfcConnectReferralService.list(input);
+        ```          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace dependency boundaries between `lib`, `services`, `actions`, and `app/api` layers.          </p>
+          <p class="lt-p">
+Response: Here&#x27;s a trace of the dependency boundaries between the `lib`, `services`, `actions`, and `app/api` layers in the PRFC Connect codebase:
+
+### 1. `app/api/referrals/route.ts` (Top Layer - API Endpoints)
+*   **Depends on:** `actions/createReferral.ts`
+    *   This file handles incoming POST requests for creating a referral. It calls the `createReferral` function from `actions`.
+    *   **File Path:** `src/app/api/referrals/route.ts`
+
+### 2. `actions/createReferral.ts` (Middle Layer - Actions)
+*   **Depends on:** `services/referralService.ts`
+    *   The `createReferral` action is responsible for validating the input and then passing the data to the `referralService` to persist it to the database.
+    *   **File Path:** `src/actions/createReferral.ts`
+
+### 3. `services/referralService.ts` (Middle Layer - Services)
+*   **Depends on:** `lib/prfcClient.ts`
+    *   The `referralService` contains the business logic for creating a referral, including generating a unique ID and calling the `prfcClient` to send the data to the PRFC API.
+    *   **File Path:** `src/services/referralService.ts`
+
+### 4. `lib/prfcClient.ts` (Bottom Layer - External API Client)
+*   **Depends on:** `services/referralService.ts` (only in the `try` block)
+    *   The `prfcClient` is responsible for making POST requests to the PRFC API. If the external API call fails, it throws an error, which the `referralService` catches and handles.
+    *   **File Path:** `src/lib/prfcClient.ts`
+
+### Summary of Dependency Flow:
+-   `app/api/referrals/route.ts` → `actions/createReferral.ts`
+-   `actions/createReferral.ts` → `services/referralService.ts`
+-   `services/referralService.ts` → `lib/prfcClient.ts`
+
+This structure ensures that the API layer remains decoupled from the external PRFC API, while the `services` layer acts as an intermediary, and `actions` handle the application-specific logic before data is persisted.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+87                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+87                </td>
+                <td>
+1356                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+87                </td>
+                <td>
+851                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+87                </td>
+                <td>
+145                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+87                </td>
+                <td>
+630                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+87                </td>
+                <td>
+585                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+87                </td>
+                <td>
+871                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+87                </td>
+                <td>
+484                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how admin authorization is enforced for reading all referrals (`GET /api/referrals`).          </p>
+          <p class="lt-p">
+Response: Admin authorization for reading all referrals (`GET /api/referrals`) is enforced through a series of checks within the `src/app/api/referrals/route.ts` file. Here&#x27;s a step-by-step trace:
+
+1. **Middleware Check (`middleware.ts` in `src/app/api/middleware.ts`)**:
+   - Before the request reaches the `GET` handler in `src/app/api/referrals/route.ts`, the request is processed by the authentication middleware.
+   - This middleware, defined in `src/app/api/middleware.ts`, verifies that the user is authenticated by checking the presence of a valid token in the request headers.
+   - If the token is missing or invalid, the user is denied access, and a `401 Unauthorized` error is returned.
+
+2. **Role-Based Access Control (`route.ts` in `src/app/api/referrals/route.ts`)**:
+   - Once authenticated, the middleware sets the `user` object in the request context.
+   - In `src/app/api/referrals/route.ts`, the `GET` handler begins by checking the user&#x27;s role:
+     ```typescript
+     if (user.role !== &quot;admin&quot;) {
+       return NextResponse.json({ message: &quot;Forbidden&quot; }, { status: 403 });
+     }
+     ```
+   - This conditional statement ensures that only users with the `&quot;admin&quot;` role can proceed. If the user&#x27;s role is not `&quot;admin&quot;`, a `403 Forbidden` error is returned, indicating that they do not have permission to access this resource.
+
+3. **Database Query (`route.ts` in `src/app/api/referrals/route.ts`)**:
+   - If the user is an admin, the system proceeds to fetch all referrals from the database:
+     ```typescript
+     const referrals = await prisma.referral.findMany({
+       include: {
+         referredBy: true,
+         referredTo: true,
+       },
+     });
+     ```
+   - This query retrieves all records from the `referral` table, including related `referredBy` and `referredTo` user details.
+
+4. **Response (`route.ts` in `src/app/api/referrals/route.ts`)**:
+   - Finally, the retrieved referrals are sent back as a JSON response:
+     ```typescript
+     return NextResponse.json(referrals);
+     ```
+
+In summary, admin authorization is enforced by first ensuring the user is authenticated and then verifying their role. Only users with the `&quot;admin&quot;` role are allowed to retrieve all referral data.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how admin authorization is enforced for reading all referrals (`GET /api/referrals`).          </p>
+          <p class="lt-p">
+Response: Admin authorization for reading all referrals (`GET /api/referrals`) is enforced through a combination of middleware functions and database queries. Here&#x27;s a step-by-step trace:
+
+1. **Middleware Function `isAdmin`**: 
+   The `isAdmin` function, located at `src/lib/middleware.ts#L10-L16`, checks if the authenticated user has an `isAdmin` role. This function is called at the beginning of the `GET /api/referrals` handler.
+
+   ```typescript
+   // src/lib/middleware.ts
+   export function isAdmin() {
+     return (req: NextRequest, res: NextResponse, next: NextMiddleware) =&gt; {
+       if (req.nextUrl.pathname.startsWith(&quot;/api/admin&quot;)) {
+         const user = getUserFromToken(req.cookies.get(&quot;token&quot;)?.value);
+         if (!user || !user.isAdmin) {
+           return new Response(&quot;Unauthorized&quot;, { status: 401 });
+         }
+       }
+       next();
+     };
+   }
+   ```
+
+   This ensures that only users with the `isAdmin` role can proceed to the next part of the request handler.
+
+2. **Database Query Filtering**:
+   Even if the user is an admin, the data retrieved from the database is filtered to ensure sensitive information is not exposed. This filtering is done in `src/app/api/referrals/route.ts#L15-L17`.
+
+   ```typescript
+   // src/app/api/referrals/route.ts
+   const referrals = await prisma.referral.findMany({
+     where: { OR: [{ referrerId: user.id }, { referredId: user.id }] },
+     include: { referrer: true, referred: true },
+   });
+   ```
+
+   - **`where: { OR: [{ referrerId: user.id }, { referredId: user.id }] }`**: This condition ensures that only referrals where the authenticated user is either the `referrer` or the `referred` are returned. This prevents an admin from viewing all referrals in the database, which might contain sensitive information about other users, and instead limits the data to what the authenticated user is directly involved in.
+
+   - **`include: { referrer: true, referred: true }`**: This includes the related `referrer` and `referred` user details for each referral, ensuring that the full context of each referral is provided to the authenticated user.
+
+In summary, admin authorization is enforced by the `isAdmin` middleware, and data access is further restricted based on the authenticated user&#x27;s direct involvement in the referrals.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how admin authorization is enforced for reading all referrals (`GET /api/referrals`).          </p>
+          <p class="lt-p">
+Response: Admin authorization for reading all referrals in the `GET /api/referrals` endpoint is enforced through the following steps, traced across these specific source files:
+
+1.  **Request Validation:**
+    The incoming HTTP request is first validated to ensure it contains a valid authentication token. This is handled by the `validateRequest` function located in `src/app/api/referrals/route.ts` (lines 17-24). This function checks for the presence of an `authorization` header and verifies the token using `verifyToken` (line 18). If the token is missing or invalid, a `401 Unauthorized` error is thrown (line 23).
+
+2.  **Role-Based Access Control (RBAC):**
+    After successfully validating the token, the user&#x27;s role is determined from the decoded token claims. This is done in `src/app/api/referrals/route.ts` (line 28), where `userRole` is extracted from `decodedToken.role`.
+
+    The core authorization logic is then implemented in a conditional check (lines 29-36). If the `userRole` is not &quot;admin&quot;, a `403 Forbidden` error is thrown, indicating that the user does not have the necessary permissions to access all referrals. This ensures that only users with the &quot;admin&quot; role can proceed.
+
+3.  **Data Retrieval:**
+    If the user is authenticated and authorized (i.e., their role is &quot;admin&quot;), the system proceeds to retrieve all referral data from the database. This is handled by calling the `getAllReferrals` function (line 38), which queries the database for all records in the `Referral` model.
+
+4.  **Response Formatting and Dispatch:**
+    Finally, the retrieved data is formatted into a JSON response (lines 40-44). The `data` object is populated with the total number of referrals (`total`) and the array of referral objects (`referrals`). The HTTP status code `200 OK` is used to indicate a successful retrieval. This response is then dispatched using `NextResponse.json` (line 44).
+
+In summary, the `GET /api/referrals` endpoint enforces admin authorization by validating the request token and then checking the decoded role. Only users with the &quot;admin&quot; role are allowed to access and retrieve all referral data.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how admin authorization is enforced for reading all referrals (`GET /api/referrals`).          </p>
+          <p class="lt-p">
+Response: Admin authorization for reading all referrals (`GET /api/referrals`) is enforced through the following steps:
+
+1.  **Middleware Check (`src/app/api/middleware.ts`)**:
+    Before processing the request, the `adminOnly` middleware is applied. This middleware checks if the user making the request has an `isAdmin` flag set to `true` in their session.
+    
+```typescript
+    // src/app/api/middleware.ts
+    if (!session?.user?.isAdmin) {
+      return NextResponse.json({ error: &quot;Forbidden&quot; }, { status: 403 });
+    }
+    ```
+
+    If the user is not an administrator, they receive a `403 Forbidden` response, and the request is terminated.
+
+2.  **Database Query (`src/app/api/referrals/route.ts`)**:
+    If the user is authenticated and has admin privileges, the request proceeds to the database query.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    const referrals = await prismadb.referral.findMany();
+    ```
+
+    The `prismadb.referral.findMany()` function retrieves **all** records from the `referral` table in the database, including those created by non-admin users. This is because the `isAdmin` check ensures that only authorized personnel can access this comprehensive list of referrals.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how admin authorization is enforced for reading all referrals (`GET /api/referrals`).          </p>
+          <p class="lt-p">
+Response: Admin authorization for reading all referrals (`GET /api/referrals`) is enforced through the `requireAdmin` function, which checks the user&#x27;s role before allowing access. Here&#x27;s the detailed flow:
+
+1.  **Route Definition (`src/app/api/referrals/route.ts`)**:
+    The `GET` handler for `/api/referrals` calls `requireAdmin()` to ensure only administrators can access this resource.
+    
+```typescript
+// src/app/api/referrals/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { db } from &quot;@/lib/db&quot;;
+import { Referral } from &quot;@/schema/referral&quot;;
+import { requireAdmin } from &quot;@/utils/auth&quot;;
+
+export async function GET(req: NextRequest) {
+  // ... (code to fetch all referrals)
+  requireAdmin(req); // Enforces admin authorization
+  // ... (code to return referrals)
+}
+```
+
+2.  **Role Verification (`src/utils/auth.ts`)**:
+    The `requireAdmin` function inspects the `user` object extracted from the request&#x27;s session. If the user&#x27;s role is not &quot;admin&quot;, it throws an `UnauthorizedError`.
+    
+```typescript
+// src/utils/auth.ts
+import { NextRequest } from &quot;next/server&quot;;
+import { getUser } from &quot;@/services/auth0&quot;;
+
+export function requireAdmin(req: NextRequest) {
+  const user = getUser(req);
+  if (user.role !== &quot;admin&quot;) {
+    throw new UnauthorizedError(&quot;You are not authorized to access this resource.&quot;);
+  }
+}
+```
+
+3.  **User Session Retrieval (`src/services/auth0.ts`)**:
+    The `getUser` function retrieves the authenticated user&#x27;s information, including their role, from the session cookie set by Auth0.
+    
+```typescript
+// src/services/auth0.ts
+import { verify } from &quot;jsonwebtoken&quot;;
+import { User } from &quot;@/schema/user&quot;;
+import { SECRET } from &quot;@/utils/env&quot;;
+
+export function getUser(req: NextRequest): User {
+  const token = req.cookies.get(&quot;token&quot;)?.value;
+  if (!token) {
+    throw new UnauthorizedError(&quot;No authentication token found.&quot;);
+  }
+
+  try {
+    const decoded = verify(token, SECRET) as { id: string; name: string; role: string };
+    return {
+      id: decoded.id,
+      name: decoded.name,
+      role: decoded.role, // &#x27;admin&#x27; or &#x27;user&#x27;
+    };
+  } catch (error) {
+    console.error(&quot;Token verification failed:&quot;, error);
+    throw new UnauthorizedError(&quot;Invalid or expired authentication token.&quot;);
+  }
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how admin authorization is enforced for reading all referrals (`GET /api/referrals`).          </p>
+          <p class="lt-p">
+Response: Admin authorization for reading all referrals (`GET /api/referrals`) is enforced through a series of checks within the `middleware.ts` file, which is included in the request handler of `route.ts`.
+
+### 1. `src/app/api/referrals/route.ts` enforces `middleware.ts`
+
+The `GET` request handler in `src/app/api/referrals/route.ts` includes a call to `middleware.ts` to check if the user is authenticated:
+
+```typescript
+// src/app/api/referrals/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import middleware from &quot;@/app/api/middleware&quot;;
+
+export async function GET(req: NextRequest) {
+  await middleware(req, &quot;admin&quot;); // Ensures the user is authenticated and has admin privileges
+  // ... rest of the code to fetch referrals
+}
+```
+
+### 2. `src/app/api/middleware.ts` checks for admin role
+
+Inside `src/app/api/middleware.ts`, the `middleware` function performs two key checks:
+
+#### a. `verifyAuth()` ensures the user is authenticated
+
+```typescript
+// src/app/api/middleware.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { prisma } from &quot;@/prisma/client&quot;;
+import { cookies } from &quot;next/headers&quot;;
+
+export const middleware = async (req: NextRequest, requiredRole: string) =&gt; {
+  const token = cookies().get(&quot;token&quot;)?.value;
+
+  if (!token) {
+    return NextResponse.json({ error: &quot;Unauthorized: Token missing&quot; }, { status: 401 });
+  }
+
+  // ... (code to verify token signature and decode payload)
+
+  const userRole = (decoded as { role: string }).role;
+
+  if (userRole !== &quot;ADMIN&quot;) {
+    return NextResponse.json({ error: &quot;Forbidden: Admins only&quot; }, { status: 403 });
+  }
+
+  // ... (sets user info in cookies for use in the route handler)
+};
+```
+
+#### b. Role validation
+
+After verifying the token&#x27;s signature and decoding the payload, the middleware checks if the decoded role is `&quot;ADMIN&quot;`:
+
+```typescript
+// src/app/api/middleware.ts
+const userRole = (decoded as { role: string }).role;
+
+if (userRole !== &quot;ADMIN&quot;) {
+  return NextResponse.json({ error: &quot;Forbidden: Admins only&quot; }, { status: 403 });
+}
+```
+
+If the role is not `&quot;ADMIN&quot;`, the user is denied access with a `403 Forbidden` status.
+
+### Summary
+
+- **`GET /api/referrals`** requires an authenticated `ADMIN` user.
+- **Authentication** is verified by checking the presence and validity of a `token` cookie.
+- **Authorization** is verified by ensuring the decoded token&#x27;s `role` is `&quot;ADMIN&quot;`.
+
+Without an authenticated `ADMIN` token, the request is rejected with an error message and a `401` or `403` HTTP status code.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how admin authorization is enforced for reading all referrals (`GET /api/referrals`).          </p>
+          <p class="lt-p">
+Response: Admin authorization for reading all referrals (`GET /api/referrals`) is enforced through a combination of modular authentication, role-based access control (RBAC), and middleware checks. Here&#x27;s a detailed trace:
+
+1. **Authentication Check (`middleware.ts`)**:
+   - Before any specific authorization logic, the request is passed through an authentication middleware located at `src/app/api/middleware.ts`.
+   - This middleware, powered by the `NextAuth.js` library, verifies if the incoming request contains a valid authentication token.
+   - If the token is missing or invalid, the user is considered &quot;unauthenticated,&quot; and the request is denied with a `401 Unauthorized` status.
+
+2. **Role-Based Access Control (`auth.ts`)**:
+   - Once authenticated, the user&#x27;s role is retrieved from their session data.
+   - The application uses `NextAuth.js` with a custom strategy (likely `Credentials`) that stores the user&#x27;s role (e.g., `&#x27;admin&#x27;`, `&#x27;user&#x27;`) in the session object.
+   - For the `GET /api/referrals` endpoint, the system checks if the authenticated user&#x27;s role is `&quot;admin&quot;`.
+
+3. **Specific Authorization Logic (`route.ts`)**:
+   - The actual authorization check occurs within the handler function of the `GET /api/referrals` endpoint, defined in `src/app/api/referrals/route.ts`.
+   - The relevant code snippet is:
+     ```typescript
+     if (userRole !== &quot;admin&quot;) {
+         return NextResponse.json({ error: &quot;Forbidden&quot; }, { status: 403 });
+     }
+     ```
+   - This condition ensures that only users with the `&quot;admin&quot;` role can proceed to fetch the list of all referrals.
+   - If the user&#x27;s role is not `&quot;admin&quot;`, a `403 Forbidden` response is returned, preventing unauthorized access to the referral data.
+
+In summary, the flow is: `Request` -&gt; `authMiddleware.ts` (Authentication) -&gt; `route.ts` (Admin Role Check) -&gt; `Forbidden or Data Retrieval`.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace how admin authorization is enforced for reading all referrals (`GET /api/referrals`).          </p>
+          <p class="lt-p">
+Response: Admin authorization for reading all referrals (`GET /api/referrals`) is enforced through a series of checks within the `src/app/api/referrals/route.ts` file. Here&#x27;s a step-by-step trace:
+
+1. **Authentication Check**:
+   - The `getSession` function from `src/app/utils/auth.ts` is called to retrieve the user&#x27;s session.
+   - If there is no session (`session?.user.id === null`), the user is unauthorized, and a `401 Unauthorized` response is returned.
+
+2. **Admin Role Verification**:
+   - The `isAdmin` function from `src/app/utils/auth.ts` is invoked to check if the authenticated user has an administrative role.
+   - If the user is not an admin (`!isAdmin`), they lack the necessary permissions, and a `403 Forbidden` response is returned.
+
+3. **Data Retrieval**:
+   - If the user is authenticated and authorized as an admin, the system proceeds to fetch all referrals from the database.
+   - The `prisma.referral.findMany()` function is used to retrieve all records from the `referral` table, which includes all referrals in the system.
+
+In summary, the authorization logic ensures that only authenticated users with the &quot;admin&quot; role can access the full list of referrals.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+84                </td>
+                <td>
+512                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+84                </td>
+                <td>
+519                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+84                </td>
+                <td>
+485                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+84                </td>
+                <td>
+274                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+84                </td>
+                <td>
+525                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+84                </td>
+                <td>
+619                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+84                </td>
+                <td>
+420                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+84                </td>
+                <td>
+266                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

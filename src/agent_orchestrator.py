@@ -4,11 +4,17 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
-from google import genai
-from google.genai import types
-
 from src.tool_gateway import ToolGateway
 from src.session_manager import SessionManager
+from src.model_backend import (
+    ModelBackend,
+    ModelTurn,
+    ToolCall,
+    ToolResult,
+    TOOL_SCHEMAS,
+    tool_schemas_for_scope,
+    create_backend,
+)
 
 
 @dataclass
@@ -104,16 +110,25 @@ class AgentOrchestrator:
                     api_key: Optional[str] = None, 
                     model: str = "gemini-2.5-flash",
                     model_map: Optional[dict[str, str]] = None,
+                    backend: Optional[ModelBackend] = None,
+                    backend_type: str = "gemini",
+                    **backend_kwargs,
                 ):
         self.gateway = gateway
         self.session = session
         self.model = model
         self.model_map = model_map if model_map is not None else {m: model for m in MODES}
-        api_key = api_key or os.environ.get("GEMINI_API_KEY")
-        if not api_key:
-            raise ValueError("GEMINI_API_KEY environment variable or api_key parameter required")
-        self.client = genai.Client(api_key=api_key)
-        self._tools = self._define_tools()
+
+        # Use provided backend, or create one from backend_type
+        if backend is not None:
+            self.backend = backend
+        else:
+            self.backend = create_backend(
+                backend_type,
+                model=model,
+                api_key=api_key,
+                **backend_kwargs,
+            )
 
     @staticmethod
     def _classify_intent(query: str) -> str:
@@ -138,16 +153,16 @@ class AgentOrchestrator:
         if scope not in SCOPES:
             raise ValueError(f"scope must be one of {SCOPES}")
 
-        active_model = self.model_map.get(mode, self.model)
         if verbose:
-            print(f"[Router] Using model {active_model} for mode {mode}")
+            print(f"[Router] Using backend {self.backend.model_name} for mode {mode}")
 
         system_prompt = self._build_system_prompt(mode, scope)
-        contents = [
-            types.Content(
-                role="user",
-                parts=[types.Part(text=system_prompt + "\n\nRequest: " + query)],
-            )
+        tools = tool_schemas_for_scope(scope)
+
+        # Build conversation using backend message formatting
+        messages = [
+            self.backend.format_system_message(system_prompt),
+            self.backend.format_user_message(query),
         ]
 
         executed_calls: list[ExecutedToolCall] = []
@@ -160,83 +175,64 @@ class AgentOrchestrator:
             if verbose:
                 print(f"\n[Orchestrator] Turn {turn}")
 
-            tools = self._tools_for_scope(scope)
+            model_turn = self.backend.generate(messages, tools, temperature=0.2)
 
-            response = self.client.models.generate_content(
-                model=active_model,
-                contents=contents,
-                config=types.GenerateContentConfig(tools=tools, temperature=0.2),
-            )
-            time.sleep(1)
-
-            if not response.candidates or not response.candidates[0].content.parts:
-                break
-
-            function_calls = []
-            text_parts = []
-            for part in response.candidates[0].content.parts:
-                if part.function_call:
-                    function_calls.append(part.function_call)
-                elif part.text:
-                    text_parts.append(part.text)
-
-            if function_calls:
+            if model_turn.has_tool_calls:
                 if turn == 1:
                     raw_plan = [
-                        ToolCallSpec(tool_name=fc.name, args=dict(fc.args))
-                        for fc in function_calls
+                        ToolCallSpec(tool_name=tc.name, args=tc.arguments)
+                        for tc in model_turn.tool_calls
                     ]
 
-                if text_parts:
-                    final_text = "\n".join(text_parts)
+                if model_turn.text:
+                    final_text = model_turn.text
 
-                contents.append(response.candidates[0].content)
-                response_parts = []
+                # Append assistant response to conversation
+                messages.append(self.backend.format_assistant_message(model_turn))
 
-                for fc in function_calls:
-                    args = dict(fc.args)
+                # Execute each tool call
+                tool_results: list[ToolResult] = []
+                for tc in model_turn.tool_calls:
                     if verbose:
-                        print(f"  [Tool] {fc.name}({args})")
+                        print(f"  [Tool] {tc.name}({tc.arguments})")
 
-                    result = self._execute_tool(fc.name, args, scope)
+                    result = self._execute_tool(tc.name, tc.arguments, scope)
                     error = result.get("error") if isinstance(result, dict) else None
                     executed_calls.append(
-                        ExecutedToolCall(tool_name=fc.name, args=args, result=result, error=error)
+                        ExecutedToolCall(tool_name=tc.name, args=tc.arguments, result=result, error=error)
                     )
 
                     if verbose and error:
                         print(f"    [Error] {error}")
 
-                    response_parts.append(
-                        types.Part(
-                            function_response=types.FunctionResponse(
-                                name=fc.name, response=result
-                            )
-                        )
-                    )
+                    tool_results.append(ToolResult(name=tc.name, result=result))
 
-                contents.append(types.Content(role="user", parts=response_parts))
+                # Append tool results
+                formatted = self.backend.format_tool_results(tool_results)
+                if isinstance(formatted, list):
+                    messages.extend(formatted)
+                else:
+                    messages.append(formatted)
 
-            elif text_parts:
-                final_text = "\n".join(text_parts)
+            elif model_turn.has_text:
+                final_text = model_turn.text
                 if verbose:
                     print("[Orchestrator] Final answer received.")
                 break
+            else:
+                # No text and no tool calls — stop
+                break
 
         if not final_text.strip():
-            contents.append(types.Content(
-                role="user",
-                parts=[types.Part(text="Please provide your final answer based on the evidence gathered.")],
-            ))
-            fallback = self.client.models.generate_content(
-                model=active_model,
-                contents=contents,
-                config=types.GenerateContentConfig(temperature=0.2),
+            # Ask the model for a final answer based on gathered evidence
+            messages.append(
+                self.backend.format_user_message(
+                    "Please provide your final answer based on the evidence gathered."
+                )
             )
-            time.sleep(1)
-            for part in fallback.candidates[0].content.parts:
-                if part.text:
-                    final_text += part.text
+            fallback = self.backend.generate(messages, tools=[], temperature=0.2)
+            if fallback.text:
+                final_text = fallback.text
 
         evidence = self._consolidate_evidence(executed_calls)
         final_response = self._compose_response(final_text, evidence, mode)
@@ -256,7 +252,7 @@ class AgentOrchestrator:
             executed_tool_calls=executed_calls,
             consolidated_evidence=evidence,
             final_response=final_response,
-            raw_turns=self._serialize_contents(contents),
+            raw_turns=self.backend.serialize_messages(messages),
         )
 
     def _consolidate_evidence(self, executed: list[ExecutedToolCall]) -> list[Citation]:
@@ -381,9 +377,12 @@ class AgentOrchestrator:
 
     @staticmethod
     def _serialize_contents(contents: list) -> list[dict]:
-        """Serialize the Gemini contents list into plain dicts for trajectory export."""
+        """Legacy serializer — backends now handle serialization via serialize_messages()."""
         turns = []
         for content in contents:
+            if isinstance(content, dict):
+                turns.append(content)
+                continue
             role = getattr(content, "role", "unknown")
             parts_out = []
             for part in getattr(content, "parts", []):
@@ -437,90 +436,12 @@ General guidelines:
 - Structure your final answer clearly with headings if appropriate."""
 
     def _define_tools(self):
-        return [
-            types.Tool(
-                function_declarations=[
-                    types.FunctionDeclaration(
-                        name="search_repo",
-                        description="Search the repository code for files and functions matching a query.",
-                        parameters={
-                            "type": "object",
-                            "properties": {
-                                "query": {"type": "string", "description": "What to search for"},
-                                "top_k": {"type": "integer", "description": "Max results", "default": 5},
-                            },
-                            "required": ["query"],
-                        },
-                    ),
-                    types.FunctionDeclaration(
-                        name="open_file",
-                        description="Read the contents of a specific file or line range.",
-                        parameters={
-                            "type": "object",
-                            "properties": {
-                                "path": {"type": "string", "description": "File path relative to repo root"},
-                                "start_line": {"type": "integer", "description": "Start line (1-indexed)"},
-                                "end_line": {"type": "integer", "description": "End line (inclusive)"},
-                            },
-                            "required": ["path"],
-                        },
-                    ),
-                    types.FunctionDeclaration(
-                        name="get_issues",
-                        description="Get GitHub issues for the repository.",
-                        parameters={
-                            "type": "object",
-                            "properties": {
-                                "query": {"type": "string", "description": "Search text"},
-                                "state": {"type": "string", "description": "open | closed | all", "default": "open"},
-                                "limit": {"type": "integer", "description": "Max results", "default": 10},
-                            },
-                        },
-                    ),
-                    types.FunctionDeclaration(
-                        name="get_pull_requests",
-                        description="Get GitHub pull requests for the repository.",
-                        parameters={
-                            "type": "object",
-                            "properties": {
-                                "query": {"type": "string", "description": "Search text"},
-                                "state": {"type": "string", "description": "open | closed | all", "default": "open"},
-                                "limit": {"type": "integer", "description": "Max results", "default": 10},
-                            },
-                        },
-                    ),
-                    types.FunctionDeclaration(
-                        name="get_repo_stats",
-                        description="Get repository statistics.",
-                        parameters={"type": "object", "properties": {}},
-                    ),
-                    types.FunctionDeclaration(
-                        name="list_files",
-                        description="List all files in the repository. Use this first to understand the project structure before searching or opening files.",
-                        parameters={
-                            "type": "object",
-                            "properties": {
-                                "path_prefix": {"type": "string", "description": "Only list files under this directory (e.g. 'src/')"},
-                                "extensions": {"type": "array", "items": {"type": "string"}, "description": "Filter by file extensions (e.g. ['.ts', '.py'])"},
-                            },
-                        },
-                    ),
-                ]
-            )
-        ]
+        """Legacy — kept for backward compat; tools now come from model_backend.TOOL_SCHEMAS."""
+        return TOOL_SCHEMAS
 
     def _tools_for_scope(self, scope: str):
-        if scope == "files-only":
-            return [
-                types.Tool(
-                    function_declarations=[
-                        decl
-                        for decl in self._tools[0].function_declarations
-                        if decl.name not in ("get_issues", "get_pull_requests")  # list_files always available
-                    ]
-                )
-            ]
-        return self._tools
+        """Legacy — kept for backward compat; use tool_schemas_for_scope() instead."""
+        return tool_schemas_for_scope(scope)
 
     def _execute_tool(self, tool_name: str, args: dict, scope: str) -> dict:
         try:

@@ -1,0 +1,3505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>RL Iteration 5</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+RL Iteration 5  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:08:45  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines referral table filter utilities?          </p>
+          <p class="lt-p">
+Response: The file that defines referral table filter utilities is src/lib/utils/referralFilters.ts.          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/table-filters.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines referral table filter utilities?          </p>
+          <p class="lt-p">
+Response: The referral table filter utilities are defined in `src/utils/referralFilters.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/table-filters.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines referral table filter utilities?          </p>
+          <p class="lt-p">
+Response: The referral table filter utilities are defined in src/utils/referralFilters.ts.          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/table-filters.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines referral table filter utilities?          </p>
+          <p class="lt-p">
+Response: The referral table filter utilities are defined in the following file:
+
+**src/lib/utils/referralFilters.ts**
+
+This file contains functions to filter referrals based on various criteria such as `status`, `referrerName`, `referredName`, `referredEmail`, `showResolved`, `showNew`, and `showActive`.          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/table-filters.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines referral table filter utilities?          </p>
+          <p class="lt-p">
+Response: The file that defines referral table filter utilities is src/lib/utils/referral-filters.ts.          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/table-filters.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines referral table filter utilities?          </p>
+          <p class="lt-p">
+Response: The referral table filter utilities are defined in the following file:
+
+*   **src/lib/utils/referralFilters.ts**
+
+This file contains the logic for filtering referrals based on various criteria such as status, user ID, and code.          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/table-filters.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines referral table filter utilities?          </p>
+          <p class="lt-p">
+Response: The referral table filter utilities are defined in src/utils/referrals.ts.
+
+Here are the relevant functions:
+
+*   **filterReferralsByStatus**: src/utils/referrals.ts#L11-L19
+    *   Filters referrals based on the specified status (`pending`, `redeemed`, `expired`).
+*   **filterReferralsByReferrerId**: src/utils/referrals.ts#L21-L29
+    *   Filters referrals to only those created by a specific referrer ID.
+*   **filterReferralsByDateRange**: src/utils/referrals.ts#L31-L48
+    *   Filters referrals within a given date range (e.g., active or expired within a specific timeframe).
+*   **filterReferralsByRedeemedAmount**: src/utils/referrals.ts#L50-L64
+    *   Filters referrals based on the minimum and maximum redeemed amounts.
+*   **filterReferralsByCode**: src/utils/referrals.ts#L66-L74
+    *   Filters referrals that contain a specific referral code.          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/table-filters.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines referral table filter utilities?          </p>
+          <p class="lt-p">
+Response: The referral table filter utilities are defined in the following files:
+
+*   **src/app/lib/utils/referralFilters.ts**: This file contains functions to filter referrals based on status (e.g., &quot;active&quot;, &quot;completed&quot;, &quot;expired&quot;), search queries, and a flag to include expired referrals.
+
+*   **src/app/lib/utils/referralSort.ts**: This file contains functions to sort referrals by date (ascending or descending) and by name (ascending or descending).
+
+These utilities are used in **src/app/api/referrals/route.ts** to process incoming filter and sort parameters and apply them to the query for retrieving referral data from the database.          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/table-filters.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+18                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+17                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+16                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+65                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+19                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+46                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+222                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+129                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma seed script located?          </p>
+          <p class="lt-p">
+Response: The Prisma seed script is located in `src/lib/db/seed.ts`. This file is responsible for initializing the database with default data when the application starts.          </p>
+          <p class="lt-p">
+Reference Answer: prisma/seed.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma seed script located?          </p>
+          <p class="lt-p">
+Response: The Prisma seed script is located in the following file:
+
+*   **src/lib/prisma/seed.ts**
+
+This file is responsible for initializing the database with default data when the application starts.          </p>
+          <p class="lt-p">
+Reference Answer: prisma/seed.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma seed script located?          </p>
+          <p class="lt-p">
+Response: The Prisma seed script is located in `src/lib/prisma/seed.ts`. This file is responsible for initializing the database with sample data when the application starts.          </p>
+          <p class="lt-p">
+Reference Answer: prisma/seed.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma seed script located?          </p>
+          <p class="lt-p">
+Response: The Prisma seed script is located in the following file:
+
+*   **src/lib/prisma/seed.ts**          </p>
+          <p class="lt-p">
+Reference Answer: prisma/seed.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma seed script located?          </p>
+          <p class="lt-p">
+Response: The Prisma seed script is located in `prisma/seed.ts`. This file is responsible for generating initial test data for the database, including creating sample users, referrers, and referrals.          </p>
+          <p class="lt-p">
+Reference Answer: prisma/seed.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma seed script located?          </p>
+          <p class="lt-p">
+Response: The Prisma seed script is located in `src/lib/prisma/seed.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: prisma/seed.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma seed script located?          </p>
+          <p class="lt-p">
+Response: The Prisma seed script is located in `src/lib/prisma/seed.ts`. This file is responsible for initializing the database with default data when the application starts.          </p>
+          <p class="lt-p">
+Reference Answer: prisma/seed.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the Prisma seed script located?          </p>
+          <p class="lt-p">
+Response: The Prisma seed script is located in `src/lib/prisma/seed.ts`. This file is responsible for initializing the database with predefined data when the application starts.          </p>
+          <p class="lt-p">
+Reference Answer: prisma/seed.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+33                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+40                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+34                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+24                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+41                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+18                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+34                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+34                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `referral-data-grid` implemented?          </p>
+          <p class="lt-p">
+Response: The `referral-data-grid` is implemented in the following files:
+
+1.  **`src/components/referrals/data-grid/columns.ts`**: This file defines the columns that will be displayed in the data grid. It specifies the data fields, their headers, and any cell rendering logic.
+2.  **`src/components/referrals/data-grid/data-grid.tsx`**: This file contains the `ReferralDataGrid` component itself. It uses the `@tanstack/react-table` library to render the table, apply sorting, filtering, and pagination, and display the data fetched from the API.
+3.  **`src/components/referrals/data-grid/data-grid.styles.ts`**: This file holds the CSS styles for the `ReferralDataGrid` component, ensuring it is visually consistent with the rest of the application.          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/referral-data-grid.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `referral-data-grid` implemented?          </p>
+          <p class="lt-p">
+Response: The `referral-data-grid` is implemented in the following two files:
+
+1.  **`src/components/referrals/data-grid/columns.tsx`**: This file defines the structure and configuration of the columns displayed in the data grid.
+2.  **`src/components/referrals/data-grid/data-grid.tsx`**: This file implements the actual React component that renders the data grid, including pagination, sorting, and filtering functionalities.          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/referral-data-grid.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `referral-data-grid` implemented?          </p>
+          <p class="lt-p">
+Response: The `referral-data-grid` is implemented in the following file:
+
+**src/components/referrals/referral-data-grid.tsx**
+
+This file defines a table component that displays referral data, including the referrer&#x27;s name, referred user&#x27;s email, status (active or redeemed), and the timestamp of the referral. It also includes pagination to navigate through the list of referrals.          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/referral-data-grid.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `referral-data-grid` implemented?          </p>
+          <p class="lt-p">
+Response: The `referral-data-grid` is implemented in the following files:
+
+1.  **`src/components/referrals/referral-data-grid.tsx`**: This file defines the core structure and functionality of the data grid, including the columns, row rendering, and integration with the refetch logic.
+2.  **`src/components/referrals/referral-data-grid.styles.ts`**: This file contains the CSS-in-JS styles for the `referral-data-grid`, ensuring it has a consistent and visually appealing layout.
+
+Together, these files handle the display, interaction, and styling of the referral data within the application.          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/referral-data-grid.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `referral-data-grid` implemented?          </p>
+          <p class="lt-p">
+Response: The `referral-data-grid` is implemented in the following files:
+
+1.  **`src/components/referrals/referral-data-grid.tsx`**: This file defines the structure and behavior of the data grid component itself. It uses the `DataGrid` component from `@material-ui/data-grid` to display referral data, including columns for ID, Code, User, Status, and Actions. It also includes features like pagination, sorting, and row selection.
+2.  **`src/components/referrals/referral-data-grid.styles.ts`**: This file contains the custom styles applied to the `referral-data-grid.tsx` component to ensure a consistent and visually appealing layout.
+3.  **`src/components/referrals/referral-card.tsx`**: While not the main data grid, this file is responsible for displaying individual referral information in a card format within each row of the data grid. It is imported and used inside `referral-data-grid.tsx` to render the &quot;User&quot; and &quot;Code&quot; details for each referral.
+
+Here are the direct code snippets from the files:
+
+### `src/components/referrals/referral-data-grid.tsx`
+```typescript
+// 1. Import necessary modules
+import React, { useEffect, useState, useCallback } from &#x27;react&#x27;;
+import { DataGrid, GridActionsCellItem, GridRowId } from &#x27;@material-ui/data-grid&#x27;;
+import { Box, Button, Typography, Dialog, DialogActions, DialogTitle, DialogContent, FormControlLabel, Switch } from &#x27;@material-ui/core&#x27;;
+import { useAuth } from &#x27;src/hooks/auth&#x27;;
+import { referralService } from &#x27;src/services/referral&#x27;;
+import { toast } from &#x27;react-toastify&#x27;;
+import { deactivateReferral, reactivateReferral } from &#x27;src/actions/referral&#x27;;
+import { useDispatch } from &#x27;src/hooks/redux&#x27;;
+import { deactivateSuccess, reactivateSuccess } from &#x27;src/reducers/referral&#x27;;
+import { useDebounce } from &#x27;src/hooks/debounce&#x27;;
+import { Search as SearchIcon, Edit as EditIcon, Delete as DeleteIcon, CheckCircle as CheckCircleIcon, Cancel as CancelIcon } from &#x27;@material-ui/icons&#x27;;
+import { useNavigate } from &#x27;react-router-dom&#x27;;
+import { ConfirmDialog } from &#x27;src/components/confirm-dialog&#x27;;
+import { Referral } from &#x27;src/types/referral&#x27;;
+import { referralDataGridColumns } from &#x27;src/components/referrals/referral-data-grid.columns&#x27;;
+import { useStyles } from &#x27;src/components/referrals/referral-data-grid.styles&#x27;;
+import { ReferralCard } from &#x27;src/components/referrals/referral-card&#x27;;
+
+// 2. Main component
+export default function ReferralDataGrid() {
+  const classes = useStyles();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [rows, setRows] = useState&lt;Referral[]&gt;([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(&#x27;&#x27;);
+  const [selectedIds, setSelectedIds] = useState&lt;GridRowId[]&gt;([]);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [selectedAction, setSelectedAction] = useState&lt;&#x27;delete&#x27; | &#x27;deactivate&#x27; | &#x27;reactivate&#x27;&gt;(&#x27;delete&#x27;);
+  const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
+  const [selectedDeactivateId, setSelectedDeactivateId] = useState&lt;GridRowId | null&gt;(null);
+  const [isReactivateDialogOpen, setIsReactivateDialogOpen] = useState(false);
+  const [selectedReactivateId, setSelectedReactivateId] = useState&lt;GridRowId | null&gt;(null);
+  const debouncedSearch = useDebounce(searchQuery, 300);
+
+  const fetchReferrals = useCallback(async () =&gt; {
+    setIsLoading(true);
+    try {
+      const data = await referralService.getAllReferrals(user.id, debouncedSearch);
+      setRows(data);
+    } catch (error) {
+      toast.error(&#x27;Failed to load referrals&#x27;);
+      console.error(&#x27;Failed to load referrals:&#x27;, error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user.id, debouncedSearch]);
+
+  useEffect(() =&gt; {
+    fetchReferrals();
+  }, [fetchReferrals]);
+
+  const handleDeactivate = async (id: GridRowId) =&gt; {
+    try {
+      await deactivateReferral(id);
+      toast.success(&#x27;Referral deactivated&#x27;);
+      dispatch(deactivateSuccess(id));
+      fetchReferrals();
+    } catch (error) {
+      toast.error(&#x27;Failed to deactivate referral&#x27;);
+      console.error(&#x27;Failed to deactivate referral:&#x27;, error);
+    }
+  };
+
+  const handleReactivate = async (id: GridRowId) =&gt; {
+    try {
+      await reactivateReferral(id);
+      toast.success(&#x27;Referral reactivated&#x27;);
+      dispatch(reactivateSuccess(id));
+      fetchReferrals();
+    } catch (error) {
+      toast.error(&#x27;Failed to reactivate referral&#x27;);
+      console.error(&#x27;Failed to reactivate referral:&#x27;, error);
+    }
+  };
+
+  const handleRowSelectionModelChange = (newSelection: GridRowId[]) =&gt; {
+    setSelectedIds(newSelection);
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent&lt;HTMLInputElement&gt;) =&gt; {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleActionConfirm = async () =&gt; {
+    if (selectedIds.length === 0) return;
+
+    if (selectedAction === &#x27;delete&#x27;) {
+      setIsConfirmDialogOpen(false);
+      try {
+        const inactiveIds = selectedIds.filter(id =&gt; rows.find(row =&gt; row.id === id)?.status !== &#x27;DEACTIVATED&#x27;);
+        const activeIds = selectedIds.filter(id =&gt; rows.find(row =&gt; row.id === id)?.status === &#x27;DEACTIVATED&#x27;);
+
+        if (inactiveIds.length &gt; 0) {
+          await Promise.all(inactiveIds.map(id =&gt; referralService.deleteReferral(id)));
+          toast.success(`${inactiveIds.length} referral(s) deleted`);
+        }
+
+        if (activeIds.length &gt; 0) {
+          await Promise.all(activeIds.map(id =&gt; deactivateReferral(id)));
+          toast.success(`${activeIds.length} referral(s) deactivated`);
+          dispatch(deactivateSuccess(...activeIds));
+        }
+
+        fetchReferrals();
+      } catch (error) {
+        toast.error(&#x27;Failed to perform bulk action&#x27;);
+        console.error(&#x27;Failed to perform bulk action:&#x27;, error);
+      }
+    } else if (selectedAction === &#x27;deactivate&#x27;) {
+      setIsDeactivateDialogOpen(false);
+      try {
+        await Promise.all(selectedIds.map(id =&gt; handleDeactivate(id)));
+        fetchReferrals();
+      } catch (error) {
+        toast.error(&#x27;Failed to deactivate selected referrals&#x27;);
+        console.error(&#x27;Failed to deactivate selected referrals:&#x27;, error);
+      }
+    } else if (selectedAction === &#x27;reactivate&#x27;) {
+      setIsReactivateDialogOpen(false);
+      try {
+        await Promise.all(selectedIds.map(id =&gt; handleReactivate(id)));
+        fetchReferrals();
+      } catch (error) {
+        toast.error(&#x27;Failed to reactivate selected referrals&#x27;);
+        console.error(&#x27;Failed to reactivate selected referrals:&#x27;, error);
+      }
+    }
+  };
+
+  const handleRowClick = (row: Referral) =&gt; {
+    navigate(`/referrals/${row.id}`);
+  };
+
+  const renderCell = (cellParams: any) =&gt; {
+    const row = rows.find(r =&gt; r.id === cellParams.id);
+    if (!row) return null;
+
+    if (cellParams.field === &#x27;user&#x27;) {
+      return (
+        &lt;ReferralCard
+          key={row.id}
+          id={row.id}
+          code={row.code}
+          user={row.user}
+          status={row.status}
+          createdAt={row.createdAt}
+          inactiveAt={row.inactiveAt}
+        /&gt;
+      );
+    }
+    if (cellParams.field === &#x27;status&#x27;) {
+      const status = row.status;
+      let color = &#x27;primary&#x27;;
+      let icon: React.ReactNode = null;
+
+      if (status === &#x27;ACTIVE&#x27;) {
+        color = &#x27;success&#x27;;
+        icon = &lt;CheckCircleIcon /&gt;;
+      } else if (status === &#x27;DEACTIVATED&#x27;) {
+        color = &#x27;error&#x27;;
+        icon = &lt;CancelIcon /&gt;;
+      }
+
+      return (
+        &lt;Box sx={{ display: &#x27;flex&#x27;, alignItems: &#x27;center&#x27;, color: color }}&gt;
+          {icon}
+          &lt;Typography marginLeft={1}&gt;{status}&lt;/Typography&gt;
+        &lt;/Box&gt;
+      );
+    }
+    return cellParams.value;
+  };
+
+  const actionColumn = {
+    field: &#x27;actions&#x27;,
+    headerName: &#x27;Actions&#x27;,
+    width: 150,
+    renderCell: (cellParams: any) =&gt; {
+      const row = rows.find(r =&gt; r.id === cellParams.id);
+      if (!row) return null;
+
+      const isDeactivated = row.status === &#x27;DEACTIVATED&#x27;;
+
+      return (
+        &lt;GridActionsCellItem
+          icon={&lt;EditIcon /&gt;}
+          label=&quot;Edit&quot;
+          onClick={() =&gt; navigate(`/referrals/${row.id}`)}
+          color=&quot;primary&quot;
+          disabled={isDeactivated}
+        /&gt;
+      );
+    },
+  };
+
+  const columns = [
+    ...referralDataGridColumns,
+    actionColumn,
+  ];
+
+  const hasSelected = selectedIds.length &gt; 0;
+
+  return (
+    &lt;Box className={classes.root}&gt;
+      &lt;Typography variant=&quot;h4&quot; gutterBottom&gt;
+        Referrals
+      &lt;/Typography&gt;
+      &lt;Box display=&quot;flex&quot; justifyContent=&quot;space-between&quot; alignItems=&quot;center&quot; mb={2}&gt;
+        &lt;Box display=&quot;flex&quot; alignItems=&quot;center&quot;&gt;
+          &lt;Typography variant=&quot;body1&quot; mr={2}&gt;
+            Search:
+          &lt;/Typography&gt;
+          &lt;Box sx={{ width: 200 }}&gt;
+            &lt;input
+              type=&quot;text&quot;
+              placeholder=&quot;Search referrals...&quot;
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className={classes.searchInput}
+            /&gt;
+            &lt;SearchIcon className={classes.searchIcon} /&gt;
+          &lt;/Box&gt;
+        &lt;/Box&gt;
+        &lt;Box          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/referral-data-grid.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `referral-data-grid` implemented?          </p>
+          <p class="lt-p">
+Response: The `referral-data-grid` is implemented in the following files:
+
+*   **src/components/referrals/data-grid.tsx**: This file defines the `ReferralDataGrid` component, which is responsible for displaying the list of referrals with columns like `referredBy`, `referredTo`, `status`, `code`, `createdAt`, and `updatedAt`. It also includes functionality to refresh data and change the status of a referral.
+    
+```typescript
+    // src/components/referrals/data-grid.tsx
+    export default function ReferralDataGrid({
+        referrals,
+        onStatusChange,
+        onRefresh,
+    }: {
+        referrals: Referral[];
+        onStatusChange: (id: string, newStatus: Status) =&gt; void;
+        onRefresh: () =&gt; void;
+    }) {
+        // ... (column definitions, data fetching, status update handler)
+    }
+    ```
+
+*   **src/app/(dashboard)/referrals/page.tsx**: This file uses the `ReferralDataGrid` component to display the referral data on the `/dashboard/referrals` page. It fetches the referral data from the database using `prisma.referral.findMany()` and passes the `onStatusChange` and `onRefresh` handlers to the `ReferralDataGrid`.
+    
+```typescript
+    // src/app/(dashboard)/referrals/page.tsx
+    export default async function ReferralsPage() {
+        const [referrals, total] = await getReferrals();
+
+        return (
+            &lt;div className=&quot;space-y-6&quot;&gt;
+                &lt;div className=&quot;flex justify-between items-center&quot;&gt;
+                    &lt;h1 className=&quot;text-2xl font-bold&quot;&gt;Referrals&lt;/h1&gt;
+                    &lt;button
+                        onClick={toggleCreateReferralModal}
+                        className=&quot;bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded&quot;
+                    &gt;
+                        Create Referral
+                    &lt;/button&gt;
+                &lt;/div&gt;
+                &lt;div className=&quot;border rounded p-4&quot;&gt;
+                    &lt;div className=&quot;flex justify-between items-center mb-4&quot;&gt;
+                        &lt;p className=&quot;text-sm text-gray-600&quot;&gt;Total Referrals: {total}&lt;/p&gt;
+                        &lt;button
+                            onClick={onRefresh}
+                            className=&quot;bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded flex items-center&quot;
+                        &gt;
+                            &lt;RotateCw className=&quot;mr-1 h-4 w-4&quot; /&gt;
+                            Refresh
+                        &lt;/button&gt;
+                    &lt;/div&gt;
+                    &lt;ReferralDataGrid
+                        referrals={referrals}
+                        onStatusChange={handleStatusChange}
+                        onRefresh={onRefresh}
+                    /&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        );
+    }
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/referral-data-grid.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `referral-data-grid` implemented?          </p>
+          <p class="lt-p">
+Response: The `referral-data-grid` is implemented in the following file:
+
+**src/app/(member)/referrals/data-grid.tsx**
+
+This file contains the `ReferralDataGrid` component, which displays the list of referrals using Material-UI&#x27;s `DataGrid` component.          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/referral-data-grid.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `referral-data-grid` implemented?          </p>
+          <p class="lt-p">
+Response: The `referral-data-grid` is implemented in `src/app/components/referrals/referral-data-grid.tsx`.          </p>
+          <p class="lt-p">
+Reference Answer: src/components/referral/referral-data-grid.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+168                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+88                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+75                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+124                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+566                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+57                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+77                </td>
+                <td>
+24                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Evaluate ambiguity in error code semantics and propose a normalized error taxonomy across services/routes.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase (Next.js referral-management application) currently employs a mix of plain `console.error()` calls and `NextResponse.json()` with HTTP status codes to handle errors. While this provides basic error reporting, it introduces ambiguity in error semantics, making it difficult for developers to quickly understand the root cause or the appropriate action to take upon encountering an error.
+
+### 1. Ambiguity in Current Error Handling
+
+#### a. `console.error()` without structured data:
+In `src/app/api/referrals/route.ts`, validation errors are logged using `console.error()`:
+```typescript
+// src/app/api/referrals/route.ts
+if (error) {
+    console.error(&quot;Validation error:&quot;, error);
+    return NextResponse.json({ message: &quot;Invalid input.&quot; }, { status: 400 });
+}
+```
+This approach logs the error message to the console, but there&#x27;s no standardized structure for the error object itself. Different parts of the application (e.g., database operations, authentication) might log errors in varying formats, making it hard to parse or react to them programmatically.
+
+#### b. `NextResponse.json()` with generic messages:
+Many endpoints return `NextResponse.json()` with a generic `&quot;message&quot;: &quot;Internal Server Error.&quot;` and a status code of 500:
+```typescript
+// src/app/api/referrals/route.ts
+try {
+    // ...
+    await prisma.referral.create({
+        data: validatedData,
+    });
+    console.log(&quot;Referral created successfully:&quot;, validatedData);
+    return NextResponse.json({ message: &quot;Referral created successfully.&quot; }, { status: 201 });
+} catch (error) {
+    console.error(&quot;Failed to create referral:&quot;, error);
+    return NextResponse.json({ message: &quot;Internal Server Error.&quot; }, { status: 500 });
+}
+```
+This is good for user-facing messages, but the lack of a specific error code makes it hard for client-side code or external systems to differentiate between a general server error and, say, a database connection failure, an authentication error, or an object-not-found error.
+
+#### c. Mixed HTTP status codes and error messages:
+While some endpoints use specific status codes (e.g., 400 for bad requests, 201 for created), there&#x27;s no consistent mapping of specific error conditions to HTTP status codes across all routes.
+
+### 2. Proposed Normalized Error Taxonomy
+
+To improve clarity and maintainability, I propose a structured error handling system across all services and routes in the PRFC Connect application. This system will introduce a consistent error object structure and map common error conditions to appropriate HTTP status codes.
+
+#### a. Core Error Object Structure
+
+Every error thrown or caught in the application should contain the following fields:
+
+*   **`message`:** A human-readable description of the error.
+*   **`code`:** A unique, standardized string that categorizes the type of error (e.g., `VALIDATION_FAILED`, `AUTHENTICATION_REQUIRED`, `DATABASE_ERROR`, `OBJECT_NOT_FOUND`, `UNAUTHORIZED`, `FORBIDDEN`, `RATE_LIMIT_EXCEEDED`, `UNPROCESSABLE_ENTITY`, `INTERNAL_SERVER_ERROR`).
+*   **`details`:** (Optional) A dictionary containing additional technical details, such as the field name for validation errors, or the specific database error message.
+
+Example:
+```json
+{
+    &quot;message&quot;: &quot;Referral creation failed.&quot;,
+    &quot;code&quot;: &quot;DATABASE_ERROR&quot;,
+    &quot;details&quot;: {
+        &quot;prisma_error&quot;: &quot;Database connection failed&quot;
+    }
+}
+```
+
+#### b. HTTP Status Code Mapping
+
+Here&#x27;s a recommended mapping of error codes to HTTP status codes:
+
+| Error Code                    | HTTP Status Code | Description                                      |
+|------------------------------|------------------|--------------------------------------------------|
+| `VALIDATION_FAILED`          | 400              | Request data did not meet validation requirements. |
+| `AUTHENTICATION_REQUIRED`    | 401              | User must be authenticated to perform this action. |
+| `AUTHENTICATION_FAILED`      | 401              | Invalid or expired authentication token.          |
+| `UNAUTHORIZED`                | 403              | User does not have permission to perform this action. |
+| `FORBIDDEN`                  | 403              | User does not have sufficient permissions.        |
+| `OBJECT_NOT_FOUND`           | 404              | The requested resource or object was not found.   |
+| `RATE_LIMIT_EXCEEDED`        | 429              | Too many requests; the user has exceeded their rate limit. |
+| `UNPROCESSABLE_ENTITY`       | 422              | Server understands the request but cannot process it due to client-side validation errors. |
+| `INTERNAL_SERVER_ERROR`      | 500              | Generic server-side error.                        |
+
+#### c. Implementation Guidelines
+
+*   **`src/utils/errors.ts`:** Create a new file to centralize error creation and throwing.
+    *   Define a `CustomError` class or a function that constructs error objects with the standardized structure.
+    *   Export functions to throw specific error types (e.g., `throwValidationError`, `throwAuthRequiredError`, `throwNotFoundError`, `throwDatabaseError`).
+*   **`src/app/api/referrals/route.ts` (and other routes):**
+    *   Replace `console.error()` with throwing a `CustomError` with the appropriate `code` and `message`. Include `details` for prisma errors.
+    *   Catch `CustomError` instances, log them to the console, and return `NextResponse.json()` with the `message` from the error object and its corresponding HTTP status code.
+*   **Client-side Handling:** When making API calls, client-side code can check the `code` in the error response to display specific user-friendly messages or trigger specific recovery actions.
+
+---
+
+### 3. Upgrade Plan
+
+1.  **Define Error Codes:** Collaborate with the development team to define a comprehensive list of error codes that cover all potential error scenarios in the application.
+2.  **Create `src/utils/errors.ts`:** Implement the `CustomError` class or functions to generate structured error objects.
+3.  **Refactor Routes:** Update all existing routes (e.g., `src/app/api/referrals/route.ts`, `src/app/api/auth/login/route.ts`, `src/app/api/referrals/[[...slug]]/route.ts`) to throw `CustomError` instances and return structured error responses.
+4.  **Documentation:** Update the project&#x27;s documentation to describe the new error taxonomy, including the structure of error objects and the mapping to HTTP status codes.
+
+This normalized error taxonomy will significantly improve the maintainability, debugging process, and user experience of the PRFC Connect application by providing clear, consistent, and actionable error information.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Evaluate ambiguity in error code semantics and propose a normalized error taxonomy across services/routes.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase currently uses a mix of `HTTP status codes` and `custom error objects with `code` and `message` fields. This approach provides detailed error information but introduces ambiguity in interpreting the overall &quot;health&quot; of a request or the source of a failure.
+
+### Ambiguity in Error Code Semantics
+
+1. **HTTP Status Codes**:
+   - **Mixed Usage**: The codebase correctly uses standard HTTP status codes (e.g., `HTTP.Status.Created` for successful resource creation in `src/app/api/referrals/route.ts`, `HTTP.Status.BadRequest` for invalid input, `HTTP.Status.Unauthorized` for authentication failures).
+   - **200 OK for Non-Resource Creation**: The use of `HTTP.Status.Created` (201) is appropriate for resource creation, but `HTTP.Status.OK` (200) is also used (e.g., `src/app/api/referrals/accept/[id]/route.ts` for accepting a referral and `src/app/api/referrals/cancel/[id]/route.ts` for canceling a referral). This is generally acceptable if the endpoint is designed to return data without creating a new resource, but it&#x27;s crucial to document this behavior.
+   - **Non-Standard Code 999**: The `999` status code is used in `src/app/api/referrals/route.ts` (lines 100-102) to indicate an &quot;Internal server error.&quot; While `HTTP.StatusInternalServerError` (500) is the standard, using `999` is non-compliant and can mislead clients or monitoring systems.
+
+2. **Custom Error Objects**:
+   - **`code` Field**:
+     - **mixed semantics**: The `code` field in custom error objects is used to indicate various business logic errors (e.g., `ReferralAlreadyExists` in `src/app/api/referrals/route.ts` line 98, `InvalidReferralCode` in `src/utils/referral.ts` line 106, `ReferralCodeExpired` in `src/utils/referral.ts` line 109, `UserNotReferralCreator` in `src/app/api/referrals/cancel/[id]/route.ts` line 30, `ReferralAlreadyAccepted` in `src/app/api/referrals/accept/[id]/route.ts` line 29).
+     - **No Centralized Definition**: These `code` values are defined ad-hoc within the files where the error occurs, leading to potential duplication and inconsistency.
+   - **`message` Field**:
+     - **Clear Business Logic Messages**: The `message` field effectively communicates the specific issue (e.g., &quot;A referral with this email or code already exists.&quot;).
+     - **Ambiguity with `999`**: When `999` is returned, the `message` is &quot;An unexpected error occurred.&quot; This is generic and does not provide specific debugging information.
+
+### Proposed Normalized Error Taxonomy
+
+To improve clarity and maintainability, the codebase should adopt a consistent, hierarchical error taxonomy. This involves defining:
+1. **Standard HTTP Status Codes**: For the overall request outcome (e.g., success, client error, server error, authentication, rate limiting).
+2. **A Centralized Error Code Namespace**: For detailed business logic or API-specific errors, ensuring consistency and avoiding duplication.
+
+#### 1. HTTP Status Codes (Standard)
+Continue using standard HTTP status codes to indicate the overall state of the request. For example:
+
+- `200 OK`: Successful retrieval of data.
+- `201 Created`: Successful creation of a new resource.
+- `204 No Content`: Successfully deleted resource (no content to return).
+- `400 Bad Request`: Malformed request or invalid data.
+- `401 Unauthorized`: Authentication required.
+- `403 Forbidden`: User does not have permission.
+- `404 Not Found`: Resource not found.
+- `409 Conflict`: Request conflicted with current state (e.g., duplicate resource).
+- `410 Gone`: Resource no longer available (e.g., revoked referral).
+- `412 Precondition Failed`: Referral code expired.
+- `429 Too Many Requests`: Rate limit exceeded.
+- `500 Internal Server Error`: Server-side error (fallback if an unexpected error occurs).
+- `503 Service Unavailable`: Temporary service unavailability.
+
+#### 2. Custom Error Codes (Namespaced)
+Define a consistent namespace for custom error codes to specify the domain or module they belong to. A recommended structure is `MODULE.TYPE`, where:
+
+- **`MODULE`** identifies the component (e.g., `referrals`, `auth`).
+- **`TYPE`** describes the nature of the error (e.g., `duplicate`, `invalid`, `permission_denied`, `expired`).
+
+**Example Namespace**: `PRFC.CONNECT.REFERRALS`
+
+**Example Error Codes**:
+
+- `PRFC.CONNECT.REFERRALS.DUPLICATE_EMAIL`: User with this email already exists.
+- `PRFC.CONNECT.REFERRALS.DUPLICATE_CODE`: A referral with this code already exists.
+- `PRFC.CONNECT.REFERRALS.INVALID_CODE`: The provided referral code is invalid or formatted incorrectly.
+- `PRFC.CONNECT.REFERRALS.EXPIRED`: The referral code has expired.
+- `PRFC.CONNECT.REFERRALS.PERMISSION_DENIED`: User is not the creator of the referral.
+- `PRFC.CONNECT.REFERRALS.ALREADY_ACCEPTED`: The referral has already been accepted.
+- `PRFC.CONNECT.REFERRALS.ALREADY_CANCELED`: The referral has already been canceled.
+- `PRFC.CONNECT.REFERRALS.INVALID_STATE`: The referral is in an invalid state to perform the requested action.
+- `PRFC.CONNECT.REFERRALS.USER_NOT_FOUND`: The specified user does not exist.
+- `PRFC.CONNECT.REFERRALS.BADGE_REDEMPTION_LIMIT_EXCEEDED`: User has redeemed all available badges.
+- `PRFC.CONNECT.REFERRALS.BADGE_REDEMPTION_REACHED_MONTHLY`: User has redeemed their monthly badge limit.
+- `PRFC.CONNECT.REFERRALS.BADGE_REDEMPTION_REACHED_YEARLY`: User has redeemed their yearly badge limit.
+- `PRFC.CONNECT.REFERRALS.INTERNAL_SERVER_ERROR`: An unexpected, non-recoverable error occurred on the server.
+
+#### 3. Error Object Structure
+
+All error responses should adhere to the following structure:
+
+```typescript
+{
+  error: {
+    code: string; // e.g., &quot;PRFC.CONNECT.REFERRALS.DUPLICATE_EMAIL&quot;
+    message: string; // e.g., &quot;A referral with this email or code already exists.&quot;
+    details: any; // Optional: can include additional, non-sensitive, debugging information
+  }
+}
+```
+
+#### 4. Implementation Strategy
+
+1. **Centralized Error Code Definition**:
+   - Create a new file, `src/utils/errors.ts`, to define all custom error codes. This will prevent duplication and ensure consistency.
+   - Example:
+     ```typescript
+     // src/utils/errors.ts
+     export const REFERRALS = {
+       DUPLICATE_EMAIL: &quot;PRFC.CONNECT.REFERRALS.DUPLICATE_EMAIL&quot;,
+       DUPLICATE_CODE: &quot;PRFC.CONNECT.REFERRALS.DUPLICATE_CODE&quot;,
+       INVALID_CODE: &quot;PRFC.CONNECT.REFERRALS.INVALID_CODE&quot;,
+       EXPIRED: &quot;PRFC.CONNECT.REFERRALS.EXPIRED&quot;,
+       PERMISSION_DENIED: &quot;PRFC.CONNECT.REFERRALS.PERMISSION_DENIED&quot;,
+       ALREADY_ACCEPTED: &quot;PRFC.CONNECT.REFERRALS.ALREADY_ACCEPTED&quot;,
+       ALREADY_CANCELED: &quot;PRFC.CONNECT.REFERRALS.ALREADY_CANCELED&quot;,
+       INVALID_STATE: &quot;PRFC.CONNECT.REFERRALS.INVALID_STATE&quot;,
+       USER_NOT_FOUND: &quot;PRFC.CONNECT.REFERRALS.USER_NOT_FOUND&quot;,
+       BADGE_REDEMPTION_LIMIT_EXCEEDED: &quot;PRFC.CONNECT.REFERRALS.BADGE_REDEMPTION_LIMIT_EXCEEDED&quot;,
+       BADGE_REDEMPTION_REACHED_MONTHLY: &quot;PRFC.CONNECT.REFERRALS.BADGE_REDEMPTION_REACHED_MONTHLY&quot;,
+       BADGE_REDEMPTION_REACHED_YEARLY: &quot;PRFC.CONNECT.REFERRALS.BADGE_REDEMPTION_REACHED_YEARLY&quot;,
+       INTERNAL_SERVER_ERROR: &quot;PRFC.CONNECT.REFERRALS.INTERNAL_SERVER_ERROR&quot;,
+     };
+     ```
+
+2. **Error Handling Middleware**:
+   - Implement a middleware (e.g., `src/middleware/error-handler.ts`) to catch `Prisma.PrismaError` and generic `Error` objects, map them to the appropriate HTTP status code and custom error code, and construct the standardized error object.
+   - Example:
+     ```typescript
+     // src/middleware/error-handler.ts
+     import { Prisma } from &quot;@prisma/client&quot;;
+     import { NextResponse } from &quot;next/server&quot;;
+     import { REFERRALS } from &quot;@/utils/errors&quot;;
+     import { logger } from &quot;@/utils/logger&quot;;
+
+     export function errorHandlerMiddleware(req: Request, res: Response, next: () =&gt; void) {
+       try {
+         next();
+       } catch (error: any) {
+         let status = 500;
+         let code = REFERRALS.INTERNAL_SERVER_ERROR;
+         let message = &quot;An unexpected error occurred.&quot;;
+
+         if (error.code === &quot;P2002&quot;) {
+           // Duplicate entry
+           status = 409;
+           if (error.message.includes(&quot;Email&quot;)) {
+             code = REFERRALS.DUPLICATE_EMAIL;
+           } else if (error.message.includes(&quot;Code&quot;)) {
+             code = REFERRALS.DUPLICATE_CODE;
+           }
+           message = &quot;A referral with this email or code already exists.&quot;;
+           logger.warn(`Duplicate referral attempt: ${error.message}`);
+         } else if (error.code === &quot;P2025&quot;)          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Evaluate ambiguity in error code semantics and propose a normalized error taxonomy across services/routes.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase (prfc-connect) currently handles errors in a generally consistent manner, particularly in the `src/app/api/referrals/route.ts` file, which uses Zod for input validation and throws a `CustomError` with a specific `code` and `message`. However, there are subtle ambiguities and opportunities for normalization, especially regarding the `code` field&#x27;s meaning and usage across different parts of the application. Below is an evaluation of the current state and a proposed normalized error taxonomy.
+
+### Current Evaluation: Ambiguity in Error Code Semantics
+
+1. **`src/app/api/referrals/route.ts` (Zod Validation Errors)**:
+   - When Zod validation fails, the system throws a `CustomError` with the code `&quot;zod-validation&quot;` (e.g., `&quot;data integrity violation: zod-validation&quot;`).
+   - **Ambiguity**: The `message` includes a description (e.g., `&quot;data integrity violation&quot;`), which is helpful, but the `code` itself (`&quot;zod-validation&quot;`) does not immediately convey the *type* of validation error (e.g., missing field, format error, unique constraint violation).
+   - **Issue**: While the `message` provides context, the `code` remains a generic identifier. If other parts of the application consume these error codes, they might need to parse the `message` to understand the specific validation failure, leading to potential centralization of error handling logic.
+
+2. **Potential Future Ambiguity**:
+   - The current approach suggests that `code` is a generic identifier, while `message` contains detailed natural language descriptions.
+   - **Risk**: If other services/routes introduce their own `CustomError` instances with `code` fields that also attempt to describe the error in natural language (e.g., `&quot;user not found&quot;`, `&quot;database connection failed&quot;`), it will become ambiguous whether `code` is a standardized machine-readable code or a human-readable description.
+
+### Proposed Normalized Error Taxonomy
+
+To ensure clarity, consistency, and machine-readability across services/routes, the following error taxonomy is proposed:
+
+#### 1. **Standardized Error Object Structure**
+
+Every error thrown in the application should strictly adhere to this structure:
+
+```typescript
+interface CustomError {
+  code: string; // A machine-readable, standardized error code (e.g., &quot;VALIDATION__MISSING_FIELD&quot;, &quot;AUTH__UNAUTHORIZED&quot;)
+  message: string; // A human-readable description of the error (e.g., &quot;The &#x27;referrerId&#x27; field is required.&quot;)
+}
+```
+
+#### 2. **Error Code Nomenclature**
+
+The `code` field should follow a clear, hierarchical naming convention using `__` (double underscore) to separate the error category from the specific error type.
+
+**Format**: `CATEGORY__SPECIFIC_TYPE`
+
+**Allowed Categories**:
+- `VALIDATION`: Errors related to input validation (e.g., missing fields, incorrect formats).
+- `AUTH`: Authentication and authorization errors.
+- `DATABASE`: Errors related to database operations (e.g., record not found, unique constraint violations, general database errors).
+- `RATELIMIT`: Errors related to request rate limiting.
+- `INTERNAL`: Server-side errors that are not directly user input-related (e.g., unexpected server errors, configuration issues).
+- `NOTFOUND`: Specific category for &quot;record not found&quot; errors (can also be a sub-type under `DATABASE` if more granular error handling is needed).
+- `UNPROCESSABLE_ENTITY`: For validation errors that prevent the server from processing the request (similar to HTTP 422 Unprocessable Entity).
+
+**Examples**:
+- `VALIDATION__MISSING_FIELD`: A required input field is missing.
+- `VALIDATION__INVALID_FORMAT`: An input field has an invalid format (e.g., email, date).
+- `AUTH__UNAUTHORIZED`: The user is not authenticated.
+- `DATABASE__RECORD_NOT_FOUND`: A record was not found in the database.
+- `DATABASE__UNIQUE_VIOLATION`: A record violates a unique constraint.
+- `RATELIMIT__EXCEEDED`: Request rate limit has been exceeded.
+- `INTERNAL__SERVER_ERROR`: An unexpected error occurred on the server.
+
+#### 3. **Error Messages**
+
+The `message` field should provide a clear, concise, and user-friendly description of the error. It should *not* contain the `CATEGORY__SPECIFIC_TYPE` code.
+
+**Guidelines**:
+- Use simple language.
+- Avoid technical jargon for user-facing error messages.
+- Ensure consistency in describing similar errors (e.g., always say &quot;was not found&quot; rather than &quot;doesn&#x27;t exist&quot;).
+
+**Examples**:
+- Code: `VALIDATION__MISSING_FIELD`
+  - Message: `&quot;The &#x27;referrerId&#x27; field is required.&quot;`
+- Code: `DATABASE__RECORD_NOT_FOUND`
+  - Message: `&quot;No record found with the specified ID.&quot;`
+
+#### 4. **Implementation Notes**
+
+- **Zod Validation Errors**: Modify `src/app/api/referrals/route.ts` (and any other routes that use Zod) to generate more specific `VALIDATION__` codes based on the Zod error details. For example, iterating through Zod&#x27;s `issues` array to create individual `CustomError` instances with `VALIDATION__MISSING_FIELD`, `VALIDATION__INVALID_FORMAT`, etc.
+  
+- **Database Errors**: Use specific `DATABASE__` codes (e.g., `DATABASE__RECORD_NOT_FOUND`, `DATABASE__UNIQUE_VIOLATION`) when catching database errors in `src/utils/db.ts` or within routes.
+
+- **Middleware/Global Error Handler**: Implement a global error handler (e.g., in `src/app/api/middleware/errorHandler.ts`) that centralizes the logging and conversion of `CustomError` objects into HTTP responses with a consistent `error` object structure. This also provides an opportunity to translate error messages into different languages if i18n is implemented.
+
+### Benefits of Normalization
+
+- **Consistency**: All errors will have a predictable structure, making it easier for developers to handle them.
+- **Machine Readability**: Standardized codes allow for automated monitoring, alerting, and reporting based on specific error types.
+- **Centralized Handling**: A global error handler can process these standardized errors, ensuring consistent HTTP status codes and user-facing messages.
+- **Scalability**: The hierarchical naming convention allows for easy expansion to accommodate new error categories or specific error types without breaking existing code.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Evaluate ambiguity in error code semantics and propose a normalized error taxonomy across services/routes.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase (Next.js, PRFC Connect) demonstrates a generally consistent approach to error handling, primarily using HTTP status codes to communicate the nature of an error. However, there are subtle ambiguities in the *semantics* of certain error codes across different routes and services, particularly regarding the distinction between &quot;record not found&quot; and &quot;invalid input&quot;/&quot;bad request&quot;, as well as the use of generic `500 Internal Server Error`.
+
+### Evaluation of Ambiguity in Error Code Semantics
+
+#### 1. &quot;Record Not Found&quot; vs. &quot;Invalid Input/Bad Request&quot; (e.g., `400` and `404`)
+
+Currently, the codebase uses `400 Bad Request` and `404 Not Found` to differentiate between invalid input and missing resources. However, the semantic clarity of these errors can be improved to prevent misunderstandings, especially when an object ID is provided but no record is found.
+
+**Examples of Ambiguity:**
+
+*   **`src/app/api/referrals/route.ts`**
+    *   **Lines 43-49**: When a referral is not found by ID or when the user has no access to that referral, a `404 Not Found` status is returned with a &quot;Referral not found&quot; message.
+    *   **Lines 54-58**: If the input data (e.g., `referrerCode`, `referredBy`, `contactDetails`) is missing or empty, a `400 Bad Request` status is returned with a &quot;Missing or empty [field] value&quot; message.
+
+    This is semantically correct. A `404` indicates that a specific resource (e.g., a referral with a given ID) does not exist in the database. A `400` indicates that the request is malformed or contains invalid data (e.g., an empty `referrerCode`).
+
+*   **src/components/referral-form.tsx** (e.g., lines 100-103, 110-113)
+    *   If `referrerCode` or `referredBy` (and `contactDetails` if a new contact) are empty, a toast message like &quot;Referrer code or referred by is required&quot; is shown, and the form is prevented from submission. This correctly indicates that required fields are missing, which would lead to a `400 Bad Request` on the backend.
+
+    **Conclusion**: The distinction between `400` and `404` is semantically clear in these examples. However, the ambiguity could arise if, for instance, a route attempted to update a record and the ID was valid, but the record itself was in an invalid state (e.g., soft-deleted). In such a case, a `400` might be more appropriate than a `404`. To prevent this, routes should explicitly check for soft-deleted records and return a `400` or `404` based on the record&#x27;s actual state.
+
+#### 2. Generic `500 Internal Server Error`
+
+The `500 Internal Server Error` is used as a catch-all for unexpected server-side errors. While this is standard for when an error occurs that the server cannot handle gracefully, it provides no specific information about the root cause of the error, making debugging difficult.
+
+**Example of Generic `500`:**
+
+*   **src/app/api/referrals/route.ts** (line 63-66):
+    ```typescript
+    } catch (error) {
+        console.error(&#x27;Internal server error:&#x27;, error);
+        return NextResponse.json({ error: &quot;Internal server error&quot; }, { status: 500 });
+    }
+    ```
+
+    This correctly logs the error and returns a `500` status, but the error message is generic.
+
+**Conclusion**: While necessary for unhandled exceptions, the use of a generic `500` without additional context (e.g., a `detail` field in the response body) limits the ability to diagnose and fix issues on the backend.
+
+#### 3. Absence of Specific Business Logic Error Codes (e.g., `422 Unprocessable Entity`)
+
+The `422 Unprocessable Entity` status code is designed to indicate that the server understands the request but was unable to process it due to semantic errors in the payload (e.g., validation failures, format issues). While `400 Bad Request` is used, explicitly using `422` can improve clarity for clients, especially when the request is well-formed but contains invalid data that fails validation.
+
+**Example of Potential `422` Usage:**
+
+*   **src/app/api/referrals/route.ts** (lines 54-58):
+    ```typescript
+    if (!referrerCode.trim() || !referredBy.trim() || (!isNewContact &amp;&amp; !contactDetails.id)) {
+        return NextResponse.json({ error: &quot;Missing or empty referrer code or referred by value&quot; }, { status: 400 });
+    }
+    if (contactDetails &amp;&amp; (!contactDetails.name.trim() || !contactDetails.email.trim() || !validateEmail(contactDetails.email))) {
+        return NextResponse.json({ error: &quot;Invalid contact details&quot; }, { status: 400 });
+    }
+    ```
+
+    These checks could be refactored to return a `422` status with a `detail` object listing all validation errors.
+
+    **Proposed Improvement**:
+    ```typescript
+    const errors: { [key: string]: string } = {};
+    if (!referrerCode.trim() || !referredBy.trim() || (!isNewContact &amp;&amp; !contactDetails.id)) {
+        errors.referrerCode = &quot;Referrer code is required&quot;;
+        errors.referredBy = &quot;Referred by is required&quot;;
+        if (!isNewContact &amp;&amp; !contactDetails.id) {
+            errors.contactDetails = &quot;Contact details are required&quot;;
+        }
+    }
+    if (contactDetails &amp;&amp; (!contactDetails.name.trim() || !contactDetails.email.trim() || !validateEmail(contactDetails.email))) {
+        errors.name = &quot;Name is required&quot;;
+        errors.email = &quot;Valid email is required&quot;;
+    }
+    if (Object.keys(errors).length &gt; 0) {
+        console.error(&quot;Validation errors:&quot;, errors);
+        return NextResponse.json({ error: &quot;Unprocessable entity&quot;, details: errors }, { status: 422 });
+    }
+    ```
+
+### Proposed Normalized Error Taxonomy
+
+To improve clarity and consistency across all services and routes, a normalized error taxonomy can be introduced. This taxonomy will define specific HTTP status codes and a common response structure for error messages.
+
+#### HTTP Status Codes
+
+*   **400 Bad Request**: Malformed request (e.g., missing headers, incorrect content type).
+*   **401 Unauthorized**: Request requires user authentication.
+*   **403 Forbidden**: User is authenticated but lacks permission to perform the requested action.
+*   **404 Not Found**: The requested resource does not exist.
+*   **405 Method Not Allowed**: The HTTP method used is not supported for the requested resource.
+*   **409 Conflict**: Request conflicts with the current state of the server (e.g., duplicate resource).
+*   **422 Unprocessable Entity**: Request is semantically invalid (e.g., validation failures).
+*   **500 Internal Server Error**: An unexpected error occurred on the server (e.g., database connection failure, unhandled exceptions).
+
+#### Error Response Structure
+
+All error responses will follow a consistent JSON structure:
+
+```json
+{
+  &quot;error&quot;: &quot;&lt;string&gt; // A human-readable summary of the error (e.g., &quot;Invalid input&quot;, &quot;Resource not found&quot;).
+  &quot;code&quot;: &quot;&lt;string&gt; // A unique, machine-readable code for the error (e.g., &quot;BAD_REQUEST&quot;, &quot;NOT_FOUND&quot;).
+  &quot;details&quot;: {
+    &quot;&lt;string&gt; // Specific details or additional context about the error. This is optional and used to provide granular information, especially for `422` errors.
+    &quot;field&quot;: &quot;&lt;string&gt;&quot;,
+    &quot;message&quot;: &quot;&lt;string&gt;&quot;
+  }
+}
+```
+
+
+#### Implementation Guidelines
+
+1.  **Specific Error Codes**: Use precise error codes (e.g., &quot;VALIDATION_FAILURE&quot;, &quot;AUTH_REQUIRED&quot;) to categorize errors for easier client-side handling and server-side logging.
+2.  **Clear Error Messages**: Ensure error messages are descriptive and guide the user or client on how to correct the issue.
+3.  **Detailed Validation Errors** (for `422`): Include a `details` object that lists which fields are invalid and what the specific validation error is (e.g., &quot;email&quot;: &quot;Invalid email format&quot;).
+4.  **Avoid Generic `500` Messages**: While `500` is necessary for unhandled server errors, include as much contextual information as possible in the `details` field to aid in debugging.
+5.  **Consistent Logging**: Log all errors (including their `code` and `message`) to the console or a dedicated error tracking service for quick identification and resolution.
+
+### Example Normalized Error Responses
+
+*   **Missing Field (`400`)**:
+    ```json
+    {
+      &quot;error&quot;: &quot;Missing input&quot;,
+      &quot;code&quot;: &quot;MISSING_INPUT&quot;,
+      &quot;details&quot;: {
+        &quot;field&quot;: &quot;referrerCode&quot;,
+        &quot;message&quot;: &quot;Referrer code is required&quot;
+      }
+    }
+    ```
+
+*   **Invalid Format (`422`)**:
+    ```json
+    {
+      &quot;error&quot;: &quot;Invalid input format&quot;,
+      &quot;code&quot;: &quot;INVALID_FORMAT&quot;,
+      &quot;details&quot;: {
+        &quot;field&quot;: &quot;email&quot;,
+        &quot;message&quot;: &quot;Invalid email format&quot;
+      }
+    }
+    ```
+
+*   **Resource Not Found (`404`)**:
+    ```json
+    {
+      &quot;          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Evaluate ambiguity in error code semantics and propose a normalized error taxonomy across services/routes.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase currently implements error handling in a generally consistent manner, using `NextResponse.json` to return a `message` and an `error` boolean, along with a `code` property. However, there is a *lack of a centralized, documented, and standardized error taxonomy* across services and routes. This leads to ambiguity in the `code` semantics, making it difficult for consumers of the API to understand and react to errors in a consistent way.
+
+### Current Error Handling Pattern
+
+The pattern is consistent across the `src/app/api/referrals/route.ts` file and is mirrored in `src/lib/server/validators.ts`, `src/lib/server/cron.ts`, and `src/lib/prfc-api/members.ts`:
+
+*   **`src/app/api/referrals/route.ts` (lines 21, 29, 37, 47, 70, 77, 84, 91, 98, 105, 112, 119, 126, 133, 140, 147, 155, 162, 169, 176):**
+    
+```typescript
+    return NextResponse.json(
+      { message: &quot;Invalid input.&quot; },
+      { status: 400 }
+    );
+    // ... or with code:
+    return NextResponse.json(
+      { message: &quot;Referral not found.&quot;, error: true, code: &quot;NOT_FOUND&quot; },
+      { status: 404 }
+    );
+    // ... or with general error:
+    console.error(&quot;An unexpected error occurred:&quot;, error);
+    return NextResponse.json(
+      { message: &quot;Internal server error.&quot;, error: true, code: &quot;INTERNAL_SERVER_ERROR&quot; },
+      { status: 500 }
+    );
+    ```
+
+*   **`src/lib/server/validators.ts` (lines 17, 37, 56, 77, 96, 115, 134, 153):**
+    
+```typescript
+    if (error) {
+      return NextResponse.json({ message: &quot;Invalid input.&quot;, error: true, code: &quot;VALIDATION_ERROR&quot; }, { status: 400 });
+    }
+    ```
+
+*   **`src/lib/server/cron.ts` (lines 23, 30, 38, 46):**
+    
+```typescript
+    } catch (error) {
+      console.error(`Failed to ${action} expired referrals:`, error);
+      return NextResponse.json({ message: &quot;Internal server error.&quot;, error: true, code: &quot;INTERNAL_SERVER_ERROR&quot; }, { status: 500 });
+    }
+    ```
+
+*   **`src/lib/prfc-api/members.ts` (lines 26, 37):**
+    
+```typescript
+    if (response.status !== 200) {
+      console.error(&quot;Failed to fetch member information:&quot;, await response.text());
+      return NextResponse.json(
+        { message: &quot;Internal server error.&quot;, error: true, code: &quot;PRFC_API_ERROR&quot; },
+        { status: 500 }
+      );
+    }
+    ```
+
+
+### Ambiguity in Error Code Semantics
+
+While the presence of `code` adds some level of specificity, its meaning is not universally clear without explicit documentation. For instance:
+
+*   **`VALIDATION_ERROR`** (e.g., `src/lib/server/validators.ts`, line 17): Clearly indicates input validation failures. This is well-defined.
+*   **`NOT_FOUND`** (e.g., `src/app/api/referrals/route.ts`, line 29): Indicates a resource was not found. This is a standard HTTP status code (404) and generally understood.
+*   **`INTERNAL_SERVER_ERROR`** (e.g., `src/app/api/referrals/route.ts`, line 47; `src/lib/server/cron.ts`, lines 23, 30; `src/lib/prfc-api/members.ts`, line 37): This is a catch-all for unexpected errors and maps to HTTP status 500. While standard, it provides no further detail, which can be useful for debugging.
+*   **`PRFC_API_ERROR`** (e.g., `src/lib/prfc-api/members.ts`, line 26): This indicates an error from an external API call (in this case, the `prfc-api` member endpoint). It&#x27;s specific to that integration and could be further normalized if other external APIs introduce similar errors.
+
+The lack of a documented error code standard means that if a new error type is introduced (e.g., `UNAUTHORIZED`, `FORBIDDEN`, `RATE_LIMIT_EXCEEDED`, `DATABASE_ERROR`, `QUOTA_EXCEEDED`, `RESOURCE_CONFLICT`, `PAYMENT_FAILURE`, `EMAIL_SEND_FAILURE`, `AUTHENTICATION_REQUIRED`, `CONFIGURATION_ERROR`, `UNPROCESSABLE_ENTITY`, `AUTHORIZATION_DENIED`, `ENTITY_ALREADY_EXISTS`, `INVALID_TOKEN`, `TOKEN_EXPIRED`, `ENCRYPTION_ERROR`, `QUOTA_LIMIT_REACHED`, `LOGICAL_ERROR`, `PERMISSION_DENIED`, `UNEXPECTED_DATA_FORMAT`, `MAX_RETRIES_EXCEEDED`, `DependencyUnavailable`, `IdempotentRejected`, `WebhooksProcessingFailed`, `InvalidWebhookSignature`, `ResourceLocked`, `UnauthorizedAccessAttempt`, `MalformedRequest`, `MissingDependency`, `InvalidState`, `FeatureDisabled`, `InvalidFormat`, `InvalidOperation`, `InvalidRequest`, `InvalidResource`, `InvalidType`, `InvalidValue`, `MissingHeader`, `MissingParameter`, `MissingQuery`, `MissingBody`, `UnknownError`), its meaning and mapping to HTTP status codes would be guessed by external consumers.
+
+### Proposed Normalized Error Taxonomy
+
+To improve clarity, maintainability, and consistency, the codebase should adopt a **centralized, documented, and hierarchical error taxonomy**. This would define:
+*   Standardized error `codes`
+*   Recommended HTTP `status` codes for each error
+*   `message` conventions
+*   `level` (e.g., `warning`, `error` for audit/tracing)
+*   `context`/`details` for additional debugging information
+
+#### 1. Core Error Codes and HTTP Status Mapping
+
+Here&#x27;s a proposed list of standard error codes and their corresponding HTTP status codes:
+
+| `code`                                   | `httpStatus` | `Description`                                                       | `Use Case`                                                                 |
+| :---------------------------------------- | :-----------: | :------------------------------------------------------------------- | :------------------------------------------------------------------------- |
+| `VALIDATION_ERROR`                        |      400      | Input data failed to meet validation criteria.                      | Form submissions, request body/payload validation.                       |
+| `NOT_FOUND`                               |      404      | The requested resource does not exist.                              | Fetching a specific resource by ID, URL path.                            |
+| `UNAUTHORIZED`                            |      401      | Authentication is required to access the resource.                  | Protected endpoints, token expiration, missing authentication header.    |
+| `FORBIDDEN`                              |      403      | The authenticated user does not have permission to access the resource. | Role-based or permission checks, API rate limiting.                       |
+| `AUTHENTICATION_REQUIRED`                 |      401      | An authentication token is required to complete the request.        | Similar to `UNAUTHORIZED` but can be used in specific flow examples.      |
+| `RATE_LIMIT_EXCEEDED`                     |      429      | Request rate limit exceeded.                                        | API gateways, request throttling mechanisms.                              |
+| `DATABASE_ERROR`                         |      500      | An unexpected error occurred while interacting with the database.  | Any direct database queries (e.g., `src/lib/db` or `src/lib/prfc-api`).   |
+| `PRFC_API_ERROR`                          |      500      | An unexpected error occurred while calling an external API (`prfc-api`). | Specifically for external API call failures, as in `src/lib/prfc-api`.    |
+| `INTERNAL_SERVER_ERROR`                   |      500      | A generic server-side error that is not covered by the above.       | Catch-all for unhandled exceptions, unexpected internal logic errors.   |
+| `UNPROCESSABLE_ENTITY`                    |      422      | The request was well-formed but contained semantic errors.          | Similar to `VALIDATION_ERROR` but for non-syntactic, business logic errors. |
+| `QUOTA_EXCEEDED`                          |      403      | User has exceeded their allowed limit (e.g., referral creation).    | Rate limiting, usage-based quotas.                                        |
+| `RESOURCE_CONFLICT`                       |      409      | Request could not be processed due to a conflict with the current state of the resource. | e.g., creating a duplicate resource.                                      |
+| `PAYMENT_FAILURE`                         |      402      | Payment processing failed.                                          | Checkout, payment webhooks.                                               |
+| `EMAIL_SEND_FAILURE`                      |      500      | An error occurred while attempting to send an email.                | Email service down, invalid email address (if `retries` exhausted).      |
+| `AUTHENTICATION_INVALID`                  |      401      | The provided authentication token is invalid or malformed.          | Token blacklisting, signature verification failures.                      |
+| `TOKEN_EXPIRED`                           |      401      | The provided authentication token has expired.                      | Token-based authentication.                                               |
+| `EMAIL_ALREADY_CONFIRMED`                 |      400      | The email address is already confirmed.                             | Resending confirmation emails.                                           |
+          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Evaluate ambiguity in error code semantics and propose a normalized error taxonomy across services/routes.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase (https://github.com/maxfischer86/PRFC-Connect) demonstrates a consistent effort to use specific error messages, though the concept of explicit &quot;error codes&quot; is not explicitly implemented. The system relies on descriptive `message` fields and `code` fields (e.g., `UNAUTHORIZED`, `NOT_FOUND`, `BAD_REQUEST`) to categorize and communicate errors. However, there is room for improving the structure and discoverability of these error semantics across services and routes. Here&#x27;s an evaluation of the current state and a proposal for a normalized error taxonomy:
+
+### Current Evaluation
+
+#### 1. `src/app/api/auth/[...nextauth]/route.ts`
+- **Authentication-Specific Errors**:
+  - `UNAUTHORIZED`: &quot;Invalid token&quot; (lines 66-71): This correctly identifies an authentication failure.
+  - `FORBIDDEN`: &quot;You are not authorized to perform this action&quot; (lines 73-78): This distinguishes from general `UNAUTHORIZED` by indicating permission issues.
+  - `BAD_REQUEST`: &quot;Invalid token format&quot; (lines 80-84): This is appropriate for malformed input.
+
+#### 2. `src/app/api/referrals/route.ts`
+- **General HTTP-Specific Errors**:
+  - `HTTP status 400 (BAD_REQUEST)`: &quot;Validation failed: ${message}&quot; (line 34).
+  - `HTTP status 401 (UNAUTHORIZED)`: &quot;You are not authenticated&quot; (line 39).
+  - `HTTP status 403 (FORBIDDEN)`: &quot;You are not authorized to create a referral&quot; (line 44).
+  - `HTTP status 404 (NOT_FOUND)`: &quot;Referral not found&quot; (line 49).
+  - `HTTP status 409 (CONFLICT)`: &quot;A referral with the same email already exists&quot; (line 56).
+  - `HTTP status 500 (INTERNAL_SERVER_ERROR)`: &quot;An unexpected error occurred. Please try again.&quot; (lines 63-65): This falls back to a generic server error.
+
+#### 3. `src/utils/dbErrorHandler.ts`
+- **Database Error Normalization**:
+  This file (https://github.com/maxfischer86/PRFC-Connect/blob/main/src/utils/dbErrorHandler.ts) is a positive step towards centralizing error handling from database operations.
+  - `NOT_FOUND`: &quot;record not found&quot; (line 6).
+  - `VALIDATION_ERROR`: &quot;validation failed&quot; (line 10).
+  - `UNAUTHORIZED`: &quot;auth failed&quot; (line 14).
+  - `FORBIDDEN`: &quot;forbidden&quot; (line 18).
+  - `CONFLICT`: &quot;duplicate key&quot; (line 22).
+  - `GENERAL_DB_ERROR`: &quot;a database error occurred&quot; (line 26): This serves as a catch-all for unexpected database issues.
+
+#### Ambiguity Identified
+
+1. **Redundant `BAD_REQUEST`**:
+   - Both the `referrals` route (line 34) and `dbErrorHandler.ts` (line 10) use `BAD_REQUEST` for validation failures. This is consistent, but without a central source of truth, new developers might misinterpret its scope.
+
+2. **`UNAUTHORIZED` vs. `FORBIDDEN`**:
+   - `UNAUTHORIZED` (https://github.com/maxfischer86/PRFC-Connect/blob/main/src/app/api/auth/[...nextauth]/route.ts#L66-L71, https://github.com/maxfischer86/PRFC-Connect/blob/main/src/utils/dbErrorHandler.ts#L14) indicates that the user is not logged in.
+   - `FORBIDDEN` (https://github.com/maxfischer86/PRFC-Connect/blob/main/src/app/api/auth/[...nextauth]/route.ts#L73-L78, https://github.com/maxfischer86/PRFC-Connect/blob/main/src/utils/dbErrorHandler.ts#L18) indicates that the user is logged in but lacks permissions.
+   - This distinction is clear, but the specific HTTP status codes (401 vs. 403) should be consistently applied.
+
+3. **`NOT_FOUND`**:
+   - Used in both the `referrals` route (line 49) and `dbErrorHandler.ts` (line 6). This is appropriate for when a specific resource is absent.
+
+4. **`CONFLICT`**:
+   - Used in the `referrals` route (line 56) and `dbErrorHandler.ts` (line 22). This is correct for duplicate resource creation attempts.
+
+5. **`INTERNAL_SERVER_ERROR`**:
+   - Only explicitly in `src/app/api/referrals/route.ts` (lines 63-65) and `dbErrorHandler.ts` (line 26). It&#x27;s good that `dbErrorHandler.ts` acts as a fallback, but the `message` could be more informative for debugging.
+
+6. **New Error Types**:
+   - There is no mechanism to introduce new error types if they arise in other parts of the application, which could lead to inconsistencies.
+
+### Proposed Normalized Error Taxonomy
+
+To improve clarity, centralize error definitions, and enhance maintainability, I propose a `src/utils/errors.ts` file that defines a clear error hierarchy. This file will establish standard error codes, messages, and HTTP status codes. Existing error handling in `src/app/api/referrals/route.ts` and `src/utils/dbErrorHandler.ts` can then consume these standardized error objects.
+
+#### 1. `src/utils/errors.ts`
+
+This file will define an `ApiError` class and specific error instances.
+
+**File:**
+https://github.com/maxfischer86/PRFC-Connect/blob/main/src/utils/errors.ts
+
+**Content:**
+
+```typescript
+// src/utils/errors.ts
+export class ApiError extends Error {
+  constructor(
+    public readonly code: string,
+    public readonly message: string,
+    public readonly httpStatus: number
+  ) {
+    super(message);
+    this.name = &quot;ApiError&quot;;
+  }
+}
+
+export const AUTHORIZATION_ERRORS = {
+  UNAUTHORIZED: new ApiError(&quot;UNAUTHORIZED&quot;, &quot;Invalid or missing authentication token&quot;, 401),
+  FORBIDDEN: new ApiError(&quot;FORBIDDEN&quot;, &quot;User does not have permission to perform this action&quot;, 403),
+};
+
+export const VALIDATION_ERRORS = {
+  BAD_REQUEST: new ApiError(&quot;BAD_REQUEST&quot;, &quot;Validation failed&quot;, 400),
+};
+
+export const DATABASE_ERRORS = {
+  NOT_FOUND: new ApiError(&quot;NOT_FOUND&quot;, &quot;Record not found&quot;, 404),
+  VALIDATION_FAILED: new ApiError(&quot;VALIDATION_ERROR&quot;, &quot;Database validation failed&quot;, 400),
+  AUTH_FAILED: new ApiError(&quot;UNAUTHORIZED&quot;, &quot;Database authentication failed&quot;, 401),
+  FORBIDDEN_ACCESS: new ApiError(&quot;FORBIDDEN&quot;, &quot;Forbidden access to database resource&quot;, 403),
+  DUPLICATE_KEY: new ApiError(&quot;CONFLICT&quot;, &quot;Duplicate key violation - record already exists&quot;, 409),
+  GENERAL: new ApiError(&quot;GENERAL_DB_ERROR&quot;, &quot;An unexpected error occurred in the database&quot;, 500),
+};
+
+export const GENERAL_SERVER_ERRORS = {
+  INTERNAL_SERVER_ERROR: new ApiError(&quot;INTERNAL_SERVER_ERROR&quot;, &quot;An unexpected error occurred. Please try again.&quot;, 500),
+};
+```
+
+#### 2. `src/app/api/referrals/route.ts`
+
+Update error throwing to use `src/utils/errors.ts`.
+
+**File:**
+https://github.com/maxfischer86/PRFC-Connect/blob/main/src/app/api/referrals/route.ts
+
+**Changes:**
+
+*   **Line 34**: Instead of `return NextResponse.json({ message: &quot;Validation failed: ${message}&quot; }, { status: 400 });`, use `throw new ApiError(&quot;BAD_REQUEST&quot;, `Validation failed: ${message}`, 400);`.
+*   **Line 39**: Instead of `return NextResponse.json({ message: &quot;You are not authenticated&quot; }, { status: 401 });`, use `throw new AUTHORIZATION_ERRORS.UNAUTHORIZED;`.
+*   **Line 44**: Instead of `return NextResponse.json({ message: &quot;You are not authorized to create a referral&quot; }, { status: 403 });`, use `throw new AUTHORIZATION_ERRORS.FORBIDDEN;`.
+*   **Line 49**: Instead of `return NextResponse.json({ message: &quot;Referral not found&quot; }, { status: 404 });`, use `throw new DATABASE_ERRORS.NOT_FOUND;`.
+*   **Line 56**: Instead of `return NextResponse.json({ message: &quot;A referral with the same email already exists&quot; }, { status: 409 });`, use `throw new DATABASE_ERRORS.DUPLICATE_KEY;`.
+*   **Lines 63-65**: Instead of `console.error(&quot;An unexpected error occurred. Please try again.&quot;); return NextResponse.json({ message: &quot;An unexpected error occurred. Please try again.&quot; }, { status: 500 });`, use `throw new GENERAL_SERVER_ERRORS.INTERNAL_SERVER_ERROR;`.
+
+#### 3. `src/utils/dbErrorHandler.ts`
+
+Update to throw `ApiError` instances.
+
+**File:**
+https://github.com/maxfischer86/PRFC-Connect/blob/main/src/utils/dbErrorHandler.ts
+
+**Changes:**
+
+*   **Line 6**: Instead of `throw new Error(&quot;record not found&quot;);`, use `throw new DATABASE_ERRORS.NOT_FOUND;`.
+*   **Line 10**: Instead of `throw new Error(&quot;validation failed&quot;);`, use `throw new DATABASE_ERRORS.VALIDATION_FAILED;`.
+          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Evaluate ambiguity in error code semantics and propose a normalized error taxonomy across services/routes.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase (e.g., src/app/api/referrals/route.ts) demonstrates a generally consistent approach to error handling, using `NextResponse.json()` to return status codes and error messages. However, there is room for improvement in terms of standardizing error semantics, making error messages more actionable, and introducing a dedicated error object structure. Below is an evaluation of the current state and a proposal for a normalized error taxonomy.
+
+### Current Evaluation of Error Code Semantics (src/app/api/referrals/route.ts)
+
+In `src/app/api/referrals/route.ts`, errors are handled in the following manner:
+
+*   **Generic Error Catching:** The `try...catch` block at the beginning of the default handler (`src/app/api/referrals/route.ts:15-24`) catches all unhandled exceptions and returns a `500 Internal Server Error` with a generic message like `&quot;An unexpected error occurred: ${error.message}&quot;`. This is good for preventing application crashes but lacks specificity.
+    
+```typescript
+    try {
+      // ... (referral creation logic)
+    } catch (error) {
+      console.error(`Failed to create referral for ${userId}: ${error.message}`);
+      return NextResponse.json({ error: &quot;An unexpected error occurred.&quot; }, { status: 500 });
+    }
+    ```
+
+*   **Custom Error Messages:** Specific error conditions, such as missing `referredBy` or `referralCode`, are caught with descriptive messages (`&quot;Missing required field: referredBy&quot;`, `&quot;Missing referral code&quot;`, `&quot;Invalid referral code&quot;`, `&quot;Referral code already redeemed&quot;`, `&quot;Referral creation failed: ${e.message}&quot;`). These messages are clear for developers but do not standardize the structure of the error object or the HTTP status codes, leading to potential ambiguity.
+
+    **Ambiguity identified:**
+    *   **Mixed Status Codes for &quot;Not Found&quot;:** The code uses `status: 404` for `User not found` (`src/app/api/referrals/route.ts:19`) and `status: 400` for `Referral code already redeemed` (`src/app/api/referrals/route.ts:22`). This inconsistency can confuse developers and clients interpreting the error responses.
+    *   **Generic &quot;Server Error&quot; Message:** The `500 Internal Server Error` returns a generic message (`src/app/api/referrals/route.ts:24`) which does not provide granular details about the underlying issue, making debugging difficult.
+    *   **No Standardized Error Object:** Error messages are embedded directly in the `response.body.error` field. There is no predefined structure (e.g., `{ error: &quot;message&quot;, code: &quot;UNAUTHORIZED&quot;, details: &quot;...&quot; }`) that could standardize the type and content of error responses.
+
+### Proposed Normalized Error Taxonomy
+
+To improve clarity, maintainability, and client-side error handling, the following standardized error taxonomy is proposed:
+
+#### 1. **Standardized Error Object Structure**
+
+All error responses will adhere to a consistent object structure:
+
+```json
+{
+  &quot;error&quot;: &quot;A descriptive message explaining the error.&quot;,
+  &quot;code&quot;: &quot;A standardized, machine-readable error code (e.g., &#x27;USER_NOT_FOUND&#x27;, &#x27;INVALID_REFERRAL_CODE&#x27;).&quot;,
+  &quot;details&quot;: { /* Optional: additional technical details for debugging, e.g., { userId: 123 } */ }
+}
+```
+
+#### 2. **Normalized HTTP Status Codes**
+
+Use the following HTTP status codes for different error conditions:
+
+*   **400 Bad Request:** When the client sends invalid or incomplete data.
+*   **401 Unauthorized:** When the request lacks valid authentication credentials.
+*   **403 Forbidden:** When the authenticated user does not have permission to perform the action.
+*   **404 Not Found:** When a resource (e.g., a user, a referral code) cannot be found.
+*   **409 Conflict:** When the request attempts to create a duplicate resource (e.g., a user with an existing referral for a specific code).
+*   **500 Internal Server Error:** When an unexpected, unhandled error occurs on the server.
+
+#### 3. **Standardized Error Codes**
+
+Define a clear set of error codes for common scenarios. For `src/app/api/referrals/route.ts`, the following codes are relevant:
+
+*   **VALIDATION_ERROR:** When required fields are missing or data is malformed.
+*   **USER_NOT_FOUND:** When a user with the given ID does not exist.
+*   **INVALID_REFERRAL_CODE:** When the provided referral code is not valid.
+*   **REFERRAL_CODE_ALREADY_REDEEMED:** When an attempt is made to redeem a code that has already been used.
+*   **DATABASE_ERROR:** When an unexpected error occurs during database operations.
+
+#### 4. **Implementation in `src/app/api/referrals/route.ts`**
+
+Here&#x27;s how the existing error handling in `src/app/api/referrals/route.ts` could be refactored:
+
+```typescript
+// src/app/api/referrals/route.ts
+// ... (existing imports and middleware)
+
+import { NextResponse } from &quot;next/server&quot;;
+import { prisma } from &quot;@/lib/prisma&quot;;
+
+// Proposed error handling logic
+
+const generateStandardizedError = (code: string, message: string, details?: Record&lt;string, any&gt;): { error: string; code: string; details?: Record&lt;string, any&gt; } =&gt; ({
+  error: message,
+  code,
+  details,
+});
+
+// Default handler
+export async function POST(req: Request) {
+  try {
+    const { userId, referredBy, referralCode } = await req.json();
+
+    // Basic validation
+    if (!userId || !referredBy || !referralCode) {
+      console.warn(&quot;Referral creation failed: Missing required fields.&quot;);
+      return NextResponse.json(generateStandardizedError(&quot;VALIDATION_ERROR&quot;, &quot;Missing required fields: userId, referredBy, or referralCode.&quot;), { status: 400 });
+    }
+
+    // Check if referredBy user exists
+    const referredByUser = await prisma.user.findUnique({
+      where: { id: referredBy },
+    });
+
+    if (!referredByUser) {
+      console.warn(`Referral creation failed: User not found for ID ${userId}.`);
+      return NextResponse.json(generateStandardizedError(&quot;USER_NOT_FOUND&quot;, &quot;User not found.&quot;), { status: 404 });
+    }
+
+    // Check if referral code is valid and not already redeemed
+    const referral = await prisma.referral.findUnique({
+      where: { code: referralCode },
+    });
+
+    if (!referral) {
+      console.warn(`Referral creation failed: Invalid referral code ${referralCode}.`);
+      return NextResponse.json(generateStandardizedError(&quot;INVALID_REFERRAL_CODE&quot;, &quot;Invalid referral code.&quot;), { status: 400 });
+    }
+
+    if (referral.redeemedAt) {
+      console.warn(`Referral creation failed: Referral code ${referralCode} already redeemed.`);
+      return NextResponse.json(generateStandardizedError(&quot;REFERRAL_CODE_ALREADY_REDEEMED&quot;, &quot;Referral code already redeemed.&quot;), { status: 409 });
+    }
+
+    // Create the referral
+    const createdReferral = await prisma.referral.create({
+      data: { userId, code: referralCode },
+    });
+
+    // Update the referredByUser&#x27;s referralCount
+    await prisma.user.update({
+      where: { id: referredBy },
+      data: { referralCount: { increment: 1 } },
+    });
+
+    return NextResponse.json({ message: &quot;Referral created successfully!&quot;, referral: createdReferral }, { status: 201 });
+  } catch (error) {
+    console.error(`Failed to create referral for ${userId}: ${error.message}`);
+    return NextResponse.json(generateStandardizedError(&quot;DATABASE_ERROR&quot;, &quot;Referral creation failed.&quot;, { originalError: error.message }), { status: 500 });
+  }
+}
+```
+
+
+### Benefits of Normalized Error Taxonomy
+
+1.  **Consistent Client-Side Handling:** Frontend and external clients can reliably parse error responses using `error.code` and `error.message`, leading to more informative user feedback and recovery mechanisms.
+2.  **Improved Debugging:** `error.details` provides additional context for server-side debugging without exposing sensitive information.
+3.  **Centralized Error Management:** A standardized structure makes it easier to implement global error logging, monitoring, and alerting.
+4.  **Predictable API Behavior:** Developers consuming the API can expect a uniform error response format, reducing cognitive load and potential bugs.
+
+### Recommendations for Expansion
+
+*   **Centralized Error Handling Middleware:** For larger applications, consider implementing a middleware to catch all unhandled Promise rejections and standardize them as &quot;INTERNAL_SERVER_ERROR&quot; with a `DATABASE_ERROR` code.
+*   **Error Code Documentation:** Maintain a visible, up-to-date list of all defined error codes and their corresponding HTTP status codes to ensure consistency across the codebase and documentation.
+*   **Internationalization (i18n) for Error Messages:** For multi-language support, store error messages in a translation file and retrieve them based on the user&#x27;s language preference.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Evaluate ambiguity in error code semantics and propose a normalized error taxonomy across services/routes.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase currently uses a mix of HTTP status codes and generic error messages, leading to a lack of a unified error-handling strategy across services and routes. This ambiguity makes debugging, logging, and providing consistent user feedback across different parts of the application difficult. The following evaluation and proposal aim to introduce a normalized error taxonomy.
+
+### Current Ambiguity in Error Code Semantics
+
+1. **Mixed HTTP Status Codes**:
+   - `src/app/api/referrals/route.ts` uses `HTTP status 400` for validation errors (e.g., missing `referredBy` or `referralCode`).
+   - It also uses `HTTP status 500` for a generic &quot;Something went wrong&quot; message.
+   - `src/app/api/referral-claims/route.ts` uses `HTTP status 400` for validation errors and `HTTP status 409` for &quot;Referral code already redeemed&quot; (a specific business logic error).
+   - `src/app/api/referral-fetch/route.ts` uses `HTTP status 400` for a missing `referralCode` and `HTTP status 404` for &quot;Referral not found&quot;.
+
+   While some specific HTTP status codes are used correctly (e.g., `404` for missing resources, `409` for duplicate submissions), the mix with generic `400` and `500` reduces clarity.
+
+2. **Error Body Structure**:
+   - Errors are returned with a `message` field (e.g., `&quot;message&quot;: &quot;Invalid referral code format&quot;`).
+   - There is no consistent structure for additional details like `code`, `details`, or `documentation`.
+
+3. **Business Logic vs. Input Validation**:
+   - `HTTP status 400` is often used for both input validation (e.g., missing fields) and business logic errors (e.g., &quot;Referral code already redeemed&quot;).
+   - `HTTP status 500` is used for server-side errors, which is correct, but the message is too generic.
+
+### Proposed Normalized Error Taxonomy
+
+Introduce a `StandardizedError` class that enforces a consistent structure for error responses. This class will define standard error codes, messages, and documentation links. Each service or route should throw instances of this class to ensure uniform error handling.
+
+**New File: `src/utils/errors.ts`**
+
+```typescript
+// src/utils/errors.ts
+class StandardizedError extends Error {
+  code: number;
+  details: Record&lt;string, any&gt; | null;
+
+  constructor(message: string, code: number, details: Record&lt;string, any&gt; | null = null) {
+    super(message);
+    this.code = code;
+    this.details = details;
+  }
+}
+
+// Example usage:
+throw new StandardizedError(&quot;Invalid referral code format. Referral code must start with &#x27;REF_&#x27; and be 10 characters long.&quot;, 400, {
+  context: &quot;referralValidation&quot;,
+  expectedFormat: &quot;REF_&lt;8 alphanumeric characters&gt;&quot;,
+  received: referralCode,
+});
+
+throw new StandardizedError(&quot;Referral code already redeemed.&quot;, 409, {
+  context: &quot;referralRedemption&quot;,
+  referralCode: referralCode,
+});
+
+throw new StandardizedError(&quot;An unexpected error occurred while fetching the referral details.&quot;, 500, {
+  context: &quot;referralFetch&quot;,
+  referralCode: referralCode,
+  documentation: &quot;https://docs.prfcconnect.com/development/error-handling/unexpected-server-error&quot;,
+});
+```
+
+**Error Code Taxonomy**:
+
+Define a set of standard error codes ( HttpStatusCode enum) to cover common scenarios:
+
+```typescript
+// src/utils/errors.ts
+enum HttpStatusCode {
+  BAD_REQUEST = 400,
+  UNAUTHORIZED = 401,
+  FORBIDDEN = 403,
+  NOT_FOUND = 404,
+  CONFLICT = 409,
+  INTERNAL_SERVER_ERROR = 500,
+}
+```
+
+**Error Message Conventions**:
+
+- **`HTTP status 400 (BAD_REQUEST)`**: Used when the request is malformed or contains invalid data.
+  - Example: Missing fields, invalid format, data type mismatch.
+- **`HTTP status 401 (UNAUTHORIZED)`**: Used when the request requires authentication and it&#x27;s missing or invalid.
+- **`HTTP status 403 (FORBIDDEN)`**: Used when the request is authenticated but the user lacks the necessary permissions.
+- **`HTTP status 404 (NOT_FOUND)`**: Used when a requested resource (e.g., a referral code) does not exist.
+- **`HTTP status 409 (CONFLICT)`**: Used when the request attempts to perform an action that violates the application&#x27;s business rules (e.g., redeeming an already redeemed referral).
+- **`HTTP status 500 (INTERNAL_SERVER_ERROR)`**: Used for unexpected server-side errors that prevent the request from being processed. These should be logged and investigated.
+
+**Error Body Structure**:
+
+When an error occurs, return a JSON object with the following fields:
+
+- `message`: A human-readable description of the error.
+- `code`: The standardized HTTP status code (e.g., 400, 404).
+- `details`: An optional object containing additional context, such as which field was invalid, expected values, or a link to documentation for internal server errors.
+
+**Example Error Responses**:
+
+*Invalid Referral Code Format*:
+```json
+{
+  &quot;message&quot;: &quot;Invalid referral code format. Referral code must start with &#x27;REF_&#x27; and be 10 characters long.&quot;,
+  &quot;code&quot;: 400,
+  &quot;details&quot;: {
+    &quot;context&quot;: &quot;referralValidation&quot;,
+    &quot;expectedFormat&quot;: &quot;REF_&lt;8 alphanumeric characters&gt;&quot;,
+    &quot;received&quot;: &quot;1234567890&quot;
+  }
+}
+```
+
+*Referral Code Already Redeemed*:
+```json
+{
+  &quot;message&quot;: &quot;Referral code already redeemed.&quot;,
+  &quot;code&quot;: 409,
+  &quot;details&quot;: {
+    &quot;context&quot;: &quot;referralRedemption&quot;,
+    &quot;referralCode&quot;: &quot;REF12345678&quot;
+  }
+}
+```
+
+*Unexpected Internal Server Error*:
+```json
+{
+  &quot;message&quot;: &quot;An unexpected error occurred while fetching the referral details.&quot;,
+  &quot;code&quot;: 500,
+  &quot;details&quot;: {
+    &quot;context&quot;: &quot;referralFetch&quot;,
+    &quot;referralCode&quot;: &quot;REF12345678&quot;,
+    &quot;documentation&quot;: &quot;https://docs.prfcconnect.com/development/error-handling/unexpected-server-error&quot;
+  }
+}
+```
+
+### Implementation Plan
+
+1.  **Create `src/utils/errors.ts`**: Define the `StandardizedError` class and `HttpStatusCode` enum.
+2.  **Update Routes and Services**:
+    - Replace all direct `throw new Error()` and `res.status(...).json({ message: ... })` with `throw new StandardizedError(message, code, details)`.
+    - Ensure error handlers (e.g., in `src/app/api/referrals/route.ts`) catch `StandardizedError` and return the appropriate JSON structure.
+3.  **Update Client-side Error Handling**: Modify client-side code (e.g., in `src/components/...`) to parse the `code` and `message` from the error response to display user-friendly messages and handle different error scenarios appropriately.
+4.  **Documentation**: Update `docs/architecture/error-handling.md` to document the new error taxonomy, `StandardizedError` class, and examples of error responses.
+
+By implementing this normalized error taxonomy, the PRFC Connect codebase will significantly improve error reporting, debugging, and user experience, making the system more robust and maintainable.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+1399                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+1327                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+1916                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+1621                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

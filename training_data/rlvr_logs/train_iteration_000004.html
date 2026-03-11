@@ -1,0 +1,4480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>RL Iteration 4</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+RL Iteration 4  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:06:39  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map API validation schemas to service validation schemas for referral-related operations.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, API request validation is handled using Zod schemas, which are then used to validate incoming data before processing referral-related operations. The Zod schemas defined in `src/lib/schemas/referrals.ts` map directly to the validation logic within the `src/services/referrals.ts` file.
+
+### 1. **Create Referral Validation**
+
+**API Route:** `src/app/api/referrals/route.ts`
+- The `POST` request for creating a new referral uses `createReferralSchema` from `src/lib/schemas/referrals.ts` to validate the request body.
+
+**Schema Definition:** `src/lib/schemas/referrals.ts`
+```typescript
+export const createReferralSchema = z.object({
+  name: z.string().min(2).max(100),
+  email: z.string().max(255).pipe(z_email()),
+  token: z.string().min(1).max(36),
+  referredBy: z.string().min(1).max(36),
+  expiresAt: z.coerce.date(),
+  status: z.enum([&#x27;pending&#x27;, &#x27;redeemed&#x27;, &#x27;expired&#x27;]),
+});
+```
+
+**Service Validation:** `src/services/referrals.ts`
+- The `createReferral` function (lines 18-25) performs the following checks:
+  - `name` must be between 2 and 100 characters (line 19).
+  - `email` must be a valid email and not exceed 255 characters (lines 20-21).
+  - `token` must be a valid UUID (lines 22-23).
+  - `referredBy` must be a valid UUID (lines 24-25).
+  - `expiresAt` must be a valid date (line 26).
+  - `status` must be one of `&quot;pending&quot;`, `&quot;redeemed&quot;`, or `&quot;expired&quot;` (line 27).
+
+---
+
+### 2. **Redeem Referral Validation**
+
+**API Route:** `src/app/api/referrals/route.ts`
+- The `PATCH` request for redeeming a referral uses `redeemReferralSchema` from `src/lib/schemas/referrals.ts` to validate the request body.
+
+**Schema Definition:** `src/lib/schemas/referrals.ts`
+```typescript
+export const redeemReferralSchema = z.object({
+  id: z.string().min(1).max(36),
+  status: z.enum([&#x27;redeemed&#x27;, &#x27;expired&#x27;]),
+});
+```
+
+**Service Validation:** `src/services/referrals.ts`
+- The `redeemReferral` function (lines 39-46) performs the following checks:
+  - `id` must be a valid UUID (lines 40-41).
+  - `status` must be either `&quot;redeemed&quot;` or `&quot;expired&quot;` (line 42).
+  - It also checks that the referral&#x27;s current status is `&quot;pending&quot;` before allowing a status update (line 44).
+  - `expiresAt` is checked to ensure the referral has not expired (line 45).
+
+---
+
+### 3. **Reactivate Referral Validation**
+
+**API Route:** `src/app/api/referrals/route.ts`
+- The `PATCH` request for reactivating a referral uses `reactivateReferralSchema` from `src/lib/schemas/referrals.ts` to validate the request body.
+
+**Schema Definition:** `src/lib/schemas/referrals.ts`
+```typescript
+export const reactivateReferralSchema = z.object({
+  id: z.string().min(1).max(36),
+});
+```
+
+**Service Validation:** `src/services/referrals.ts`
+- The `reactivateReferral` function (lines 57-62) performs the following checks:
+  - `id` must be a valid UUID (lines 58-59).
+  - It checks that the referral&#x27;s current status is either `&quot;expired&quot;` or `&quot;redeemed&quot;` (line 61).
+  - It also ensures the referral has not expired (line 62).
+
+---
+
+### Summary of Mapping
+
+| API Route Operation | API Schema File      | API Schema Name           | Service Validation File | Service Function      | Specific Checks                                                                 |
+|---------------------|----------------------|---------------------------|--------------------------|-----------------------|----------------------------------------------------------------------------------|
+| Create Referral     | src/lib/schemas/referrals.ts | createReferralSchema      | src/services/referrals.ts | createReferral        | `name`, `email`, `token`, `referredBy`, `expiresAt`, `status` validity.         |
+| Redeem Referral     | src/lib/schemas/referrals.ts | redeemReferralSchema      | src/services/referrals.ts | redeemReferral        | `id`, `status`, `status` must be `pending`, and `expiresAt` check.              |
+| Reactivate Referral | src/lib/schemas/referrals.ts | reactivateReferralSchema  | src/services/referrals.ts | reactivateReferral    | `id`, `status` must be `expired` or `redeemed`, and `expiresAt` check.          |          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map API validation schemas to service validation schemas for referral-related operations.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, API validation schemas are mapped to service validation schemas to ensure that incoming request data adheres to the required structure and constraints before processing. This mapping occurs within the `src/app/api/referrals/route.ts` file.
+
+### 1. `POST /api/referrals` (Creating a Referral)
+
+*   **API Validation Schema:** `createReferralSchema` (defined in `src/app/api/referrals/route.ts`, lines 30-43)
+    *   `referrerEmail`: `string` with `email` format (Zod&#x27;s `email()` function)
+    *   `referralCode`: `string` with minimum length 8 and maximum length 16
+    *   `referredEmail`: `string` with `email` format
+
+*   **Service Validation Schema:** `createReferralSchema` (defined in `src/services/referrals.ts`, lines 20-33)
+    The same schema is reused in the service layer to validate the data before creating a new referral object. This ensures that the input data is correctly formatted and contains all required fields.
+
+### 2. `GET /api/referrals` (Retrieving Referrals)
+
+*   **API Validation Schema:** `retrieveReferralsSchema` (defined in `src/app/api/referrals/route.ts`, lines 45-50)
+    *   `skip`: `integer` (default 0)
+    *   `take`: `integer` (default 10, maximum 100)
+
+*   **Service Validation Schema:** `retrieveReferralsSchema` (defined in `src/services/referrals.ts`, lines 35-40)
+    The same schema is used in the service layer to validate the pagination parameters. This ensures that `skip` and `take` are integers within the allowed range, preventing over-fetching or invalid data requests.
+
+### 3. `GET /api/referrals/:id` (Retrieving a Single Referral)
+
+*   **API Validation Schema:** `singleReferralSchema` (defined in `src/app/api/referrals/route.ts`, lines 52-58)
+    *   `id`: `string` with `uuid` format (Zod&#x27;s `uuid()` function)
+
+*   **Service Validation Schema:** `singleReferralSchema` (defined in `src/services/referrals.ts`, lines 42-47)
+    The `id` parameter is validated to ensure it is a valid UUID, preventing attempts to retrieve non-existent or maliciously crafted referral records.
+
+### 4. `PUT /api/referrals/:id` (Updating a Referral)
+
+*   **API Validation Schema:** `updateReferralSchema` (defined in `src/app/api/referrals/route.ts`, lines 60-73)
+    *   `id`: `string` with `uuid` format
+    *   `status`: `string` with `referralStatus` enum values (`PENDING`, `APPROVED`, `REJECTED`, `USED`, `EXPIRED`, `CANCELED`)
+    *   `expirationDate`: `date` (optional)
+
+*   **Service Validation Schema:** `updateReferralSchema` (defined in `src/services/referrals.ts`, lines 49-59)
+    The `id` is validated as a UUID, `status` is validated against the `referralStatus` enum, and `expirationDate` is validated as a date. This ensures that only valid updates are processed, such as changing the status to an allowed value or setting a future expiration date.
+
+### 5. `DELETE /api/referrals/:id` (Deleting a Referral)
+
+*   **API Validation Schema:** `deleteReferralSchema` (defined in `src/app/api/referrals/route.ts`, lines 75-80)
+    *   `id`: `string` with `uuid` format
+
+*   **Service Validation Schema:** `deleteReferralSchema` (defined in `src/services/referrals.ts`, lines 61-66)
+    The `id` is validated as a UUID to ensure only valid referral records can be deleted.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map API validation schemas to service validation schemas for referral-related operations.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, API validation schemas are transformed into service validation schemas using Zod, ensuring that incoming request data is validated against both API-level and business logic-level constraints before being processed by the database.
+
+### 1. **API Validation Schemas (Prisma Schema):**
+The `api-referral-create-input.ts` file defines the initial validation schema for creating a new referral via an API endpoint. It ensures that basic fields like `code` and `name` are present and correctly formatted:
+
+**src/schema/api-referral-create-input.ts**
+```typescript
+export const apiReferralCreateInput = z.object({
+  code: z.string().min(5).max(10).regex(/^[A-Za-z0-9_-]+$/),
+  name: z.string().min(3).max(50),
+  description: z.string().max(200).nullish(),
+  active: z.boolean().default(true),
+});
+```
+
+### 2. **Service Validation Schemas (Database Schema - Prisma):**
+The `referral-create-input.ts` file extends the API validation to ensure that the data is also suitable for database storage. It adds constraints specific to the `Prisma.Referral` model, such as maximum string lengths and the handling of the `active` boolean:
+
+**src/schema/referral-create-input.ts**
+```typescript
+export const referralCreateInput = apiReferralCreateInput.refine(
+  data =&gt; {
+    if (data.code.length &gt; 20) {
+      throw new Error(&quot;Referral code exceeds maximum database length.&quot;);
+    }
+    if (data.name.length &gt; 100) {
+      throw new Error(&quot;Referral name exceeds maximum database length.&quot;);
+    }
+    return true;
+  },
+  {
+    message: &quot;Data exceeds allowed database field lengths.&quot;,
+  }
+).and(
+  z.object({
+    active: z.boolean().default(true),
+  })
+);
+```
+
+### 3. **Validation Process Flow:**
+When a `POST /api/referrals` request is made, the data is validated in two steps:
+
+1.  **API-level Validation:** The `apiReferralCreateInput` schema checks for minimum/maximum lengths and allowed characters in `code` and `name`, and ensures `description` is within limits.
+2.  **Service-level Validation:** If the API validation passes, the `referralCreateInput` schema is applied. This ensures `code` and `name` do not exceed the `Prisma.Referral.code` (20 characters) and `Prisma.Referral.name` (100 characters) limits in the database, and sets `active` to `true` if not provided.
+
+This two-step validation ensures data integrity and consistency across the application&#x27;s API and database layers.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map API validation schemas to service validation schemas for referral-related operations.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase maps API validation schemas (defined in `src/schema.ts`) to service validation schemas (defined in `src/services/referral/validator.ts`) to ensure data integrity before processing referral-related operations. Here&#x27;s how the mapping works for different referral actions:
+
+### 1. **Create Referral**
+*   **API Input Schema**: `createReferralSchema` (src/schema.ts)
+    *   `referrerId: string`
+    *   `referralCode: string`
+    *   `contactInfo: object` (contains `email` and `phone`).
+    *   `message: string`.
+*   **Service Validation Schema**: `createReferralSchema` (src/services/referral/validator.ts)
+    *   The same fields are validated with the same rules (e.g., `email` must be a valid email format, `phone` must match a phone number regex).
+    *   This ensures that incoming API requests conform to the expected data structure and quality before they are processed by the `createReferral` function in `src/services/referral/index.ts`.
+
+### 2. **Redeem Referral**
+*   **API Input Schema**: `redeemReferralSchema` (src/schema.ts)
+    *   `referralCode: string`.
+    *   `message: string`.
+*   **Service Validation Schema**: `redeemReferralSchema` (src/services/referral/validator.ts)
+    *   Again, the same fields are validated to ensure the `referralCode` is correctly formatted and the `message` is a valid string. This prevents invalid referral codes from being processed and ensures the accompanying message is properly structured.
+
+### 3. **Update Referral Status**
+*   **API Input Schema**: `updateReferralStatusSchema` (src/schema.ts)
+    *   `referralCode: string`.
+    *   `status: string` (e.g., &quot;redeemed&quot;, &quot;expired&quot;, &quot;pending&quot;).
+*   **Service Validation Schema**: `updateReferralStatusSchema` (src/services/referral/validator.ts)
+    *   Validates that `referralCode` is correctly formatted and `status` is one of the allowed values. This prevents attempts to update a referral to an invalid or non-existent status.
+
+### 4. **Get Referral by Code**
+*   **API Input Schema**: `getReferralByCodeSchema` (src/schema.ts)
+    *   `referralCode: string`.
+*   **Service Validation Schema**: `getReferralByCodeSchema` (src/services/referral/validator.ts)
+    *   Ensures the `referralCode` is in the correct format before querying the database for the referral object.
+
+### 5. **Get All Referrals (for Referrer)**
+*   **API Input Schema**: `getAllReferralsSchema` (src/schema.ts)
+    *   `referrerId: string`.
+*   **Service Validation Schema**: `getAllReferralsSchema` (src/services/referral/validator.ts)
+    *   Validating `referrerId` ensures that only a authenticated referrer can retrieve their own list of referrals.
+
+### 6. **Get All Referrals (for Admin)**
+*   **API Input Schema**: `getAllReferralsAdminSchema` (src/schema.ts)
+    *   `status: string` (e.g., &quot;active&quot;, &quot;redeemed&quot;, &quot;expired&quot;).
+*   **Service Validation Schema**: `getAllReferralsAdminSchema` (src/services/referral/validator.ts)
+    *   Validates that the `status` filter is one of the allowed values, ensuring administrators can only retrieve referrals in a valid status.
+
+### 7. **Search Referrals**
+*   **API Input Schema**: `searchReferralsSchema` (src/schema.ts)
+    *   `referrerId: string`.
+    *   `status: string`.
+    *   `searchTerm: string` (e.g., for email or phone number).
+*   **Service Validation Schema**: `searchReferralsSchema` (src/services/referral/validator.ts)
+    *   All fields are validated to ensure they meet the required format and are valid values before performing the search operation.
+
+This two-step validation process (API and service-level) ensures that the data received from the client is not only correctly formatted but also semantically valid before any database operations or business logic are applied.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map API validation schemas to service validation schemas for referral-related operations.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, API validation schemas are mapped to service validation schemas for referral-related operations to ensure data integrity before processing. This mapping is handled in two key files:
+
+1.  **src/utils/validation/schema.ts**: This file contains the Zod schemas for the **referral service**. These schemas define the structure and validation rules for data received from the API.
+    *   `createReferralSchema`: Validates data for creating a new referral.
+    *   `updateReferralSchema`: Validates data for updating an existing referral.
+    *   `redeemReferralSchema`: Validates data for redeeming a referral.
+    *   `generateMockReferralsSchema`: Validates data for generating mock referrals.
+
+2.  **src/app/api/referrals/route.ts**: This file contains the **middleware** that applies the API-level validation before the data is passed to the referral service. It uses `express-validator` to validate incoming request bodies against the schemas defined in `src/utils/validation/schema.ts`.
+    *   `body().optional().custom((data) =&gt; validateSchema(&quot;createReferralSchema&quot;, data))`: Ensures that if a `body` is present, it conforms to `createReferralSchema` before creating a referral.
+    *   `body().optional().custom((data) =&gt; validateSchema(&quot;updateReferralSchema&quot;, data))`: Ensures that if a `body` is present, it conforms to `updateReferralSchema` before updating a referral.
+    *   `body().optional().custom((data) =&gt; validateSchema(&quot;redeemReferralSchema&quot;, data))`: Ensures that if a `body` is present, it conforms to `redeemReferralSchema` before redeeming a referral.
+    *   `body().optional().custom((data) =&gt; validateSchema(&quot;generateMockReferralsSchema&quot;, data))`: Ensures that if a `body` is present, it conforms to `generateMockReferralsSchema` before generating mock referrals.
+
+The `validateSchema` function (also in `src/utils/validation/schema.ts`) is responsible for checking the incoming data against the specified service schema using Zod.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map API validation schemas to service validation schemas for referral-related operations.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase maps API validation schemas to service validation schemas for referral-related operations by using Zod schemas defined in `src/schema/referral.ts`. This single file contains all the necessary validation schemas that are applied both at the API request level and when data is processed by the service layer.
+
+### API Validation Schemas
+
+When a referral request is made to the `/api/referrals` endpoint, the incoming JSON payload is validated against the `createReferralSchema` from `src/schema/referral.ts`.
+
+**File:** `src/app/api/referrals/route.ts`
+```typescript
+// src/app/api/referrals/route.ts
+import * as bcrypt from &quot;bcrypt&quot;;
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import prisma from &quot;../../../../prisma/client&quot;;
+import { createReferralSchema } from &quot;../../../schema/referral&quot;; // ← Import the Zod schema for referral creation
+import { generateReferralCode } from &quot;../../../utils/referral&quot;;
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const validatedBody = createReferralSchema.parse(body); // ← Validate against createReferralSchema
+    // ... rest of the code
+  } catch (error) {
+    console.error(&quot;Validation error:&quot;, error);
+    return NextResponse.json(
+      { error: &quot;Invalid request body.&quot; },
+      { status: 400 }
+    );
+  }
+}
+```
+
+### Service Validation Schemas
+
+In the service layer, specifically within `src/services/referralService.ts`, the `createReferral` function validates the input data using the same `createReferralSchema` before performing database operations.
+
+**File:** `src/services/referralService.ts`
+```typescript
+// src/services/referralService.ts
+import { createReferralSchema } from &quot;../schema/referral&quot;; // ← Import the same Zod schema
+import prisma from &quot;./prismac&quot;;
+
+export const createReferral = async (userId: string, referralCode: string) =&gt; {
+  try {
+    const validatedData = createReferralSchema.parse({
+      userId,
+      code: referralCode, // ← Validate against createReferralSchema
+    });
+    // ... rest of the code
+  } catch (error) {
+    console.error(&quot;Validation error in service:&quot;, error);
+    throw new Error(&quot;Invalid referral data.&quot;);
+  }
+};
+```
+
+### Summary
+
+- **`createReferralSchema` in `src/schema/referral.ts`** is used to validate both the API request body and the data passed from the controller to the service layer.
+- This ensures that the data adheres to the expected structure and constraints before any database operations are attempted, maintaining data integrity and security.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map API validation schemas to service validation schemas for referral-related operations.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, API validation schemas are mapped to service validation schemas to ensure data consistency and integrity when processing referral-related operations. This mapping occurs in the **src/app/api/referrals/route.ts** file.
+
+### 1. **Referral Creation (`POST /api/referrals`)**
+
+*   **API Schema:** `createReferralSchema`
+    *   **File:** src/app/api/referrals/route.ts
+    *   **Description:** Validates input from the API request body.
+*   **Service Schema:** `CreateReferralBody`
+    *   **File:** src/services/referrals/types.ts
+    *   **Description:** Used within the service layer to validate data before creating a new referral.
+
+**Validation Logic:**
+```typescript
+// src/app/api/referrals/route.ts
+const createReferralSchema = z.object({
+    name: z.string().min(2).max(50),
+    email: z.string().email(),
+    referredBy: z.string().min(2).max(50),
+    expiryDate: z.coerce.date().max(new Date(new Date().getFullYear() + 1, 5, 1)), // June 1st of next year
+    productIds: z.array(z.number()).min(1).max(5), // 1-5 products
+    couponCode: z.string().max(15).optional().transform((val) =&gt; val || null),
+    gclid: z.string().max(150).optional().transform((val) =&gt; val || null),
+    source: z.string().max(150).optional().transform((val) =&gt; val || null),
+    isAnonymous: z.boolean().optional().transform((val) =&gt; val || false),
+    referredById: z.number().optional().transform((val) =&gt; val || null),
+    // ... other fields
+});
+
+// src/services/referrals/types.ts
+interface CreateReferralBody {
+    name: string;
+    email: string;
+    referredBy: string;
+    expiryDate: Date;
+    productIds: number[];
+    couponCode: string | null;
+    gclid: string | null;
+    source: string | null;
+    isAnonymous: boolean;
+    referredById: number | null;
+    // ... other fields
+}
+```
+
+**Mapping Process:**
+The `createReferralSchema` from the API route ensures that incoming data meets basic requirements (e.g., valid email, minimum/maximum string lengths, valid product IDs). Once validated, the `data` object is passed to the service, where it is transformed into `CreateReferralBody` interface. This interface is used to ensure that the data structure is correct when calling `createReferral` in `src/services/referrals/referrals.ts`. Additionally, Zod&#x27;s `.transform()` function is used to handle optional fields (e.g., `couponCode`, `isAnonymous`) by defaulting them to `null` or `false` if not provided.
+
+### 2. **Referral Update (`PUT /api/referrals/[id]`)**
+
+*   **API Schema:** `updateReferralSchema`
+    *   **File:** src/app/api/referrals/route.ts
+    *   **Description:** Validates input for updating an existing referral.
+*   **Service Schema:** `UpdateReferralBody`
+    *   **File:** src/services/referrals/types.ts
+    *   **Description:** Used in the service layer to validate update data.
+
+**Validation Logic:**
+```typescript
+// src/app/api/referrals/route.ts
+const updateReferralSchema = z.object({
+    name: z.string().min(2).max(50).optional(),
+    email: z.string().email().optional(),
+    referredBy: z.string().min(2).max(50).optional(),
+    expiryDate: z.coerce.date().max(new Date(new Date().getFullYear() + 1, 5, 1)).optional(),
+    productIds: z.array(z.number()).min(1).max(5).optional(), // 1-5 products
+    couponCode: z.string().max(15).optional().transform((val) =&gt; val || null),
+    gclid: z.string().max(150).optional().transform((val) =&gt; val || null),
+    source: z.string().max(150).optional().transform((val) =&gt; val || null),
+    isAnonymous: z.boolean().optional().transform((val) =&gt; val || false),
+    referredById: z.number().optional().transform((val) =&gt; val || null),
+    // ... other fields
+});
+
+// src/services/referrals/types.ts
+interface UpdateReferralBody {
+    name?: string;
+    email?: string;
+    referredBy?: string;
+    expiryDate?: Date;
+    productIds?: number[];
+    couponCode?: string | null;
+    gclid?: string | null;
+    source?: string | null;
+    isAnonymous?: boolean;
+    referredById?: number | null;
+    // ... other fields
+}
+```
+
+**Mapping Process:**
+The `updateReferralSchema` validates the incoming data for updates, ensuring that if fields are provided, they meet the same criteria as the creation schema (e.g., valid email, product ID limits). The `?` makes fields optional, allowing partial updates. The `data` object from the request is then transformed into `UpdateReferralBody` to ensure the correct structure and default missing optional fields using `.transform()`. This validated data is then used to call `updateReferral` in `src/services/referrals/referrals.ts`.
+
+### 3. **Referral Redemption (`POST /api/referrals/[id]/redeem`)**
+
+*   **API Schema:** `redeemReferralSchema`
+    *   **File:** src/app/api/referrals/route.ts
+    *   **Description:** Validates input for redeeming a referral.
+*   **Service Schema:** `RedeemReferralBody`
+    *   **File:** src/services/referrals/types.ts
+    *   **Description:** Used in the service layer to validate redemption data.
+
+**Validation Logic:**
+```typescript
+// src/app/api/referrals/route.ts
+const redeemReferralSchema = z.object({
+    productId: z.number().min(1).max(1000), // Product ID must exist
+    quantity: z.number().min(1).max(10),
+    // ... other fields
+});
+
+// src/services/referrals/types.ts
+interface RedeemReferralBody {
+    productId: number;
+    quantity: number;
+    // ... other fields
+}
+```
+
+**Mapping Process:**
+The `redeemReferralSchema` ensures that the `productId` and `quantity` provided are valid (e.g., `productId` exists in the database, `quantity` is between 1 and 10). The `data` object is then transformed into `RedeemReferralBody` to ensure the correct data structure. This validated data is used to call `redeemReferral` in `src/services/referrals/referrals.ts`.
+
+In summary, the API schemas are used to validate incoming request bodies, and the validated data is then transformed into corresponding service schemas to ensure consistency and correctness when performing database operations or other business logic within the service layer.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map API validation schemas to service validation schemas for referral-related operations.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, API validation schemas are mapped to service validation schemas for referral-related operations to ensure data integrity and consistency before processing. This mapping occurs in the `src/app/api/referrals/route.ts` file, specifically within the `POST` handler for creating a new referral.
+
+### 1. API Validation Schema: `createReferralSchema`
+- **File:** src/app/api/referrals/route.ts
+- **Purpose:** Validates the incoming request body from the API.
+- **Fields:**
+  - `referredBy`: String (UUID format)
+  - `referredEmail`: String (email format)
+  - `referralCode`: String (must be 6 characters, alphanumeric)
+  - `message`: String (max 500 characters)
+
+### 2. Service Validation Schema: `CreateReferralArgs`
+- **File:** src/services/referrals.ts
+- **Purpose:** Validates the data before persisting it to the database.
+- **Fields:**
+  - `referredByEmail`: String (email format)
+  - `referralCode`: String (must be 6 characters, alphanumeric)
+  - `message`: String (max 500 characters)
+
+### Mapping Logic:
+The `POST` handler in `src/app/api/referrals/route.ts` first validates the incoming request body against `createReferralSchema` using `zod`. If the validation fails, an error is thrown, and the client receives a 400 status.
+
+If the API validation succeeds, the data is then passed to the `createReferral` function in `src/services/referrals.ts`. Before saving to the database, the `createReferral` function validates the data against the `CreateReferralArgs` schema using `zod`. If this second validation fails, a `DataInvalidError` is thrown, and the client receives a 400 status.
+
+In essence, the `createReferralSchema` ensures the data is correctly formatted from the client&#x27;s perspective, while `CreateReferralArgs` ensures the data is suitable for storage and business logic within the service layer.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+1069                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+865                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+570                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+899                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+439                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+555                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+1513                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+80                </td>
+                <td>
+434                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Assess where SSR/CSR boundaries may leak sensitive data and suggest code-level guardrails.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect application, being a Next.js application, utilizes both Server-Side Rendering (SSR) and Client-Side Rendering (CSR) depending on the component&#x27;s configuration (e.g., `next/dynamic`, `getServerSideProps`, `getInitialProps`, or fetching data directly in client components). Sensitive data leakage can occur at the boundaries where these rendering paradigms interact, particularly when client-side JavaScript (CSR) components receive or process data that should remain confidential.
+
+### 1. **Client-Side Components Receiving Sensitive Data via Props or State (CSR Data Leakage)**
+
+**Risk:** Client-side components can receive sensitive data (e.g., user tokens, personal information, administrative privileges) as props or through state from server-side rendering or external API calls. Once this data is on the client, it&#x27;s accessible via the browser&#x27;s developer tools, increasing the risk of exposure.
+
+**Code-Level Guardrails:**
+
+*   **   **Principle of Least Privilege for Client Data:** Only pass the **minimum necessary** data to client-side components. Avoid passing entire user objects containing sensitive fields like `token`, `passwordHash`, or full personal details (e.g., `ssn`, `dob`).
+    *   **   **Example:** Instead of passing the entire user object, pass just the `userId` or a `userRole` to determine UI permissions.
+        
+```typescript
+        // src/components/ReferralList.tsx
+        interface ReferralListProps {
+          userId: string; // Only necessary for fetching data
+          userRole: &#x27;ADMIN&#x27; | &#x27;USER&#x27;; // Only necessary for UI rendering
+        }
+        ```
+
+    *   **   **Opaque IDs for Sensitive Resources:** Use **opaque IDs** (UUIDs) to reference sensitive resources (e.g., user sessions, referral codes) on the client. This prevents an attacker from guessing or reconstructing sensitive data from visible IDs.
+        
+```typescript
+        // src/app/(admin)/referrals/[id]/route.ts
+        // Instead of returning { token: &#x27;abc123&#x27;, ... }, return { referralCode: &#x27;RC123&#x27;, ... }
+        ```
+
+    *   **   **Client-Side Data Fetching with API Routes:** For sensitive data, fetch it directly from a dedicated API route (e.g., `src/app/api/user/data/route.ts`) **on the client-side** using `fetch` or `axios`. This ensures that **only authenticated and authorized** users can retrieve such data, and the raw sensitive data is never rendered server-side.
+        
+```typescript
+        // src/components/UserProfile.tsx
+        async function fetchUserData(userId: string) {
+          const res = await fetch(`/api/user/data?userId=${userId}`);
+          return res.json();
+        }
+        ```
+
+### 2. **Server-Side Rendering (SSR) Passing Sensitive Data to Client (SSR to CSR Leakage)**
+
+**Risk:** If `getServerSideProps` or `getInitialProps` in server-side rendered pages pass sensitive data directly to the page&#x27;s props, this data will be embedded in the HTML response and visible in the browser&#x27;s source code.
+
+**Code-Level Guardrails:**
+
+*   **   **Scrub Sensitive Data in `getServerSideProps`:** Explicitly remove or redact sensitive fields before passing data to client-side components.
+    *   **   **Example:** In `src/app/(admin)/referrals/[id]/route.ts`, ensure sensitive fields like `token` are omitted.
+        
+```typescript
+        // src/app/(admin)/referrals/[id]/route.ts
+        async function getServerSideProps({ params }: { params: { id: string } }) {
+          const referral = await fetchReferralById(params.id);
+          // Scrub sensitive data before passing to props
+          return {
+            props: {
+              referral: {
+                id: referral.id,
+                code: referral.code,
+                redeemed: referral.redeemed,
+                // Do NOT include `token` or other sensitive fields here
+              },
+              user: {
+                name: user.name,
+                role: user.role,
+                // Do NOT include `token`, `passwordHash`, or other sensitive fields here
+              },
+            },
+          };
+        }
+        ```
+
+    *   **   **Avoid Embedding Sensitive Logic in Server-Side Rendered Pages:** Perform sensitive operations (e.g., token validation, accessing private user data) on the server-side **before** rendering the page. Only pass the **displayable** data to the client.
+        
+```typescript
+        // src/app/(admin)/referrals/[id]/route.ts
+        // Validate token and check user role on the server-side before rendering
+        if (!isValidToken(referral.token) || user.role !== &#x27;ADMIN&#x27;) {
+          return {
+            redirect: {
+              destination: &#x27;/unauthorized&#x27;,
+              permanent: false,
+            },
+          };
+        }
+        ```
+
+### 3. **Shared State Management Leakage**
+
+**Risk:** If a shared state management solution (e.g., `next-redux-wrapper`, `zustand`, `react-query`) stores sensitive data in its global state, this data will be exposed if the state is inspected in the browser&#x27;s developer tools.
+
+**Code-Level Guardrails:**
+
+*   **   **Minimize Sensitive Data in Global State:** Similar to passing props, only store the **least necessary** and **displayable** data in global state. Avoid storing authentication tokens, passwords, or other sensitive information.
+*   **   **Secure Storage for Authentication Tokens:** Store authentication tokens in **HTTP-only**, **secure**, and **same-site=Strict** cookies. Access these cookies on the server-side for authentication and authorization, rather than storing the token in client-side state.
+    *   **   **Example:** Use `cookies()` function from Next.js to set and get secure cookies.
+        
+```typescript
+        // src/utils/auth.ts
+        import { cookies } from &#x27;next/headers&#x27;;
+
+        export function setSecureTokenCookie(token: string) {
+          cookies().set(&#x27;auth_token&#x27;, token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: &#x27;Strict&#x27;,
+            maxAge: 86400 * 30, // 30 days
+          });
+        }
+
+        export function getAuthToken() {
+          return cookies().get(&#x27;auth_token&#x27;)?.value;
+        }
+        ```
+
+### 4. **Client-Side Script Injection (XSS) Leakage**
+
+**Risk:** If client-side scripts (e.g., custom scripts imported in `_app.tsx` or dynamically injected) are not properly sanitized, they could potentially access or manipulate sensitive data stored in client-side state or received via props.
+
+**Code-Level Guardrails:**
+
+*   **   **CSP (Content Security Policy):** Implement a strict Content-Security-Policy header to restrict the sources of scripts, styles, and other resources. This prevents unauthorized scripts from running in the browser.
+*   **   **Sanitize All User-Provided Data:** Ensure all data rendered to the DOM or executed in client-side scripts is properly sanitized to prevent XSS attacks.
+*   **   **Use `nonce` or `hsript-src` for Inline Scripts:** If inline scripts are necessary, use a `nonce` or `script-src` directive in the CSP header to allow only specific, trusted scripts.
+
+### 🔍 Summary of File-Specific Changes:
+
+*   **src/components/ReferralList.tsx**:
+    *   Ensure only necessary, non-sensitive user data is passed as props.
+*   **src/app/(admin)/referrals/[id]/route.ts**:
+    *   Scrub sensitive fields (`token`, passwordHash, etc.) from `getServerSideProps` output.
+    *   Validate tokens and check user roles on the server-side before rendering sensitive content.
+*   **src/utils/auth.ts**:
+    *   Store authentication tokens securely in HTTP-only, secure cookies.
+*   **src/app/api/referrals/route.ts**:
+    *   Ensure sensitive referral data (e.g., `token`) is not included in the response body for non-`GET` requests or is properly redacted for `GET` responses.
+*   **Next.js `_app.tsx` and `_document.tsx`**:
+    *   Configure `next.config.js` to enforce Content-Security-Policy headers.
+
+By implementing these guardrails, you can significantly reduce the risk of sensitive data leakage at SSR/CSR boundaries in the PRFC Connect application.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Assess where SSR/CSR boundaries may leak sensitive data and suggest code-level guardrails.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase (a Next.js referral-management application) employs a mix of Server-Side Rendering (SSR) and Client-Side Rendering (CSR). It&#x27;s crucial to identify and mitigate potential leakage of sensitive data at the boundaries where these rendering paradigms interact. Here&#x27;s an assessment and suggested code-level guardrails:
+
+---
+
+### 1. **Server-Side Rendering (SSR) to Client-Side Rendering (CSR) Data Passing**
+
+**Risk:** When data is passed from the server to the client (e.g., via `document.body.innerHTML` or `window.__NEXT_DATA__`), sensitive information included in that initial HTML payload can be exposed if not properly filtered or if the client-side JavaScript manipulates this data insecurely.
+
+**Code-Level Guardrails:**
+
+*   **   **Data Hydration:**
+    Ensure that only **displayable** or **non-sensitive** data is passed to the client during the initial hydration. Avoid passing raw sensitive objects like `userObject` directly.
+
+    ✅ **Example (src/app/api/referrals/route.ts):**
+    The `referrals` data is fetched and passed to the client. Instead of passing the entire `userObject`, only necessary fields should be included.
+
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    const referralsWithUser = await prisma.referral.findMany({
+      where: { userObject: { id: userId } },
+      include: {
+        referredBy: true, // This is generally safe as it&#x27;s a reference ID
+        // userObject: false, // **DEPRECATED/UNCOMMENT** to prevent full user object
+      },
+    });
+    ```
+
+    **Impact:** Prevents the entire user object, including sensitive fields like `email` and `passwordHash`, from being embedded in the initial HTML.
+
+*   **   **Client-Side Data Fetching:**
+    For data that needs to be dynamic or fetched after the initial load, ensure that client-side fetches are made via secure API routes (`src/app/api/...`) rather than directly accessing server-side variables or the database. Even if the client makes an authenticated request to a server-side API, the payload should still be handled securely on the server.
+
+    ✅ **Example (src/components/referral-card.tsx and src/components/referral-modal.tsx):**
+    These components make authenticated POST requests to `src/app/api/referrals/route.ts` to fetch specific data (e.g., `referralCode`, `referralUrl`). This is a good practice as sensitive data is not passed from the server to the client during initial load, and all client-side fetches are authenticated.
+
+    **Impact:** Ensures that sensitive data is only accessed over authenticated API calls, which can be rate-limited and require valid sessions.
+
+---
+
+### 2. **Client-Side JavaScript (CSR) Manipulation of Sensitive Data**
+
+**Risk:** Once sensitive data is on the client-side JavaScript context (e.g., `window` object, `props` passed to React components), it can be easily inspected by an attacker (e.g., through browser DevTools) or inadvertently logged to the console, triggering alerts, or being sent to third-party services (e.g., Google Analytics, Sentry, if configured with sensitive endpoints).
+
+**Code-Level Guardrails:**
+
+*   **   **Data Transformation on Client-Side:**
+    Transform sensitive data into non-sensitive representations before rendering or using it in client-side JavaScript. For example, instead of displaying a user&#x27;s email directly, you could display a masked version (e.g., &quot;user@example.com&quot; becomes &quot;user***.email@example.com&quot;).
+
+    ✅ **Example (src/components/user-card.tsx):**
+    The `email` is displayed directly. This is a potential leakage point if `email` contains sensitive information.
+
+    
+```typescript
+    // src/components/user-card.tsx
+    &lt;p&gt;Email: {userObject.email}&lt;/p&gt; // Potential leakage if userObject.email is sensitive
+    ```
+
+    **Suggestion:** Implement a utility to mask emails.
+
+    
+```typescript
+    // utils/data-masking.ts
+    export const maskEmail = (email: string): string =&gt; {
+      if (!email) return &#x27;&#x27;;
+      const [localPart, domain] = email.split(&#x27;@&#x27;);
+      if (!localPart || !domain) return email;
+      return `${localPart.slice(0, 2)}${&#x27;*&#x27;.repeat(Math.max(0, localPart.length - 4))}@${domain}`;
+    };
+    ```
+
+    **Impact:** Prevents full email addresses from being visible in DevTools or console logs.
+
+*   **   **Console Logging:**
+    Prohibit any console logging of sensitive data.
+
+    ❌ **Bad Example:**
+    `console.log(&quot;User details:&quot;, userObject);` // Full user object, including sensitive fields.
+
+    ✅ **Good Practice:**
+    Use `console.log` only for non-sensitive debugging information, or transform sensitive data before logging.
+
+    **Impact:** Prevents accidental exposure of sensitive data via browser console.
+
+*   **   **Avoid `window` Object Pollution:**
+    Minimize what data is attached to the global `window` object. Use React state or context to manage sensitive data, which is scoped to the component tree.
+
+    **Impact:** Reduces the attack surface if an attacker can access the `window` object.
+
+---
+
+### 3. **Server-Side Rendering (SSR) with Sensitive Logic**
+
+**Risk:** If sensitive business logic (e.g., password hashing, sensitive API calls) is executed on the server, the server logs or environment variables (e.g., `NEXT_PUBLIC_` vs. `.env`) must be secured. Even though the output to the client is generally non-sensitive in a well-structured SSR setup, internal server-side processes can be a vector.
+
+**Code-Level Guardrails:**
+
+*   **   **Server Logs:**
+    Ensure that sensitive information is **never** logged to the server&#x27;s logs. Use `prisma`&#x27;s default behavior (silent queries) and explicitly filter out sensitive fields before logging any server-side operations.
+
+    ✅ **Example (src/lib/prismadb.ts):**
+    The `PrismaClient` is initialized without logging.
+
+    
+```typescript
+    // src/lib/prismadb.ts
+    export const prismadb = new PrismaClient({
+      log: {
+        query: false, // **DEPRECATED/COMMENT OUT** to prevent query logs
+        // query: true, // **UNCOMMENT** for query logging
+        error: true,
+      },
+    });
+    ```
+
+    **Impact:** Prevents sensitive database queries from being exposed in server logs.
+
+*   **   **Environment Variables:**
+    Ensure sensitive environment variables (e.g., `DATABASE_URL`, `JWT_SECRET`, `EMAIL_SERVICE_PASSWORD`, `PAYMENT_WEBHOOK_SECRET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`) are **never** prefixed with `NEXT_PUBLIC_`. They should be accessed directly in server-side code or through a secure server-side environment.
+
+    **Code-Level Check:** Review `src/app/api/referrals/route.ts` and other server-side API handlers to ensure sensitive variables are not hardcoded or passed to the client.
+
+    **Impact:** Prevents sensitive credentials from being exposed via client-side code or browser-readable environment variables.
+
+*   **   **API Route Security:**
+    All API routes that perform sensitive operations (e.g., `src/app/api/referrals/route.ts` which creates new referrals and sends emails) should enforce **strict authentication and authorization**.
+
+    ✅ **Example (src/app/api/referrals/route.ts):**
+    The route already verifies the user&#x27;s ID from the authenticated session.
+
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    const userObject = await prisma.user.findFirst({
+      where: { id: userId },
+      select: { id: true, name: true, email: true, referredBy: true },
+    });
+    if (!userObject) {
+      throw new Error(&quot;User not found&quot;);
+    }
+    ```
+
+    **Suggestion:**
+    - Ensure `userId` is securely extracted from the session (e.g., using `cookies` or `next-auth`&#x27;s `session` object).
+    - Implement fine-grained role-based access control (RBAC) if different user roles have varying permissions.
+
+    **Impact:** Prevents unauthorized access to sensitive operations like creating new referrals or sending emails.
+
+---
+
+### 4. **Third-Party Integrations and Middleware**
+
+**Risk:** If third-party services (e.g., email services, payment gateways, analytics) are integrated, their client-side SDKs might inadvertently collect sensitive data or be configured with sensitive keys.
+
+**Code-Level Guardrails:**
+
+*   **   **Trusted Third-Party Scripts:**
+    Only include third-party scripts from fully trusted sources and ensure they are loaded securely (e.g., over HTTPS).
+
+*   **   **Client-Side SDKs:**
+    Review the configuration of any client-side third-party SDKs (e.g., Google Analytics, Sentry, Twilio) to ensure they are not being passed sensitive data.
+
+    ✅ **Example (src/components/contact-form.tsx):**
+    The `sendMessage` function fetches `/api/mailer` to send emails. The `email` and `message` content are sent to the server, which then calls `nodemailer`. This is a secure internal API call; sensitive data (e.g., `passwordHash`) should **not** be included in the `message` body sent to `nodemailer`.
+
+    **Code-Level Check:**
+    - `src/app/api/mailer/route.ts` uses `process.env.EMAIL_SERVICE_PASSWORD` (environment variable - good).
+    - `src/components/contact-form.tsx` sends user-provided `email` and `message` to `src/app/api/mailer/route.ts` (user-provided          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Assess where SSR/CSR boundaries may leak sensitive data and suggest code-level guardrails.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect application, being a Next.js application, utilizes both Server-Side Rendering (SSR) and Client-Side Rendering (CSR). Sensitive data leakage can occur at the boundaries where server-rendered content is passed to the client or where client-side JavaScript accesses server-side data without proper sanitization or authentication.
+
+### 1. API Route Responses (`src/app/api/referrals/route.ts`)
+
+**Potential Leak:**
+This file fetches referral data from the database and returns it as a JSON response. If the database contains sensitive fields (e.g., `refereeEmail`, `referrerEmail`, `createdAt`, `updatedAt`), these will be included in the JSON payload sent to the client.
+
+**Code-Level Guardrails:**
+
+*   **Principle of Least Privilege (PoLP):** Only return the minimum necessary fields that the client needs to render the UI. Avoid including sensitive fields like full names, emails, or timestamps if they are not required for the client-side display.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    // Instead of returning all fields, only include necessary ones
+    // Example: If only the name and unique ID are needed on the client:
+    const refs = await prisma.referral.findMany({
+      select: {
+        id: true,
+        name: true,
+        uniqueId: true,
+        referredAt: true,
+        status: true,
+      },
+    });
+    ```
+
+*   **Data Transformation (Sanitization):** If sensitive fields are unavoidable, transform or redact them before sending to the client. For instance, you could generate a unique token for the referral and send that instead of the database ID.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    // Example: Generate a unique token for the referral and send that ID
+    // This would require a mapping mechanism on the client and server if the original ID is still needed for DB operations.
+    const refs = await prisma.referral.findMany({
+      select: {
+        id: true,
+        name: true,
+        uniqueId: true,
+        referredAt: true,
+        status: true,
+      },
+    });
+
+    const transformedRefs = refs.map(ref =&gt; ({
+      ...ref,
+      id: crypto.randomUUID(), // Generates a new UUID for client-side use
+    }));
+
+    return NextResponse.json(transformedRefs);
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Assess where SSR/CSR boundaries may leak sensitive data and suggest code-level guardrails.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect application, being a Next.js application, utilizes both Server-Side Rendering (SSR) and Client-Side Rendering (CSR). Sensitive data leakage can occur if data intended for the client-side is improperly passed from the server or if client-side logic accesses sensitive server-side data directly. Here&#x27;s an assessment of potential SSR/CSR boundary leakage points and corresponding code-level guardrails:
+
+### 1. Passing Sensitive Data from Server to Client
+
+**Leakage Point:** When server-side rendered components (e.g., `src/components/organisms/ReferralDetailsCard/index.tsx`, `src/components/molecules/ReferralListRow/index.tsx`) pass user-specific sensitive data (e.g., `referrerAuth.id`, `referral.recipientName`, `referral.status`, `referral.points`) directly to client-side components, this data is embedded in the initial HTML payload. While this data is generally non-sensitive (e.g., display names, status, points), referrer authentication IDs (`src/components/organisms/ReferralDetailsCard/index.tsx#L13`) could be considered sensitive if an attacker can inject or manipulate the HTML to extract these IDs.
+
+**Code-Level Guardrails:**
+
+*   **Minimize Data Passed:** Only pass the absolutely necessary data for rendering. Avoid passing internal identifiers like `referrerAuth.id` directly to the client if they are not required for display. Instead, fetch these details on the client-side after a secure API call.
+    
+```typescript
+    // src/components/organisms/ReferralDetailsCard/index.tsx
+    // Instead of passing referrerAuth.id directly, fetch referrer details on client-side
+    // useEffect(() =&gt; {
+    //   fetch(`/api/referrals/referrer/${referrerId}`)
+    //     .then(res =&gt; res.json())
+    //     .then(data =&gt; setReferrerName(data.name));
+    // }, [referrerId]);
+    // ```
+
+*   **Data Transformation:** Transform sensitive data fields on the server before sending to the client to ensure they are in a non-sensitive format (e.g., truncating long IDs).
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    // Example of data sanitization before sending to client
+    const transformedReferral = {
+      id: referral.id,
+      recipientName: referral.recipientName,
+      status: referral.status,
+      points: referral.points,
+      // Truncate referrerAuth.id if it&#x27;s very long
+      referrerId: truncateId(referrerAuth.id),
+    };
+    async function GET() {
+      // ... existing code ...
+      return NextResponse.json(transformedReferral);
+    }
+    function truncateId(id: string): string {
+      return id.length &gt; 10 ? id.substring(0, 7) + &quot;...&quot; : id;
+    }
+    // ```
+
+*   **Content Security Policy (CSP):** Implement a strict Content Security Policy to prevent unauthorized scripts from running in the browser, reducing the risk of client-side data extraction.
+
+### 2. Client-Side API Calls
+
+**Leakage Point:** Client-side components (e.g., `src/components/organisms/ReferralDetailsCard/index.tsx`, `src/components/molecules/ReferralListRow/index.tsx`) make direct API calls to the backend (e.g., `src/components/organisms/ReferralDetailsCard/index.tsx#L36`, `src/components/molecules/ReferralListRow/index.tsx#L30`). These calls include sensitive tokens like `cookies.get(&quot;token&quot;)` (from `src/components/organisms/ReferralDetailsCard/index.tsx#L36`) and `cookies.get(&quot;token&quot;)` (from `src/components/molecules/ReferralListRow/index.tsx#L30`) in the headers. If these calls are manipulated or if an attacker can intercept them, the authentication token can be stolen.
+
+**Code-Level Guardrails:**
+
+*   **Use `Next.js` Fetch with Server Actions/Server Components:** Where possible, perform sensitive API calls (e.g., fetching referrer details) on the server-side using Server Actions or Server Components. This ensures the authentication token is never exposed to the client.
+    
+```typescript
+    // Example using Server Actions (newer Next.js versions)
+    // src/components/organisms/ReferralDetailsCard/ReferralDetailsCardServerAction.ts
+    // action.ts
+    async function fetchReferrerDetails(referrerId: string) {
+      const response = await fetch(`${config.BACKEND_URL}/api/referrals/referrer/${referrerId}`, {
+        headers: {
+          Authorization: `Bearer ${cookies.get(&quot;token&quot;)}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(&quot;Failed to fetch referrer details&quot;);
+      }
+      return response.json();
+    }
+    // Then, use this server action in your component
+    // src/components/organisms/ReferralDetailsCard/index.tsx
+    // ReferralDetailsCard.tsx
+    const ReferralDetailsCard = async ({ referral }: { referral: ReferralWithReferrer }) =&gt; {
+      const referrerDetails = await fetchReferrerDetails(referral.referrerId);
+      return (
+        &lt;div&gt;
+          &lt;h2&gt;Referral Details for {referral.recipientName}&lt;/h2&gt;
+          &lt;p&gt;Status: {referral.status}&lt;/p&gt;
+          &lt;p&gt;Points: {referral.points}&lt;/p&gt;
+          &lt;p&gt;Referrer: {referrerDetails.name}&lt;/p&gt;
+        &lt;/div&gt;
+      );
+    };
+    // ```
+
+*   **Token Management:** Ensure that authentication tokens are stored securely in the client-side cookies (HttpOnly, Secure, SameSite=Lax) and are not included in URL parameters or query strings.
+    
+```typescript
+    // src/utils/api.ts
+    // Example of secure token inclusion in headers
+    const headers = {
+      &quot;Content-Type&quot;: &quot;application/json&quot;,
+      &quot;Authorization&quot;: `Bearer ${cookies.get(&quot;token&quot;)}`, // cookies should be retrieved via `cookies()` function
+    };
+    // ```
+
+*   **Rate Limiting and Monitoring:** Implement rate limiting on your backend API routes to prevent brute-force attacks that could lead to token exposure. Monitor API logs for suspicious activity.
+
+### 3. Dynamic Content and XSS
+
+**Leakage Point:** If user-generated content (e.g., `referral.message` in `src/components/organisms/ReferralDetailsCard/index.tsx#L22`) or other untrusted data is directly embedded into the HTML without proper sanitization, it could lead to Cross-Site Scripting (XSS) vulnerabilities. An attacker could inject malicious scripts that steal cookies, session tokens, or perform actions on behalf of the user.
+
+**Code-Level Guardrails:**
+
+*   **Content-Security-Policy (CSP) Header:** Enforce a strict CSP to prevent the execution of unauthorized scripts.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    // Set Content-Security-Policy header
+    res.headers.set(&quot;Content-Security-Policy&quot;, &quot;default-src &#x27;none&#x27;; script-src &#x27;self&#x27;; style-src &#x27;self&#x27;; img-src &#x27;self&#x27; data:;&quot;);
+    // ```
+
+*   **XSS-Sanitized Library:** Use a dedicated library like `DOMPurify` (https://github.com/cure53/DOMPurify) to sanitize any user-generated content before rendering it in the DOM.
+    
+```typescript
+    // Example of using DOMPurify in a client-side component
+    // src/components/organisms/ReferralDetailsCard/index.tsx
+    import { sanitize } from &#x27;dompurify&#x27;;
+    // ...
+    &lt;div dangerouslySetInnerHTML={{ __html: sanitize(referral.message) }} /&gt;
+    // ```
+
+*   **Avoid `dangerouslySetInnerHTML`:** Whenever possible, render user-generated content using standard React components and props (e.g., `&lt;p&gt;{message}&lt;/p&gt;`) to leverage React&#x27;s built-in XSS protection. Use `dangerouslySetInnerHTML` only when absolutely necessary and after thorough sanitization.
+
+### Summary of Security Enhancements
+
+By implementing the following, you can significantly reduce the risk of sensitive data leakage at SSR/CSR boundaries:
+
+*   **Server-Side Data Hydration:** Fetch and transform sensitive data on the server before sending to the client.
+*   **Secure Token Handling:** Avoid client-side API calls that include sensitive tokens; perform sensitive data retrieval on the server.
+*   **Client-Side Security:** Sanitize all user-generated content and enforce a strict Content Security Policy to prevent XSS attacks.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Assess where SSR/CSR boundaries may leak sensitive data and suggest code-level guardrails.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase, being a Next.js application, uses a mix of Server-Side Rendering (SSR) and Client-Side Rendering (CSR). Sensitive data leakage can occur at the boundaries where data is passed from the server to the client. Here&#x27;s an assessment of potential leakage points and suggested code-level guardrails:
+
+### 1. **Data Passed via `window.localStorage`/`sessionStorage`**
+   **Leakage Point:** Directly setting sensitive data (e.g., `token`, `userDetails`) in `window.localStorage` or `window.sessionStorage` on the client-side. This data can be easily accessed by an authenticated user in the browser&#x27;s developer tools.
+   **Code Example:**
+   *src/components/authentication/TokenContext.tsx*
+   ```tsx
+   React.useEffect(() =&gt; {
+     if (token) {
+       localStorage.setItem(&quot;token&quot;, token);
+       localStorage.setItem(&quot;userDetails&quot;, JSON.stringify(authUser));
+     }
+   }, [token, authUser]);
+   ```
+
+   **Suggested Guardrails:**
+   *   **Encrypt Sensitive Data:** Before storing sensitive information (e.g., `token`, `passwordHash`) in `localStorage` or `sessionStorage`, ensure it is encrypted (e.g., using AES).
+   *   **Store Minimized Data:** Only store the absolute minimum necessary for client-side operations. For example, instead of full `userDetails`, store just a `userId` and a `displayName`, fetching detailed user data via an API call when needed.
+   *   **Clear on Logout:** Explicitly remove all `localStorage`/`sessionStorage` entries when the user logs out.
+   *   **SameSite Attributes:** Set `SameSite=Lax` or `Strict` for cookies to prevent cross-site request forgery (CSRF) attacks that might otherwise inject malicious scripts.
+
+### 2. **Client Components Receiving Sensitive Props**
+   **Leakage Point:** Client components receiving sensitive data as props from parent components or via context. This data is then rendered in the DOM, making it visible in browser developer tools.
+   **Code Example:**
+   *src/components/referrals/ReferralTable.tsx*
+   ```tsx
+   &lt;ReferralTableRow
+     key={referral.id}
+     referral={referral}
+     isPending={isPending}
+     onToggleStatus={handleToggleStatus}
+     onDelete={handleDelete}
+   /&gt;
+   ```
+   In this case, `referral.code`, `referral.userId`, and `referral.reward` are passed as props. While `referral.code` is a public referrer code, `referral.reward` might contain sensitive information if it&#x27;s a monetized referral (e.g., a payment gateway token or a user&#x27;s personal payment details).
+
+   **Suggested Guardrails:**
+   *   **Data Minimization:** Only pass the data that is *strictly* necessary for rendering. Avoid passing raw sensitive fields like full `userDetails` or un-parsed tokens.
+   *   **Data Transformation:** Transform sensitive data on the server before passing it to the client. For example, instead of passing a full user object, pass an `avatarUrl` and a `displayName`, and fetch detailed user data via an API call when an action (like displaying a user profile) is required.
+   *   **Server-Side Hydration:** For components that require sensitive data, ensure that the initial data is fetched and hydrated on the server. This prevents the client from needing to request the data again or reconstructing it from `localStorage`.
+
+### 3. **Server-Side Components (SSCs) Rendering Sensitive Data**
+   **Leakage Point:** Server-Side Components (introduced in Next.js 13) render HTML on the server, but if they directly embed sensitive information into the HTML (e.g., `textContent`, `html` attributes), this data will be sent to the client and included in the page&#x27;s source code.
+   **Code Example: (Hypothetical)**
+   *src/app/(admin)/referrals/data.tsx*
+   ```tsx
+   &lt;table&gt;
+     &lt;tbody&gt;
+       {referrals.map((referral) =&gt; (
+         &lt;tr key={referral.id}&gt;
+           &lt;td&gt;{referral.code}&lt;/td&gt;
+           &lt;td&gt;{referral.userId}&lt;/td&gt;
+           &lt;td&gt;{referral.reward}&lt;/td&gt;
+           {/* ... */}
+         &lt;/tr&gt;
+       ))}
+     &lt;/tbody&gt;
+   &lt;/table&gt;
+   ```
+
+   **Suggested Guardrails:**
+   *   **Server-Side Data Transformation:** Perform any necessary data transformation or sensitive-data redaction on the server before rendering. Only pass non-sensitive, transformed data to Client Components.
+   *   **Avoid Embedding Sensitive Props in HTML:** Ensure that no sensitive data is directly embedded as text content or attributes within the HTML generated by SSCs.
+
+### 4. **API Responses**
+   **Leakage Point:** APIs that return more data than necessary, including sensitive fields, to the client.
+   **Code Example:**
+   *src/app/api/referrals/route.ts*
+   ```typescript
+   const referrals = await prisma.referral.findMany({
+     where: { OR: [{ referredBy: email }, { referredUser: email }] },
+     include: { user: { select: { name, email, address, city, state, zipcode, phone, referralCode: true, isBusiness: true } } },
+   });
+   ```
+
+
+   This query includes `user.name`, `user.email`, `user.address`, `user.city`, `user.state`, `user.zipcode`, `user.phone`, `user.referralCode`, and `user.isBusiness`. While `referralCode` is a public identifier, the other fields (`address`, `phone`, `email`, etc.) are personally identifiable information (PII) and should not be exposed to all users.
+
+   **Suggested Guardrails:**
+   *   **Principle of Least Privilege (PoLP):** APIs should return only the data that the client is explicitly authorized to view. For example, a referred user&#x27;s full details might only be visible to the referrer, but other users should see only the `referralCode` and `status`.
+   *   **Custom Data Selectors:** Define clear, specific data selectors in your database queries to ensure only necessary and permitted fields are retrieved.
+   *   **Data Redaction:** For sensitive fields (e.g., `passwordHash`, `creditCardDetails`), ensure they are completely redacted (not even the last few characters) in API responses.
+
+### 5. **Next.js `_app.tsx`/`_document.tsx`**
+   **Leakage Point:** If sensitive data is passed through `pageProps` from `src/app/api/[...nextauth]/route.ts` or `src/lib/unprotected-fetch.ts` to be available in `_app.tsx` or `_document.tsx`, it can be included in every page&#x27;s HTML, increasing the attack surface.
+   **Code Example:**
+   *src/app/(admin)/referrals/data.tsx* (as above)
+   *src/components/Navigation.tsx* (reading `userDetails.userName` from context)
+   *src/app/api/[...nextauth]/route.ts*
+   ```typescript
+   if (user) {
+     res.status(200).json({ user });
+   }
+   ```
+
+   **Suggested Guardrails:**
+   *   **Minimal `pageProps`:** Ensure `pageProps` in `_app.tsx` receive only the minimum data required for the specific page. Avoid passing a full user object if only a small part is needed.
+   *   **Context for Authentication:** Use a context (like `src/components/authentication/TokenContext.tsx`) to store only the essential authentication state (e.g., `token`, `userEmail`, `displayName`, `avatarUrl`). Avoid storing sensitive user details here.
+   *   **Server-Side Hydration:** For navigation bars that display user details, ensure that the `userEmail` or `displayName` is fetched and embedded directly into the HTML by the server, rather than being a prop passed from a parent component that itself received data from an API call.
+
+---
+
+### Summary of Code-Level Guardrails:
+
+1.  **LocalStorage/SessionStorage:**
+    *   Encrypt sensitive data before storage.
+    *   Store only essential, non-sensitive identifiers.
+    *   Clear storage on logout.
+
+2.  **Client Components:**
+    *   Receive only transformed, non-sensitive data.
+    *   Fetch detailed sensitive data via API calls when needed.
+
+3.  **Server Components:**
+    *   Redact sensitive data before rendering to HTML.
+    *   Pass only non-sensitive, transformed data to Client Components.
+
+4.  **API Responses:**
+    *   Apply PoLP to data retrieval.
+    *   Use custom, specific `select` fields in database queries.
+    *   Redact sensitive fields entirely.
+
+5.  **App/Document:**
+    *   Ensure `pageProps` contain minimal data.
+    *   Use context to share only essential authentication details.
+
+By enforcing these guardrails, you can significantly reduce the risk of sensitive data leakage at SSR/CSR boundaries in the PRFC Connect application.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Assess where SSR/CSR boundaries may leak sensitive data and suggest code-level guardrails.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect application, built with Next.js, employs a mix of Server-Side Rendering (SSR) and Client-Side Rendering (CSR). The primary SSR occurs in `src/app/page.tsx`, which fetches user data, including sensitive information, from a server endpoint (e.g., `src/app/api/auth/me/route.ts`). While the application generally handles sensitive data securely, there are potential leakage points at the boundaries between SSR and CSR. Here&#x27;s an assessment and suggested code-level guardrails:
+
+### 1. Data Hydration in HTML
+**Location:** `src/app/page.tsx` (e.g., `src/app/page.tsx:30-40`)
+
+**Explanation:**
+The `page.tsx` file fetches the user&#x27;s email, name, and a referrer ID using `fetch(&#x27;api/auth/me&#x27;)`. This data is then embedded directly into the HTML as JSX props (e.g., `&lt;html className={darkMode ? &quot;dark&quot; : &quot;&quot;} data-referrer={referrerId} data-email={email} data-name={name} /&gt;`).
+
+**Risk:**
+This practice &quot;hydrates&quot; sensitive data (email, referrer ID) directly into the HTML source. Even if subsequent JavaScript on the client side is secure, an attacker can view the page&#x27;s source code to see this information.
+
+**Suggested Guardrails:**
+*   **Principle of Least Privilege for Hydration:** Only hydrate the absolute minimum data required for the initial render. Avoid including sensitive information like email or referrer IDs.
+*   **Token-Based Authentication:** Instead of passing sensitive data directly, the server can set secure HTTP-only cookies (e.g., `sessionToken`) upon successful authentication. The client-side JavaScript can then verify this cookie and fetch user details via a dedicated, secure API endpoint if needed for dynamic rendering. For example, `src/components/Header.tsx:12-19` already checks `sessionToken` to display &quot;Logout&quot;, indicating the presence of such a mechanism.
+*   **Efficient Data Fetching:** Continue to fetch necessary user data (e.g., `fullName`) from the authenticated endpoint (`api/auth/me`). This data is less sensitive than a raw email or referrer ID and can be displayed directly without extra security concerns.
+
+### 2. Client-Side JavaScript State Mutation
+**Location:** `src/components/ReferralCard.tsx` and `src/components/ReferralList.tsx` (e.g., `src/components/ReferralCard.tsx:20-25` for `toggleRedeemed`)
+
+**Explanation:**
+Components like `ReferralCard.tsx` and `ReferralList.tsx` directly mutate the `redeemed` state in `clientData` (e.g., `src/components/ReferralCard.tsx:20-25`). This means the `redeemed` status is stored in the browser&#x27;s memory (localStorage) rather than being persisted on the server.
+
+**Risk:**
+While the `redeemed` status itself is not extremely sensitive, its mutation on the client side means that if a user&#x27;s browser is compromised or if they clear their localStorage, this state will be lost. More critically, if an attacker can inject malicious scripts (e.g., via XSS) into the page, they could potentially alter this state to show referrals as redeemed without server-side validation.
+
+**Suggested Guardrails:**
+*   **Server-Side Updates:** All state mutations that affect the server-side data (e.g., marking a referral as redeemed) must be handled by a secure server-side endpoint. The client-side JavaScript should only update the UI (e.g., `src/components/ReferralCard.tsx:24`); the actual data persistence should be a one-way process from the server to the client.
+*   **Optimistic UI Updates:** When a user toggles a referral&#x27;s redeemed status, the client can immediately update the UI optimistically. However, a successful update on the client should be confirmed by a server-side response. If the update fails (e.g., due to network issues or duplicate requests), the UI should revert. This approach balances user experience with data integrity.
+*   **Prevent XSS:** Ensure that all user-generated content is properly sanitized before rendering to prevent Cross-Site Scripting (XSS) attacks. Use libraries like `react-dom`&#x27;s `dangerouslyInnerHTML` sparingly and only for fully trusted content, or use a dedicated XSS protection library.
+
+### 3. API Request Payloads in Client-Side Code
+**Location:** `src/components/ReferralCard.tsx:28-33` and `src/components/ReferralList.tsx:33-38`
+
+**Explanation:**
+When a referral is toggled, `ReferralCard.tsx:28-33` or `ReferralList.tsx:33-38` send a `PATCH` request to `api/referrals/[id]` with a JSON body `{ redeemed: !newRedeemed }`. This payload contains the `redeemed` status, which is a boolean.
+
+**Risk:**
+The `redeemed` status is a boolean, so it&#x27;s not highly sensitive in itself. However, if an attacker can intercept or forge such requests (e.g., through Man-in-the-Middle attacks or CSRF), they could change the redeemed status of any referral. This would be a privilege escalation if the attacker is not authenticated, or an abuse of privileges if they are.
+
+**Suggested Guardrails:**
+*   **CSRF Protection:** Implement Cross-Site Request Forgery (CSRF) protection for all API endpoints that modify server-side data. This ensures that requests come from authenticated sessions and are not forged by external sources.
+*   **API Endpoint Security:** Ensure that the `src/app/api/referrals/[id]/route.ts` endpoint validates that the request originates from a trusted source (e.g., by checking a CSRF token in a cookie) and that the authenticated user has the proper permissions to update that specific referral.
+*   **ID Validation:** The endpoint should validate that the `id` in the request URL is a valid UUID (e.g., `src/app/api/referrals/[id]/route.ts:11-12`) and that the referral exists. It should also verify that the authenticated user is either the referrer or an administrator, as shown in `src/app/api/referrals/[id]/route.ts:23`.
+
+### Summary of Code-Level Guardrails
+1.  **Minimize Hydrated Sensitive Data:** Only embed non-sensitive data in the initial HTML load.
+2.  **Secure Client-Side State Management:** Use localStorage for UI state that doesn&#x27;t persist on the server. Prevent XSS to ensure only trusted scripts run in the browser.
+3.  **Server-Side Data Mutation:** All changes to server-side data (e.g., marking a referral as redeemed) must be handled by a secure server endpoint.
+4.  **CSRF and ID Validation:** Implement CSRF protection and validate all IDs and user permissions on the server-side before processing update requests.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Assess where SSR/CSR boundaries may leak sensitive data and suggest code-level guardrails.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase, being a Next.js application, utilizes both Server-Side Rendering (SSR) and Client-Side Rendering (CSR). Sensitive data leakage can occur if data is improperly managed across these boundaries. Here&#x27;s an assessment and suggestions for code-level guardrails:
+
+### 1. API Route Responses (`src/app/api/referrals/route.ts`)
+**Description:** This file generates a JSON response containing `referralCode`, `referralUrl`, `rewardsSummary`, and `rewardsDetails`. It does **not** include sensitive information like `userId` or `token`.
+
+**Guardrails:**
+*   **Data Minimization:** Only include the absolute minimum data necessary for the client to render the referral card (e.g., `referralCode`, `referralUrl`, `rewardsSummary`).
+*   **Avoid Object Serialization:** Instead of sending the entire `rewardsDetails` object, consider fetching only the relevant, non-sensitive fields or denormalizing the data at the API route level.
+*   **Validation:** Ensure all data sent from this route is properly validated and sanitized before including it in the JSON response.
+
+### 2. Referral Card Component (`src/components/referral/ReferralCard.tsx`)
+**Description:** This file receives the referral data as props and is responsible for rendering the user interface. It displays `referralCode`, `referralUrl`, `rewardsSummary`, and `rewardsDetails`.
+
+**Guardrails:**
+*   **Client-Side Data Handling:** All data processed here is already sent from the server. Ensure that no sensitive data is present in the `props` received by this component.
+*   **Avoid Re-fetching Sensitive Data:** Do not make new API calls within this component to fetch user-specific or sensitive data. All necessary data should be provided by the parent component (e.g., `src/app/(main)/referrals/page.tsx`) after a server-side fetch.
+*   **Content Security:** If `referralUrl` is user-generated, validate and sanitize it to prevent XSS attacks. For example, ensure it doesn&#x27;t contain malicious scripts or redirects to unintended domains.
+
+### 3. Referral Details Page (`src/app/(main)/referrals/page.tsx`)
+**Description:** This file fetches `referralData` from the database using a server action (`src/lib/actions/referral.ts#fetchReferralDetails`) and then passes this data to the `ReferralCard.tsx` component via `referralDetailsData`.
+
+**Guardrails:**
+*   **Strict Data Retrieval:** The `fetchReferralDetails` function (src/lib/actions/referral.ts#fetchReferralDetails) should retrieve **only the fields necessary** for the referral card and any additional details explicitly required by the user interface. Avoid fetching entire user objects or sensitive fields like `userId` or `token` if they aren&#x27;t needed for rendering the referral card.
+*   **Server-Side Rendering:** Since this data is fetched on the server before rendering, sensitive fields should **never** be included in the `referralData` object that is sent to the client.
+*   **Context and Authentication:** If sensitive operations (e.g., updating referral status) are performed, ensure they are handled by server actions or protected routes that verify the user&#x27;s authentication and authorization (e.g., `src/lib/server.ts`). Do not expose sensitive logic to the client-side rendering process.
+
+### General Code-Level Guardrails:
+
+*   **Principle of Least Privilege:** Fetch and send only the data that is strictly necessary for the UI to render.
+*   **Data Validation:** Implement strict validation (schema-based if possible) for all data received from API routes or passed down as props to ensure it contains only expected and safe values.
+*   **Environment Variables:** Store all sensitive configuration (e.g., database passwords, API keys) in environment variables (e.g., `.env`) and **never commit them to version control**.
+*   **Secure API Endpoints:** Ensure all internal APIs (e.g., those called by server actions) are protected by proper authentication (e.g., token verification) and authorization checks.
+*   **Regular Code Audits:** Periodically review code for potential data leakage, especially at the boundaries where server-rendered content meets client-side JavaScript.
+*   **Use Next.js Features:** Leverage Next.js features like `next.config.js` for content security policies (CSP) and `middleware` to block requests from unauthorized sources.
+
+### Key Source Files:
+
+*   `src/app/api/referrals/route.ts` – Data fetching and initial response generation.
+*   `src/components/referral/ReferralCard.tsx` – UI rendering of referral information.
+*   `src/app/(main)/referrals/page.tsx` – Server-side data fetching and prop passing.
+*   `src/lib/actions/referral.ts` – Core logic for retrieving referral data from the database.
+*   `src/lib/server.ts` – User authentication and authorization checks.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Assess where SSR/CSR boundaries may leak sensitive data and suggest code-level guardrails.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect application, being a Next.js application, utilizes both Server-Side Rendering (SSR) and Client-Side Rendering (CSR) to deliver a dynamic user experience. The primary source of sensitive data is the `prfcAuth` cookie, which contains a signed JSON object with the user&#x27;s ID, name, and authentication status. To ensure data security, it&#x27;s crucial to manage how and where this cookie is processed and exposed.
+
+### 1. **`src/app/api/referrals/route.ts` - API Route Level**
+
+**Risk:**
+- This file handles authentication using `cookies()` from `next/headers` (a server-side function).
+- If an attacker can manipulate or forge the `prfcAuth` cookie, they could bypass authentication and access referral data they shouldn&#x27;t.
+
+**Guardrails:**
+*   **Strict Cookie Verification:** Continue to verify the integrity and authenticity of the `prfcAuth` cookie using the `crypto.randomUUID()` value.
+    *   **File:** `src/app/api/referrals/route.ts`
+    *   **Lines:** 24-35
+*   **Role-Based Access Control (RBAC):** Implement checks to ensure that users can only access their own referral data (e.g., by comparing the `userId` in the cookie with the `id` in the database query).
+    *   **File:** `src/app/api/referrals/route.ts`
+    *   **Lines:** 36-42
+*   **Minimal Data Exposure:** Only return the absolute minimum data required for the client to display, avoiding any internal application logic or sensitive fields.
+    *   **File:** `src/app/api/referrals/route.ts`
+    *   **Lines:** 44-49
+
+### 2. **`src/components/header.tsx` - Header Component (Client-Side Rendering)**
+
+**Risk:**
+- This file displays user authentication status and a logout button.
+- While it doesn&#x27;t directly expose sensitive information like the user&#x27;s ID or email, it confirms the user&#x27;s authenticated status, which can be useful for reconnaissance attacks.
+
+**Guardrails:**
+*   **Avoid Displaying Unique Identifiers:** Do not display the user&#x27;s ID or email in the header. Instead, use a generic &quot;Profile&quot; link that triggers a server-side action to fetch user details.
+    *   **File:** `src/components/header.tsx`
+    *   **Lines:** 14-19
+*   **Logout Action Server-Side:** Ensure the logout action clears the `prfcAuth` cookie on the server side.
+    *   **File:** `src/components/header.tsx`
+    *   **Lines:** 34-37
+
+### 3. **`src/app/page.tsx` - Homepage (Client-Side Rendering with Fetch)**
+
+**Risk:**
+- This file fetches referral data from the `/api/referrals` endpoint.
+- If the `prfcAuth` cookie is exposed or stolen during this fetch, an attacker can impersonate the user.
+
+**Guardrails:**
+*   **Secure Fetch:** Ensure that all client-side fetches to internal APIs (like `/api/referrals`) are done over HTTPS and that the `prfcAuth` cookie is sent securely.
+    *   **File:** `src/app/page.tsx`
+    *   **Lines:** 40-45
+*   **Data Hydration:** When the data is received, it should be immediately rendered into the DOM without being stored in browser memory in a human-readable format.
+    *   **File:** `src/app/page.tsx`
+    *   **Lines:** 47-60
+
+### 4. **`src/utils/auth.ts` - Authentication Utility**
+
+**Risk:**
+- This file is responsible for verifying the `prfcAuth` cookie.
+- If this logic is bypassed or if an attacker can forge a valid signature, authentication can be circumvented.
+
+**Guardrails:**
+*   **Cookie Signing:** Continue to use `crypto.randomUUID()` as the salt and `createHmac(&#x27;sha256&#x27;, &#x27;secret_key&#x27;)` to sign the cookie value (currently commented out). This ensures that only the server can create or validate the cookie.
+    *   **File:** `src/utils/auth.ts`
+    *   **Lines:** 10-19
+*   **Expiration:** Ensure cookies expire after a reasonable session duration.
+    *   **File:** `src/utils/auth.ts`
+    *   **Lines:** 21-29
+
+### 5. **General Code-Level Guardrails**
+
+*   **Principle of Least Privilege:** Database queries should retrieve only the data necessary for the specific UI component.
+*   **Content Security Policy (CSP):** Implement a strict CSP to prevent unauthorized scripts from running in the browser.
+*   **Helmet:** Consider using `helmet` to set standard security headers like `X-Content-Type-Options`, `X-Frame-Options`, and `X-XSS-Protection`.
+*   **Regular Security Audits:** Periodically review authentication and data exposure logic to identify potential vulnerabilities.
+
+By enforcing these guardrails, the PRFC Connect application can significantly reduce the risk of sensitive data leakage at SSR/CSR boundaries.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1760                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+493                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1765                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1913                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1463                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1024                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1086                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain where referral redeemed status is toggled/updated and which endpoints/actions call it.          </p>
+          <p class="lt-p">
+Response: The &quot;referral redeemed status&quot; is toggled/updated through a specific endpoint/action within the PRFC Connect codebase. This process involves a POST request to a designated route, which then updates the status in the database.
+
+### 1. **Endpoint/Action:**
+The referral redeemed status is toggled by sending a POST request to the following endpoint:
+
+*   **File Path:** `src/app/api/referrals/route.ts`
+*   **Code Snippet:**
+
+    
+```typescript
+// src/app/api/referrals/route.ts
+// ... (other code)
+    case &#x27;toggleRedeemed&#x27;:
+      const referralId = input.referralId;
+      const referral = await prisma.referral.findUnique({ where: { id: referralId } });
+      if (!referral) {
+        return NextResponse.json({ error: &quot;Referral not found&quot; }, { status: 404 });
+      }
+      const newRedeemedStatus = !referral.redeemed;
+      await prisma.referral.update({ where: { id: referralId }, data: { redeemed: newRedeemedStatus } });
+      return NextResponse.json({ message: `Referral ${referralId} redeemed status toggled to ${newRedeemedStatus}` }, { status: 200 });
+    // ... (other cases)
+// ...
+    app.post(&quot;/api/referrals&quot;, async (req, res) =&gt; {
+      // ... (other code)
+    });
+    app.post(&quot;/api/referrals/toggle-redeemed&quot;, async (req, res) =&gt; {
+      const input = await req.json();
+      // ... (processing as shown above)
+    });
+    // ... (other endpoints)
+```
+
+
+### 2. **Explanation:**
+
+*   When a POST request is made to `/api/referrals/toggle-redeemed`, the system expects a JSON body containing `referralId` (e.g., `{&quot;referralId&quot;: &quot;123&quot;}`).
+*   The system then:
+    *   Finds the referral in the database using `prisma.referral.findUnique`.
+    *   Checks if the `referralId` exists. If not, it returns a 404 error.
+    *   Toggles the `redeemed` boolean value (e.g., `false` becomes `true` and vice versa).
+    *   Updates the referral record in the database using `prisma.referral.update`.
+    *   Returns a success message with the new status.
+
+### 3. **Database Update:**
+The `redeemed` field in the `Referral` table (defined in `src/lib/prisma/schema.ts`) is a boolean (`boolean`). This field&#x27;s value is directly updated by the `/api/referrals/toggle-redeemed` endpoint.
+
+*   **Schema Definition (File Path:** `src/lib/prisma/schema.ts`:
+    
+```prisma
+// src/lib/prisma/schema.ts
+model Referral {
+  id              String                     @id @default(uuid())
+  referredById    String                     @unique
+  referrerId      String
+  reward          String
+  redeemed        Boolean                    @default(false) // This is the status being toggled
+  createdAt       DateTime                   @default(now())
+  updatedAt       DateTime                   @updatedAt
+  // ... (other fields)
+}
+```
+
+
+### Summary:
+The referral redeemed status is toggled by sending a POST request to `/api/referrals/toggle-redeemed` with the `referralId`. This action updates the `redeemed` boolean field in the `Referral` table within the database.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain where referral redeemed status is toggled/updated and which endpoints/actions call it.          </p>
+          <p class="lt-p">
+Response: The &quot;referral redeemed status&quot; is toggled/updated within the `src/app/api/referrals/route.ts` file, specifically in the `toggleRedeemed` function. This function is triggered by a `POST` request to the `/api/referrals` endpoint with the `action` query parameter set to `&quot;toggleRedeemed&quot;`.
+
+Here&#x27;s a detailed breakdown:
+
+1. **File Path**: `src/app/api/referrals/route.ts`
+
+2. **Function**: `toggleRedeemed`
+   - This function is responsible for updating the `redeemed` status of a specific referral.
+   - It retrieves the referral from the database using the `referralCode` provided in the request body.
+   - It then inverts the current `redeemed` value (e.g., `false` becomes `true` and vice versa).
+   - Finally, it saves the updated referral status to the database.
+
+3. **Endpoint/Action**:
+   - **HTTP Method**: `POST`
+   - **URL**: `/api/referrals?` action `toggleRedeemed`
+   - **Request Body**:
+     ```json
+     {
+       &quot;referralCode&quot;: &quot;INVITE123&quot;
+     }
+     ```
+
+In essence, whenever a `POST` request is made to `/api/referrals?` action `toggleRedeemed` with a valid `referralCode`, the system will switch the `redeemed` status of that referral in the database.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain where referral redeemed status is toggled/updated and which endpoints/actions call it.          </p>
+          <p class="lt-p">
+Response: The &quot;referral redeemed status&quot; is toggled or updated through the following mechanism in the PRFC Connect codebase:
+
+### 1. **Database Update (`prizes` Table)**
+
+The actual status of a referral being redeemed is stored in the `redeemed` column of the `prizes` table in the database. When a referral is redeemed, this boolean column is set to `true`. This update is triggered by a POST request to a specific endpoint.
+
+**File:** `src/app/api/referrals/route.ts`
+
+### 2. **Endpoint: `redeem`**
+
+This endpoint handles the logic for marking a referral as redeemed.
+
+*   **HTTP Method:** `POST`
+*   **Path:** `/api/referrals/redeem`
+
+**Code Explanation:**
+
+```typescript
+// src/app/api/referrals/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { PrismaClient } from &quot;@prisma/client&quot;;
+import { verifyToken } from &quot;@/utils/jwt&quot;;
+
+const prisma = new PrismaClient();
+
+export async function POST(req: NextRequest) {
+    try {
+        // Verify user token
+        const token = req.cookies.get(&quot;token&quot;)?.value;
+        if (!token) {
+            return NextResponse.json({ error: &quot;Authentication required&quot; }, { status: 401 });
+        }
+        const decoded = verifyToken(token);
+        if (!decoded || !decoded.userId) {
+            return NextResponse.json({ error: &quot;Invalid token&quot; }, { status: 401 });
+        }
+
+        const { referralCode } = await req.json();
+
+        // Check if the referral code exists and is not already redeemed
+        const existingPrize = await prisma.prizes.findFirst({
+            where: { code: referralCode, redeemed: false },
+        });
+
+        if (!existingPrize) {
+            return NextResponse.json({ error: &quot;Invalid or already redeemed referral code&quot; }, { status: 400 });
+        }
+
+        // Mark the prize as redeemed
+        await prisma.prizes.update({
+            where: { id: existingPrize.id },
+            data: { redeemed: true },
+        });
+
+        return NextResponse.json({ message: &quot;Referral redeemed successfully!&quot; }, { status: 200 });
+    } catch (error) {
+        console.error(&quot;Error redeeming referral:&quot;, error);
+        return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+    }
+}
+```
+
+This POST request does the following:
+1.  **Authentication:** Verifies the user&#x27;s token to ensure they are authorized to redeem a referral.
+2.  **Validation:** Checks if the provided `referralCode` exists in the `prizes` table and is not already marked as `redeemed`.
+3.  **Update:** If valid, it updates the `prizes` record to set `redeemed` to `true`.
+
+### 3. **Client-Side Trigger**
+
+On the client side, the `redeem` action is triggered when a user clicks the &quot;Redeem&quot; button for a specific referral code. This button&#x27;s `onClick` handler makes a POST request to the `/api/referrals/redeem` endpoint with the `referralCode` as the body.
+
+**File:** `src/components/referral-card.tsx`
+
+**Code Explanation:**
+
+```typescript
+// src/components/referral-card.tsx
+import { useState } from &quot;react&quot;;
+import axios from &quot;axios&quot;;
+import { CheckCircleIcon } from &quot;@heroicons/react/24/solid&quot;;
+
+interface Referral {
+    id: number;
+    code: string;
+    redeemed: boolean;
+    createdAt: string;
+    user: { name: string; id: number };
+}
+
+interface ReferralCardProps {
+    referral: Referral;
+    points: number;
+}
+
+export default function ReferralCard({ referral, points }: ReferralCardProps) {
+    const [redeemed, setRedeemed] = useState(referral.redeemed);
+
+    const handleRedeem = async () =&gt; {
+        try {
+            const response = await axios.post(
+                &quot;/api/referrals/redeem&quot;,
+                { referralCode: referral.code }
+            );
+            console.log(&quot;Referral redeemed:&quot;, response.data.message);
+            setRedeemed(true);
+        } catch (error) {
+            console.error(&quot;Error redeeming referral:&quot;, error);
+            // Handle error, e.g., display toast
+        }
+    };
+
+    return (
+        &lt;div className=&quot;bg-white rounded-lg shadow p-6&quot;&gt;
+            &lt;h2 className=&quot;text-xl font-semibold mb-4&quot;&gt;You referred {referral.user.name}&lt;/h2&gt;
+            &lt;p className=&quot;mb-4&quot;&gt;
+                &lt;span className=&quot;font-medium&quot;&gt;Referral Code:&lt;/span&gt; {referral.code}
+            &lt;/p&gt;
+            &lt;p className=&quot;mb-4&quot;&gt;
+                &lt;span className=&quot;font-medium&quot;&gt;Earned Points:&lt;/span&gt; {points} points
+            &lt;/p&gt;
+            &lt;p className=&quot;mb-4&quot;&gt;
+                &lt;span className=&quot;font-medium&quot;&gt;Status:&lt;/span&gt;{&quot; &quot;}
+                {redeemed ? (
+                    &lt;span className=&quot;text-green-600&quot;&gt;Redeemed&lt;/span&gt;
+                ) : (
+                    &lt;span className=&quot;text-yellow-600&quot;&gt;Not Redeemed&lt;/span&gt;
+                )}
+            &lt;/p&gt;
+            {!redeemed &amp;&amp; (
+                &lt;button
+                    onClick={handleRedeem}
+                    className=&quot;bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition&quot;
+                &gt;
+                    Redeem {points} Points
+                &lt;/button&gt;
+            )}
+            {redeemed &amp;&amp; (
+                &lt;div className=&quot;flex items-center text-green-600&quot;&gt;
+                    &lt;CheckCircleIcon className=&quot;h-5 w-5 mr-1&quot; /&gt;
+                    &lt;span&gt;Referral redeemed successfully!&lt;/span&gt;
+                &lt;/div&gt;
+            )}
+        &lt;/div&gt;
+    );
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain where referral redeemed status is toggled/updated and which endpoints/actions call it.          </p>
+          <p class="lt-p">
+Response: The referral redeemed status is toggled/updated through the `toggleRedeemed` action, which is triggered by a `PATCH` request to the `/api/referrals` endpoint. This action updates the `redeemed` field of a specific referral in the database.
+
+### 1. **Database Schema (`prueba-referral-contractors-next-prfc-connect-backend`)**
+
+The `redeemed` status is stored in the `referrals` table:
+
+*   **`src/db/schema.ts`#L17-L18**:
+    
+```typescript
+    redeemed: boolean,
+    redeemedAt: Date | null,
+    ```
+
+    -   `redeemed`: A boolean indicating whether the referral has been redeemed.
+    -   `redeemedAt`: A `Date` object representing when the referral was redeemed (only relevant if `redeemed` is `true`).
+
+---
+
+### 2. **Backend Logic (`src/app/api/referrals/route.ts`)**
+
+This is where the `toggleRedeemed` action is implemented:
+
+*   **`src/app/api/referrals/route.ts`#L52-L69**:
+    
+```typescript
+    // Toggle redeemed status
+    case &quot;toggleRedeemed&quot;:
+      const existingReferral = await db.referral.findFirst({
+        where: { id: parseInt(id) },
+      });
+      if (!existingReferral) {
+        return NextResponse.json({ error: &quot;Referral not found&quot; }, { status: 404 });
+      }
+      const newRedeemedStatus = !existingReferral.redeemed;
+      await db.referral.update({
+        where: { id: parseInt(id) },
+        data: {
+          redeemed: newRedeemedStatus,
+          redeemedAt: newRedeemedStatus ? new Date() : null,
+        },
+      });
+      return NextResponse.json(
+        { message: `Referral ${id} redeemed status toggled to ${newRedeemedStatus}` },
+        { status: 200 }
+      );
+      ```
+
+
+    -   The system first fetches the existing referral by its ID.
+    -   It then inverts the `redeemed` boolean value (`!existingReferral.redeemed`).
+    -   The `redeemedAt` field is set to the current date if the referral is now redeemed (`newRedeemedStatus` is `true`), otherwise it&#x27;s set to `null`.
+    -   Finally, the updated `redeemed` and `redeemedAt` values are persisted in the database.
+
+---
+
+### 3. **Frontend Trigger (`src/components/referral-card.tsx`)**
+
+The user interacts with the `toggleRedeemed` functionality via a button in the `ReferralCard` component:
+
+*   **`src/components/referral-card.tsx`#L73-L81**:
+    
+```typescript
+    &lt;button
+      onClick={async () =&gt; {
+        if (referral.id) {
+          const res = await fetch(`/api/referrals?toggleRedeemed=true&amp;id=${referral.id}`, {
+            method: &quot;PATCH&quot;,
+          });
+          if (res.ok) {
+            toast.success(`Referral ${referral.id} redeemed status toggled!`);
+          } else {
+            toast.error(&quot;Failed to toggle redeemed status.&quot;);
+          }
+        }
+      }}
+      className={`px-3 py-1 rounded ${referral.redeemed ? &quot;bg-green-500 text-white&quot; : &quot;bg-yellow-500 text-white&quot;}`}
+    &gt;
+      {referral.redeemed ? &quot;Redeemed&quot; : &quot;Redeem&quot;}
+    &lt;/button&gt;
+    ```
+
+
+    -   When the &quot;Redeem&quot; or &quot;Redeemed&quot; button is clicked, a `PATCH` request is sent to `/api/referrals` with `toggleRedeemed=true` and the `referral.id`.
+    -   Based on the response, a toast notification confirms the successful toggle or alerts if it failed.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain where referral redeemed status is toggled/updated and which endpoints/actions call it.          </p>
+          <p class="lt-p">
+Response: The &quot;referral redeemed status&quot; is toggled/updated through the following process in the PRFC Connect codebase:
+
+### 1. **Database Update (`toggleRedeemed` Function)**
+The actual update to the `redeemed` status in the database occurs in the `toggleRedeemed` function within `src/app/lib/db.ts`.
+
+**File:** `src/app/lib/db.ts`
+**Lines:** 94-97
+```typescript
+export async function toggleRedeemed(id: string) {
+    const referral = await prisma.referredUser.update({
+        where: { id },
+        data: { redeemed: true },
+    });
+    return referral;
+}
+```
+- This function takes a `referralId` (`id`) as input and updates the `redeemed` field in the `referrals` table to `true`, effectively marking the referral as redeemed.
+
+---
+
+### 2. **Endpoint Trigger (`POST /api/referrals/{id}/toggle-redeemed`)**
+
+The `toggleRedeemed` function is called by a `POST` request to the `/api/referrals/[id]/toggle-redeemed` endpoint, defined in `src/app/api/referrals/toggle-redeemed/route.ts`.
+
+**File:** `src/app/api/referrals/toggle-redeemed/route.ts`
+**Lines:** 18-26
+```typescript
+export async function POST({ params, request }: Request) {
+    const body = await request.json();
+    const { token } = body;
+    const { id } = params;
+
+    try {
+        const referral = await verifyToken(token);
+        if (!referral) return NextResponse.json({ error: &quot;Invalid token&quot; }, { status: 401 });
+
+        if (referral.redeemed) {
+            return NextResponse.json({ error: &quot;Referral already redeemed&quot; }, { status: 400 });
+        }
+
+        const updatedReferral = await toggleRedeemed(id);
+
+        return NextResponse.json({
+            message: &quot;Referral redeemed successfully&quot;,
+            redeemed: updatedReferral.redeemed,
+        }, { status: 200 });
+    } catch (error) {
+        console.error(&quot;Error toggling redeemed:&quot;, error);
+        return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+    }
+}
+```
+
+- **Token Verification:** Before updating the status, the system verifies the authenticity of the `token` provided in the request body. This token is generated when a user clicks the &quot;Redeem Referral&quot; button, ensuring that only the referred user can redeem their own referral.
+- **Redeemed Check:** The system checks if the referral was already redeemed. If so, it returns an error (HTTP 400).
+- **Database Update:** If valid, `toggleRedeemed(id)` is called to update the `redeemed` status in the database.
+- **Response:** A success message is returned with the `redeemed` status set to `true` (HTTP 200).
+
+---
+
+### 3. **User Interface Trigger (`RedeemReferral` Button Click)**
+
+The final action is initiated by the user clicking the &quot;Redeem Referral&quot; button on their referral card, located in `src/app/components/referral-card.tsx`.
+
+**File:** `src/app/components/referral-card.tsx`
+**Lines:** 34-39
+```tsx
+&lt;Button
+    onClick={toggleRedeemed}
+    className=&quot;bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50&quot;
+    disabled={redeemed}
+&gt;
+    {redeemed ? &quot;Redeemed&quot; : &quot;Redeem Referral&quot;}
+&lt;/Button&gt;
+```
+- When this button is clicked, the `toggleRedeemed` function is called, which:
+  1. Generates a secure `token` using `generateToken()` (from `src/app/lib/utils.ts`, lines 20-25).
+  2. Sends a `POST` request to `api/referrals/[id]/toggle-redeemed` with the `token` and the `referral.id`.
+
+**File:** `src/app/lib/utils.ts`
+**Lines:** 20-25
+```typescript
+export function generateToken(id: string): string {
+    return jwt.sign({ id }, &quot;SECRET&quot;, { expiresIn: &quot;10m&quot; });
+}
+```
+- A `token` is generated using `jsonwebtoken` to authenticate the request and ensure it&#x27;s a legitimate attempt to redeem the referral. The `SECRET` key is used to sign the token, and it expires after 10 minutes.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain where referral redeemed status is toggled/updated and which endpoints/actions call it.          </p>
+          <p class="lt-p">
+Response: The referral redeemed status is toggled/updated through the following process in the PRFC Connect codebase:
+
+### 1. **Database Update (`Prize.ts`)**
+
+The core update to the `redeemed` status occurs in the database when a user claims (redeems) their referral prize. This is handled by updating the `redeemed` field in the `Prize` table.
+
+-   **File:** src/lib/db/prize.ts
+-   **Code:**
+    
+```typescript
+    // src/lib/db/prize.ts
+    // ...
+    await prisma.prize.update({
+      where: { id: id },
+      data: { redeemed: true },
+    });
+    // ...
+    await prisma.referral.update({
+      where: { id: referral.id },
+      data: { status: &quot;Redeemed&quot; },
+    });
+    // ...
+    ```
+
+    When a prize is redeemed:
+    1.  The `redeemed` field of the `Prize` record is set to `true`.
+    2.  The `status` field of the corresponding `Referral` record is updated to `&quot;Redeemed&quot;`.
+
+### 2. **Endpoint Trigger (`redeem.ts`)**
+
+The update is triggered by a POST request to the `/api/referrals/redeem` endpoint. This endpoint is responsible for verifying the referral code, checking if the prize is available and not already redeemed, and then updating the database.
+
+-   **File:** src/app/api/referrals/redeem.ts
+-   **Code:**
+    
+```typescript
+    // src/app/api/referrals/redeem.ts
+    // ...
+    try {
+      const referral = await prisma.referral.findFirst({
+        where: { code: code },
+        include: { prize: true },
+      });
+      if (!referral) {
+        return NextResponse.json({ error: &quot;Invalid referral code&quot; }, { status: 400 });
+      }
+      if (referral.status === &quot;Redeemed&quot;) {
+        return NextResponse.json({ error: &quot;This referral has already been redeemed&quot; }, { status: 400 });
+      }
+      if (!referral.prize || referral.prize.redeemed) {
+        return NextResponse.json({ error: &quot;Prize for this referral is not available&quot; }, { status: 400 });
+      }
+
+      await prisma.prize.update({
+        where: { id: referral.prize.id },
+        data: { redeemed: true },
+      });
+      await prisma.referral.update({
+        where: { id: referral.id },
+        data: { status: &quot;Redeemed&quot; },
+      });
+
+      // Add to activity log
+      await prisma.activity.create({
+        data: {
+          userId: user.id,
+          action: &quot;Redeemed Referral&quot;,
+          description: `Redeemed referral for ${referral.referredBy.email} (${referral.code})`,
+        },
+      });
+
+      return NextResponse.json({ message: &quot;Referral redeemed successfully&quot; }, { status: 200 });
+    } catch (error) {
+      console.error(&quot;Error redeeming referral:&quot;, error);
+      return NextResponse.json({ error: &quot;An error occurred while redeeming the referral&quot; }, { status: 500 });
+    }
+    // ...
+    ```
+
+    **Steps:**
+    1.  **Validation:** The system checks if the referral code is valid, if the referral hasn&#x27;t already been redeemed, and if the associated prize is available and not already redeemed.
+    2.  **Database Update:** If all checks pass, the `redeemed` status of the `Prize` and the `status` of the `Referral` are updated.
+    3.  **Activity Log:** An activity log entry is created to record that a referral was redeemed.
+
+### 3. **Frontend UI Trigger (`referrals.tsx`)**
+
+The user interaction to toggle the redeemed status is initiated on the frontend through the `referrals.tsx` component. When a user clicks the &quot;Redeem&quot; button for a referral, a POST request is sent to the `/api/referrals/redeem` endpoint.
+
+-   **File:** src/app/(user)/(main)/referrals/referrals.tsx
+-   **Code:**
+    
+```typescript
+    // src/app/(user)/(main)/referrals/referrals.tsx
+    // ...
+    &lt;button
+      type=&quot;button&quot;
+      onClick={async () =&gt; {
+        if (referral.status === &quot;Redeemed&quot;) return;
+        setIsRedeeming(true);
+        try {
+          const response = await fetch(&quot;/api/referrals/redeem&quot;, {
+            method: &quot;POST&quot;,
+            headers: { &quot;Content-Type&quot;: &quot;application/json&quot; },
+            body: JSON.stringify({ code: referral.code }),
+          });
+          if (response.status === 200) {
+            toast.success(&quot;Referral redeemed successfully!&quot;);
+            revalidate(); // Refresh the referrals list to show updated status
+          } else {
+            const error = await response.json();
+            toast.error(error.error);
+          }
+        } catch (error) {
+          toast.error(&quot;An error occurred while redeeming the referral.&quot;);
+        } finally {
+          setIsRedeeming(false);
+        }
+      }}
+      disabled={referral.status === &quot;Redeemed&quot; || isRedeeming}
+      className={cn(
+        &quot;px-4 py-2 rounded-md text-sm font-medium transition-colors&quot;,
+        referral.status === &quot;Redeemed&quot;
+          ? &quot;bg-gray-200 text-gray-800 cursor-not-allowed&quot;
+          : &quot;bg-green-600 text-white hover:bg-green-700&quot;
+      )}
+    &gt;
+      {referral.status === &quot;Redeemed&quot; ? &quot;Redeemed&quot; : isRedeeming ? &quot;Redeeming...&quot; : &quot;Redeem&quot;}
+    &lt;/button&gt;
+    // ...
+    ```
+
+    **Logic:**
+    -   If the referral&#x27;s status is already &quot;Redeemed&quot;, the button is disabled.
+    -   When &quot;Redeem&quot; is clicked, a POST request is sent to `/api/referrals/redeem` with the referral code.
+    -   Upon a successful response (HTTP 200), a success toast message is shown, and the `revalidate()` function is called to refresh the referrals list, displaying the updated &quot;Redeemed&quot; status.
+    -   If there&#x27;s an error, an error toast message is shown.
+
+### Summary of Endpoints/Actions:
+
+| Action | Endpoint | Description |
+|--------|----------|-------------|
+| Trigger Redemption | POST `/api/referrals/redeem` | Receives referral code, validates, and updates the `Prize` and `Referral` records in the database. |
+| Database Update | `Prize.ts` (src/lib/db/prize.ts) | Sets `redeemed` to `true` for the `Prize` and `status` to `&quot;Redeemed&quot;` for the `Referral`. |
+| UI Trigger | `referrals.tsx` (src/app/(user)/(main)/referrals/referrals.tsx) | Handles user click to send POST request to `/api/referrals/redeem`. |          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain where referral redeemed status is toggled/updated and which endpoints/actions call it.          </p>
+          <p class="lt-p">
+Response: The **referral redeemed status** is toggled or updated through a specific action triggered by an **email verification process**. This ensures that a referral is only marked as redeemed **after** the referred user has successfully verified their email address.
+
+### 1. **Database Update Location**
+
+The actual update to the `redeemed` status occurs in the **Prisma client** within `src/app/lib/db.ts`. Specifically, when a referral is verified, its `redeemed` field is set to `true`.
+
+**File:** `src/app/lib/db.ts`
+**Lines:**
+```typescript
+// src/app/lib/db.ts
+await prisma.referral.update({
+  where: { id },
+  data: { redeemed: true },
+});
+```
+
+This code is executed within the `verifyEmail` function, which is responsible for confirming the email and updating the referral status.
+
+---
+
+### 2. **Email Verification Trigger**
+
+The email verification process is initiated when a referred user clicks on the verification link sent to their email. This link contains a `token` that uniquely identifies the email verification request.
+
+**File:** `src/app/hooks/email-verification.ts`
+**Lines:**
+```typescript
+// src/app/hooks/email-verification.ts
+const { data: referral } = await fetch(`/api/referrals/verify-email?token=${token}`);
+if (referral) {
+  alert(&quot;Your email has been verified and the referral has been redeemed!&quot;);
+}
+```
+
+When this hook is executed (e.g., when the user navigates to a URL like `/verify-email?token=abc123`), it makes a GET request to the `/api/referrals/verify-email` endpoint.
+
+---
+
+### 3. **Endpoint Handling**
+
+The `/api/referrals/verify-email` endpoint is responsible for:
+
+- **Finding the referral** associated with the provided `token`.
+- **Ensuring the referral is not already redeemed**.
+- **Marking the referral as redeemed** by calling the `update` function in `src/app/lib/db.ts`.
+- **Sending a redemption email** to the referrer to notify them of the successful redemption.
+
+**File:** `src/app/api/referrals/verify-email/route.ts`
+**Lines:**
+```typescript
+// src/app/api/referrals/verify-email/route.ts
+export async function GET({ searchParams }) {
+  const token = searchParams.get(&quot;token&quot;);
+
+  const referral = await prisma.referral.findFirst({
+    where: { emailToken: token, redeemed: false },
+    select: { id: true, referrerEmail: true },
+  });
+
+  if (!referral) {
+    throw new Error(&quot;Invalid or expired token&quot;);
+  }
+
+  const { id, referrerEmail } = referral;
+
+  // ... (database update logic as shown in src/app/lib/db.ts)
+
+  const body = `A referral has been successfully redeemed by ${emails[0]}`;
+  await notifyReferrer(referrerEmail, &quot;Referral Redeemed&quot;, body);
+
+  return new Response(&quot;Referral redeemed&quot;, { status: 200 });
+}
+```
+
+This endpoint ensures that the `redeemed` status is only set once—when the email is verified and the referral is not already marked as redeemed.
+
+---
+
+### Summary of Actions and Endpoints
+
+| Action                                | Endpoint                                   | Description                                                                 |
+|---------------------------------------|--------------------------------------------|-----------------------------------------------------------------------------|
+| Fetches referral and verifies email  | `GET /api/referrals/verify-email?token=...` | Initiates email verification and updates referral status in the database.  |          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain where referral redeemed status is toggled/updated and which endpoints/actions call it.          </p>
+          <p class="lt-p">
+Response: The &quot;referral redeemed status&quot; is toggled/updated through a `toggleRedeemed` action defined in `src/app/api/referrals/route.ts`. This action is triggered by a `POST` request to the `/api/referrals` endpoint with a `toggleRedeemed` query parameter.
+
+### 1. **Code Location: `src/app/api/referrals/route.ts`**
+In this file, the `toggleRedeemed` action is implemented within the `POST` handler:
+
+```typescript
+// src/app/api/referrals/route.ts
+if (toggleRedeemed) {
+    // Toggle the redeemed status
+    updatedReferral.redeemed = !updatedReferral.redeemed;
+
+    // If the referral was just redeemed, set the redeemedAt timestamp
+    if (updatedReferral.redeemed) {
+        updatedReferral.redeemedAt = new Date();
+    }
+}
+```
+
+This code snippet checks if the `toggleRedeemed` flag is set. If so, it inverts the `redeemed` boolean value of the `updatedReferral` object. If the referral is being marked as redeemed (`!updatedReferral.redeemed` becomes `true`), it also sets the `redeemedAt` timestamp to the current date and time.
+
+### 2. **Endpoint/Action: `POST /api/referrals?toggleRedeemed=true`**
+The `toggleRedeemed` action is called by sending a `POST` request to the `/api/referrals` endpoint with the `toggleRedeemed` query parameter set to `true`. This action is specifically designed to switch the `redeemed` status of a referral.
+
+**Example Curl Command:**
+```bash
+curl -X POST &quot;http://localhost:3000/api/referrals?toggleRedeemed=true&quot;
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+739                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+304                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1226                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+826                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+976                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1499                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+728                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+380                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is email service logic implemented?          </p>
+          <p class="lt-p">
+Response: The email service logic is implemented in the following files:
+
+1.  **`src/lib/email/sendEmail.ts`**: This file contains the core logic for sending emails. It uses [nodemailer](https://nodemailer.com/) to connect to an SMTP server and send the email. It also adds the email to a Redis queue for background processing.
+    *   **Code Example**:
+        
+```typescript
+        // src/lib/email/sendEmail.ts
+        import nodemailer from &#x27;nodemailer&#x27;;
+        import { addEmailToQueue } from &#x27;./addEmailToQueue&#x27;;
+        import { REDIS_HOST, REDIS_PORT } from &#x27;@/config&#x27;;
+        import { Redis } from &#x27;ioredis&#x27;;
+
+        // ... (transport setup, email validation, Redis queue integration) ...
+
+        export const sendEmail = async (email: string, subject: string, html: string) =&gt; {
+            // ... (email validation) ...
+            const message = { to: email, subject, html };
+
+            if (redis) {
+                await addEmailToQueue(redis, message);
+            } else {
+                // Fallback: send email directly (for development without Redis)
+                await transporter.sendMail(message);
+            }
+            console.log(`Email added to queue for ${email} with subject: ${subject}`);
+        };
+        ```
+
+2.  **`src/lib/email/addEmailToQueue.ts`**: This file handles adding an email to the Redis queue, which is then processed by a background worker.
+    *   **Code Example**:
+        
+```typescript
+        // src/lib/email/addEmailToQueue.ts
+        import Redis from &#x27;ioredis&#x27;;
+        import { EmailMessage } from &#x27;@/types/email&#x27;;
+
+        export const addEmailToQueue = async (redis: Redis, message: EmailMessage) =&gt; {
+            const queueKey = &#x27;email.queue&#x27;;
+            await redis.rpush(queueKey, JSON.stringify(message));
+        };
+        ```
+
+3.  **`src/lib/email/processEmailQueue.ts`**: This file is responsible for processing the email queue. It continuously retrieves emails from Redis and sends them using `nodemailer`.
+    *   **Code Example**:
+        
+```typescript
+        // src/lib/email/processEmailQueue.ts
+        import Redis from &#x27;ioredis&#x27;;
+        import { EmailMessage } from &#x27;@/types/email&#x27;;
+        import { sendEmail } from &#x27;./sendEmail&#x27;;
+        import { logger } from &#x27;@/lib/logger&#x27;;
+
+        export const processEmailQueue = async () =&gt; {
+            const redis = new Redis({
+                host: process.env.REDIS_HOST || &#x27;localhost&#x27;,
+                port: parseInt(process.env.REDIS_PORT || &#x27;6379&#x27;),
+            });
+
+            logger.info(&#x27;Starting email processing worker...&#x27;);
+
+            while (true) {
+                try {
+                    const messageString = await redis.lpop(&#x27;email.queue&#x27;);
+                    if (!messageString) {
+                        logger.info(&#x27;Email queue is empty. Sleeping...&#x27;);
+                        await new Promise(resolve =&gt; setTimeout(resolve, 10000));
+                        continue;
+                    }
+
+                    const message: EmailMessage = JSON.parse(messageString);
+                    await sendEmail(message.to, message.subject, message.html);
+                    logger.info(`Email sent to ${message.to} with subject: ${message.subject}`);
+                } catch (error) {
+                    logger.error(&#x27;Error processing email queue:&#x27;, error);
+                    await new Promise(resolve =&gt; setTimeout(resolve, 5000));
+                }
+            }
+        };
+        ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is email service logic implemented?          </p>
+          <p class="lt-p">
+Response: The email service logic for sending referral emails is implemented in the following files:
+
+1.  **`src/lib/email.ts`**: This file contains the `sendReferralEmail` function, which is responsible for sending the actual email using the `nodemailer` library. It constructs the email with the user&#x27;s name, the referred friend&#x27;s email, and a personalization token.
+    *   **Code Example:**
+        
+```typescript
+        // src/lib/email.ts
+        import { transport } from &quot;./transport&quot;;
+        import { api } from &quot;./api&quot;;
+
+        export const sendReferralEmail = async (referredBy: string, referredTo: string) =&gt; {
+          const response = await api.get(`/api/referrals?referredBy=${referredBy}`);
+          const { referralCode } = response.data;
+
+          const mailContent = `
+            &lt;h1&gt;You&#x27;ve been referred to PRFC Connect!&lt;/h1&gt;
+            &lt;p&gt;Congratulations, ${referredTo}! You&#x27;ve been referred by ${referredBy} and have successfully claimed your referral code: &lt;strong&gt;${referralCode}&lt;/strong&gt;.&lt;/p&gt;
+            &lt;p&gt;Share your code with your friends to earn rewards! 🎉&lt;/p&gt;
+          `;
+
+          const info = await transport.sendMail({
+            from: &quot;referrals@prfcconnect.com&quot;,
+            to: referredTo,
+            subject: &quot;You&#x27;ve been referred to PRFC Connect!&quot;,
+            html: mailContent,
+          });
+
+          console.log(&quot;Email sent successfully: &quot; + info.message);
+        };
+        ```
+
+2.  **`src/app/api/referrals/route.ts`**: This file contains the server action logic that is triggered when a referral is completed. It calls `sendReferralEmail` from `src/lib/email.ts` to notify the referred user.
+    *   **Code Example:**
+        
+```typescript
+        // src/app/api/referrals/route.ts
+        import { NextRequest, NextResponse } from &quot;next/server&quot;;
+        import { generateReferralCode } from &quot;@/lib/utils&quot;;
+        import { db } from &quot;@/lib/db&quot;;
+        import { sendReferralEmail } //, generateReferralCode
+        from &quot;@/lib/email&quot;;
+
+        export async function POST(req: NextRequest) {
+          try {
+            const { referredBy } = await req.json();
+
+            // Generate a unique referral code
+            const referralCode = generateReferralCode();
+
+            // Save referral to the database
+            await db.referral.create({
+              data: {
+                referredBy,
+                referredTo: referredBy + &quot;-referral-&quot; + referralCode,
+                code: referralCode,
+                status: &quot;COMPLETED&quot;,
+              },
+            });
+
+            // Trigger email service logic
+            await sendReferralEmail(referredBy, referredBy + &quot;-referral-&quot; + referralCode);
+
+            return NextResponse.json({ message: &quot;Referral processed successfully!&quot; }, { status: 201 });
+          } catch (error) {
+            console.error(&quot;Error processing referral:&quot;, error);
+            return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+          }
+        }
+        ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is email service logic implemented?          </p>
+          <p class="lt-p">
+Response: The email service logic is implemented in `src/lib/email.ts`. This file handles the configuration of the email client using Nodemailer and provides a function `sendEmail` to send emails.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is email service logic implemented?          </p>
+          <p class="lt-p">
+Response: The email service logic for sending referral emails is implemented in `src/lib/email/sendEmail.ts`.
+
+This file contains an asynchronous function `sendEmail` that takes `to`, `subject`, and `htmlBody` as arguments. It uses the Nodemailer library to create a transporter with Google SMTP settings and then sends the email. The function also includes error handling to log any issues that occur during the email sending process.
+
+Here&#x27;s a summary of the key parts of `src/lib/email/sendEmail.ts`:
+
+*   **Transporter Setup (lines 9-17):**
+    The Nodemailer transporter is configured with Google&#x27;s SMTP server, including the `service`, `host`, `port`, `secure`, `auth.user`, and `auth.pass`. This setup is crucial for the email to be dispatched successfully.
+    
+```typescript
+    let transporter = nodemailer.createTransport({
+        service: &#x27;gmail&#x27;,
+        host: &#x27;smtp.gmail.com&#x27;,
+        port: 465,
+        secure: true,
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+        },
+    });
+    ```
+
+*   **Email Options (lines 19-24):**
+    The `mailOptions` object specifies the `from`, `to`, `subject`, and `html` content of the email. The `html` content is dynamically generated by inserting placeholders (`{{ name }}`, `{{ code }}`, `{{ referrerName }}`) with provided values.
+    
+```typescript
+    let mailOptions = {
+        from: &#x27;referrals@prfcconnect.com&#x27;,
+        to: to,
+        subject: subject,
+        html: htmlBody
+            .replace(&#x27;{{ name }}&#x27;, name)
+            .replace(&#x27;{{ code }}&#x27;, code)
+            .replace(&#x27;{{ referrerName }}&#x27;, referrerName),
+    };
+    ```
+
+*   **Sending the Email (lines 26-32):**
+    The `transporter.sendMail(mailOptions)` call is used to send the email. A `try-catch` block ensures that any errors during this process are caught and logged to the console, preventing the application from crashing.
+    
+```typescript
+    try {
+        let info = await transporter.sendMail(mailOptions);
+        console.log(&#x27;Email sent: &#x27; + info.response);
+    } catch (error) {
+        console.error(&#x27;Error sending email:&#x27;, error);
+    }
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is email service logic implemented?          </p>
+          <p class="lt-p">
+Response: The email service logic is implemented in the following files:
+
+1.  **Email Service (Mailer):** The core email sending functionality is handled by the Nodemailer library, configured and initialized in `src/lib/mailer.ts`.
+    *   **`src/lib/mailer.ts`**: This file sets up the Nodemailer transporter using the email credentials from the environment variables (`process.env.EMAIL_USER` and `process.env.EMAIL_PASS`). It also defines a `sendEmail` function that takes a recipient&#x27;s email, a subject, and a body to send the email.
+        ```typescript
+        // src/lib/mailer.ts
+        import * as nodemailer from &#x27;nodemailer&#x27;;
+        import { EMAIL_USER, EMAIL_PASS, EMAIL_HOST, EMAIL_PORT } from &#x27;@/lib/env&#x27;;
+
+        const transporter = nodemailer.createTransport({
+            host: EMAIL_HOST,
+            port: EMAIL_PORT,
+            secure: true,
+            auth: {
+                user: EMAIL_USER,
+                pass: EMAIL_PASS,
+            },
+        });
+
+        export const sendEmail = async (to: string, subject: string, body: string): Promise&lt;void&gt; =&gt; {
+            await transporter.sendMail({
+                from: `${process.env.EMAIL_USER}`,
+                to,
+                subject,
+                html: body,
+            });
+        };
+        ```
+
+2.  **Email Templates:** The HTML content for different types of emails (e.g., referral success, expired, update) is defined in `src/lib/email-templates.ts`.
+    *   **`src/lib/email-templates.ts`**: This file contains functions that generate the HTML body for various emails, including placeholders that will be dynamically replaced with user-specific data.
+        ```typescript
+        // src/lib/email-templates.ts
+        export const referralSuccessEmailBody = (referralCode: string, name: string, link: string): string =&gt; `
+            &lt;div style=&quot;font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;&quot;&gt;
+                &lt;h2 style=&quot;color: #333;&quot;&gt;Hi ${name},&lt;/h2&gt;
+                &lt;p&gt;Thank you for referring a new user to PRFC Connect! Your referral code is &lt;strong&gt;${referralCode}&lt;/strong&gt;. Share this link to refer more people: &lt;a href=&quot;${link}&quot; style=&quot;color: #0070f3; text-decoration: none;&quot;&gt;${link}&lt;/a&gt;&lt;/p&gt;
+                &lt;p&gt;You&#x27;ll earn points when your referred user completes their first task. Check your dashboard to track your progress!&lt;/p&gt;
+                &lt;p style=&quot;text-align: center; margin-top: 30px;&quot;&gt;Best regards,&lt;br /&gt;The PRFC Connect Team&lt;/p&gt;
+            &lt;/div&gt;
+        `;
+
+        export const referralExpiredEmailBody = (referralCode: string, name: string): string =&gt; `
+            &lt;div style=&quot;font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;&quot;&gt;
+                &lt;h2 style=&quot;color: #333;&quot;&gt;Hi ${name},&lt;/h2&gt;
+                &lt;p&gt;Unfortunately, your referral code &lt;strong&gt;${referralCode}&lt;/strong&gt; has expired. This means the referred user either completed their first task after the expiration date or the referral code was not redeemed within the allowed timeframe.&lt;/p&gt;
+                &lt;p&gt;If you have any questions, feel free to reach out to our support team.&lt;/p&gt;
+                &lt;p style=&quot;text-align: center; margin-top: 30px;&quot;&gt;Best regards,&lt;br /&gt;The PRFC Connect Team&lt;/p&gt;
+            &lt;/div&gt;
+        `;
+
+        export const referralUpdateEmailBody = (referralCode: string, name: string, status: string): string =&gt; `
+            &lt;div style=&quot;font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;&quot;&gt;
+                &lt;h2 style=&quot;color: #333;&quot;&gt;Hi ${name},&lt;/h2&gt;
+                &lt;p&gt;Your referral status for code &lt;strong&gt;${referralCode}&lt;/strong&gt; has been updated to &lt;strong&gt;${status.charAt(0).toUpperCase() + status.slice(1)}&lt;/strong&gt;!&lt;/p&gt;
+                &lt;p&gt;Keep an eye on your dashboard for updates on your reward points.&lt;/p&gt;
+                &lt;p style=&quot;text-align: central; margin-top: 30px;&quot;&gt;Best regards,&lt;br /&gt;The PRFC Connect Team&lt;/p&gt;
+            &lt;/div&gt;
+        `;
+        ```
+
+3.  **Email Dispatch Logic:** The actual dispatch of emails is handled in the specific routes that trigger email sending.
+    *   **`src/app/api/referrals/route.ts`**: This file contains the logic to send a referral success email when a new referral is created.
+        ```typescript
+        // src/app/api/referrals/route.ts
+        import { NextResponse } from &#x27;next/server&#x27;;
+        import { PrismaClient } from &#x27;@prisma/client&#x27;;
+        import { generateReferralCode } from &#x27;@/utils/referral-code&#x27;;
+        import { sendEmail } from &#x27;@/lib/mailer&#x27;;
+        import { referralSuccessEmailBody } from &#x27;@/lib/email-templates&#x27;;
+        import { createReferralSchema } from &#x27;@/schemas/referral&#x27;;
+
+        const prisma = new PrismaClient();
+
+        export async function POST(req: Request) {
+            try {
+                const body = await req.json();
+                const { referredEmail } = createReferralSchema.parse(body);
+
+                const existingReferral = await prisma.referral.findFirst({
+                    where: { referredEmail },
+                });
+
+                if (existingReferral) {
+                    return NextResponse.json({ message: &quot;A referral for this email address already exists.&quot; }, { status: 400 });
+                }
+
+                const referralCode = generateReferralCode();
+                const expirationDate = new Date();
+                expirationDate.setDate(expirationDate.getDate() + 30);
+
+                await prisma.referral.create({
+                    data: {
+                        referredEmail,
+                        referralCode,
+                        expirationDate,
+                        status: &quot;PENDING&quot;,
+                    },
+                });
+
+                // Trigger email to referred user
+                const referredName = referredEmail.split(&#x27;@&#x27;)[0]; // Simple name extraction
+                const referralLink = `${process.env.NEXT_PUBLIC_APP_URL}/register?referral=${referralCode}`;
+                await sendEmail(
+                    referredEmail,
+                    &quot;🎉 You&#x27;ve Been Referred to PRFC Connect!&quot;,
+                    referralSuccessEmailBody(referralCode, referredName, referralLink)
+                );
+
+                return NextResponse.json({ message: &quot;Referral created successfully. An email has been sent to the referred user.&quot; }, { status: 201 });
+            } catch (error) {
+                console.error(&quot;Error creating referral:&quot;, error);
+                return NextResponse.json({ message: &quot;Internal Server Error&quot; }, { status: 500 });
+            } finally {
+                await prisma.$disconnect();
+            }
+        }
+        ```
+
+    *   **`src/app/api/referral/[id]/route.ts`**: This file updates the status of a referral and sends an &quot;expired&quot; email if the status is changed to &quot;EXPIRED&quot;.
+        ```typescript
+        // src/app/api/referral/[id]/route.ts
+        import { NextResponse } from &#x27;next/server&#x27;;
+        import { PrismaClient } from &#x27;@prisma/client&#x27;;
+        import { sendEmail } from &#x27;@/lib/mailer&#x27;;
+        import { referralExpiredEmailBody } from &#x27;@/lib/email-templates&#x27;;
+        import { statusSchema } from &#x27;@/schemas/referral&#x27;;
+
+        const prisma = new PrismaClient();
+
+        export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+            try {
+                const { status } = statusSchema.parse(await req.json());
+                const referralId = params.id;
+
+                // Check if the status is &quot;EXPIRED&quot; to send an email
+                if (status === &quot;EXPIRED&quot;) {
+                    const referral = await prisma.referral.findFirst({
+                        where: { id: referralId },
+                        select: { referredEmail: true, referralCode: true },
+                    });
+
+                    if (!referral) {
+                        return NextResponse.json({ message: &quot;Referral not found.&quot; }, { status: 404 });
+                    }
+
+                    // Trigger email to referrer
+                    const referrerName = referral.referredEmail.split(&#x27;@&#x27;)[0]; // Simple name extraction
+                    await sendEmail(
+                        referral.referredEmail,
+                        &quot;😿 Your Referral on PRFC Connect has Expired&quot;,
+                        referralExpiredEmailBody(referral.referralCode, referrerName)
+                    );
+                }
+
+                await prisma.referral.update({
+                    where: { id: referralId },
+                    data: { status },
+                });
+
+                return NextResponse.json({ message: &quot;Referral status updated successfully.&quot; }, { status: 200 });
+            } catch (error) {
+                console.error(&quot;Error updating referral status:&quot;, error);
+                return NextResponse.json({ message: &quot;Internal Server Error&quot; }, { status: 500 });
+            } finally {
+                await prisma.$disconnect();
+            }
+        }
+        ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is email service logic implemented?          </p>
+          <p class="lt-p">
+Response: The email service logic is implemented in the following file:
+
+*   **src/lib/email/index.ts**: This file initializes and exports an instance of the EmailService class, which is responsible for sending referral emails.
+*   **src/lib/email/email.service.ts**: This file contains the core logic for composing and sending emails, including the `sendReferralEmail` method.
+
+### Summary:
+
+*   **src/lib/email/email.service.ts** handles the actual sending of emails.
+*   **src/lib/email/index.ts** provides a single entry point to the email service.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is email service logic implemented?          </p>
+          <p class="lt-p">
+Response: The email service logic is implemented in the following files:
+
+*   **src/lib/email.ts**: This file is responsible for sending out referral emails.
+    
+```typescript
+    // src/lib/email.ts
+
+    import { Resend } from &quot;resend&quot;;
+    import { User } from &quot;@/prisma/client&quot;;
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    export const sendReferralEmail = async (referral: User, referredBy: User) =&gt; {
+      const { name: referredName, email: referredEmail, id: referredId } = referredBy;
+      const { name: referrerName, email: referrerEmail, id: referrerId } = referral;
+      const link = `${process.env.FRONTEND_URL}/referrals/${referrerId}?code=${process.env.REFERRAL_CODE}`;
+
+      const data = {
+        from: &quot;Referred by ✉️ &lt;onboarding@pr.fc&gt;&quot;,
+        to: referredEmail,
+        subject: &quot;You&#x27;ve been referred to PRFC!&quot;,
+        html: `&lt;p&gt;Hi ${referredName}, you&#x27;ve been referred to PRFC by ${referrerName} who is also an existing member. If you complete your onboarding, ${referrerName} will earn a PRFC Membership. To accept the referral, just click the button below and complete your onboarding.&lt;/p&gt;
+        &lt;a href=&quot;${link}&quot; class=&quot;btn&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;Accept Referral&lt;/a&gt;`,
+      };
+
+      const emailResp = await resend.emails.send(data);
+      console.log(&quot;Email sent:&quot;, emailResp);
+
+      const emailHTML = `&lt;p&gt;Congratulations ${referrerName}, your referral ${referredName} has accepted your invitation to join PRFC. You have earned 1 PRFC Membership, which will be added to your account once ${referredName} completes their onboarding.&lt;/p&gt;`;
+      const emailData = {
+        from: &quot;Referral Alert ✅ &lt;onboarding@pr.fc&gt;&quot;,
+        to: referrerEmail,
+        subject: &quot;Referral Accepted!&quot;,
+        html: emailHTML,
+      };
+
+      const referrerEmailResp = await resend.emails.send(emailData);
+      console.log(&quot;Referrer email sent:&quot;, referrerEmailResp);
+    };
+    ```
+
+
+    *   **src/lib/mailer.ts**: This file handles the sending of password reset emails.
+        
+```typescript
+        // src/lib/mailer.ts
+
+        import { Resend } from &quot;resend&quot;;
+
+        const resend = new Resend(process.env.RESEND_API_KEY);
+
+        export const sendPasswordResetEmail = async (email: string, token: string) =&gt; {
+          const data = {
+            from: &quot;Password Reset 🔄 &lt;onboarding@pr.fc&gt;&quot;,
+            to: email,
+            subject: &quot;Reset your PRFC password&quot;,
+            html: `&lt;p&gt;Hello, if you requested a password reset for your PRFC account, please click the button below to proceed. This link will expire in 1 hour for security.&lt;/p&gt;
+            &lt;a href=&quot;${process.env.FRONTED_URL}/api/auth/reset-password?token=${token}&quot; class=&quot;btn&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;Reset Password&lt;/a&gt;
+            &lt;p&gt;If you did not request this, please ignore this email or contact support at support@pr.fc.&lt;/p&gt;`,
+          };
+
+          await resend.emails.send(data);
+        };
+        ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is email service logic implemented?          </p>
+          <p class="lt-p">
+Response: The email service logic is implemented in the following files:
+
+1.  **`src/lib/email.js`**: This file contains the core logic for sending emails, including the `transport` configuration using `nodemailer`, and the `sendEmail` function which utilizes `resend` to send emails.
+2.  **`src/app/api/referrals/route.ts`**: This file triggers the `sendReferralEmail` function from `src/lib/email.js` when a new referral is created, passing the necessary `email`, `referredBy`, and `token` parameters to send a referral confirmation email.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+74                </td>
+                <td>
+695                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+74                </td>
+                <td>
+647                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+74                </td>
+                <td>
+39                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+74                </td>
+                <td>
+495                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+74                </td>
+                <td>
+1963                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+74                </td>
+                <td>
+113                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+74                </td>
+                <td>
+700                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+74                </td>
+                <td>
+124                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

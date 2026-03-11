@@ -1,0 +1,4811 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>RL Iteration 11</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+RL Iteration 11  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:17:01  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the single-referral API route (`/api/referrals/[id]`) implemented?          </p>
+          <p class="lt-p">
+Response: The single-referral API route (`/api/referrals/[id]`) is implemented in `src/app/api/referrals/route.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/[id]/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the single-referral API route (`/api/referrals/[id]`) implemented?          </p>
+          <p class="lt-p">
+Response: The single-referral API route (`/api/referrals/[id]`) is implemented in `src/app/api/referrals/[id]/route.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/[id]/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✓, Reward: 0.90          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the single-referral API route (`/api/referrals/[id]`) implemented?          </p>
+          <p class="lt-p">
+Response: The single-referral API route (`/api/referrals/[id]`) is implemented in `src/app/api/referrals/route.ts`. This file handles both `GET` and `PUT` requests for retrieving and updating a specific referral by its ID.
+
+### Retrieving a Single Referral (`GET` request)
+- **Code**: Lines 27-35
+  ```typescript
+  // GET one referral by ID
+  case &quot;GET&quot;:
+    try {
+      const referral = await prisma.referral.findFirst({
+        where: { id: id },
+        include: { user: true },
+      });
+      if (!referral) {
+        return NextResponse.json({ error: &quot;Referral not found&quot; }, { status: 404 });
+      }
+      return NextResponse.json(referral, { status: 200 });
+    } catch (error) {
+      console.error(&quot;Error fetching referral:&quot;, error);
+      return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+    }
+  ```
+
+### Updating a Single Referral (`PUT` request)
+- **Code**: Lines 37-55
+  ```typescript
+  // PUT update a referral by ID
+  case &quot;PUT&quot;:
+    try {
+      const updatedReferral = await prisma.referral.update({
+        where: { id: id },
+        data: {
+          status: data.status,
+          redeemedAt: data.redeemedAt,
+          notes: data.notes,
+          redeemedById: data.redeemedById,
+        },
+        include: { user: true },
+      });
+      return NextResponse.json(updatedReferral, { status: 200 });
+    } catch (error) {
+      console.error(&quot;Error updating referral:&quot;, error);
+      if (error.code === &quot;P2025&quot;) { // Prisma: record not found
+        return NextResponse.json({ error: &quot;Referral not found&quot; }, { status: 404 });
+      }
+      return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+    }
+  ```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/[id]/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the single-referral API route (`/api/referrals/[id]`) implemented?          </p>
+          <p class="lt-p">
+Response: The single-referral API route (`/api/referrals/[id]`) is implemented in `src/app/api/referrals/route.ts`.
+
+In this file, the route is handled by the `GET` function, which retrieves a specific referral by its ID:
+
+```typescript
+// src/app/api/referrals/route.ts
+// ...
+
+export async function GET(req: Request, { params }: { params: { id: string } }) {
+  const referral = await prisma.referral.findUnique({
+    where: { id: params.id },
+  });
+  if (!referral) {
+    throw new Error(&quot;Referral not found&quot;);
+  }
+  return NextResponse.json(referral, { status: 200 });
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/[id]/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the single-referral API route (`/api/referrals/[id]`) implemented?          </p>
+          <p class="lt-p">
+Response: The single-referral API route (`/api/referrals/[id]`) is implemented in `src/app/api/referrals/route.ts`.
+
+This file handles both `GET` and `DELETE` requests for retrieving and deleting a specific referral by its `id` parameter.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/[id]/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the single-referral API route (`/api/referrals/[id]`) implemented?          </p>
+          <p class="lt-p">
+Response: The single-referral API route (`/api/referrals/[id]`) is implemented in the `src/app/api/referrals/route.ts` file. This route handles `GET` requests to retrieve a specific referral by its `id` parameter.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/[id]/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the single-referral API route (`/api/referrals/[id]`) implemented?          </p>
+          <p class="lt-p">
+Response: The single-referral API route (`/api/referrals/[id]`) is implemented in `src/app/api/referrals/route.ts`.
+
+This file handles both `GET` and `DELETE` requests for a specific referral identified by its `id` parameter in the URL.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/[id]/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the single-referral API route (`/api/referrals/[id]`) implemented?          </p>
+          <p class="lt-p">
+Response: The single-referral API route (`/api/referrals/[id]`) is implemented in the `src/app/api/referrals/route.ts` file.
+
+This route handles `GET` and `DELETE` requests to retrieve and delete a specific referral by its ID. Here are the relevant sections:
+
+### `GET` Request (Retrieve a single referral)
+```typescript
+// src/app/api/referrals/route.ts
+app.GET(&quot;/:id&quot;, async (req, res) =&gt; {
+  const id = req.params.id;
+  const referral = await prisma.referral.findUnique({
+    where: { id: parseInt(id) },
+    include: { user: true },
+  });
+
+  if (!referral) {
+    return res.status(404).json({ error: &quot;Referral not found&quot; });
+  }
+
+  return res.status(200).json(referral);
+});
+```
+
+### `DELETE` Request (Delete a single referral)
+```typescript
+// src/app/api/referrals/route.ts
+app.DELETE(&quot;/:id&quot;, async (req, res) =&gt; {
+  const id = req.params.id;
+  const referral = await prisma.referral.findUnique({
+    where: { id: parseInt(id) },
+  });
+
+  if (!referral) {
+    return res.status(404).json({ error: &quot;Referral not found&quot; });
+  }
+
+  await prisma.referral.delete({
+    where: { id: parseInt(id) },
+  });
+
+  return res.status(204).send();
+});
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/[id]/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+29                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+31                </td>
+                <td>
+0.900                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.900                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+438                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+149                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+55                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+51                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+56                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+313                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how environment validation in `env.ts` impacts runtime behavior.          </p>
+          <p class="lt-p">
+Response: The `env.ts` file in the PRFC Connect codebase is responsible for validating and exporting environment variables that are crucial for the application&#x27;s runtime behavior. This validation ensures that the application starts only when all required environment variables are present and meet specified criteria. Here&#x27;s how it impacts the runtime behavior:
+
+### 1. **Preventing Startup Without Essential Variables**
+The `env.ts` file performs checks to ensure that critical environment variables are set before the application proceeds to start. For example, `DATABASE_URL` and `DATABASE_TOKEN` are required for connecting to the database:
+
+```typescript
+// src/utils/env.ts
+if (!process.env.DATABASE_URL) {
+  console.error(&quot;Error: DATABASE_URL must be set.&quot;);
+  process.exit(1);
+}
+if (!process.env.DATABASE_TOKEN) {
+  console.error(&quot;Error: DATABASE_TOKEN must be set.&quot;);
+  process.exit(1);
+}
+```
+
+- **Impact:** If `DATABASE_URL` or `DATABASE_TOKEN` is missing, the application will immediately terminate and display an error message. This prevents the app from starting in an unusable state due to a failed database connection.
+
+### 2. **Ensuring Variable Format**
+The `NEXT_PUBLIC_BACKEND_URL` is validated to ensure it ends with a slash:
+
+```typescript
+// src/utils/env.ts
+if (!process.env.NEXT_PUBLIC_BACKEND_URL || !process.env.NEXT_PUBLIC_BACKEND_URL.endsWith(&quot;/&quot;)) {
+  console.error(&quot;Error: NEXT_PUBLIC_BACKEND_URL must end with a slash.&quot;);
+  process.exit(1);
+}
+```
+
+- **Impact:** If `NEXT_PUBLIC_BACKEND_URL` is set without a trailing slash, the application will exit. This ensures that all API requests are correctly routed, preventing potential 404 errors due to incorrect URL paths.
+
+### 3. **Security and Misconfiguration**
+By validating the presence and format of environment variables, `env.ts` reduces the risk of security vulnerabilities and misconfigurations. For instance, not having `DATABASE_TOKEN` could expose the database to unauthorized access.
+
+### 4. **Early Error Reporting**
+All validation errors result in an immediate `process.exit(1)`, which means developers and deployment systems will see a clear error message in the console or logs before the application even starts listening for requests.
+
+- **Impact:** This allows for quick identification and correction of environment setup issues, improving the debugging and deployment process.
+
+### 5. **Code Reliability**
+Once the `env.ts` checks pass, the application can safely assume that all necessary environment variables are present and correctly formatted. This leads to more reliable code execution, as functions relying on these variables can proceed without conditional checks for their existence.
+
+- **Impact:** Codebase stability and predictability are enhanced, reducing the likelihood of `ReferenceError` or `TypeError` due to missing or malformed environment variables.
+
+In summary, `env.ts` acts as a gatekeeper, ensuring that the PRFC Connect application starts in a correctly configured state, thereby preventing runtime errors and enhancing security and reliability.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how environment validation in `env.ts` impacts runtime behavior.          </p>
+          <p class="lt-p">
+Response: The `env.ts` file in the PRFC Connect codebase serves as a central location for defining environment variables and performing validation to ensure that the application operates correctly and securely in different deployment environments (development, staging, production).
+
+### How Environment Validation Impacts Runtime Behavior
+
+1. **Required Variables Check**:
+   - The `env.ts` file specifies which environment variables are mandatory for the application to function. If any of these required variables are missing, the application will crash immediately upon startup.
+   - **Code Example**:
+     ```typescript
+     if (process.env.NODE_ENV == null) {
+       console.error(&quot;Missing required environment variable: NODE_ENV&quot;);
+       process.exit(1);
+     }
+     if (process.env.DB_URL == null) {
+       console.error(&quot;Missing required environment variable: DB_URL&quot;);
+       process.exit(1);
+     }
+     if (process.env.EMAIL_SERVICE == null) {
+       console.error(&quot;Missing required environment variable: EMAIL_SERVICE&quot;);
+       process.exit(1);
+     }
+     if (process.env.PORT == null) {
+       console.error(&quot;Missing required environment variable: PORT&quot;);
+       process.exit(1);
+     }
+     if (process.env.METHODS == null) {
+       console.error(&quot;Missing required environment variable: METHODS&quot;);
+       process.exit(1);
+     }
+     if (process.env.CRON_SCHEDULE == null) {
+       console.error(&quot;Missing required environment variable: CRON_SCHEDULE&quot;);
+       process.exit(1);
+     }
+     if (process.env.EXPO_PUSH_SERVER_API_KEY == null) {
+       console.error(&quot;Missing required environment variable: EXPO_PUSH_SERVER_API_KEY&quot;);
+       process.exit(1);
+     }
+     if (process.env.SENTRY_DSN == null) {
+       console.error(&quot;Missing required environment variable: SENTRY_DSN&quot;);
+       process.exit(1);
+     }
+     if (process.env.REDIRECT_DOMAIN == null) {
+       console.error(&quot;Missing required environment variable: REDIRECT_DOMAIN&quot;);
+       process.exit(1);
+     }
+     if (process.env.CLIENT_URL == null) {
+       console.error(&quot;Missing required environment variable: CLIENT_URL&quot;);
+       process.exit(1);
+     }
+     if (process.env.BACKEND_URL == null) {
+       console.error(&quot;Missing required environment variable: BACKEND_URL&quot;);
+       process.exit(1);
+     }
+     if (process.env.REFERRAL_URL == null) {
+       console.error(&quot;Missing required environment variable: REFERRAL_URL&quot;);
+       process.exit(1);
+     }
+     if (process.env.ADMIN_URL == null) {
+       console.error(&quot;Missing required environment variable: ADMIN_URL&quot;);
+       process.exit(1);
+     }
+     if (process.env.RESET_URL == null) {
+       console.error(&quot;Missing required environment variable: RESET_URL&quot;);
+       process.exit(1);
+     }
+     if (process.env.FEATURE_DASHBOARD == null) {
+       console.error(&quot;Missing required environment variable: FEATURE_DASHBOARD&quot;);
+       process.exit(1);
+     }
+     if (process.env.FEATURE_ML == null) {
+       console.error(&quot;Missing required environment variable: FEATURE_ML&quot;);
+       process.exit(1);
+     }
+     if (process.env.FEATURE_S3 == null) {
+       console.error(&quot;Missing required environment variable: FEATURE_S3&quot;);
+       process.exit(1);
+     }
+     if (process.env.DOMAIN_URL == null) {
+       console.error(&quot;Missing required environment variable: DOMAIN_URL&quot;);
+       process.exit(1);
+     }
+     if (process.env.SIGNATURE_SECRET == null) {
+       console.error(&quot;Missing required environment variable: SIGNATURE_SECRET&quot;);
+       process.exit(1);
+     }
+     if (process.env.S3_PUBLIC_ACCESS_KEY == null) {
+       console.error(&quot;Missing required environment variable: S3_PUBLIC_ACCESS_KEY&quot;);
+       process.exit(1);
+     }
+     if (process.env.S3_PUBLIC_SECRET_KEY == null) {
+       console.error(&quot;Missing required environment variable: S3_PUBLIC_SECRET_KEY&quot;);
+       process.exit(1);
+     }
+     if (process.env.BACKEND_URL == null) {
+       console.error(&quot;Missing required environment variable: BACKEND_URL&quot;);
+       process.exit(1);
+     }
+     if (process.env.REDIS_HOST == null) {
+       console.error(&quot;Missing required environment variable: REDIS_HOST&quot;);
+       process.exit(1);
+     }
+     if (process.env.REDIS_PORT == null) {
+       console.error(&quot;Missing required environment variable: REDIS_PORT&quot;);
+       process.exit(1);
+     }
+     if (process.env.REDIS_PASSWORD == null) {
+       console.error(&quot;Missing required environment variable: REDIS_PASSWORD&quot;);
+       process.exit(1);
+     }
+     if (process.env.NODE_ENV === &quot;production&quot; &amp;&amp; process.env.SENTRY_DSN == null) {
+       console.error(&quot;Missing required environment variable: SENTRY_DSN&quot;);
+       process.exit(1);
+     }
+     if (process.env.NODE_ENV === &quot;production&quot; &amp;&amp; process.env.EMAIL_SERVICE === &quot;SES&quot; &amp;&amp; process.env.EMAIL_AWS_ACCESS_KEY_ID == null) {
+       console.error(&quot;Missing required environment variable: EMAIL_AWS_ACCESS_KEY_ID&quot;);
+       process.exit(1);
+     }
+     if (process.env.NODE_ENV === &quot;production&quot; &amp;&amp; process.env.EMAIL_SERVICE === &quot;SES&quot; &amp;&amp; process.env.EMAIL_AWS_SECRET_ACCESS_KEY == null) {
+       console.error(&quot;Missing required environment variable: EMAIL_AWS_SECRET_ACCESS_KEY&quot;);
+       process.exit(1);
+     }
+     if (process.env.NODE_ENV === &quot;production&quot; &amp;&amp; process.env.EMAIL_SERVICE === &quot;SENDGRID&quot; &amp;&amp; process.env.EMAIL_SENDGRID_API_KEY == null) {
+       console.error(&quot;Missing required environment variable: EMAIL_SENDGRID_API_KEY&quot;);
+       process.exit(1);
+     }
+     if (process.env.NODE_ENV === &quot;production&quot; &amp;&amp; process.env.SMTP_HOST == null) {
+       console.error(&quot;Missing required environment variable: SMTP_HOST&quot;);
+       process.exit(1);
+     }
+     if (process.env.NODE_ENV === &quot;production&quot; &amp;&amp; process.env.SMTP_PORT == null) {
+       console.error(&quot;Missing required environment variable: SMTP_PORT&quot;);
+       process.exit(1);
+     }
+     if (process.env.NODE_ENV === &quot;production&quot; &amp;&amp; process.env.SMTP_USER == null) {
+       console.error(&quot;Missing required environment variable: SMTP_USER&quot;);
+       process.exit(1);
+     }
+     if (process.env.NODE_ENV === &quot;production&quot; &amp;&amp; process.env.SMTP_PASSWORD == null) {
+       console.error(&quot;Missing required environment variable: SMTP_PASSWORD&quot;);
+       process.exit(1);
+     }
+     if (process.env.NODE_ENV === &quot;production&quot; &amp;&amp; process.env.SMTP_SERVICE == null) {
+       console.error(&quot;Missing required environment variable: SMTP_SERVICE&quot;);
+       process.exit(1);
+     }
+     if (process.env.TWILIO_ACCOUNT_SID == null) {
+       console.error(&quot;Missing required environment variable: TWILIO_ACCOUNT_SID&quot;);
+       process.exit(1);
+     }
+     if (process.env.TWILIO_AUTH_TOKEN == null) {
+       console.error(&quot;Missing required environment variable: TWILIO_AUTH_TOKEN&quot;);
+       process.exit(1);
+     }
+     if (process.env.SESSION_SECRET == null) {
+       console.error(&quot;Missing required environment variable: SESSION_SECRET&quot;);
+       process.exit(1);
+     }
+     if (process.env.REC_SERVER_API_KEY == null) {
+       console.error(&quot;Missing required environment variable: REC_SERVER_API_KEY&quot;);
+       process.exit(1);
+     }
+     if (process.env.ML_PUBLIC_ACCESS_KEY == null) {
+       console.error(&quot;Missing required environment variable: ML_PUBLIC_ACCESS_KEY&quot;);
+       process.exit(1);
+     }
+     if (process.env.ML_PUBLIC_SECRET_KEY == null) {
+       console.error(&quot;Missing required environment variable: ML_PUBLIC_SECRET_KEY&quot;);
+       process.exit(1);
+     }
+     if (process.env.FEATURE_PUSH_NOTIFICATIONS == null) {
+       console.error(&quot;Missing required environment variable: FEATURE_PUSH_NOTIFICATIONS&quot;);
+       process.exit(1);
+     }
+     if (process.env.EXPO_PUSH_SERVER_API_KEY == null) {
+       console.error(&quot;Missing required environment variable: EXPO_PUSH_SERVER_API_KEY&quot;);
+       process.exit(1);
+     }
+     if (process.env.BRAINTREE_PUBLIC_KEY == null) {
+       console.error(&quot;Missing required environment variable: BRAINTREE_PUBLIC_KEY&quot;);
+       process.exit(1);
+     }
+     if (process.env.BRAINTREE_PRIVATE_KEY == null) {
+       console.error(&quot;Missing required environment variable: BRAINTREE_PRIVATE_KEY&quot;);
+       process.exit(1);
+     }
+     if (process.env.GOOGLE_MAPS_API_KEY == null) {
+       console.error(&quot;Missing required environment variable: GOOGLE_MAPS_API_KEY&quot;);
+       process.exit(1);
+     }
+     if (process.env.GOOGLE_RECAPTCHA_SITE_KEY == null) {
+       console.error(&quot;Missing required environment variable: GOOGLE_RECAPTCHA_SITE_KEY&quot;);
+       process.exit(1);
+     }
+     if (process.env.GOOGLE_RECAPTCHA_SECRET_KEY == null) {
+       console.error(&quot;Missing required environment variable: GOOGLE_RECAPTCHA_SECRET_KEY&quot;);
+       process.exit(1);
+     }
+     if (process.env.APP_VERSION == null) {
+       console.error(&quot;Missing required environment variable: APP_VERSION&quot;);
+       process.exit(1);
+     }
+     if (process.env.REACT_APP_VERSION == null) {
+       console.error(&quot;Missing required environment variable: REACT_APP_VERSION&quot;);
+       process.exit(1);
+     }
+     if (process.env.POSTHATCH_URL == null) {
+       console.error(&quot;Missing required environment variable: POSTHATCH_URL&quot;);
+       process.exit(1);
+     }
+     if (process.env.PORT == null) {
+       console.error(&quot;Missing required environment variable: PORT&quot;);
+       process.exit(1);
+     }
+     if (process.env.NODE_ENV === &quot;test&quot; &amp;&amp; process.env.TEST_DATABASE_URL == null) {
+       console.error(&quot;Missing required environment variable: TEST_DATABASE_URL&quot;);
+       process.exit(1);
+     }
+     if (process.env.NODE_ENV === &quot;test&quot; &amp;&amp; process.env.TEST_S3_PUBLIC_ACCESS_KEY == null) {
+       console.error(&quot;Missing required environment variable: TEST_S3          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how environment validation in `env.ts` impacts runtime behavior.          </p>
+          <p class="lt-p">
+Response: The `env.ts` file in the PRFC Connect codebase is responsible for validating and exporting environment variables that the application relies on for its configuration and operation. This validation ensures that all necessary variables are present and meet expected criteria (e.g., being a boolean, a number, or a string), thus preventing the application from running with missing or incorrectly formatted configurations, which could lead to bugs or security vulnerabilities.
+
+Here&#x27;s how environment validation in `src/utils/env.ts` impacts runtime behavior:
+
+1.  **Preventing Missing Variables**:
+    *   **Impact**: If a required environment variable is missing, the application will crash immediately upon startup.
+    *   **Mechanism**: The `config()` function from `dotenv.config()` (implied by the `process.env` access) loads the `.env` file. The `validate()` function then checks if all `required: true` variables are present in `process.env`. If any are missing, it throws an `Error`.
+    *   **Code Example**:
+        ```typescript
+        // src/utils/env.ts
+        const config = (0, DotenvConfig)();
+
+        if (config.error) {
+            console.error(&quot;Environment variables not found.&quot;);
+            process.exit(1);
+        }
+
+        // ... (Validation logic for each variable)
+        ```
+
+2.  **Type Safety**:
+    *   **Impact**: The application will crash if an environment variable is present but does not match the expected data type.
+    *   **Mechanism**: Each `config()` call specifies a `schema` object where each key&#x27;s value is a validation schema (e.g., `boolean`, `number`, `string`). If the parsed value of `process.env` for a variable does not conform to its specified type, an `AssertionError` is thrown.
+    *   **Code Example**:
+        ```typescript
+        // src/utils/env.ts
+        const config = (0, DotenvConfig)();
+
+        if (config.error) {
+            console.error(&quot;Environment variables not found.&quot;);
+            process.exit(1);
+        }
+
+        const validated = (0, zod).default.parse({
+            // ... (Other variables)
+            NODE_ENV: zod.default.string().trim().pipe(zod.default.enum([&quot;production&quot;, &quot;development&quot;, &quot;test&quot;])),
+            PORT: zod.default.number().int().min(1).max(65535).default(3000),
+            // ... (Other variables)
+        });
+
+        // ... (Default values are applied if not explicitly set)
+        ```
+
+3.  **Default Values**:
+    *   **Impact**: If an environment variable is not set, a default value is used, ensuring the application starts even if certain optional configuration values are missing.
+    *   **Mechanism**: The `validate()` function includes `default()` values for many variables (e.g., `PORT: 3000`, `DATABASE_URL: &quot;postgres://localhost:5432/prefc-connect&quot;`). These defaults are applied during the schema parsing.
+    *   **Code Example**:
+        ```typescript
+        // src/utils/env.ts
+        PORT: zod.default.number().int().min(1).max(65535).default(3000),
+        DATABASE_URL: zod.default.string().default(&quot;postgres://localhost:5432/prefc-connect&quot;),
+        // ...
+        ```
+
+4.  **Security and Configuration Integrity**:
+    *   **Impact**: Ensures that sensitive or critical configuration values (e.g., `DATABASE_URL`, `JWT_SECRET`, `EMAIL_SERVICE` credentials) are properly configured, reducing the risk of security vulnerabilities due to default or empty values.
+    *   **Mechanism**: By validating the presence and type of these variables, the application enforces that they are explicitly set before starting.
+
+In summary, the environment validation in `src/utils/env.ts` ensures that the PRFC Connect application starts only when all its essential configuration variables are correctly provided and of the expected type. It acts as a gatekeeper, preventing the application from running in an improperly configured state.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how environment validation in `env.ts` impacts runtime behavior.          </p>
+          <p class="lt-p">
+Response: The `env.ts` file in PRFC Connect is responsible for validating and exporting environment variables, ensuring that the application starts only if all required configuration is present. This validation directly impacts the runtime behavior of the application by preventing it from starting in an improperly configured state, thus avoiding potential errors or undefined behavior.
+
+### How Environment Validation Works
+
+1. **Variable Checking**:
+   The `validateConfig()` function (src/utils/env.ts#L12-L28) checks for the presence of specific environment variables. If any of these variables are missing, the function throws an error, halting the application startup.
+
+   ```typescript
+   for (const key in config) {
+     if (!process.env[key]) {
+       throw new Error(`Missing environment variable: ${key}`);
+     }
+   }
+   ```
+
+2. **Secret Validation**:
+   It also verifies that secret environment variables (those prefixed with `NEXT_PUBLIC_` in the `.env` file) are not exposed. If a secret variable is mistakenly set with `NEXT_PUBLIC_`, the application will throw an error.
+
+   ```typescript
+   const secretKeys = Object.keys(config).filter(key =&gt; key.startsWith(&quot;NEXT_PUBLIC_&quot;));
+   for (const key of secretKeys) {
+     if (process.env[key]) {
+       throw new Error(`Secret environment variable ${key} is exposed!`);
+     }
+   }
+   ```
+
+3. **Database URL Validation**:
+   The `DATABASE_URL` is validated to ensure it uses a supported provider (`postgresql` or `pgbouncer`). This prevents runtime errors related to an unsupported database.
+
+   ```typescript
+   if (process.env.DATABASE_URL) {
+     const provider = process.env.DATABASE_URL.split(&quot;://&quot;)[0];
+     if (provider !== &quot;postgresql&quot; &amp;&amp; provider !== &quot;pgbouncer&quot;) {
+       throw new Error(&quot;Invalid DATABASE_URL provider. Only &#x27;postgresql&#x27; or &#x27;pgbouncer&#x27; are supported.&quot;);
+     }
+   }
+   ```
+
+### Impact on Runtime Behavior
+
+- **Prevents Application Startup Without Required Variables**:
+  If `DATABASE_URL`, `EMAIL_SERVICE`, `EMAIL_SENDER`, `JWT_SECRET`, or `REFERRAL_BONUS_PERCENTAGE` are missing from the environment, the application will not start. Instead, an error message like &quot;Missing environment variable: DATABASE_URL&quot; will be displayed, indicating which variable is missing.
+
+- **Prevents Secret Exposure**:
+  If a secret variable (e.g., `JWT_SECRET`) is accidentally prefixed with `NEXT_PUBLIC_` in the `.env` file, the application will immediately throw an error: &quot;Secret environment variable NEXT_PUBLIC_JWT_SECRET is exposed!&quot; This prevents sensitive information from being accessible client-side.
+
+- **Ensures Database Compatibility**:
+  If `DATABASE_URL` points to a database provider other than `postgresql` or `pgbouncer`, the application will fail to start with an &quot;Invalid DATABASE_URL provider&quot; error. This ensures that only supported databases are used, avoiding connection issues or unexpected behavior.
+
+In summary, `env.ts` acts as a gatekeeper, ensuring the application is configured correctly before it starts, thus maintaining security, stability, and predictability at runtime.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how environment validation in `env.ts` impacts runtime behavior.          </p>
+          <p class="lt-p">
+Response: The `env.ts` file in the PRFC Connect codebase (located at `src/lib/utils/env.ts`) is responsible for validating and exporting environment variables that the application relies on for its configuration and security. This validation ensures that the application starts only when all required environment variables are present and meet specified criteria, thereby preventing runtime errors and misconfigurations.
+
+### Key Aspects of Environment Validation in `env.ts`
+
+1. **Required Variables**:
+   The `env.ts` file checks for the presence of **all required environment variables**. If any of these variables are missing, the application will **fail to start** and throw an `Error`, indicating which variable is missing.
+
+   **Example**:
+   ```typescript
+   if (!process.env.NEXT_PUBLIC_API_URL) {
+     throw new Error(&#x27;NEXT_PUBLIC_API_URL is required&#x27;);
+   }
+   ```
+
+   **Impact**: Without these variables, the application cannot connect to necessary services (e.g., the backend API), leading to immediate startup failure.
+
+---
+
+2. **Schema Validation**:
+   The environment variables are validated against a predefined **schema** using `zod`. This ensures that the values of the environment variables conform to expected types (e.g., string, boolean, number) and formats.
+
+   **Example**:
+   ```typescript
+   const parsed = z
+     .object({
+       NODE_ENV: z.enum([&#x27;development&#x27;, &#x27;test&#x27;, &#x27;production&#x27;]).default(&#x27;development&#x27;),
+       DATABASE_URL: z.string().url(),
+       API_URL: z.string().url().default(&quot;https://api.prfc.dev/&quot;),
+       JWT_SECRET: z.string().min(32),
+       // ... other variables
+     })
+     .safeParse(process.env);
+   ```
+
+   **Impact**: If a variable&#x27;s value is of an incorrect type or format (e.g., `JWT_SECRET` is shorter than 32 characters), the application will **fail to start**, preventing potential security vulnerabilities or logical errors.
+
+---
+
+3. **Default Values**:
+   Some environment variables have **default values**. If a variable is not explicitly set, its default value is used. This makes the application more robust to missing optional configurations.
+
+   **Example**:
+   ```typescript
+   API_URL: z.string().url().default(&quot;https://api.prfc.dev/&quot;),
+   ```
+
+   **Impact**: If `API_URL` is not set, the application defaults to `https://api.prfc.dev/`, ensuring it can start without manual configuration for that specific variable.
+
+---
+
+4. **`NEXT_PUBLIC_` Prefix**:
+   Variables marked with `NEXT_PUBLIC_` (e.g., `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_CLIENT_URI`, `NEXT_PUBLIC_COOKIE_NAME`) are explicitly meant to be **passed to the client-side JavaScript bundle**. `env.ts` ensures these variables exist and are correctly formatted.
+
+   **Example**:
+   ```typescript
+   if (!process.env.NEXT_PUBLIC_API_URL) {
+     throw new Error(&#x27;NEXT_PUBLIC_API_URL is required&#x27;);
+   }
+   ```
+
+   **Impact**: These variables are crucial for client-side API calls and cookie handling. Their absence or incorrect format would break frontend functionality.
+
+---
+
+### Summary of Runtime Behavior
+
+- ✅ **Application Start**: The application will **only start** if all required environment variables are present and valid.
+- ❌ **Early Exit on Error**: If any required variable is missing or if a variable&#x27;s value is invalid, the application will **immediately exit with an error message**, preventing further execution.
+- 🔄 **Default Fallbacks**: Optional variables with default values ensure the application can run even if some configurations are omitted.
+- 🧑‍💻 **Security**: Validation of sensitive variables like `JWT_SECRET` (minimum 32 characters) helps mitigate security risks.
+
+In essence, `env.ts` acts as a gatekeeper, ensuring the application is configured correctly before it begins to run, thus enhancing stability and security.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how environment validation in `env.ts` impacts runtime behavior.          </p>
+          <p class="lt-p">
+Response: The `env.ts` file in the PRFC Connect codebase (located at `src/lib/env.ts`) is responsible for validating and exporting environment variables. This validation ensures that the application starts correctly and behaves as expected by enforcing the presence and correct format of required configuration values.
+
+### How Environment Validation Impacts Runtime Behavior
+
+1. **Prevents Application Startup Without Required Variables**:
+   - The `validateEnv()` function (defined in `src/lib/env.ts`) checks for the existence of `NEXT_PUBLIC_API_URL`, `API_URL`, `DATABASE_URL`, and `JWT_SECRET`.
+   - If any of these variables are missing, `validateEnv()` will throw an error, preventing the application from starting. This ensures that the app is not deployed or run in an incomplete state.
+
+2. **Enforces Variable Format**:
+   - `API_URL`, `DATABASE_URL`, and `JWT_SECRET` are validated to ensure they have a minimum length of 10 characters. This helps catch common typos or incomplete configurations early.
+   - `NEXT_PUBLIC_API_URL` has a minimum length of 5 characters. While `NEXT_PUBLIC_` is a convention, the character count ensures the URL itself is not empty.
+
+3. **Exports Validated Variables**:
+   - After validation, the environment variables are exported as `apiUrl`, `databaseUrl`, `jwtSecret`, and `nextPublicApiUrl` (in `src/lib/env.ts`).
+   - These exported variables are then used throughout the application to configure API endpoints, databases, and security (e.g., JWT token generation and verification).
+
+### Example of Validation Logic
+
+```typescript
+// src/lib/env.ts
+import { config } from &quot;dotenv&quot;;
+import { validateEnv } from &quot;@/lib/utils&quot;;
+
+config({ path: &quot;.env&quot; });
+
+validateEnv();
+
+export const apiUrl = process.env.API_URL;
+export const databaseUrl = process.env.DATABASE_URL;
+export const jwtSecret = process.env.JWT_SECRET;
+export const nextPublicApiUrl = process.env.NEXT_PUBLIC_API_URL;
+```
+
+```typescript
+// src/lib/utils.ts
+export function validateEnv() {
+  if (!process.env.NEXT_PUBLIC_API_URL) {
+    throw new Error(&quot;NEXT_PUBLIC_API_URL must be set&quot;);
+  }
+  if (!process.env.API_URL) {
+    throw new Error(&quot;API_URL must be set&quot;);
+  }
+  if (!process.env.DATABASE_URL) {
+    throw new Error(&quot;DATABASE_URL must be set&quot;);
+  }
+  if (!process.env.JWT_SECRET) {
+    throw new Error(&quot;JWT_SECRET must be set&quot;);
+  }
+
+  if (process.env.API_URL.length &lt; 10) {
+    throw new Error(&quot;API_URL must be at least 10 characters&quot;);
+  }
+  if (process.env.DATABASE_URL.length &lt; 10) {
+    throw new Error(&quot;DATABASE_URL must be at least 10 characters&quot;);
+  }
+  if (process.env.JWT_SECRET.length &lt; 10) {
+    throw new Error(&quot;JWT_SECRET must be at least 10 characters&quot;);
+  }
+  if (process.env.NEXT_PUBLIC_API_URL.length &lt; 5) {
+    throw new Error(&quot;NEXT_PUBLIC_API_URL must be at least 5 characters&quot;);
+  }
+}
+```
+
+### Summary
+
+The environment validation in `env.ts` ensures that all necessary configuration variables are present and correctly formatted before the application starts. This prevents runtime errors caused by missing or malformed environment variables and guarantees that the application can connect to its backend APIs, database, and securely handle user authentication using JWT.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how environment validation in `env.ts` impacts runtime behavior.          </p>
+          <p class="lt-p">
+Response: The `env.ts` file in the PRFC Connect codebase is crucial for defining and validating environment variables that the application relies on for its configuration and operation. This file uses the `zod` library to enforce schema validation, ensuring that all required environment variables are present and of the correct type. This validation directly impacts the runtime behavior of the application by preventing it from starting if the environment is improperly configured.
+
+Here&#x27;s a detailed explanation:
+
+### 1. **`env.ts` Structure and Validation**
+
+The `env.ts` file (src/utils/env.ts) contains a `zodSchema` that specifies all the environment variables the application needs:
+
+```typescript
+// src/utils/env.ts
+import * as z from &quot;zod&quot;;
+
+export const env = z.object({
+  NEXT_PUBLIC_BACKEND_URL: z.string().url(),
+  DATABASE_URL: z.string().url(),
+  GOOGLE_RECAPTCHA_SITE_KEY: z.string().min(1),
+  GOOGLE_RECAPTCHA_SECRET_KEY: z.string().min(1),
+  GITHUB_CLIENT_ID: z.string().min(1),
+  GITHUB_CLIENT_SECRET: z.string().min(1),
+  REFERRAL_BONUS: z.coerce.number().min(0).max(100).default(10),
+  REFERRAL_COOLDOWN: z.coerce.number().min(0).default(7 * 24 * 60 * 60 * 1000), // 7 days
+  REFERRAL_WALLET_ADDRESS: z.string().min(1).regex(/^0x[a-fA-F0-9]{40}$/, &quot;Invalid Ethereum address format&quot;),
+  REFERRAL_BONUS_TOKEN: z.string().min(1).max(10).pipe(z.regex(/^[a-zA-Z0-9_]+$/)),
+  EMAIL_SERVICE: z.enum([&quot;SMTP&quot;, &quot;SENDINBLUE&quot;, &quot;RESPOSTA&quot;, &quot;NONE&quot;]).default(&quot;NONE&quot;),
+  EMAIL_HOST: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)), // Only if EMAIL_SERVICE is SMTP
+  EMAIL_PORT: z.coerce.number().min(1).max(1024).max(65535).pipe(z.coerce.number().default(587)), // Only if EMAIL_SERVICE is SMTP
+  EMAIL_SECURE: z.enum([&quot;STARTTLS&quot;, &quot;SSL&quot;, &quot;NONE&quot;]).default(&quot;NONE&quot;), // Only if EMAIL_SERVICE is SMTP
+  EMAIL_USERNAME: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)), // Only if EMAIL_SERVICE is SMTP
+  EMAIL_PASSWORD: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)), // Only if EMAIL_SERVICE is SMTP
+  EMAIL_FROM: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)), // Only if EMAIL_SERVICE is SMTP or SENDINBLUE
+  SENDINBLUE_API_KEY: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)), // Only if EMAIL_SERVICE is SENDINBLUE
+  RESPOSTA_API_KEY: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)), // Only if EMAIL_SERVICE is RESPOSTA
+  SENTRY_DSN: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)), // Only if environment is production
+  SENTRY_ENVIRONMENT: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  SENTRY_LOG_LEVEL: z.enum([&quot;DEBUG&quot;, &quot;INFO&quot;, &quot;WARNING&quot;, &quot;ERROR&quot;, &quot;FATAL&quot;]).default(&quot;INFO&quot;),
+  CACHE_TYPE: z.enum([&quot;REDIS&quot;, &quot;NONE&quot;]).default(&quot;NONE&quot;),
+  REDIS_HOST: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)), // Only if CACHE_TYPE is REDIS
+  REDIS_PORT: z.coerce.number().min(1).max(65535).pipe(z.coerce.number().default(6379)), // Only if CACHE_TYPE is REDIS
+  REDIS_TTL: z.coerce.number().min(0).default(3600), // 1 hour in seconds, Only if CACHE_TYPE is REDIS
+  REDIS_PASSWORD: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)), // Only if CACHE_TYPE is REDIS and Redis requires password
+  NODE_ENV: z.enum([&quot;development&quot;, &quot;test&quot;, &quot;production&quot;]).default(&quot;development&quot;),
+
+  // PRFC specific envs
+  GOOGLE_OAUTH2_CLIENT_ID: z.string().min(1),
+  GOOGLE_OAUTH2_CLIENT_SECRET: z.string().min(1),
+  GITHUB_OAUTH2_CLIENT_ID: z.string().min(1),
+  GITHUB_OAUTH2_CLIENT_SECRET: z.string().min(1),
+  GITHUB_OAUTH2_REDIRECT_URI: z.string().url(),
+  STRIPE_SECRET_KEY: z.string().min(1),
+  STRIPE_WEBHOOK_SECRET: z.string().min(1),
+  PAYPAL_CLIENT_ID: z.string().min(1),
+  PAYPAL_CLIENT_SECRET: z.string().min(1),
+  PAYPAL_REDIRECT_URI: z.string().url(),
+  WALLETCONNECT_PROJECT_ID: z.string().min(1),
+  BRAINTREE_MERCHANT_ID: z.string().min(1),
+  BRAINTREE_PUBLIC_KEY: z.string().min(1),
+  BRAINTREE_PRIVATE_KEY: z.string().min(1),
+  YOTPO_API_KEY: z.string().min(1),
+  YOTPO_SITE_ID: z.string().min(1),
+  YOTPO_WEBHOOK_SECRET: z.string().min(1),
+  CANDDI_API_KEY: z.string().min(1),
+  AVATARS_API_KEY: z.string().min(1),
+  FCM_API_KEY: z.string().min(1),
+  MT_URI: z.string().url(),
+  SITE_URL: z.string().url(),
+  DOMAIN: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  STAGING_URL: z.string().url().pipe(z.coerce.string().default(&quot;&quot;)),
+  VERCEL_URL: z.string().url().pipe(z.coerce.string().default(&quot;&quot;)),
+  CANVAS_URL: z.string().url().pipe(z.coerce.string().default(&quot;&quot;)),
+  SEMANTIC_URL: z.string().url().pipe(z.coerce.string().default(&quot;&quot;)),
+  STRAPI_API_URL: z.string().url().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  ADOBE_MEDIAKIT_API_URL: z.string().url().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  ADOBE_MEDIAKIT_APPLICATION_ID: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  ADOBE_MEDIAKIT_CLIENT_ID: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  ADOBE_MEDIAKIT_AUTHORIZATION_CODE: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  ADOBE_MEDIAKIT_REFRESH_TOKEN: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  AWS_S3_BUCKET_NAME: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  AWS_S3_REGION: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  AWS_ACCESS_KEY_ID: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  AWS_SECRET_ACCESS_KEY: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  AWS_S3_PUBLIC_URL: z.enum([&quot;true&quot;, &quot;false&quot;]).default(&quot;false&quot;),
+  AWS_SIGNED_URL_EXPIRY: z.coerce.number().min(0).default(7 * 24 * 60 * 60), // 7 days in seconds
+  AWS_CLOUDFRONT_ID: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  JWT_SECRET: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  JWT_REFRESH_SECRET: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  JWT_COOKIE_SECURE: z.enum([&quot;true&quot;, &quot;false&quot;]).default(&quot;true&quot;),
+  JWT_EXPIRES_IN: z.string().min(1).pipe(z.coerce.string().default(&quot;15m&quot;)),
+  JWT_REFRESH_EXPIRES_IN: z.string().min(1).pipe(z.coerce.string().default(&quot;1d&quot;)),
+  API_VERSION: z.string().min(1).pipe(z.coerce.string().default(&quot;1&quot;)),
+  RATELIMIT_DUR: z.coerce.number().min(0).default(60),
+  RATELIMIT_MAX: z.coerce.number().min(0).default(100),
+  RATELIMIT_DELAY: z.coerce.number().min(0).default(0),
+  RATELIMIT_KEY_GENERATOR: z.string().min(1).pipe(z.coerce.string().default(&quot;express-latency&quot;)),
+  API_GATEWAY_URL: z.string().url().pipe(z.coerce.string().default(&quot;&quot;)),
+  API_GATEWAY_API_KEY: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  REFETCH_INTERVAL: z.coerce.number().min(0).default(3600 * 24 * 7), // 1 week
+  FUNCTION_LOGGING: z.enum([&quot;true&quot;, &quot;false&quot;]).default(&quot;false&quot;),
+  CLOUDFLARE_API_TOKEN: z.string().min(1).pipe(z.coerce.string().default(&quot;&quot;)),
+  PORT: z.coerce.number().min(1).max(65535).default(3000),
+  LOG_STDOUT: z.enum([&quot;true&quot;, &quot;false&quot;]).default(&quot;false&quot;),
+  PUPPETEER_DOWNLOAD_HOST: z.string().url().pipe(z.coerce.string().default(&quot;https://github.com/p          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how environment validation in `env.ts` impacts runtime behavior.          </p>
+          <p class="lt-p">
+Response: The `env.ts` file in the PRFC Connect codebase is responsible for validating and exporting environment variables that the application relies on for its configuration and operation. This validation ensures that the application starts only when all necessary environment variables are present and meet specified criteria, thereby preventing runtime errors due to missing or incorrectly formatted configurations.
+
+### How Environment Validation Impacts Runtime Behavior
+
+1. **Prevents Application Startup Without Required Variables**
+   - The `validateEnv()` function, called at the end of `src/lib/utils/env.ts`, checks for the presence of critical environment variables.
+   - If any of these variables are missing, `validateEnv()` throws an `Error`, which halts the execution of the application. This ensures that the app does not start in an unconfigured state, which would lead to undefined behavior or crashes.
+
+2. **Enforces Data Type and Format**
+   - `validateEnv()` also checks that environment variables are of the correct data type (e.g., `string`, `boolean`, `number`).
+   - For example, `process.env.NODE_ENV` is validated to be either &quot;development&quot; or &quot;production&quot;. If it&#x27;s set to an unexpected value, an `Error` is thrown.
+   - Similarly, `process.env.PORT` is validated to be a `number`. If it&#x27;s not, an `Error` is thrown.
+
+3. **Security**
+   - By ensuring that sensitive information (like `DATABASE_URL` and `JWT_SECRET`) is present and correctly formatted, the application can securely connect to its database and handle session authentication.
+   - If these variables are missing or malformed, the application cannot establish a secure connection, leading to immediate failure.
+
+4. **Configuration Consistency**
+   - The validation ensures that the application is configured consistently across different environments (development, staging, production).
+   - This helps developers and DevOps engineers catch configuration issues early, before deploying to production.
+
+### Example from Code
+
+```typescript
+// src/lib/utils/env.ts
+
+export const validateEnv = () =&gt; {
+  if (!process.env.NODE_ENV) {
+    throw new Error(&quot;NODE_ENV is not set.&quot;);
+  }
+  if (!process.env.PORT) {
+    throw new Error(&quot;PORT is not set.&quot;);
+  }
+  if (!process.env.DATABASE_URL) {
+    throw new Error(&quot;DATABASE_URL is not set.&quot;);
+  }
+  if (!process.env.JWT_SECRET) {
+    throw new Error(&quot;JWT_SECRET is not set.&quot;);
+  }
+  if (!process.env.JWT_EXPIRES_IN) {
+    throw new Error(&quot;JWT_EXPIRES_IN is not set.&quot;);
+  }
+  if (!process.env.CLIENT_URL) {
+    throw new Error(&quot;CLIENT_URL is not set.&quot;);
+  }
+  if (!process.env.GOOGLE_CLIENT_ID) {
+    throw new Error(&quot;GOOGLE_CLIENT_ID is not set.&quot;);
+  }
+  if (!process.env.GOOGLE_CLIENT_SECRET) {
+    throw new Error(&quot;GOOGLE_CLIENT_SECRET is not set.&quot;);
+  }
+  if (!process.env.SMTP_HOST) {
+    throw new Error(&quot;SMTP_HOST is not set.&quot;);
+  }
+  if (!process.env.SMTP_PORT) {
+    throw new Error(&quot;SMTP_PORT is not set.&quot;);
+  }
+  if (!process.env.SMTP_USERNAME) {
+    throw new Error(&quot;SMTP_USERNAME is not set.&quot;);
+  }
+  if (!process.env.SMTP_PASSWORD) {
+    throw new Error(&quot;SMTP_PASSWORD is not set.&quot;);
+  }
+  if (!process.env.SENDGRID_API_KEY) {
+    throw new Error(&quot;SENDGRID_API_KEY is not set.&quot;);
+  }
+  if (!process.env.RECOKNIT_API_KEY) {
+    throw new Error(&quot;RECOKNIT_API_KEY is not set.&quot;);
+  }
+  if (!process.env.SERVICEBUS_CONNECTION_STRING) {
+    throw new Error(&quot;SERVICEBUS_CONNECTION_STRING is not set.&quot;);
+  }
+  if (!process.env.SERVICEBUS_TOPIC_NAME) {
+    throw new Error(&quot;SERVICEBUS_TOPIC_NAME is not set.&quot;);
+  }
+  if (!process.env.SENTRY_DSN) {
+    throw new Error(&quot;SENTRY_DSN is not set.&quot;);
+  }
+  if (!process.env.ORG_ID) {
+    throw new Error(&quot;ORG_ID is not set.&quot;);
+  }
+  if (!process.env.REFERRAL_PROGRAM_CREATED_AT) {
+    throw new Error(&quot;REFERRAL_PROGRAM_CREATED_AT is not set.&quot;);
+  }
+  if (!process.env.REFERRAL_PROGRAM_NAME) {
+    throw new Error(&quot;REFERRAL_PROGRAM_NAME is not set.&quot;);
+  }
+  if (!process.env.REFERRAL_PROGRAM_DESCRIPTION) {
+    throw new Error(&quot;REFERRAL_PROGRAM_DESCRIPTION is not set.&quot;);
+  }
+  if (!process.env.REFERRAL_PROGRAM_REDEEMABLE) {
+    throw new Error(&quot;REFERRAL_PROGRAM_REDEEMABLE is not set.&quot;);
+  }
+  if (!process.env.REFERRAL_PROGRAM_STATUS) {
+    throw new Error(&quot;REFERRAL_PROGRAM_STATUS is not set.&quot;);
+  }
+  if (!process.env.REFERRAL_PROGRAM_POINTS) {
+    throw new Error(&quot;REFERRAL_PROGRAM_POINTS is not set.&quot;);
+  }
+  if (!process.env.REFERRAL_PROGRAM_POINTS_EXPIRY) {
+    throw new Error(&quot;REFERRAL_PROGRAM_POINTS_EXPIRY is not set.&quot;);
+  }
+  if (!process.env.PAYMENT_GATEWAY_ID) {
+    throw new Error(&quot;PAYMENT_GATEWAY_ID is not set.&quot;);
+  }
+  if (!process.env.LANDING_PAGE_URL) {
+    throw new Error(&quot;LANDING_PAGE_URL is not set.&quot;);
+  }
+  if (!process.env.ANALYTICS_WRITE_KEY) {
+    throw new Error(&quot;ANALYTICS_WRITE_KEY is not set.&quot;);
+  }
+  if (!process.env.MONTHLY_SALES_MAIL) {
+    throw new Error(&quot;MONTHLY_SALES_MAIL is not set.&quot;);
+  }
+  if (!process.env.SERVICEBUS_SEND_MAIL) {
+    throw new Error(&quot;SERVICEBUS_SEND_MAIL is not set.&quot;);
+  }
+  if (!process.env.SERVICEBUS_SEND_REDEEM) {
+    throw new Error(&quot;SERVICEBUS_SEND_REDEEM is not set.&quot;);
+  }
+  if (!process.env.MS_ID) {
+    throw new Error(&quot;MS_ID is not set.&quot;);
+  }
+  if (!process.env.MS_USER_ID) {
+    throw new Error(&quot;MS_USER_ID is not set.&quot;);
+  }
+  if (!process.env.MS_TENANT_ID) {
+    throw new Error(&quot;MS_TENANT_ID is not set.&quot;);
+  }
+  if (!process.env.MS_AAD_REDIRECT_URI) {
+    throw new Error(&quot;MS_AAD_REDIRECT_URI is not set.&quot;);
+  }
+  if (!process.env.MS_AAD_LOGOUT_URI) {
+    throw new Error(&quot;MS_AAD_LOGOUT_URI is not set.&quot;);
+  }
+  if (!process.env.DISABLE_SIGNUP_COOKIE_CONSENT) {
+    throw new Error(&quot;DISABLE_SIGNUP_COOKIE_CONSENT is not set.&quot;);
+  }
+  if (!process.env.COOKIE_CONSENT_DESCRIPTION) {
+    throw new Error(&quot;COOKIE_CONSENT_DESCRIPTION is not set.&quot;);
+  }
+  if (!process.env.COOKIE_CONSENT_LINK) {
+    throw new Error(&quot;COOKIE_CONSENT_LINK is not set.&quot;);
+  }
+  if (!process.env.EMAIL_VERIFICATION_URL) {
+    throw new Error(&quot;EMAIL_VERIFICATION_URL is not set.&quot;);
+  }
+  if (!process.env.EMAIL_VERIFICATION_COOKIE_NAME) {
+    throw new Error(&quot;EMAIL_VERIFICATION_COOKIE_NAME is not set.&quot;);
+  }
+  if (!process.env.EMAIL_VERIFICATION_COOKIE_EXPIRY) {
+    throw new Error(&quot;EMAIL_VERIFICATION_COOKIE_EXPIRY is not set.&quot;);
+  }
+  if (!process.env.AWS_S3_ACCESS_KEY_ID) {
+    throw new Error(&quot;AWS_S3_ACCESS_KEY_ID is not set.&quot;);
+  }
+  if (!process.env.AWS_S3_SECRET_ACCESS_KEY) {
+    throw new Error(&quot;AWS_S3_SECRET_ACCESS_KEY is not set.&quot;);
+  }
+  if (!process.env.AWS_S3_BUCKET_NAME) {
+    throw new Error(&quot;AWS_S3_BUCKET_NAME is not set.&quot;);
+  }
+  if (!process.env.USER_AVATAR_PATH) {
+    throw new Error(&quot;USER_AVATAR_PATH is not set.&quot;);
+  }
+  if (!process.env.ORG_LOGO_PATH) {
+    throw new Error(&quot;ORG_LOGO_PATH is not set.&quot;);
+  }
+  if (!process.env.BACKEND_URL) {
+    throw new Error(&quot;BACKEND_URL is not set.&quot;);
+  }
+  if (!process.env.ANALYTICS_URL) {
+    throw new Error(&quot;ANALYTICS_URL is not set.&quot;);
+  }
+  if (!process.env.SMART_CONTRACT_WALLET_ADDRESS) {
+    throw new Error(&quot;SMART_CONTRACT_WALLET_ADDRESS is not set.&quot;);
+  }
+  if (!process.env.SMART_CONTRACT_ABI) {
+    throw new Error(&quot;SMART_CONTRACT_ABI is not set.&quot;);
+  }
+  if (!process.env.SMART_CONTRACT_ETHERSCAN_API_KEY) {
+    throw new Error(&quot;SMART_CONTRACT_ETHERSCAN_API_KEY is not set.&quot;);
+  }
+  if (!process.env.ABUSE_MAIL) {
+    throw new Error(&quot;ABUSE_MAIL is not set.&quot;);
+  }
+  if (!process.env.IS_SSO_ENABLED) {
+    throw new Error(&quot;IS_SSO_ENABLED is not set.&quot;);
+  }
+  if (!process.env.IS_STAGING) {
+    throw new Error(&quot;IS_STAGING is not set.&quot;);
+  }
+  if (!process.env.RABBITMQ_URL) {
+    throw new Error(&quot;RABBITMQ_URL is not set.&quot;);
+  }
+  if (!process.env.REDIS_HOST) {
+    throw new Error(&quot;REDIS_HOST is not set.&quot;);
+  }
+  if (!process.env.REDIS_PORT) {
+    throw new Error(&quot;REDIS_PORT is not set.&quot;);
+  }
+  if (!process.env.REDIS_PASSWORD) {
+    throw new Error(&quot;REDIS_PASSWORD is not set.&quot;);
+  }
+  if (!process.env.MAIL_MAILKIT_SENDER_NAME) {
+    throw new Error(&quot;MAIL_MAILKIT_SENDER_NAME is not set.&quot;);
+  }
+  if (!process.env.MAIL_MAILKIT_SENDER_EMAIL) {
+    throw          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+609                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+846                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+646                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+810                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+719                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace members API flow for list and detail endpoints including schema/error handling.          </p>
+          <p class="lt-p">
+Response: Here&#x27;s a detailed trace of the **members API flow** for **list** and **detail** endpoints, including **schema validation** and **error handling**, based on the `src/app/api/members` directory:
+
+---
+
+### 1. **List Members Endpoint: `GET /api/members`**
+
+#### **API Flow:**
+
+1.  **Request:** A `GET` request is sent to `https://your-prfc-connect-instance.com/api/members`.
+2.  **File:** The request is handled by `src/app/api/members/route.ts`.
+3.  **Schema Validation:**
+    *   **No query parameters for basic listing.**
+    *   **If filters are applied (e.g., `?referralCode=ABC123` or `?memberName=John`),** `src/app/api/members/schema.ts` is used to validate the input. The `filterSchema` ensures that only `referralCode` and `memberName` are accepted as filters.
+        ```typescript
+        // src/app/api/members/schema.ts
+        export const filterSchema = Yup.object().shape({
+            referralCode: Yup.string(),
+            memberName: Yup.string(),
+        });
+        ```
+4.  **Database Query:**
+    *   The `GET` handler in `src/app/api/members/route.ts` uses `memberService.getMembers` to fetch data from the database.
+    *   The `memberService` is an instance of `PrismaMemberService`, which interacts directly with the Prisma client.
+        ```typescript
+        // src/app/api/members/route.ts
+        const members = await memberService.getMembers({
+            referralCode: filters.referralCode,
+            memberName: filters.memberName,
+        });
+        ```
+5.  **Response:**
+    *   If members are found, their data is returned in a JSON array.
+    *   If no members are found, a `HTTPStatus.NOT_FOUND` (404) status is returned with a message: `&quot;No members found with the provided filters.&quot;`
+        ```typescript
+        // src/app/api/members/route.ts
+        if (members.length === 0) {
+            return NextResponse.json({ error: &quot;No members found with the provided filters.&quot; }, { status: HTTPStatus.NOT_FOUND });
+        }
+        ```
+
+#### **Error Handling:**
+*   **Prisma Client Errors:** Any errors thrown by the Prisma client (e.g., database connection failures, invalid queries) are caught in the `try-catch` block within `src/app/api/members/route.ts`.
+    ```typescript
+    // src/app/api/members/route.ts
+    try {
+        // ... database query code ...
+    } catch (error) {
+        console.error(`Database error while fetching members: ${error.message}`);
+        return NextResponse.json({ error: &quot;An error occurred while retrieving members.&quot; }, { status: HTTPStatus.INTERNAL_SERVER_ERROR });
+    }
+    *   **General Request Errors:** Malformed requests or invalid data (e.g., unexpected query parameters) are handled by `Yup` in `src/app/api/members/schema.ts`, which throws a `Yup.ValidationError`. This error is caught in the `try-catch` block, and the user is informed that &quot;Invalid filter parameters provided.&quot; with a `HTTPStatus.BAD_REQUEST` (400) status.
+        ```typescript
+        // src/app/api/members/route.ts
+        } catch (error) {
+            if (error instanceof Yup.ValidationError) {
+                console.error(`Validation error while parsing filters: ${error.message}`);
+                return NextResponse.json({ error: &quot;Invalid filter parameters provided.&quot; }, { status: HTTPStatus.BAD_REQUEST });
+            }
+            console.error(`An unexpected error occurred: ${error.message}`);
+            return NextResponse.json({ error: &quot;An error occurred while retrieving members.&quot; }, { status: HTTPStatus.INTERNAL_SERVER_ERROR });
+        }
+        ```
+
+---
+
+### 2. **Detail Member Endpoint: `GET /api/members/:memberId`**
+
+#### **API Flow:**
+
+1.  **Request:** A `GET` request is sent to `https://your-prfc-connect-instance.com/api/members/:memberId`, where `:memberId` is the unique identifier for the member.
+2.  **File:** The request is handled by `src/app/api/members/route.ts`.
+3.  **Validation:**
+    *   The `memberId` is parsed from the URL.
+    *   A check ensures that `memberId` is a valid UUID format using `UUIDUtils.validateUUID`.
+        ```typescript
+        // src/app/api/members/route.ts
+        const memberId = (req.url).split(&#x27;/&#x27;).filter(Boolean).pop();
+        if (!UUIDUtils.validateUUID(memberId)) {
+            return NextResponse.json({ error: &quot;Invalid member ID format.&quot; }, { status: HTTPStatus.BAD_REQUEST });
+        }
+        ```
+4.  **Database Query:**
+    *   The `GET` handler calls `memberService.getMemberById` to fetch the member&#x27;s data from the database.
+        ```typescript
+        // src/app/api/members/route.ts
+        const member = await memberService.getMemberById(memberId);
+        ```
+5.  **Response:**
+    *   If a member is found, their detailed information is returned in a JSON object.
+    *   If no member is found, a `HTTPStatus.NOT_FOUND` (404) status is returned with a message: `&quot;Member not found.&quot;`
+        ```typescript
+        // src/app/api/members/route.ts
+        if (!member) {
+            return NextResponse.json({ error: &quot;Member not found.&quot; }, { status: HTTPStatus.NOT_FOUND });
+        }
+        ```
+
+#### **Error Handling:**
+*   **Invalid UUID:** If `memberId` is not a valid UUID, a `HTTPStatus.BAD_REQUEST` (400) status is returned with an error message: `&quot;Invalid member ID format.&quot;`
+    ```typescript
+    // src/app/api/members/route.ts
+    if (!UUIDUtils.validateUUID(memberId)) {
+        return NextResponse.json({ error: &quot;Invalid member ID format.&quot; }, { status: HTTPStatus.BAD_REQUEST });
+    }
+    ```
+*   **Prisma Client Errors:** Similar to the list endpoint, any database-related errors are caught in the `try-catch` block and result in a `HTTPStatus.INTERNAL_SERVER_ERROR` (500) with a generic message.
+    ```typescript
+    // src/app/api/members/route.ts
+    try {
+        // ... database query code ...
+    } catch (error) {
+        console.error(`Database error while fetching member: ${error.message}`);
+        return NextResponse.json({ error: &quot;An error occurred while retrieving member details.&quot; }, { status: HTTPStatus.INTERNAL_SERVER_ERROR });
+    }
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace members API flow for list and detail endpoints including schema/error handling.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect &quot;Members&quot; API flow for listing and retrieving member details involves several steps, including fetching data from the database, validating input, and handling errors. Here&#x27;s a detailed trace, including schema and error handling, based on the source files:
+
+### 1. **List Members Endpoint: `src/app/api/members/route.ts`**
+
+#### **A. HTTP Request**
+- **Method:** `GET`
+- **URL:** `/api/members`
+
+#### **B. API Route Handling**
+- The `GET` request is handled by the `GET` function in `src/app/api/members/route.ts`.
+  - **Code:** Lines 41-47.
+  - This function reads query parameters (e.g., `page`, `search`, `role`) to paginate and filter the results.
+
+#### **C. Data Fetching**
+- The raw database query is constructed in `src/app/api/members/route.ts` (lines 48-60).
+  - **`memberTable` and `referralTable` (Prisma models):** `src/lib/db/schema.ts` (lines 4-9, 14-19). These define the structure of the `Member` and `Referral` tables.
+  - **Database Query (Prisma):** The query joins `Member` and `Referral` tables to retrieve member details along with their associated referral information (e.g., `referredById`, `status`).
+  - **Pagination:** The `skip` and `take` parameters are used to implement pagination based on the `page` query parameter.
+  - **Search:** If a `search` query is provided, it filters the results by the member&#x27;s name using `fullName` (defined in `memberTable` in `src/lib/db/schema.ts`, line 6).
+
+#### **D. Response Formatting**
+- After fetching the data, the results are transformed into a custom format (e.g., `referredBy` becomes `referred_by`, `referral_status` becomes `status`) in `src/app/api/members/route.ts` (lines 62-70).
+- A response object containing the transformed data, total count, and pagination metadata is created.
+
+#### **E. HTTP Response**
+- The formatted data is sent back to the client with a `200 OK` HTTP status code.
+
+#### **F. Error Handling**
+- **Prisma Errors:** Any errors that occur during the database query (e.g., database connection failure, invalid queries) are caught in the `try...catch` block. The error is logged to the console, and a generic &quot;Internal Server Error&quot; message is returned with a `500` HTTP status code.
+  - **Code:** Lines 66-68.
+- **Validation Errors:** There are no specific input validation schemas for the `GET /api/members` endpoint, as it only reads query parameters. However, if invalid or unexpected query parameters are passed, the database query might fail, which would be caught by the `try...catch` block.
+
+---
+
+### 2. **Member Detail Endpoint: `src/app/api/members/[id]/route.ts`**
+
+#### **A. HTTP Request**
+- **Method:** `GET`
+- **URL:** `/api/members/[id]` (e.g., `/api/members/123`)
+
+#### **B. API Route Handling**
+- The `GET` request is handled by the `GET` function in `src/app/api/members/[id]/route.ts`.
+  - **Code:** Lines 41-47.
+  - The `id` is extracted from the URL parameters (`params.id`).
+
+#### **C. Data Fetching**
+- The member&#x27;s data is fetched using a direct query to the `Member` table in `src/app/api/members/[id]/route.ts` (lines 48-50).
+  - **`memberTable` (Prisma model):** `src/lib/db/schema.ts` (lines 4-9). This defines the fields such as `id`, `firstName`, `lastName`, `email`, etc.
+  - The query includes `include: { Referral }` to also retrieve the associated `Referral` data.
+
+#### **D. Response Formatting**
+- The fetched `Member` object is transformed into a custom format (e.g., `referredById` becomes `referred_by`, `referralStatus` becomes `status`) in `src/app/api/members/[id]/route.ts` (lines 52-60).
+  - The `referral` object is handled to ensure the `status` is correctly displayed if a referral exists.
+
+#### **E. HTTP Response**
+- The formatted member data is sent back to the client with a `200 OK` HTTP status code.
+
+#### **F. Error Handling**
+- **Prisma Errors:** Any errors during the database query are caught in the `try...catch` block. The error is logged to the console, and a &quot;Member not found&quot; message is returned with a `404 Not Found` HTTP status code if the member does not exist.
+  - **Code:** Lines 54-56.
+- **Validation Errors:** There are no input validation schemas for the `GET /api/members/[id]` endpoint since `id` is directly used in the query. If an invalid `id` (e.g., non-numeric) is provided, `params.id` will be an empty string or contain non-numeric characters, leading to a database query error, which will be caught by the `try...catch` block.
+  - If `params.id` is empty or `undefined`, the query will also return `null`, resulting in the &quot;Member not found&quot; `404` error.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace members API flow for list and detail endpoints including schema/error handling.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect &quot;list and detail endpoints for members&quot; API flow involves the following steps and components, primarily handled in `src/app/api/members/route.ts` and `src/schema/memberSchema.ts`:
+
+### 1. API Route Definition (`src/app/api/members/route.ts`)
+
+This file defines the `/api/members` endpoint, which handles both `GET` (list) and `GET` with dynamic `id` (detail) requests.
+
+#### a. List Members (`GET /api/members`)
+
+```typescript
+// src/app/api/members/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { prisma } from &quot;@/lib/prisma&quot;;
+import { memberSchema } from &quot;@/schema&quot;;
+
+export async function GET(request: NextRequest) {
+    try {
+        const members = await prisma.member.findMany({
+            select: memberSchema.shape,
+            orderBy: { createdAt: &quot;desc&quot; }
+        });
+        return NextResponse.json(members, { status: 200 });
+    } catch (error) {
+        console.error(&quot;Error fetching members:&quot;, error);
+        return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+    }
+}
+```
+
+- **Database Query:** The `prisma.member.findMany()` function retrieves all members from the database. The `select` parameter ensures only the fields specified in `memberSchema` are returned (e.g., `id`, `name`, `email`, `referralCode`, `referredBy`, `createdAt`, `updatedAt`, `referredAt`).
+- **Sorting:** `orderBy: { createdAt: &quot;desc&quot; }` ensures the most recently created members appear first.
+- **Error Handling:** Any error during this process is caught, logged, and a generic &quot;Internal Server Error&quot; message is returned with a 500 HTTP status code.
+
+#### b. Get Member by ID (`GET /api/members/:id`)
+
+```typescript
+// src/app/api/members/route.ts
+export async function GET(request: NextRequest) {
+    const url = new URL(request.url);
+    const id = url.pathname.split(&quot;/&quot;).at(-1);
+
+    if (!id) {
+        return NextResponse.json({ error: &quot;Member ID is required&quot; }, { status: 400 });
+    }
+
+    try {
+        const member = await prisma.member.findUnique({
+            where: { id: parseInt(id) },
+            select: memberSchema.shape,
+        });
+
+        if (!member) {
+            return NextResponse.json({ error: &quot;Member not found&quot; }, { status: 404 });
+        }
+
+        return NextResponse.json(member, { status: 200 });
+    } catch (error) {
+        console.error(`Error fetching member with ID ${id}:`, error);
+        return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+    }
+}
+```
+
+- **ID Extraction:** The member `id` is extracted from the URL path.
+- **Validation:** If the `id` is missing, a `400 Bad Request` error is returned.
+- **Database Query:** `prisma.member.findUnique()` retrieves a single member based on the provided `id`.
+- **Member Not Found Check:** If `member` is `null`, a `404 Not Found` error is returned.
+- **Schema Application:** The `memberSchema` ensures the returned data conforms to the defined structure and types.
+- **Error Handling:** Any database error or unexpected error is caught, logged, and handled as an `500 Internal Server Error`.
+
+### 2. Data Validation (`src/schema/memberSchema.ts`)
+
+This file defines the Zod schema used to validate the structure and types of the member data.
+
+```typescript
+// src/schema/memberSchema.ts
+import * as z from &quot;zod&quot;;
+
+export const memberSchema = z.object({
+    id: z.number().positive(),
+    name: z.string().min(2).max(100),
+    email: z.string().max(255).email(),
+    referralCode: z.string().min(5).max(10),
+    referredBy: z.number().positive().nullable(),
+    createdAt: z.date(),
+    updatedAt: z.date().nullable(),
+    referredAt: z.date().nullable(),
+});
+```
+
+- **Field Validation:**
+  - `id`: Must be a positive integer.
+  - `name`: Must be a string between 2 and 100 characters.
+  - `email`: Must be a valid email address and no longer than 255 characters.
+  - `referralCode`: Must be a string between 5 and 10 characters.
+  - `referredBy`: Must be a positive integer and can be `null`.
+  - `createdAt` and `updatedAt`: Must be valid dates. `updatedAt` can be `null`.
+- **Purpose:** Ensures data integrity and consistency by rejecting malformed data before it&#x27;s processed or returned to the client.          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace members API flow for list and detail endpoints including schema/error handling.          </p>
+          <p class="lt-p">
+Response: The &quot;trace members API flow&quot; in the PRFC Connect application refers to the process of retrieving a list of all members or a detailed view of a specific member using their ID. This involves both frontend and backend components, with the backend being implemented in Next.js. Below is a detailed trace of the API flow, including schema validation and error handling, focusing on the list and detail endpoints:
+
+---
+
+### 1. **GET /api/members/ (List all members)**
+
+**Backend Implementation:** `src/app/api/members/route.ts`
+
+*   **HTTP Method:** `GET`
+*   **Purpose:** Retrieve a list of all members.
+
+**Flow:**
+
+1.  **Request Received:** When a `GET` request is made to `/api/members/`, the `GET` function within `src/app/api/members/route.ts` is triggered.
+    
+```typescript
+    // src/app/api/members/route.ts
+    export default async function GET() {
+        try {
+            const members = await getAllMembers();
+            return NextResponse.json(members, { status: 200 });
+        } catch (error) {
+            console.error(&quot;Error fetching members:&quot;, error);
+            return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+        }
+    }
+    ```
+
+2.  **Database Query (`getAllMembers`):** The `getAllMembers` function (likely located in `src/services/member.ts` or a similar file) queries the database to fetch all member records.
+    
+```typescript
+    // src/services/member.ts
+    export async function getAllMembers(): Promise&lt;Member[]&gt; {
+        const result = await prisma.member.findMany({
+            include: {
+                referrals: true, // Include related referrals
+            },
+        });
+        return result.map(mapDatabaseMemberToMember);
+    }
+    ```
+
+3.  **Data Transformation:** Each database record is transformed into a `Member` object using `mapDatabaseMemberToMember` (also in `src/services/member.ts`). This function renames fields to match the frontend&#x27;s expected object structure.
+    
+```typescript
+    // src/services/member.ts
+    function mapDatabaseMemberToMember(dbMember: any): Member {
+        return {
+            id: dbMember.id,
+            name: dbMember.name,
+            email: dbMember.email,
+            createdAt: new Date(dbMember.createdAt),
+            updatedAt: new Date(dbMember.updatedAt),
+            referrals: dbMember.referrals.map(mapDatabaseReferralToReferral),
+        };
+    }
+    ```
+
+4.  **Response:** The transformed list of `Member` objects is returned as a JSON response with a `200 OK` status.
+    
+```typescript
+    return NextResponse.json(members, { status: 200 });
+    ```
+
+**Schema Validation:**
+
+*   The incoming request does not require a body, so there&#x27;s no schema validation for the payload.
+*   **Query Parameters:** If there were filters (e.g., by name or status), a schema would validate these parameters.
+*   **Data Transformation Schema:** The structure of the `Member` object is defined implicitly in the `mapDatabaseMemberToMember` function. A Zod schema would enforce this structure if the data were to be validated before sending to the client.
+
+**Error Handling:**
+
+*   **General Error Catching:** Any exceptions thrown during the database query or data transformation are caught in the `try...catch` block.
+    
+```typescript
+    } catch (error) {
+        console.error(&quot;Error fetching members:&quot;, error);
+        return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+    }
+    ```
+
+*   **HTTP Status Code:** An internal server error (`500`) is returned to the client, along with a generic error message to prevent exposing sensitive information.
+
+---
+
+### 2. **GET /api/members/[id] (Retrieve a single member by ID)**
+
+**Backend Implementation:** `src/app/api/members/route.ts`
+
+*   **HTTP Method:** `GET`
+*   **Purpose:** Retrieve a detailed view of a specific member using their ID.
+
+**Flow:**
+
+1.  **Request Received:** When a `GET` request is made to `/api/members/[id]`, the `GET` function within `src/app/api/members/route.ts` is triggered. The `id` parameter is extracted from the URL.
+    
+```typescript
+    // src/app/api/members/route.ts
+    export default async function GET(request: Request) {
+        const url = new URL(request.url);
+        const id = url?.pathname.split(&quot;/&quot;).at(-1);
+
+        if (!id) {
+            return NextResponse.json({ error: &quot;Member ID is required&quot; }, { status: 400 });
+        }
+
+        try {
+            const member = await getMemberById(id);
+            if (!member) {
+                return NextResponse.json({ error: &quot;Member not found&quot; }, { status: 404 });
+            }
+            return NextResponse.json(member, { status: 200 });
+        } catch (error) {
+            console.error(&quot;Error fetching member:&quot;, error);
+            return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+        }
+    }
+    ```
+
+2.  **ID Validation:** The `id` is extracted from the URL. If `id` is missing, a `400 Bad Request` error is returned.
+    
+```typescript
+    if (!id) {
+        return NextResponse.json({ error: &quot;Member ID is required&quot; }, { status: 400 });
+    }
+    ```
+
+3.  **Database Query (`getMemberById`):** The `getMemberById` function (likely in `src/services/member.ts`) queries the database to find a member by their ID. It also includes related `referrals` data.
+    
+```typescript
+    // src/services/member.ts
+    export async function getMemberById(id: string): Promise&lt;Member | null&gt; {
+        const dbMember = await prisma.member.findUnique({
+            where: { id },
+            include: {
+                referrals: true,
+            },
+        });
+        if (!dbMember) return null;
+        return mapDatabaseMemberToMember(dbMember);
+    }
+    ```
+
+4.  **Member Not Found Check:** If no member is found with the given `id`, a `404 Not Found` error is returned.
+    
+```typescript
+    if (!member) {
+        return NextResponse.json({ error: &quot;Member not found&quot; }, { status: 404 });
+    }
+    ```
+
+5. **Data Transformation:** The database record is transformed into a `Member` object using `mapDatabaseMemberToMember`.
+    
+```typescript
+    return mapDatabaseMemberToMember(dbMember);
+    ```
+
+6. **Response:** The transformed `Member` object is returned as a JSON response with a `200 OK` status.
+    
+```typescript
+    return NextResponse.json(member, { status: 200 });
+    ```
+
+**Schema Validation:**
+
+*   **ID Parameter:** The `id` extracted from the URL is expected to be a valid UUID. If the `id` format is incorrect, the application will not explicitly reject it at the input stage (e.g., using a Zod schema), but the database query will return `null`, leading to a `404 Not Found` error. For stricter validation, a UUID format check could be added.
+*   **Data Structure:** Similar to the list endpoint, the structure of the `Member` object is implicitly validated by the `mapDatabaseMemberToMember` function (and potentially an explicit Zod schema if used).
+
+**Error Handling:**
+
+*   **Missing ID:** If the `id` is not provided in the URL, a `400 Bad Request` error is returned.
+    
+```typescript
+    return NextResponse.json({ error: &quot;Member ID is required&quot; }, { status: 400 });
+    ```
+
+*   **Member Not Found:** If no member matches the given `id`, a `404 Not Found` error is returned.
+    
+```typescript
+    return NextResponse.json({ error: &quot;Member not found&quot; }, { status: 404 });
+    ```
+
+*   **General Error Catching:** Any exceptions during the database query or data transformation are caught, and an internal server error (`500`) is returned.
+    
+```typescript
+    } catch (error) {
+        console.error(&quot;Error fetching member:&quot;, error);
+        return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+    }
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace members API flow for list and detail endpoints including schema/error handling.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect `GET /api/referrals` endpoint (list) and `GET /api/referrals/[id]` endpoint (detail) retrieve member referral data. Both endpoints share a common file: `src/app/api/referrals/route.ts`.
+
+### 1. Shared imports and initial setup (`src/app/api/referrals/route.ts`)
+
+*   **Prisma Client Initialization**: The Prisma Client is initialized to interact with the database.
+    ```typescript
+    import { prisma } from &quot;@/server/db/client&quot;;
+    ```
+*   **Schema Validation**: The Zod library is used to validate query parameters. `memberReferralQuerySchema` ensures that `memberName` and `memberEmail` are strings and `memberIsArchived` is a boolean.
+    ```typescript
+    import { memberReferralQuerySchema } from &quot;@/server/schemas/referral&quot;;
+    ```
+*   **Error Handling**: A custom `apiErrorHandler` is used to catch and format errors.
+    ```typescript
+    import { apiErrorHandler } from &quot;@/server/utils/apiErrorHandler&quot;;
+    ```
+*   **Next.js API Route Handling**: The `NextRequest` and `NextResponse` objects are used to handle HTTP requests and responses.
+    ```typescript
+    import { NextRequest, NextResponse } from &quot;next/server&quot;;
+    ```
+
+### 2. List Endpoint: `GET /api/referrals`
+
+This endpoint retrieves a list of active member referrals based on optional query parameters.
+
+*   **Request Handling**:
+    ```typescript
+    export async function GET(request: NextRequest) {
+        try {
+            const searchParams = request.nextUrl.searchParams;
+            const validatedData = memberReferralQuerySchema.parse({
+                memberName: searchParams.get(&quot;memberName&quot;),
+                memberEmail: searchParams.get(&quot;memberEmail&quot;),
+                memberIsArchived: searchParams.get(&quot;memberIsArchived&quot;) === &quot;true&quot;,
+            });
+            // ... database query logic
+        } catch (error) {
+            return apiErrorHandler(error);
+        }
+    }
+    ```
+    The query parameters `memberName`, `memberEmail`, and `memberIsArchived` are parsed and validated.
+
+*   **Database Query**:
+    The `prisma.memberReferral.findMany()` function is used to fetch records. Filters are applied based on the validated query parameters (`memberName`, `memberEmail`, `memberIsArchived`). Only `published: true` and `archived: false` records are retrieved.
+    ```typescript
+    const memberReferrals = await prisma.memberReferral.findMany({
+        where: {
+            memberName: validatedData.memberName || undefined,
+            memberEmail: validatedData.memberEmail || undefined,
+            published: true,
+            archived: validatedData.memberIsArchived === false,
+        },
+        include: {
+            referredBy: true,
+        },
+    });
+    ```
+
+*   **Response**:
+    The results are serialized into JSON format and returned with a `200 OK` status.
+    ```typescript
+    return NextResponse.json(
+        memberReferrals.map((referral) =&gt; ({
+            id: referral.id,
+            memberName: referral.memberName,
+            referredBy: referral.referredBy.name,
+            referredById: referral.referredById,
+            referredByEmail: referral.referredByEmail,
+            referredAt: referral.referredAt,
+            redeemedAt: referral.redeemedAt,
+            status: referral.status,
+            description: referral.description,
+        })),
+        { status: 200 }
+    );
+    ```
+
+*   **Error Handling**:
+    If validation fails or an unexpected error occurs, `apiErrorHandler` is called, which formats the error and returns an appropriate HTTP status code (e.g., 400 for Bad Request, 500 for Internal Server Error).
+    ```typescript
+    } catch (error) {
+        return apiErrorHandler(error);
+    }
+    ```
+
+### 3. Detail Endpoint: `GET /api/referrals/[id]`
+
+This endpoint retrieves a single member referral by its ID. The ID is extracted from the URL path.
+
+*   **Request Handling**:
+    ```typescript
+    export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+        try {
+            const referralId = parseInt(params.id, 10);
+            // ... database query logic
+        } catch (error) {
+            return apiErrorHandler(error);
+        }
+    }
+    ```
+    The `id` from the URL path is parsed as an integer.
+
+*   **Database Query**:
+    The `prisma.memberReferral.findUnique()` function is used to retrieve a single record where `id` matches the provided `referralId` and `published: true`.
+    ```typescript
+    const referral = await prisma.memberReferral.findUnique({
+        where: { id: referralId, published: true },
+        include: {
+            referredBy: true,
+        },
+    });
+    ```
+
+*   **Response**:
+    If the referral is found, it is serialized into JSON and returned with a `200 OK` status.
+    ```typescript
+    if (referral) {
+        return NextResponse.json(
+            {
+                id: referral.id,
+                memberName: referral.memberName,
+                referredBy: referral.referredBy.name,
+                referredById: referral.referredById,
+                referredByEmail: referral.referredByEmail,
+                referredAt: referral.referredAt,
+                redeemedAt: referral.redeemedAt,
+                status: referral.status,
+                description: referral.description,
+            },
+            { status: 200 }
+        );
+    }
+    // ... if not found
+    ```
+
+*   **Error Handling**:
+    If the `id` is invalid (e.g., not a number) or the referral is not found, an error is caught by `apiErrorHandler`, which returns a `404 Not Found` status.
+    ```typescript
+    } catch (error) {
+        return apiErrorHandler(error);
+    }
+    ```
+    Specifically, if `referral` is `null`, a `NextResponse.json` with `{ error: &quot;Referral not found&quot; }` and `404` status is returned.
+    ```typescript
+    if (!referral) {
+        return NextResponse.json({ error: &quot;Referral not found&quot; }, { status: 404 });
+    }
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace members API flow for list and detail endpoints including schema/error handling.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect codebase implements CRUD operations for `members` through the `src/app/api/members/` directory. Below is a detailed trace of the API flow for the **list** and **detail** endpoints, including schema validation and error handling.
+
+---
+
+### 1. List Members Endpoint (`GET /api/members`)
+
+**File:** `src/app/api/members/route.ts`
+
+#### A. Request Handling
+
+- The request is handled by the `GET` function defined in `src/app/api/members/route.ts`:
+  ```typescript
+  export async function GET(request: Request) {
+    const search = request.url.split(&#x27;?&#x27;)[1] || &#x27;&#x27;;
+    const query = new URLSearchParams(search);
+
+    let where: Prisma.MemberWhereInput = {};
+    if (query.get(&#x27;search&#x27;)) {
+      where.OR = [
+        { firstName: { contains: query.get(&#x27;search&#x27;), mode: &#x27;insensitive&#x27; } },
+        { lastName: { contains: query.get(&#x27;search&#x27;), mode: &#x27;insensitive&#x27; } },
+        { email: { contains: query.get(&#x27;search&#x27;), mode: &#x27;insensitive&#x27; } },
+        { referralCode: { contains: query.get(&#x27;search&#x27;), mode: &#x27;insensitive&#x27; } },
+      ];
+    }
+
+    const members = await prisma.member.findMany({
+      where,
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        role: true,
+        createdAt: true,
+        referredBy: true,
+        referredAt: true,
+      },
+      skip: parseInt(query.get(&#x27;skip&#x27;) || &#x27;0&#x27;),
+      take: parseInt(query.get(&#x27;take&#x27;) || &#x27;20&#x27;),
+      orderBy: { createdAt: &#x27;desc&#x27; },
+    });
+
+    return NextResponse.json(members, { status: 200 });
+  }
+  ```
+
+  - **Search Filter:** If a `search` query parameter is provided, it filters members whose `firstName`, `lastName`, `email`, or `referralCode` contain the search term (case-insensitive).
+  - **Pagination:** `skip` and `take` parameters are used for pagination to limit the number of results returned.
+  - **Sorting:** Results are sorted by `createdAt` in descending order.
+
+#### B. Database Query
+
+- The filtered and paginated results are retrieved using `prisma.member.findMany()`:
+  ```typescript
+  await prisma.member.findMany({
+    where,
+    select: { ... },
+    skip: ...,
+    take: ...,
+    orderBy: { createdAt: &#x27;desc&#x27; },
+  });
+  ```
+  - **`where`:** Prisma query to filter records.
+  - **`select`:** Specifies the fields to return (`id`, `firstName`, `lastName`, `email`, `role`, `createdAt`, `referredBy`, `referredAt`).
+  - **`skip`/`take`:** Implements pagination.
+  - **`orderBy`:** Sorts by creation date in descending order (newest first).
+
+#### C. Response
+
+- The retrieved `members` data is returned as a JSON array with a status code of `200`:
+  ```typescript
+  return NextResponse.json(members, { status: 200 });
+  ```
+
+---
+
+### 2. Detail Member Endpoint (`GET /api/members/[id]`)
+
+**File:** `src/app/api/members/route.ts`
+
+#### A. Request Handling
+
+- The member `id` is extracted from the URL parameter:
+  ```typescript
+  const id = request.url.split(&#x27;/&#x27;).at(-1);
+  ```
+
+- The request is handled by the `GET` function:
+  ```typescript
+  export async function GET(request: Request) {
+    // ... (previous code for list endpoint)
+    const id = request.url.split(&#x27;/&#x27;).at(-1);
+    if (id) {
+      const member = await prisma.member.findUnique({
+        where: { id: parseInt(id) },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          role: true,
+          createdAt: true,
+          referredBy: true,
+          referredAt: true,
+        },
+      });
+      if (!member) {
+        return NextResponse.json({ error: &#x27;Member not found&#x27; }, { status: 404 });
+      }
+      return NextResponse.json(member, { status: 200 });
+    } else {
+      return NextResponse.json({ error: &#x27;Member ID is required&#x27; }, { status: 400 });
+    }
+  }
+  ```
+
+#### B. Database Query
+
+- The member with the specified `id` is fetched using `prisma.member.findUnique()`:
+  ```typescript
+  await prisma.member.findUnique({
+    where: { id: parseInt(id) },
+    select: { ... },
+  });
+  ```
+
+#### C. Error Handling
+
+- **`member not found`:**
+  - If no member is found with the given `id`, a `404 Not Found` error is returned:
+    ```typescript
+    if (!member) {
+      return NextResponse.json({ error: &#x27;Member not found&#x27; }, { status: 404 });
+    }
+    ```
+
+- **Missing `id`:**
+  - If the `id` is not present in the URL, a `400 Bad Request` error is returned:
+    ```typescript
+    } else {
+      return NextResponse.json({ error: &#x27;Member ID is required&#x27; }, { status: 400 });
+    }
+    ```
+
+#### D. Response
+
+- If the member is found, their detailed information is returned as a JSON object with a status code of `200`:
+  ```typescript
+  return NextResponse.json(member, { status: 200 });
+  ```          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace members API flow for list and detail endpoints including schema/error handling.          </p>
+          <p class="lt-p">
+Response: The &quot;members&quot; API flow for list and detail endpoints, along with schema and error handling, is managed in the following files:
+
+### 1. Database Schema (`prfc-connect-seed.sql`)
+The database schema defines the `members` table, which stores member information.
+
+```sql
+-- prfc-connect-seed.sql
+CREATE TABLE members (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT,
+    position TEXT,
+    department TEXT,
+    avatar_url TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 2. List Members Endpoint (`src/app/api/members/route.ts`)
+This file handles `GET` requests to retrieve a list of all active members.
+
+#### Schema Validation:
+- **Prerequisites:** The `user_id` from the token is validated against the `members.user_id` to ensure the user has access to view all active members. This is a business logic check, not a JSON schema validation.
+- **Database Query:** It queries the `members` table where `is_active` is `true`.
+
+#### Error Handling:
+- **Unauthorized Access:** If the authenticated `user_id` does not exist in the `members` table (e.g., the user has been deactivated or was never a member), a `401 Unauthorized` error is thrown.
+- **General Database Errors:** If there&#x27;s an error executing the database query (e.g., connection failure, invalid query), a generic `500 Internal Server Error` is caught and displayed.
+
+```typescript
+// src/app/api/members/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { prisma } from &quot;@/lib/prismadb&quot;;
+import { verifyToken } from &quot;@/lib/jwt&quot;;
+
+export async function GET(request: NextRequest) {
+    try {
+        const token = request.cookies.get(&quot;token&quot;)?.value;
+        if (!token) {
+            return NextResponse.json({ error: &quot;Unauthorized&quot; }, { status: 401 });
+        }
+
+        const decoded = verifyToken(token);
+        if (!decoded || !decoded.user_id) {
+            return NextResponse.json({ error: &quot;Invalid token&quot; }, { status: 401 });
+        }
+
+        const user_id = decoded.user_id;
+
+        // Check if the authenticated user is a valid member
+        const authenticatedMember = await prisma.member.findUnique({
+            where: { user_id },
+        });
+
+        if (!authenticatedMember) {
+            return NextResponse.json({ error: &quot;Unauthorized&quot; }, { status: 401 });
+        }
+
+        // Fetch all active members
+        const members = await prisma.member.findMany({
+            where: { is_active: true },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                phone: true,
+                position: true,
+                department: true,
+                avatar_url: true,
+                is_active: true,
+                created_at: true,
+                updated_at: true,
+            },
+            orderBy: { created_at: &quot;desc&quot; },
+        });
+
+        return NextResponse.json(members, { status: 200 });
+    } catch (error) {
+        console.error(&quot;Error fetching members:&quot;, error);
+        return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+    }
+}
+```
+
+### 3. Get Member by ID Endpoint (`src/app/api/members/[id]/route.ts`)
+This file handles `GET` requests to retrieve a single member&#x27;s details by their `id`.
+
+#### Schema Validation:
+- **Parameter Validation:** The `id` is extracted from the URL. It is validated using a regular expression (`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`) to ensure it&#x27;s a valid UUID format. If the `id` is invalid, a `400 Bad Request` error is thrown.
+- **Database Query:** It queries the `members` table where `members.id` matches the provided `id` and `is_active` is `true`.
+
+#### Error Handling:
+- **Invalid ID Format:** If the `id` in the URL is not a valid UUID, a `400 Bad Request` error is returned.
+- **Unauthorized Access:** If the authenticated `user_id` does not exist in the `members` table, or if the member with the given `id` does not exist, or if the member is inactive, a `404 Not Found` error is thrown.
+- **General Database Errors:** If there&#x27;s an error executing the database query, a generic `500 Internal Server Error` is caught and displayed.
+
+```typescript
+// src/app/api/members/[id]/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { prisma } from &quot;@/lib/prismadb&quot;;
+import { verifyToken } from &quot;@/lib/jwt&quot;;
+
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+    try {
+        const token = request.cookies.get(&quot;token&quot;)?.value;
+        if (!token) {
+            return NextResponse.json({ error: &quot;Unauthorized&quot; }, { status: 401 });
+        }
+
+        const decoded = verifyToken(token);
+        if (!decoded || !decoded.user_id) {
+            return NextResponse.json({ error: &quot;Invalid token&quot; }, { status: 401 });
+        }
+
+        const user_id = decoded.user_id;
+
+        // Check if the authenticated user is a valid member
+        const authenticatedMember = await prisma.member.findUnique({
+            where: { user_id },
+        });
+
+        if (!authenticatedMember) {
+            return NextResponse.json({ error: &quot;Unauthorized&quot; }, { status: 401 });
+        }
+
+        const { id: urlId } = params;
+
+        // Validate the ID format
+        if (!uuidRegex.test(urlId)) {
+            return NextResponse.json({ error: &quot;Invalid member ID format&quot; }, { status: 400 });
+        }
+
+        // Fetch the member by ID and check if they are active
+        const member = await prisma.member.findUnique({
+            where: { id: urlId, is_active: true },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                phone: true,
+                position: true,
+                department: true,
+                avatar_url: true,
+                is_active: true,
+                created_at: true,
+                updated_at: true,
+            },
+        });
+
+        if (!member) {
+            return NextResponse.json({ error: &quot;Member not found or inactive&quot; }, { status: 404 });
+        }
+
+        return NextResponse.json(member, { status: 200 });
+    } catch (error) {
+        console.error(&quot;Error fetching member:&quot;, error);
+        return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+    }
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace members API flow for list and detail endpoints including schema/error handling.          </p>
+          <p class="lt-p">
+Response: The PRFC Connect application&#x27;s &quot;Trace members API flow for list and detail endpoints&quot; involves the `src/app/api/members/route.ts` file, which handles both listing and retrieving detailed information about members. This file uses the Prisma client to interact with the database and Zod for input validation and error handling.
+
+### 1. Prerequisites
+
+- **Prisma Client**: The application uses Prisma to perform database operations. The schema for the `Member` model is defined in `src/schema/prisma.schema`.
+- **Next.js API Route**: The API route is defined in `src/app/api/members/route.ts`.
+- **Zod for Schema Validation**: Zod is used to validate query parameters for the list endpoint (`src/schema/members.ts`).
+
+### 2. List Members Endpoint (`GET /api/members`)
+
+This endpoint retrieves a list of members based on optional query parameters such as `skip`, `take`, `search`, `status`, `createdAt`, and `updatedAt`.
+
+#### 2.1 Request Flow
+
+1. **Route Handling**:
+   The `GET` request is handled by the `GET` function in `src/app/api/members/route.ts`.
+
+   ```typescript
+   // src/app/api/members/route.ts
+   export async function GET(request: Request) {
+     const { searchParams } = new URL(request.url);
+     const query: ListMembersQuery = {
+       skip: parseInt(searchParams.get(&quot;skip&quot;) || &quot;0&quot;),
+       take: parseInt(searchParams.get(&quot;take&quot;) || &quot;20&quot;),
+       search: searchParams.get(&quot;search&quot;) || &quot;&quot;,
+       status: searchParams.get(&quot;status&quot;) as Member[&quot;status&quot;] | undefined,
+       createdAt: parseSortOrder(searchParams.get(&quot;createdAt&quot;)),
+       updatedAt: parseSortOrder(searchParams.get(&quot;updatedAt&quot;)),
+     };
+
+     // ... validation logic ...
+   }
+   ```
+
+2. **Schema Validation**:
+   The `validate` function from `src/schema/members.ts` ensures that the provided `skip`, `take`, and `sort` values are within acceptable ranges and correctly formatted.
+
+   ```typescript
+   // src/schema/members.ts
+   export const membersSchema = z.object({
+     skip: z.number().min(0).max(1000).default(0),
+     take: z.number().min(1).max(100).default(20),
+     search: z.string().trim().default(&quot;&quot;),
+     status: z.enum([&quot;active&quot;, &quot;inactive&quot;, &quot;suspended&quot;, &quot;cancelled&quot;]).optional(),
+     createdAt: z.enum([&quot;asc&quot;, &quot;desc&quot;]).optional().default(&quot;desc&quot;),
+     updatedAt: z.enum([&quot;asc&quot;, &quot;desc&quot;]).optional().default(&quot;desc&quot;),
+   });
+   ```
+
+   If validation fails, a `ZodError` is caught, and a `BadRequestError` is thrown with a descriptive message.
+
+   ```typescript
+   // src/app/api/members/route.ts
+   try {
+     membersSchema.parse(query);
+   } catch (error) {
+     if (error instanceof ZodError) {
+       throw new BadRequestError(&quot;Invalid query parameters:&quot;, error.errors.map(e =&gt; `${e.path[0]}: ${e.message}`));
+     }
+     throw new InternalServerError(&quot;An unexpected error occurred during validation.&quot;);
+   }
+   ```
+
+3. **Database Query**:
+   Validated query parameters are used to construct a Prisma `findMany` query on the `Member` model, applying filters for `search`, `status`, and sorting by `createdAt` and `updatedAt`.
+
+   ```typescript
+   // src/app/api/members/route.ts
+   const members = await prisma.member.findMany({
+     where: {
+       OR: [
+         { firstName: { contains: query.search, mode: &quot;insensitive&quot; } },
+         { lastName: { contains: query.search, mode: &quot;insensitive&quot; } },
+         { email: { contains: query.search, mode: &quot;insensitive&quot; } },
+       ],
+       status: query.status,
+     },
+     skip: query.skip,
+     take: query.take,
+     orderBy: [
+       { updatedAt: query.updatedAt },
+       { createdAt: query.createdAt },
+     ],
+   });
+   ```
+
+4. **Response**:
+   The resulting `members` array is transformed into a JSON array of member details (id, firstName, lastName, email, status, createdAt, updatedAt) and sent back in the response.
+
+   ```typescript
+   // src/app/api/members/route.ts
+   return NextResponse.json(
+     members.map(member =&gt; ({
+       id: member.id,
+       firstName: member.firstName,
+       lastName: member.lastName,
+       email: member.email,
+       status: member.status,
+       createdAt: member.createdAt,
+       updatedAt: member.updatedAt,
+     })),
+     { status: 200 }
+   );
+   ```
+
+### 3. Detail Member Endpoint (`GET /api/members/[id]`)
+
+This endpoint retrieves a single member by their `id`.
+
+#### 3.1 Request Flow
+
+1. **Route Handling**:
+   The `GET` request is handled by the `GET` function in `src/app/api/members/route.ts`, with the `id` parameter extracted from the URL.
+
+   ```typescript
+   // src/app/api/members/route.ts
+   export async function GET(request: Request, { params }: { params: { id: string } }) {
+     const id = params.id;
+
+     // ... validation logic ...
+   }
+   ```
+
+2. **ID Validation**:
+   The `id` is parsed as a number. If it&#x27;s not a valid integer, a `BadRequestError` is thrown.
+
+   ```typescript
+   // src/app/api/members/route.ts
+   if (!id || isNaN(parseInt(id))) {
+     throw new BadRequestError(&quot;Invalid member ID format.&quot;);
+   }
+   ```
+
+3. **Database Query**:
+   A Prisma `findUnique` query is executed to retrieve the member with the specified `id`.
+
+   ```typescript
+   // src/app/api/members/route.ts
+   const member = await prisma.member.findUnique({
+     where: { id: parseInt(id) },
+   });
+   ```
+
+4. **Error Handling**:
+   - If `member` is `null` (meaning no member was found with that ID), a `NotFoundError` is thrown.
+   - Any unexpected errors during the database query are caught and an `InternalServerError` is thrown.
+
+   ```typescript
+   // src/app/api/members/route.ts
+   if (!member) {
+     throw new NotFoundError(`Member with ID ${id} not found.`);
+   }
+
+   try {
+     // ... database query ...
+   } catch (error) {
+     if (error.code === &quot;P2002&quot; || error.code === &quot;P2025&quot;) {
+       // Handle unique constraint violation or record not found
+     } else {
+       throw new InternalServerError(&quot;An unexpected error occurred while fetching the member.&quot;);
+     }
+   }
+   ```
+
+5. **Response**:
+   The detailed member information is transformed into a JSON object and sent back in the response.
+
+   ```typescript
+   // src/app/api/members/route.ts
+   return NextResponse.json(
+     {
+       id: member.id,
+       firstName: member.firstName,
+       lastName: member.lastName,
+       email: member.email,
+       status: member.status,
+       createdAt: member.createdAt,
+       updatedAt: member.updatedAt,
+     },
+     { status: 200 }
+   );
+   ```          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/api.ts, src/schema/referral.ts, src/services/referral.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1419                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1206                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1044                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1800                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1317                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1208                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1504                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1546                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how `referrals/[id]` route composes service calls and error handling.          </p>
+          <p class="lt-p">
+Response: The `referrals/[id]` route in PRFC Connect is responsible for retrieving a specific referral by its ID. It composes service calls and implements error handling to ensure data integrity and a smooth user experience. Here&#x27;s a detailed breakdown:
+
+### Route Definition and Initial Checks
+
+1. **Route Definition**:
+   The route is defined in `src/app/api/referrals/route.ts` to accept a dynamic `id` parameter.
+   ```typescript
+   export async function GET(req: Request, { params }: { params: { id: string } }) {
+     // ...
+   }
+   ```
+
+2. **ID Validation**:
+   Before making any database calls, the system ensures that the provided `id` is a valid UUID.
+   ```typescript
+   const { id } = params;
+   if (!uuidValidate(id)) {
+     return NextResponse.json({ error: &quot;Invalid ID format&quot; }, { status: 400 });
+   }
+   ```
+
+### Service Call to Fetch Referral
+
+3. **Calling the Service**:
+   The `getReferralById` function is called with the validated `id` to fetch the corresponding referral data from the database.
+   ```typescript
+   const referral = await getReferralById(id);
+   ```
+
+4. **Database Error Handling**:
+   If no referral is found for the given `id`, a `NotFoundError` is caught, and an appropriate HTTP status code (404) and error message are returned.
+   ```typescript
+   } catch (error) {
+     if (error instanceof prismaClientKnownRequestError &amp;&amp; error.code === &quot;P2011&quot;) {
+       return NextResponse.json({ error: &quot;Referral not found&quot; }, { status: 404 });
+     }
+     console.error(&quot;Database error:&quot;, error);
+     return NextResponse.json({ error: &quot;Internal server error&quot; }, { status: 500 });
+   }
+   ```
+
+### Response Based on Fetch Result
+
+5. **Successful Retrieval**:
+   If the referral is successfully retrieved, its data is returned as a JSON object with a `status` of &quot;success&quot;.
+   ```typescript
+   return NextResponse.json({ status: &quot;success&quot;, data: referral });
+   ```
+
+### Summary
+
+- **UUID Validation**: Ensures the input is a valid referral ID.
+- **`getReferralById` Service Call**: Retrieves the referral data from the database.
+- **Comprehensive Error Handling**:
+  - `P2011` (record not found) results in a `404 Not Found` response.
+  - Any other database errors result in a `500 Internal Server Error` response, with the error logged for debugging.
+  - Malformed UUIDs result in a `400 Bad Request` response.
+
+This structure ensures that the application gracefully handles missing data, invalid inputs, and unexpected database errors, providing clear feedback to the client.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how `referrals/[id]` route composes service calls and error handling.          </p>
+          <p class="lt-p">
+Response: The `referrals/[id]` route in the PRFC Connect codebase is responsible for retrieving a specific referral by its ID. It composes service calls and implements error handling to ensure data integrity and a smooth user experience. Here&#x27;s a detailed breakdown:
+
+### Route Definition
+
+The route is defined in `src/app/api/referrals/[id]/route.ts`. This file uses the Next.js API route syntax to capture the `id` parameter from the URL and trigger the appropriate handler function (`GET` method).
+
+### Service Call Composition
+
+1. **Extracting the ID**:
+   The `id` parameter is extracted from the URL path using `params.id`. This ensures that the correct referral ID is used for the database query.
+
+   **Code**:
+   ```typescript
+   const id = params.id;
+   ```
+
+2. **Calling the Referral Service**:
+   The `getReferralById` function is called with the extracted `id` to fetch the corresponding referral data. This function interacts with the database to retrieve the referral details.
+
+   **Code**:
+   ```typescript
+   try {
+     const referral = await referralService.getReferralById(id);
+   ```
+
+   **Implementation**:
+   The `getReferralById` function is located in `src/lib/services/referral.ts`. It queries the `Referral` model using Mongoose to find a document where the `id` matches the provided value.
+
+   **Code**:
+   ```typescript
+   const referral = await Referral.findOne({ id: id }).exec();
+   ```
+
+   **Return Value**:
+   - **Success**: If a referral with the given ID is found, the `referral` object containing all relevant details (e.g., `referredBy`, `referredTo`, `status`, `createdAt`, `updatedAt`) is returned.
+   - **Not Found**: If no referral is found, `referral` will be `null`.
+
+### Error Handling
+
+1. **Id Validation**:
+   Before making the database call, the system ensures that the `id` is a valid hexadecimal string (UUID format). This prevents invalid queries to the database.
+
+   **Code**:
+   ```typescript
+   if (!isValidUUID(id)) {
+     return NextResponse.json({ error: &quot;Invalid referral ID format.&quot; }, { status: 400 });
+   }
+   ```
+
+   **Validation Function**:
+   The `isValidUUID` function checks if the input string matches the standard UUID format (`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`).
+
+   **Code**:
+   ```typescript
+   function isValidUUID(id: string): boolean {
+     return uuidRegex.test(id);
+   }
+   ```
+
+2. **Handling &quot;Not Found&quot; Scenario**:
+   If the `referral` object is `null` (meaning no referral was found with the given ID), the system returns a `404 Not Found` status with a descriptive error message.
+
+   **Code**:
+   ```typescript
+   if (!referral) {
+     return NextResponse.json({ error: &quot;Referral not found.&quot; }, { status: 404 });
+   }
+   ```
+
+3. **General Error Handling (Catch-all)**:
+   Any unexpected errors that occur during the database operation (e.g., database connection issues, query errors, or other exceptions) are caught in the `try...catch` block. The system then returns a `500 Internal Server Error` status with a generic error message to inform the client about a server-side issue.
+
+   **Code**:
+   ```typescript
+   } catch (error) {
+     console.error(&quot;Error fetching referral:&quot;, error);
+     return NextResponse.json({ error: &quot;An error occurred while fetching the referral.&quot; }, { status: 500 });
+   }
+   ```
+
+### Summary
+
+The `referrals/[id]` route ensures that:
+- The `id` is valid before querying the database (`src/app/api/referrals/[id]/route.ts`).
+- It correctly fetches the referral data using `referralService.getReferralById` (`src/lib/services/referral.ts`).
+- It handles &quot;not found&quot; scenarios (`src/app/api/referrals/[id]/route.ts`).
+- It gracefully recovers from general errors and returns an appropriate HTTP status code and message (`src/app/api/referrals/[id]/route.ts`).          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how `referrals/[id]` route composes service calls and error handling.          </p>
+          <p class="lt-p">
+Response: The `referrals/[id]` route in PRFC Connect handles retrieving detailed information about a specific referral. It composes service calls and implements error handling as follows:
+
+### 1. Data Fetching (Service Call)
+The route first fetches the referral data from the database using a service call to `referralService.get`.
+
+*   **File:** src/app/api/referrals/route.ts
+*   **Code:**
+    
+```typescript
+    try {
+      const referral = await referralService.get(id);
+      // ... rest of the code
+    } catch (error) {
+      logger.error(`Failed to retrieve referral with ID: ${id}`, error);
+      return NextResponse.json({ error: &quot;Failed to retrieve referral.&quot; }, { status: 500 });
+    }
+    ```
+
+    Here, `referralService.get(id)` is responsible for querying the database for a referral record with the given `id`. This is a direct interaction with the data source (Prismatic DB).
+
+### 2. Error Handling
+The route implements error handling to manage potential issues during the data fetching process:
+
+*   **File:** src/app/api/referrals/route.ts
+*   **Code:**
+    
+```typescript
+    try {
+      const referral = await referralService.get(id);
+      if (!referral) {
+        logger.warn(`Referral with ID: ${id} not found.`);
+        return NextResponse.json({ error: &quot;Referral not found.&quot; }, { status: 404 });
+      }
+      // ... rest of the code
+    } catch (error) {
+      logger.error(`Failed to retrieve referral with ID: ${id}`, error);
+      return NextResponse.json({ error: &quot;Failed to retrieve referral.&quot; }, { status: 500 });
+    }
+    ```
+
+    *   **`if (!referral)` Check:** If the `referral` object is `null` or `undefined`, it means no record was found in the database. In this case, a `404 Not Found` HTTP status code is returned, and a warning is logged.
+    *   **`try...catch` Block:** If an unexpected error occurs during the `referralService.get(id)` call (e.g., database connection issues, query errors), the error is caught. A `500 Internal Server Error` HTTP status code is returned, and the error is logged as an error.
+
+### Summary
+The `referrals/[id]` route fetches a single referral object from the database using `referralService.get(id)`. It then checks if the object exists to handle `404 Not Found` errors. Any other errors during the fetch are caught and handled as `500 Internal Server Error` to indicate a server-side issue.  This approach ensures that users receive clear feedback when a referral cannot be found or when a generic server error occurs.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how `referrals/[id]` route composes service calls and error handling.          </p>
+          <p class="lt-p">
+Response: The `referrals/[id]` route in the PRFC Connect application is responsible for retrieving a single referral by its ID. It composes service calls and implements error handling in the following way:
+
+### 1. Route Definition and Basic Structure
+
+The route is defined in `src/app/api/referrals/[id]/route.ts`. This file uses Next.js&#x27; App Router architecture to define an asynchronous `GET` handler that accepts a `params` object containing the `id` of the referral:
+
+```typescript
+// src/app/api/referrals/[id]/route.ts
+import { NextResponse } from &#x27;next/server&#x27;;
+import { prisma } from &#x27;../../../../prismadb&#x27;;
+import { Referral } from &#x27;@prisma/client&#x27;;
+import { handleError } from &#x27;../../../../lib/utils&#x27;;
+
+export async function GET(
+    request: Request,
+    params: { id: string }
+): Promise&lt;NextResponse&lt;Referral | { error: string }&gt;&gt; {
+    // ... logic here ...
+}
+```
+
+### 2. Fetching Referral Data
+
+Inside the `GET` handler, the `id` extracted from `params` is used to query the database using Prisma:
+
+```typescript
+// src/app/api/referrals/[id]/route.ts
+const referral = await prisma.referral.findUnique({
+    where: { id: params.id },
+});
+```
+
+This code calls `prisma.referral.findUnique` with a `where` clause specifying the `id`. If a referral with that `id` exists, it will be returned; otherwise, `referral` will be `null`.
+
+### 3. Error Handling
+
+#### a. Handling `null` Referral
+
+After fetching the referral, the code checks if `referral` is `null`:
+
+```typescript
+// src/app/api/referrals/[id]/route.ts
+if (!referral) {
+    return NextResponse.json(
+        { error: &#x27;Referral not found&#x27; },
+        { status: 404 }
+    );
+}
+```
+
+If the referral is not found, a `NextResponse` with a `404` HTTP status code and an error message &quot;Referral not found&quot; is returned. This tells the client that the resource does not exist.
+
+#### b. General Error Handling with `handleError`
+
+All database operations are wrapped in a `try...catch` block to catch any unexpected errors that may occur during the query:
+
+```typescript
+// src/app/api/referrals/[id]/route.ts
+try {
+    // ... database query code ...
+} catch (error) {
+    return handleError(error, &#x27;Failed to fetch referral&#x27;);
+}
+```
+
+If an error occurs (e.g., due to a database connection issue, invalid ID format, or a Prisma error), it is passed to the `handleError` function.
+
+The `handleError` function, located in `src/lib/utils.ts`, is responsible for logging the error and returning a `NextResponse` with a `500` HTTP status code and a generic &quot;Internal Server Error&quot; message:
+
+```typescript
+// src/lib/utils.ts
+export function handleError(error: Error, context: string): NextResponse {
+    console.error(`[${context}]: ${error.message}`, error);
+    return NextResponse.json({ error: &#x27;Internal Server Error&#x27; }, { status: 500 });
+}
+```
+
+This ensures that any unhandled exceptions during the database operation are caught, logged, and the client receives a `500` status, indicating a server-side problem.
+
+### 4. Returning the Referral Data
+
+If the referral is successfully found and no errors occur, the data is returned in a `NextResponse` with a `200` HTTP status code:
+
+```typescript
+// src/app/api/referrals/[id]/route.ts
+return NextResponse.json(referral, { status: 200 });
+```
+
+This sends the referral object back to the client in JSON format.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how `referrals/[id]` route composes service calls and error handling.          </p>
+          <p class="lt-p">
+Response: The `referrals/[id]` route in PRFC Connect is responsible for retrieving a single referral by its ID and displaying its details on a dedicated page. This route composes service calls to fetch the referral data and implements error handling to manage cases where the referral is not found or if there is an unexpected error during the data retrieval process.
+
+### 1. Route Definition and Initial Setup
+
+The `referrals/[id]` route is defined in `src/app/referrals/[id]/route.ts`. This file uses the `GET` method to handle requests when a user navigates to a URL like `/referrals/123`.
+
+```typescript
+// src/app/referrals/[id]/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { getReferralById } from &quot;@/services/referral&quot;;
+import { Referral } from &quot;@/types/referral&quot;;
+
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+  const referralId = params.id;
+
+  try {
+    const referral: Referral | null = await getReferralById(referralId);
+
+    if (!referral) {
+      return NextResponse.json(
+        { error: &quot;Referral not found&quot; },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(referral, { status: 200 });
+  } catch (error) {
+    console.error(`Error fetching referral with ID ${referralId}:`, error);
+    return NextResponse.json(
+      { error: &quot;An unexpected error occurred while fetching the referral.&quot; },
+      { status: 500 }
+    );
+  }
+}
+```
+
+### 2. Service Call: `getReferralById`
+
+The core logic for fetching the referral data is handled by the `getReferralById` function, which is imported from `src/services/referral.ts`.
+
+```typescript
+// src/services/referral.ts
+import { prisma } from &quot;@/lib/prismadb&quot;;
+
+export async function getReferralById(id: string) {
+  try {
+    const referral = await prisma.referral.findUnique({
+      where: { id },
+      include: {
+        user: true,
+        referredUser: true,
+      },
+    });
+
+    return referral;
+  } catch (error) {
+    console.error(`Error in getReferralById for ID ${id}:`, error);
+    throw error;
+  }
+}
+```
+
+- **Prisma Query (`prisma.referral.findUnique`)**: This query is used to retrieve a single `Referral` object from the database based on the provided `id`. The `include: { user: true, referredUser: true }` ensures that the associated `User` objects for both the referrer and the referred user are also fetched.
+- **Error Handling in Service**: If an error occurs during the Prisma query (e.g., due to a database connection issue or an invalid ID format), it is caught, logged to the console, and then the error is `thrown` back to the route handler.
+
+### 3. Error Handling in Route
+
+The error handling in `src/app/referrals/[id]/route.ts` is structured to provide clear feedback to the client and prevent sensitive error details from being exposed.
+
+- **Referral Not Found**:
+  If `getReferralById` returns `null` (meaning no referral with the given ID exists), the route handler checks this condition and returns a `404 Not Found` HTTP status code along with a JSON object containing the message `&quot;Referral not found&quot;`. This tells the client that the requested resource does not exist.
+
+  ```typescript
+  if (!referral) {
+    return NextResponse.json(
+      { error: &quot;Referral not found&quot; },
+      { status: 404 }
+    );
+  }
+  ```
+
+- **Unexpected Internal Server Error**:
+  If any exception is thrown during the execution of `await getReferralById(referralId)`, it is caught in the `catch` block. The error is logged to the console, and a `500 Internal Server Error` HTTP status code is returned, along with a generic error message. This is appropriate for server-side errors that are not expected or可控 by the client.
+
+  ```typescript
+  } catch (error) {
+    console.error(`Error fetching referral with ID ${referralId}:`, error);
+    return NextResponse.json(
+      { error: &quot;An unexpected error occurred while fetching the referral.&quot; },
+      { status: 500 }
+    );
+  }
+  ```
+
+### Summary
+
+The `referrals/[id]` route composes a service call to `getReferralById` to retrieve detailed referral information, including the referrer and referred user data. It handles two primary error scenarios: when the referral ID is invalid or the referral does not exist (returning a 404 status), and when an unexpected error occurs during the database query (returning a 500 status). This ensures that the client receives a clear and appropriate response regardless of the outcome.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how `referrals/[id]` route composes service calls and error handling.          </p>
+          <p class="lt-p">
+Response: The `referrals/[id]` route, defined in `src/app/api/referrals/[id]/route.ts`, retrieves detailed information about a specific referral by its ID. It composes service calls to the Prisma client to fetch the referral data and handles errors to ensure the user receives a proper response.
+
+### 1. Route Definition and Fetching the Referral ID
+
+The route is defined as an `async GET` function that extracts the `id` from the URL parameters:
+
+```typescript
+// src/app/api/referrals/[id]/route.ts
+export async function GET({ params }) {
+    const id = params.id;
+    // ... rest of the code
+}
+```
+
+### 2. Importing the Referral Service
+
+The route imports the `getReferralById` function from `src/services/referrals.ts`, which is responsible for querying the database:
+
+```typescript
+// src/app/api/referrals/[id]/route.ts
+import { getReferralById } from &quot;@/services/referrals&quot;;
+```
+
+### 3. Composing the Service Call
+
+Inside the `GET` function, `getReferralById` is called with the extracted `id` to retrieve the referral data from the database:
+
+```typescript
+// src/app/api/referrals/[id]/route.ts
+const referral = await getReferralById(id);
+```
+
+### 4. Error Handling
+
+The code checks if the `referral` object is `null` or `undefined`, which indicates that no referral was found with the provided ID:
+
+```typescript
+// src/app/api/referrals/[id]/route.ts
+if (!referral) {
+    return new Response(&quot;Referral not found&quot;, { status: 404 });
+}
+```
+
+- **`status: 404`**: This HTTP status code means &quot;Not Found,&quot; signaling that the requested resource (in this case, the referral) does not exist.
+
+### 5. Returning the Referral Data
+
+If the referral is found, the function returns a JSON object containing the referral details:
+
+```typescript
+// src/app/api/referrals/[id]/route.ts
+return new Response(JSON.stringify(referral), { status: 200 });
+```
+
+- **`status: 200`**: This HTTP status code means &quot;OK,&quot; indicating that the request was successful and the data was retrieved.
+
+### Summary
+
+The `referrals/[id]` route:
+1. Extracts the `id` from the URL.
+2. Calls `getReferralById` from `src/services/referrals.ts` to fetch data from the database using Prisma.
+3. Checks if the result is `null` and returns a 404 error if not found.
+4. Returns the referral data with a 200 status code if found.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how `referrals/[id]` route composes service calls and error handling.          </p>
+          <p class="lt-p">
+Response: The `referrals/[id]` route in the PRFC Connect codebase is responsible for fetching a single referral object by its unique `id`. This route composes service calls and implements error handling to ensure data integrity and user experience.
+
+### Route File
+*   **src/app/api/referrals/[id]/route.ts**
+
+### Code Explanation
+
+#### 1. Import Statements
+The route starts by importing necessary modules and components:
+```typescript
+import { NextRequest, NextResponse } from &#x27;next/server&#x27;;
+import { prisma } from &#x27;@prisma/client&#x27;;
+import { APIResponse } from &#x27;@/utils/api-response&#x27;;
+import { Referral } from &#x27;@/types/referral&#x27;;
+import { verifyAuth } from &#x27;@/utils/auth&#x27;;
+import { Prisma } from &#x27;@prisma/client/runtime&#x27;;
+import errorHelper from &#x27;@/utils/error-helper&#x27;;
+import { HttpStatusCode } from &#x27;axios&#x27;;
+```
+-   `NextRequest` and `NextResponse` are used to handle HTTP requests and responses.
+-   `prisma` is the Prisma client instance for database operations.
+-   `APIResponse` is a utility to standardize responses with `message`, `data`, and `code`.
+-   `Referral` type defines the structure of a referral object.
+-   `verifyAuth` ensures the user is authenticated before proceeding.
+-   `Prisma` is imported to handle Prisma-specific errors.
+-   `errorHelper` is used to convert Prisma errors into user-friendly messages.
+-   `HttpStatusCode` provides standard HTTP status codes.
+
+#### 2. `GET` Handler
+The `GET` function is triggered when a user requests data for a specific referral ID:
+```typescript
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+    try {
+        // Verify user authentication
+        verifyAuth(req);
+
+        // Fetch the referral from the database
+        const referral = await prisma.referral.findFirst({
+            where: { id: parseInt(params.id, 10) },
+            select: { id: true, name: true, email: true, referredBy: true, status: true, createdAt: true },
+        });
+
+        // If no referral is found, return a 404 error
+        if (!referral) {
+            return APIResponse.error(&#x27;Referral not found&#x27;, HttpStatusCode.NOT_FOUND, &#x27;NOT_FOUND&#x27;);
+        }
+
+        // If a referral is found, return it in a success response
+        return APIResponse.success&lt;Referral&gt;(referral, &#x27;Referral retrieved successfully&#x27;, HttpStatusCode.OK, &#x27;SUCCESS&#x27;);
+    } catch (error) {
+        // Log the error
+        console.error(`Error fetching referral ${params.id}:`, error);
+
+        // Convert Prisma errors to a user-friendly message
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === &#x27;P2025&#x27;) { // Record not found
+                return APIResponse.error(&#x27;Referral not found&#x27;, HttpStatusCode.NOT_FOUND, &#x27;NOT_FOUND&#x27;);
+            } else {
+                return APIResponse.error(&#x27;An unexpected database error occurred&#x27;, HttpStatusCode.INTERNAL_SERVER_ERROR, &#x27;DATABASE_ERROR&#x27;);
+            }
+        } else {
+            return APIResponse.error(&#x27;An unexpected error occurred&#x27;, HttpStatusCode.INTERNAL_SERVER_ERROR, &#x27;UNEXPECTED_ERROR&#x27;);
+        }
+    }
+}
+```
+*   **Authentication Check (`verifyAuth(req)`)**: Before attempting to fetch the referral, the user&#x27;s authentication is verified using `verifyAuth(req)`. This ensures that only authenticated users can access specific referral data.
+*   **Database Query (`prisma.referral.findFirst`)**: The core service call to retrieve the referral data. `findFirst` is used with a `where` clause to filter by `id` (converted from a string to an integer). The `select` clause specifies which fields to include in the response: `id`, `name`, `email`, `referredBy`, `status`, and `createdAt`.
+*   **Data Not Found Handling**: If `referral` is `null` (meaning no record was found), a `404 Not Found` error is returned using `APIResponse.error` with the message &quot;Referral not found&quot;.
+*   **Successful Data Retrieval**: If a referral is found, it is returned in a `200 OK` response using `APIResponse.success`.
+*   **Error Handling**:
+    *   **Prisma Client Errors (`Prisma.PrismaClientKnownRequestError`)**: Catches specific database errors. For `P2025` (record not found), it returns a `404 Not Found` error. For other Prisma errors, it returns a `500 Internal Server Error` with a generic &quot;An unexpected database error occurred&quot; message.
+    *   **Generic Errors**: Any other unexpected errors (not originating from Prisma) are also caught and result in a `500 Internal Server Error` with &quot;An unexpected error occurred&quot;.
+
+### Summary
+The `referrals/[id]` route ensures that only authenticated users can access referral data. It queries the database for a specific referral using the provided `id`, handles cases where the referral might not exist, and provides appropriate error messages if database operations fail. This approach ensures data security, accuracy, and clear communication with the client about the request&#x27;s outcome.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how `referrals/[id]` route composes service calls and error handling.          </p>
+          <p class="lt-p">
+Response: The `referrals/[id]` route in the PRFC Connect codebase is responsible for retrieving a specific referral by its ID. This route composes service calls and implements error handling to ensure data integrity and a smooth user experience. Here&#x27;s a detailed breakdown:
+
+### 1. **Route Definition (`src/app/api/referrals/[id]/route.ts`)**
+
+The route is defined in `src/app/api/referrals/[id]/route.ts`. This file uses the `GET` method to fetch referral data based on the provided `id` parameter from the URL.
+
+```typescript
+// src/app/api/referrals/[id]/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { getReferralById } from &quot;@/lib/api/referral&quot;;
+
+export async function GET(request: NextRequest) {
+  const id = request.url.split(&quot;/&quot;).at(-1);
+
+  try {
+    const referral = await getReferralById(id);
+    return NextResponse.json(referral, { status: 200 });
+  } catch (error) {
+    console.error(`Failed to fetch referral with ID ${id}`);
+    return NextResponse.json({ error: &quot;Referral not found&quot; }, { status: 404 });
+  }
+}
+```
+
+### 2. **Extracting the `id`**
+
+At the beginning of the `GET` function, the `id` is extracted from the URL:
+
+```typescript
+const id = request.url.split(&quot;/&quot;).at(-1);
+```
+
+This line splits the URL by `/` and takes the last element, which should be the ID of the referral.
+
+### 3. **Calling the Referral Service (`src/lib/api/referral.ts`)**
+
+The `getReferralById` function is called to retrieve the referral data from the database:
+
+```typescript
+// src/lib/api/referral.ts
+import { prisma } from &quot;@/lib/prisma&quot;;
+
+export async function getReferralById(id: string) {
+  const referral = await prisma.referral.findUnique({
+    where: { id },
+    include: {
+      user: true,
+      redeemedBy: true,
+    },
+  });
+
+  if (!referral) {
+    throw new Error(&quot;Referral not found&quot;);
+  }
+
+  return referral;
+}
+```
+
+- **Prisma Client**: The `prisma.referral.findUnique` method is used to query the database for a referral with the given `id`.
+- **Include Relations**: The `include: { user: true, redeemedBy: true }` ensures that the user who created the referral and the user who redeemed it are also fetched and included in the response.
+- **Error Handling in Service**: If no referral is found (`if (!referral)`), an `Error` is thrown with the message &quot;Referral not found&quot;. This error is then caught in the route handler.
+
+### 4. **Error Handling in Route (`src/app/api/referrals/[id]/route.ts`)**
+
+The error thrown by `getReferralById` is caught in the `try...catch` block in `src/app/api/referrals/[id]/route.ts`:
+
+```typescript
+} catch (error) {
+  console.error(`Failed to fetch referral with ID ${id}`);
+  return NextResponse.json({ error: &quot;Referral not found&quot; }, { status: 404 });
+}
+```
+
+- **Logging**: The error is logged to the console for debugging purposes.
+- **HTTP Status Code 404**: A `NextResponse` with a JSON body containing the error message and a `404` HTTP status code is returned. This indicates that the requested resource (in this case, the referral) was not found.
+
+### Summary
+
+- The `GET` request to `/api/referrals/[id]` extracts the `id` from the URL.
+- The `getReferralById` function in `src/lib/api/referral.ts` uses Prisma to fetch the referral from the database, including related user data.
+- If the referral does not exist, an error is thrown in `src/lib/api/referral.ts`.
+- This error is caught in `src/app/api/referrals/[id]/route.ts`, where it is logged and a `404 Not Found` response is sent to the client. This ensures that the client receives a clear error message and knows the referral could not be retrieved.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+601                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+933                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+593                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+802                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+1050                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+573                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+1095                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+898                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

@@ -11,4 +11,5 @@ python -m src.training.eval_sft \
     --spec eval/eval_spec.json \
     --checkpoint training_data/last_checkpoint.txt \
     --output-dir eval/prfconnect/sft_results \
-    --baseline eval/prfconnect/real_results/output.prfc-connect.auto.json
+    --baseline eval/prfconnect/real_results/output.prfc-connect.auto.json \
+    --repo-path hack4impact-repos/prfc-connect

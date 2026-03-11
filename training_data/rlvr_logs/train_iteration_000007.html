@@ -1,0 +1,4061 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>RL Iteration 7</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+RL Iteration 7  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:12:01  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Propose a resilient fallback strategy when Redis rate limiter is unavailable, and justify tradeoffs.          </p>
+          <p class="lt-p">
+Response: When the Redis rate limiter becomes unavailable, a critical trade-off must be made: without Redis, the application will **no longer enforce rate limits** at the *application tier*. This means that, in the absence of Redis, **all requests will be treated as if they are within the allowed limits**, potentially leading to **DoS (Denial of Service)** or **abuse of the API**.
+
+### Resilient Fallback Strategy: &quot;Graceful Degradation with Alerting and Manual Intervention&quot;
+
+**Strategy Overview:**
+
+1. **Graceful Degradation (No Enforced Rate Limiting):**
+   - **Mechanism:** When Redis is unavailable, the rate limiter middleware should **silently bypass** its checks.
+   - **Trade-off:** No protection against abuse, but the application remains *functionally* operational.
+   - **Justification:** In the event of a Redis failure, the primary goal is to ensure the application remains *available* to users, even if it&#x27;s vulnerable to increased load.
+
+2. **Immediate Alerting (Operational Visibility):**
+   - **Mechanism:** Trigger an immediate alert (e.g., via Slack, PagerDuty, or CloudWatch) when Redis becomes unreachable.
+   - **Trade-off:** Adds to operational overhead and alert fatigue if false positives occur.
+   - **Justification:** Provides immediate visibility, allowing the operations team to prioritize recovery of the Redis service.
+
+3. **Retry with Exponential Backoff (for Redis Recovery):**
+   - **Mechanism:** Implement a mechanism to **periodically attempt to reconnect** to Redis with exponentially increasing intervals.
+   - **Trade-off:** Slightly increased latency in full recovery; potential for alert spam if recovery is intermittent.
+   - **Justification:** Increases the likelihood of Redis recovery without manual intervention, reducing downtime.
+
+4. **Manual Intervention Gateway (for Prolonged Unavailability):**
+   - **Mechanism:** If Redis remains unavailable **beyond a configurable threshold** (e.g., 5 minutes), transition to a &quot;fail-open&quot; state where rate limiting is **completely disabled** and an admin must manually re-enable it.
+   - **Trade-off:** Requires manual steps to restore protection; administrative burden for prolonged outages.
+   - **Justification:** Prevents the system from remaining in a potentially vulnerable state indefinitely without human oversight.
+
+---
+
+### Implementation Considerations
+
+*   **Alerting Integration:**
+    Integrate with your existing alerting infrastructure (e.g., Alertmanager, Datadog, New Relic).
+*   **Redis Health Check:**
+    Implement a dedicated health check endpoint or mechanism to monitor Redis connectivity.
+*   **Retry Logic:**
+    Use a library like `p-queue` or `retry-async` to manage exponential backoff.
+*   **Configurable Alert Thresholds:**
+    Allow configuration of how long to wait before alerting and before allowing manual re-enablement.
+*   **Admin UI Toggle (for Manual Re-enablement):**
+    Provide a UI toggle for administrators to manually re-enable rate limiting once Redis is restored.
+
+---
+
+### Justification of Trade-offs
+
+This strategy prioritizes **high availability** during Redis downtime at the cost of **reduced security against API abuse**.
+
+*   **High Availability:** Users can continue to interact with the application without interruption, which is crucial for user experience and business continuity.
+*   **Security Mitigation:** Alerts ensure that the operations team is immediately aware of the issue, and the manual re-enablement gate prevents the application from remaining unprotected indefinitely.
+*   **Minimized Risk:** The system does not operate entirely &quot;blindly&quot; without any form of protection; it simply reverts to a state where protection is explicitly managed by an administrator.
+
+---
+
+### Code-level Example (Conceptual)
+
+In `src/app/api/referrals/route.ts`, the rate limiter is applied. A fallback strategy could be implemented as follows:
+
+```typescript
+// src/app/api/referrals/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { redis } from &quot;@/lib/utils&quot;;
+import { rateLimits } from &quot;@/config/rate-limits&quot;;
+
+// Rate Limiter Function with fallback
+async function rateLimiterMiddleware(request: NextRequest, identifier: string, maxRequests: number, timeWindowSeconds: number) {
+    // Check Redis connection before proceeding
+    if (!(await redis.isConnected())) {
+        console.warn(&quot;Redis is unavailable. Rate limiting bypassed.&quot;);
+        // Trigger alert (e.g., via a dedicated alerting function)
+        await triggerAlert(&quot;Redis Unavailable&quot;, &quot;The Redis rate limiter is currently unreachable. Rate limiting is bypassed.&quot;);
+        // Retry mechanism to reconnect to Redis
+        if (await attemptRedisReconnection()) {
+            console.warn(&quot;Redis reconnected. Rate limiting resumed.&quot;);
+            // Re-check rate limit after recovery
+            return await checkRateLimit(identifier, maxRequests, timeWindowSeconds);
+        } else {
+            console.warn(&quot;Failed to recover Redis connection. Manual intervention required.&quot;);
+            // Optionally, toggle a flag to disable rate limiting globally
+            // For example: isRateLimitingEnabled = false;
+            return true; // Allow all requests in this state
+        }
+    }
+
+    return await checkRateLimit(identifier, maxRequests, timeWindowSeconds);
+}
+
+// Actual rate limiting logic (in the existing code in src/app/api/referrals/route.ts)
+async function checkRateLimit(identifier: string, maxRequests: number, timeWindowSeconds: number): Promise&lt;boolean&gt; {
+    const key = `rate_limit:${identifier}`;
+    const requestCount = await redis.incr(key);
+
+    if (requestCount === 1) {
+        // Set an expiration for the key to ensure it&#x27;s removed after the time window
+        await redis.expire(key, timeWindowSeconds);
+    }
+
+    return requestCount &gt; maxRequests;
+}
+```
+
+**Note:** The `triggerAlert`, `isRedisConnected`, and `attemptRedisReconnection` functions would need to be implemented separately, likely in a new file like `src/lib/alerts.ts` or `src/lib/redis-health.ts`. They would interface with your chosen alerting service and Redis connection status check.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Propose a resilient fallback strategy when Redis rate limiter is unavailable, and justify tradeoffs.          </p>
+          <p class="lt-p">
+Response: If the Redis rate limiter becomes unavailable in PRFC Connect, a robust fallback strategy is essential to maintain application availability and integrity while minimizing abuse.
+
+### Proposed Fallback Strategy: In-Memory Request Blocking with Graceful Degradation
+
+**Mechanism:**
+When Redis is unreachable, the application should immediately degrade to a simple in-memory mechanism to block further sign-ups. This prevents a complete DoS from a single user or IP address, even without Redis.
+
+**Implementation:**
+1.  **Immediate Blocking for New Sign-Ups:**
+    As soon as the Redis connection fails, all new sign-up requests should be rejected with a 429 Too Many Requests HTTP status code. This prevents any new users from exceeding the rate limit.
+    *   **File:** `src/lib/utils/rateLimiter.ts`
+    *   **Code (simplified):**
+        
+```typescript
+        try {
+            // ... existing Redis client initialization and rate limit check
+        } catch (error) {
+            // In-memory blocking
+            if (!inMemoryBlockList.has(ip)) {
+                inMemoryBlockList.add(ip);
+                console.warn(`Redis unavailable; IP ${ip} blocked due to rate limit (${remaining} requests left).`);
+            }
+            return NextResponse.json({ error: &quot;Too Many Requests&quot; }, { status: 429 });
+        }
+        ```
+
+2.  **Scheduled Redis Reconnect and Unblock:**
+    A background worker or a scheduled job should periodically attempt to reconnect to Redis. If successful, it should remove the blocked IP addresses from the in-memory block list, allowing them to try again.
+    *   **File:** `src/services/redisHealth.ts` (create a new file if necessary)
+    *   **Code (simplified, using a setInterval for simplicity in a non-workerless environment):**
+        
+```typescript
+        export const checkRedisHealth = () =&gt; {
+            const reconnectInterval = 5000; // 5 seconds
+            const maxReconnectAttempts = 3;
+
+            let reconnectAttempts = 0;
+
+            const attemptReconnect = () =&gt; {
+                try {
+                    // Code to connect to Redis
+                    if (redisClient.connected) {
+                        console.log(&quot;Redis connection restored.&quot;);
+                        // Unblock all IPs
+                        inMemoryBlockList.clear();
+                        reconnectAttempts = 0;
+                    } else {
+                        reconnectAttempts++;
+                        if (reconnectAttempts &lt; maxReconnectAttempts) {
+                            console.warn(`Redis connection lost. Attempting to reconnect... (${reconnectAttempts}/${maxReconnectAttempts})`);
+                            setTimeout(attemptReconnect, reconnectInterval);
+                        } else {
+                            console.error(&quot;Redis connection lost and max reconnect attempts reached. In-memory blocking remains active.&quot;);
+                        }
+                    }
+                } catch (error) {
+                    console.error(&quot;Error checking Redis health:&quot;, error);
+                    // In case of error during Redis check, keep retrying
+                    setTimeout(attemptReconnect, reconnectInterval);
+                }
+            };
+
+            attemptReconnect();
+        };
+        ```
+
+    **Initialization:** Call `checkRedisHealth()` on application startup, e.g., in `src/lib/prfc.ts`.
+
+3.  **Configurable Rate Limits During Fallback:**
+    The blocking mechanism should use the original rate limits (e.g., `MAX_SIGNUPS_PER_IP_HOURLY = 5`) to ensure consistency.
+    *   **File:** `src/lib/utils/rateLimiter.ts`
+    *   **Code (relevant section):**
+        
+```typescript
+        const MAX_SIGNUPS_PER_IP_HOURLY = 5;
+        const MAX_SIGNUPS_PER_IP_DAILY = 100;
+        ```
+
+### Justification of Tradeoffs:
+
+*   **Pros:**
+    *   **Prevents DoS:** Immediately blocks new sign-ups if Redis is down, preventing a single user from overwhelming the system.
+    *   **Graceful Degradation:** The application remains functional for existing users and can process sign-ups if Redis recovers.
+    *   **Configurable Limits:** In-memory blocking uses the same rate limits as Redis, ensuring consistent protection.
+    *   **Automated Reconnect:** Periodic Redis checks increase the chances of recovery without manual intervention.
+*   **Cons:**
+    *   **Single Point of Failure:** The in-memory block list is vulnerable to server restarts. If the application instance crashes, the block list is lost, and all IPs are unblocked.
+    *   **No Cross-Instance Coordination:** If the application scales horizontally, each instance will have its own in-memory block list, leading to potential gaps in protection.
+    *   **Increased Complexity:** Adds new components (e.g., a health check function) and considerations for recovery.
+
+### Alternative Fallbacks (with tradeoffs):
+
+*   **No Fallback (Just Error Handling):**
+    *   **Pros:** Simples, no additional components.
+    *   **Cons:** Full sign-up capability is lost if Redis is down, leading to potential DoS.
+*   **Fallback to HTTP Cache/Firewall Rate Limiting:**
+    *   **Pros:** Centralized rate limiting visible to all instances.
+    *   **Cons:** Adds external dependency, potential for misconfiguration, less fine-grained control.
+
+The proposed in-memory blocking with Redis reconnect is a well-balanced solution, offering strong protection during Redis downtime while minimizing disruption upon recovery.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Propose a resilient fallback strategy when Redis rate limiter is unavailable, and justify tradeoffs.          </p>
+          <p class="lt-p">
+Response: When the Redis rate limiter is unavailable, a resilient fallback strategy is crucial to ensure that the application remains functional while minimizing abuse. The most straightforward and justifiable approach is to **disable rate limiting entirely** and implement a **simple, in-application (e.g., memory) fallback** with basic request counting.
+
+### Proposed Fallback Strategy: &quot;Disabled + Basic Request Counting&quot;
+
+1. **Redis Unavailability Detection**:
+   Ensure the application can detect when Redis is unreachable. This can be done using a Redis client that throws an error or returns a `null` connection.
+
+2. **Graceful Rate Limiter Disable**:
+   If Redis is detected as unavailable, a flag (e.g., `rateLimiterDisabled`) should be set. This flag will bypass the Redis rate limiter logic.
+
+   **Justification**: Immediately disabling rate limiting prevents the application from failing requests due to an unavailable Redis. It&#x27;s a critical availability decision.
+
+3. **Basic In-Memory Request Counting**:
+   When `rateLimiterDisabled` is true, implement a very basic rate limiting mechanism using `requestCount` and `resetTimer` stored in memory (e.g., a simple JavaScript object).
+
+   **Example logic** (in `src/app/api/referrals/route.ts`):
+   ```typescript
+   let requestCount = 0;
+   let resetTimer = Date.now();
+
+   const MAX_REQUESTS = 100;
+   const RESET_TIMER_MS = 60000; // 1 minute
+
+   function isRequestAllowed() {
+     const now = Date.now();
+
+     // If the reset timer has passed, reset the counter
+     if (now - resetTimer &gt;= RESET_TIMER_MS) {
+       requestCount = 0;
+       resetTimer = now;
+     }
+
+     // Allow request if under limit
+     if (requestCount &lt; MAX_REQUESTS) {
+       requestCount++;
+       return true;
+     }
+
+     // Reject if over limit
+     console.warn(&quot;Rate limit exceeded (basic fallback).&quot;);
+     return false;
+   }
+   ```
+
+   **Justification**:
+   *   **Simplicity**: A simple object-based counter is easy to implement, understand, and maintain. It introduces minimal overhead.
+   *   **Prevents Abuse**: While not as robust as Redis, it prevents an unlimited flood of requests from a single IP or user, protecting basic application resources (e.g., database connections).
+   *   **Limited Scope**: It does not differentiate between users, IP addresses, or specific endpoints, making it less effective against distributed attacks.
+
+4. **Logging**:
+   Log rate limit exceedances to monitor potential abuse and the health of the Redis service.
+
+   **Justification**: Logging provides visibility into when the fallback is triggered and how many requests are being rejected, aiding in incident response and recovery.
+
+5. **Redis Recovery**:
+   Implement a mechanism to re-enable the Redis rate limiter once Redis becomes available. This could be a periodic check (e.g., every 5 seconds) or an event listener if Redis recovers gracefully.
+
+   **Justification**: Ensures that once Redis is back online, the stronger, distributed rate limiting is restored promptly.
+
+---
+
+### Tradeoffs
+
+| **Tradeoff** | **Explanation** |
+|---|---|
+| **Increased vulnerability to abuse** | Without Redis, the application is more exposed to DoS attacks, especially from multiple IPs. |
+| **No persistence** | In-memory counters reset on application restart or scale-out (e.g., if a new worker instance is spun up). |
+| **Manual recovery configuration** | If Redis is down for an extended period, the basic fallback might become the permanent solution until manually disabled. |
+| **Simplified development** | The basic fallback is easier to implement and understand than a complex distributed in-memory solution. |
+
+---
+
+### Conclusion
+
+The &quot;Disabled + Basic Request Counting&quot; strategy provides a balance between **availability** (ensuring the application works when Redis is down) and **basic protection against abuse**. It&#x27;s a pragmatic choice that should be reviewed and potentially enhanced as the application grows or Redis availability becomes a more critical concern.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Propose a resilient fallback strategy when Redis rate limiter is unavailable, and justify tradeoffs.          </p>
+          <p class="lt-p">
+Response: When the Redis rate limiter is unavailable, the PRFC Connect application needs a resilient fallback strategy to ensure basic functionality while being aware of potential abuse. Here&#x27;s a proposed strategy, along with justifications for its tradeoffs:
+
+### Proposed Fallback Strategy: In-Memory Rate Limiter with Graceful Degradation
+
+#### 1. **In-Memory Rate Limiter (e.g., using `lru-fast` or `express-rate-limit`)**
+   - **Mechanism**: If Redis is unavailable, the application should switch to an in-memory rate limiter. This limiter will track request counts within the application&#x27;s process (or across processes if `fastify-cloudfare` or a similar solution is used with shared memory).
+   - **Implementation**: Introduce a new middleware or a dedicated rate-limiting service that falls back to in-memory storage when Redis is not accessible.
+   - **Example**: Use `lru-fast` to track request counts per IP or API key.
+   - **Code Location**: A new file, e.g., `src/utils/rateLimiterInMemory.ts`, would handle this logic. A middleware in `src/app/api/middleware.ts` or `src/app/libraries/rateLimiter.ts` would check Redis availability and switch to the in-memory limiter if Redis is down.
+
+#### 2. **Graceful Degradation and Alerting**
+   - **Mechanism**: When the in-memory rate limiter is activated, it should operate with more lenient limits than the Redis limiter. Additionally, the system should alert administrators that Redis is unavailable.
+   - **Implementation**: Log an error or warning message to the console or a dedicated monitoring service (e.g., Datadog, New Relic) when Redis is detected as unavailable.
+   - **Code Location**: In the rate limiter initialization code (e.g., `src/utils/rateLimiter.ts`), add a check for Redis connection and trigger an alert if it fails.
+
+#### 3. **Circuit Breaker Pattern (Optional but Recommended)**
+   - **Mechanism**: Implement a circuit breaker to prevent continuous attempts to connect to an unreachable Redis instance, thus saving resources.
+   - **Implementation**: Use a library like `axios-circuit-breaker` or a custom solution to monitor Redis connection attempts and open/close the circuit based on failure rates.
+   - **Code Location**: This could be integrated into the Redis client initialization in `src/utils/redis.ts`.
+
+### Justification of Tradeoffs
+
+#### ✅ **Pros:**
+1. **Continued Basic Functionality**:
+   - The in-memory rate limiter ensures that even if Redis is down, the application can still process requests, albeit with higher limits. This is crucial for maintaining availability during Redis outages.
+
+2. **Immediate Alerting**:
+   - Admins are promptly notified of the Redis failure, allowing them to investigate and resolve the issue without prolonged downtime.
+
+3. **Predictable Behavior (Within Limits)**:
+   - While the in-memory limiter&#x27;s effectiveness is process-level, it provides a predictable &quot;fallback&quot; behavior, preventing infinite requests from overwhelming the application entirely.
+
+#### ⚖️ **Cons and Tradeoffs:**
+1. **Higher Request Limits**:
+   - In-memory limiters are inherently less effective than distributed Redis limiters. They cannot enforce strict, globally consistent limits across all instances of the application. This means a higher risk of abuse from multiple clients hitting the system simultaneously.
+
+2. **No Distributed Protection**:
+   - If the application is deployed across multiple instances (e.g., on a Kubernetes cluster), the in-memory limiter will not share state between instances. Each instance will operate independently, leading to potentially higher overall request volumes.
+
+3. **Alert Fatigue**:
+   - Frequent Redis unavailability alerts can lead to alert fatigue. It&#x27;s important to implement alerting at appropriate severity levels and ensure that critical alerting paths (e.g., PagerDuty) are only triggered for persistent issues.
+
+4. **Increased Complexity**:
+   - Adding an in-memory rate limiter and alerting logic increases the codebase&#x27;s complexity. However, this is a necessary tradeoff for resilience.
+
+### Conclusion
+
+The in-memory rate limiter with graceful degradation is a robust fallback strategy that balances the need for continued service availability with basic protection against abuse. It is a pragmatic solution for when Redis is unavailable, acknowledging its limitations while minimizing the impact on the end-user experience.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Propose a resilient fallback strategy when Redis rate limiter is unavailable, and justify tradeoffs.          </p>
+          <p class="lt-p">
+Response: When the Redis rate limiter is unavailable, a resilient fallback strategy is crucial to maintain application availability and prevent abuse, even if not at the most granular level. A two-tiered fallback approach is proposed, balancing simplicity, effectiveness, and preventable abuse:
+
+### Proposed Fallback Strategy: Graceful Degradation with In-Memory Rate Limiting
+
+1. **Redis Availability Check (Synchronous, Low Overhead)**
+   - **Justification**: Before enforcing any rate limiting, the application should *first* verify the availability of Redis. This ensures that if Redis is operational, the more precise rate limiting is applied.
+   - **Implementation**:
+     *   **File**: `src/lib/utils.ts`
+     *   **Code**:
+        
+```typescript
+        async isRedisAvailable(): Promise&lt;boolean&gt; {
+            try {
+                await redis.ping();
+                return true;
+            } catch (error) {
+                console.warn(&quot;Redis is unavailable:&quot;, error.message);
+                return false;
+            }
+        }
+        ```
+
+2. **In-Memory Rate Limiter (Fallback, Coarser-Grained)**
+   - **Justification**: If Redis is unavailable, an in-memory rate limiter provides a basic layer of protection against abuse. While less robust than Redis (e.g., no persistence, single-node), it prevents infinite submissions from a single user/session in a single application instance.
+   - **Implementation**:
+     *   **File**: `src/lib/rateLimiter.ts`
+     *   **Code**:
+        
+```typescript
+        export class InMemoryRateLimiter {
+            private requestCount = 0;
+            private windowStart: number = Date.now();
+            private readonly maxRequests = 100; // Allow 100 requests per minute
+            private readonly windowMs = 60 * 1000; // 1 minute
+
+            public consume(): boolean {
+                const now = Date.now();
+
+                // Reset the window if a new minute has passed
+                if (now - this.windowStart &gt;= this.windowMs) {
+                    this.requestCount = 0;
+                    this.windowStart = now;
+                }
+
+                if (this.requestCount &gt;= this.maxRequests) {
+                    return false; // Rate limit exceeded
+                }
+
+                this.requestCount++;
+                return true;
+            }
+        }
+
+        // Initialize the in-memory rate limiter
+        export const inMemoryRateLimiter = new InMemoryRateLimiter();
+        ```
+
+
+### Usage in API Route:
+
+*   **File**: `src/app/api/referrals/route.ts`
+*   **Code**:
+    
+```typescript
+    import { NextResponse, NextRequest } from &#x27;next/server&#x27;;
+    import redis from &#x27;redis&#x27;;
+    import { isRedisAvailable } from &#x27;@/lib/utils&#x27;;
+    import { InMemoryRateLimiter } from &#x27;@/lib/rateLimiter&#x27;;
+    import { generateReferralCode } from &#x27;@/lib/referralUtils&#x27;;
+    import prisma from &#x27;@/lib/prisma&#x27;; // Assuming a Prisma client for database operations
+
+    const redisClient = redis.createClient({
+        host: process.env.REDIS_HOST!,
+        port: parseInt(process.env.REDIS_PORT!, 10),
+    });
+
+    // ... (existing Redis rate limiter setup using fastify-rate-limit, lines 28-41 in src/app/api/referrals/route.ts)
+
+    export async function POST(req: NextRequest) {
+        const { name, email, phone } = await req.json();
+
+        // Check Redis availability
+        const redisAvailable = await isRedisAvailable();
+
+        if (redisAvailable) {
+            // Use Redis rate limiter as primary
+            const ipAddress = req.ip || &quot;unknown&quot;;
+            const key = `rate-limit:${ipAddress}`;
+            const allowed = (await redis.get(key)) === &quot;allowed&quot;;
+
+            if (!allowed) {
+                console.warn(`Rate limit exceeded for IP ${ipAddress}`);
+                return NextResponse.status(429).json({ message: &quot;Too many requests. Please try again later.&quot; });
+            }
+
+            // ... (existing code to generate referral code and save to DB, lines 46-60 in src/app/api/referrals/route.ts)
+        } else {
+            // Fall back to in-memory rate limiter
+            const allowed = inMemoryRateLimiter.consume();
+
+            if (!allowed) {
+                console.warn(&quot;In-memory rate limit exceeded for this session.&quot;);
+                return NextResponse.status(429).json({ message: &quot;Too many requests. Please try again later.&quot; });
+            }
+
+            // ... (existing code to generate referral code and save to DB, lines 46-60 in src/app/api/referrals/route.ts)
+        }
+
+        return NextResponse.json({ message: &quot;Referral code generated successfully!&quot;, code: generatedCode });
+    }
+    ```
+
+### Tradeoffs and Justification:
+
+| **Factor**                      | **In-Redis Rate Limiter**                              | **In-Memory Fallback Rate Limiter**                                      | **Grace Period Alert**                                  |
+|-------------------------------|--------------------------------------------------------|--------------------------------------------------------------------------|---------------------------------------------------------|
+| **Preventive Power**           | High (global, distributed, fine-grained)                | Medium (per-instance, coarser-grained)                                   | Low (reactive, alerts only)                             |
+| **Redis Dependency**           | High                                                    | Low (only if Redis is completely down)                                   | Low                                                     |
+| **Prevents Infinite Submissions** | Yes (Redis)                                           | Yes (In-Memory)                                                         | No                                                      |
+| **Resilience to Redis Failure** | Low (if Redis fails, no protection)                    | Medium (provides basic protection)                                        | Medium (alerts staff to investigate)                    |
+| **Implementation Complexity**  | Medium (redis-promise, fastify-rate-limit)              | Low (simple counters)                                                   | Low (Zabbix/Prometheus integration)                     |
+| **Scalability**                | High (Redis Cluster)                                   | Low (limited to single instance)                                         | N/A                                                     |
+
+**Justification**:
+The primary rate limiting using Redis is essential for distributed protection against abuse. The in-memory rate limiter acts as a *last line of defense* if Redis fails, preventing infinite submissions from a single user session within a single application instance. A grace period alert provides early notification of Redis unavailability, allowing quick intervention. This approach balances protection, resilience, and operational awareness.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Propose a resilient fallback strategy when Redis rate limiter is unavailable, and justify tradeoffs.          </p>
+          <p class="lt-p">
+Response: When the Redis rate limiter is unavailable, a resilient fallback strategy is essential to ensure the application remains functional and adheres to rate-limiting policies to some degree. A two-tiered fallback strategy using **in-memory rate limiting** and **adaptive policy enforcement** is proposed, justifying trade-offs in terms of centralization, cache persistence, and response consistency.
+
+### Proposed Fallback Strategy: In-Memory Rate Limiting with Adaptive Policy Enforcement
+
+#### 1. **In-Memory Rate Limiter (e.g., Token Bucket)**
+
+**Mechanism:**  
+When Redis is unavailable, the application should switch to an in-memory rate limiter, such as a **token bucket** or **fixed window counter**. This limiter will track request counts for each user or IP address within a sliding window (e.g., 1 minute) and reject requests exceeding a predefined limit.
+
+**Implementation:**  
+This logic should be contained within a dedicated rate-limiting middleware or service. For example:
+
+*   **`src/lib/rateLimiter.ts`** (modified to include Redis fallback)
+    
+```typescript
+    // src/lib/rateLimiter.ts
+    // ... (existing Redis client setup)
+    
+    let inMemoryRateLimiter: TokenBucket[] = [];
+
+    export const getRateLimiterKey = (userId: string | null, ipAddress: string) =&gt; {
+        // Prioritize userId, then ipAddress for granularity
+        return userId ? `in-memory:rate-limit:${userId}` : `in-memory:rate-limit:${ipAddress}`;
+    };
+
+    export const rateLimiter = (allowedRequests: number, windowMs: number) =&gt; {
+        return (req: Request, res: Response, next: NextFunction) =&gt; {
+            const userId = (req as any).userId; // Assuming user ID is stored in request object
+            const ipAddress = req.realIP; // Ensure this parses the actual client IP
+            const key = getRateLimiterKey(userId, ipAddress);
+
+            // Check Redis first
+            const redisClient = getRedisClient();
+            if (redisClient &amp;&amp; redisClient.isConnected()) {
+                redisClient.get(key)
+                    .then((storedCount: string | null) =&gt; {
+                        if (storedCount === null || parseInt(storedCount) &gt;= allowedRequests) {
+                            return res.status(429).json({ error: &quot;Too many requests. Please try again later.&quot; });
+                        }
+                        const newCount = (parseInt(storedCount) || 0) + 1;
+                        redisClient.setex(key, windowMs, newCount);
+                        next();
+                    })
+                    .catch((err: Error) =&gt; {
+                        console.error(&quot;Redis rate limit check failed. Fallback to in-memory limit.&quot;, err.message);
+                        enforceInMemoryRateLimit(key, allowedRequests, windowMs, req, res, next);
+                    });
+            } else {
+                console.warn(&quot;Redis not connected. Enforcing in-memory rate limit.&quot;);
+                enforceInMemoryRateLimit(key, allowedRequests, windowMs, req, res, next);
+            };
+        };
+    };
+
+    export const enforceInMemoryRateLimit = (key: string, allowedRequests: number, windowMs: number, req: Request, res: Response, next: NextFunction) =&gt; {
+        // Initialize the token bucket for this key if it doesn&#x27;t exist
+        if (!inMemoryRateLimiter.find(bucket =&gt; bucket.key === key)) {
+            inMemoryRateLimiter.push({ key, tokens: allowedRequests, lastRefill: Date.now() });
+        }
+
+        const now = Date.now();
+        let refillRate = allowedRequests / (windowMs / 1000); // Tokens per second
+        let timeSinceLastRefill = (now - inMemoryRateLimiter.find(bucket =&gt; bucket.key === key)!.lastRefill) / 1000;
+
+        // Refill tokens
+        const tokensToAdd = refillRate * timeSinceLastRefill;
+        inMemoryRateLimiter.find(bucket =&gt; bucket.key === key)!.tokens = Math.min(allowedRequests, inMemoryRateLimiter.find(bucket =&gt; bucket.key === key)!.tokens + tokensToAdd);
+        inMemoryRateLimiter.find(bucket =&gt; bucket.key === key)!.lastRefill = now;
+
+        if (inMemoryRateLimiter.find(bucket =&gt; bucket.key === key)!.tokens &lt;= 0) {
+            return res.status(429).json({ error: &quot;Too many requests. Please try again later.&quot; });
+        } else {
+            inMemoryRateLimiter.find(bucket =&gt; bucket.key === key)!.tokens--;
+            next();
+        }
+    };
+    ```
+
+
+**Trade-offs:**
+
+*   **Pros:**
+    *   **Immediate fallback:** Provides a quick, self-contained rate-limiting mechanism without waiting for Redis to be restored.
+    *   ** simpler logic:** In-memory checks are generally faster than network calls to Redis.
+    *   **Granular control:** User-specific and IP-specific rate limits can be enforced.
+*   **Cons:**
+    *   **No centralization:** In-memory limits are per-application instance, leading to potential &quot;noisy neighbor&quot; issues if multiple instances are deployed without proper session sharing (e.g., Nginx proxy).
+    *   **No persistence:** If the application restarts or scales, the in-memory state is lost.
+    *   **Vulnerability to DoS:** An attacker could potentially overwhelm a single instance if it&#x27;s the only one handling requests.
+
+#### 2. **Adaptive Policy Enforcement (Graceful Degradation)**
+
+**Mechanism:**  
+In addition to the in-memory limiter, the application should implement a secondary layer of &quot;adaptive policy&quot; to prevent complete system saturation, even if the in-memory limiter is bypassed. This involves:
+1.  **Circuit Breaker Pattern:** If a surge of requests causes the application to slow down or return 429 errors at an unusually high rate, the system should temporarily &quot;open the circuit,&quot; rejecting all new requests with a 503 Service Unavailable error after a delay, allowing the system to recover.
+2.  **Request Throttling (e.g., QPS Limiting):** Enforce a very strict, global limit on the number of requests per second (RPS) that the entire application accepts. This acts as a final defense against denial-of-service attacks and ensures the application remains responsive even if internal rate-limiting fails.
+
+**Implementation:**  
+*   **Circuit Breaker:**
+    
+```typescript
+    // src/lib/circuitBreaker.ts
+    export class CircuitBreaker {
+        private state: &quot;closed&quot; | &quot;opened&quot; | &quot;halfOpen&quot; = &quot;closed&quot;;
+        private failureCount = 0;
+        private successCount = 0;
+        private timeout: NodeJS.Timeout | null = null;
+        private readonly maxFailures = 5; // Number of failures before opening
+        private readonly recoveryTimeout = 30000; // 30 seconds
+
+        public execute(action: () =&gt; Promise&lt;any&gt;): Promise&lt;any&gt; {
+            if (this.state === &quot;opened&quot;) {
+                return new Promise((resolve, reject) =&gt; {
+                    setTimeout(() =&gt; {
+                        this.halfOpen();
+                        // If still failed, it will be reopened; if successful, the state remains half-open
+                    }, this.recoveryTimeout);
+                    reject(new Error(&quot;Circuit breaker is open. Service unavailable.&quot;));
+                });
+            }
+
+            return new Promise((resolve, reject) =&gt; {
+                this.failureCount++;
+                action()
+                    .then(result =&gt; {
+                        this.successCount++;
+                        if (this.state === &quot;opened&quot;) {
+                            this.close();
+                        }
+                        resolve(result);
+                    })
+                    .catch(error =&gt; {
+                        if (this.state === &quot;halfOpen&quot;) {
+                            this.open();
+                        }
+                        reject(error);
+                    });
+            });
+        }
+
+        private close() {
+            this.state = &quot;closed&quot;;
+            this.failureCount = 0;
+            this.successCount = 0;
+            if (this.timeout) {
+                clearTimeout(this.timeout);
+            }
+        }
+
+        private open() {
+            this.state = &quot;opened&quot;;
+            this.failureCount = 0;
+            this.successCount = 0;
+            if (this.timeout) {
+                clearTimeout(this.timeout);
+            }
+        }
+
+        private halfOpen() {
+            this.state = &quot;halfOpen&quot;;
+            // If the action succeeds, close the circuit; otherwise, keep it open
+        }
+    }
+    ```
+
+
+    *   **Global Request Throttler (e.g., using `express-rate-limit` with `headers=true`):**
+        
+```typescript
+        // src/app/api/middleware/rateLimit.ts
+        import { NextFunction, Request, Response } from &quot;express&quot;;
+        import { rateLimiter } from &quot;@/lib/rateLimiter&quot;;
+
+        export const rateLimitMiddleware = (allowedRequests: number, windowMs: number) =&gt; {
+            return (req: Request, res: Response, next: NextFunction) =&gt; {
+                // Primary rate limiting with Redis and then in-memory
+                rateLimiter(allowedRequests, windowMs)(req, res, async () =&gt; {
+                    try {
+                        // Secondary: Circuit Breaker and global QPS limit
+                        const result = await executeWithCircuitBreaker(async () =&gt; {
+                            // This is a no-op; the `execute` method of CircuitBreaker will either
+                            // allow the request or reject with a 503 error, or the global QPS
+                            // limiter will have already rejected it.
+                            return true;
+                        });
+
+                        // If we&#x27;ve passed both, proceed to the next middleware/controller
+                        next();
+                    } catch (error) {
+                        if (error.message === &quot;Circuit breaker is open. Service unavailable.&quot;) {
+                            res.status(503).json({ error: &quot;Service temporarily unavailable. Please try again later.&quot; });
+                        } else {
+                            res.status(42          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Propose a resilient fallback strategy when Redis rate limiter is unavailable, and justify tradeoffs.          </p>
+          <p class="lt-p">
+Response: When the Redis rate limiter is unavailable in PRFC Connect, a robust fallback strategy is essential to maintain application availability and user experience, even if it means slightly reduced protection against abuse.
+
+### Proposed Fallback Strategy: Graceful Degradation with In-Memory Rate Limiting and Request Blocking
+
+**1. Primary Fallback: In-Memory Rate Limiter (e.g., Fastify Rate Limiter)**
+
+*   **Mechanism**: When Redis is unavailable, the application should gracefully degrade to an in-memory rate limiter.
+*   **Implementation**:
+    *   In `src/lib/rateLimiter.ts`, modify `initRateLimiter` to check the health of the Redis connection before proceeding to create a Fastify rate limiter instance.
+    *   If Redis is unreachable or reports an error, the function should default to an in-memory rate limiter.
+*   **Example Code (`src/lib/rateLimiter.ts`)**:
+
+	
+```typescript
+import { Redis } from &quot;@prisma/client&quot;;
+import { RateLimiterMemory } from &quot;rate-limit-memory&quot;;
+import fastifyRateLimiter from &quot;fastify-rate-limit&quot;;
+import { logger } from &quot;./logger&quot;;
+import { PrismaClientHealth } from &quot;@prisma/client/health&quot;;
+
+// Function to check if Redis is available
+async function isRedisAvailable(): Promise&lt;boolean&gt; {
+  try {
+    const health = new PrismaClientHealth();
+    await health.check();
+    return true;
+  } catch (error) {
+    logger.error(&quot;Redis is unavailable:&quot;, error);
+    return false;
+  }
+}
+
+export async function initRateLimiter(fastify: FastifyInstance) {
+  if (await isRedisAvailable()) {
+    // Initialize Redis rate limiter (existing logic)
+    const redis = new Redis();
+    const rateLimiter = new RedisRateLimiter(redis, {
+      max: 1000,
+      windowMs: 1000 * 60 * 5, // 5 minutes
+      errorMessage: &quot;Too many requests. Please try again later.&quot;,
+      headers: { &quot;X-RateLimit-Limit&quot;: 1000, &quot;X-RateLimit-Remaining&quot;: 999 },
+      skipIfMemoryStored: true,
+    });
+    fastify.register(fastifyRateLimiter, {
+      name: &quot;rateLimiter&quot;,
+      options: { rateLimiter },
+    });
+  } else {
+    // Initialize In-Memory rate limiter
+    logger.warn(&quot;Redis rate limiter unavailable. Falling back to in-memory rate limiter.&quot;);
+    fastify.register(fastifyRateLimiter, {
+      name: &quot;rateLimiter&quot;,
+      options: {
+        rateLimiter: new RateLimiterMemory({
+          max: 200, // Lower than Redis to ensure in-memory can handle multiple instances
+          windowMs: 1000 * 60 * 5, // 5 minutes
+          errorMessage: &quot;Too many requests. Please try again later.&quot;,
+          headers: { &quot;X-RateLimit-Limit&quot;: 200, &quot;X-RateLimit-Remaining&quot;: 199 },
+        }),
+      },
+    });
+  }
+}
+```
+
+*   **Tradeoffs**:
+    *   **Pros**:
+        *   **Increased availability**: The application remains responsive even if Redis is down.
+        *   **Simplified recovery**: Once Redis is back online, the application will automatically revert to the Redis rate limiter without manual intervention.
+    *   **Cons**:
+        *   **Limited scope**: The in-memory rate limiter is only effective for the specific application instance. If the application scales horizontally, each instance will have its own independent rate limit, potentially allowing more requests in total but without true distributed protection.
+        *   **Increased memory usage**: Many concurrent requests will consume more memory.
+        *   **Lower limits**: In-memory limits are typically lower than Redis (e.g., 200 vs. 1000) to ensure they don&#x27;t become a bottleneck themselves.
+
+**2. Secondary Fallback: Request Blocking (Circuit Breaker Pattern)**
+
+*   **Mechanism**: If the in-memory rate limiter is also overwhelmed (e.g., due to a DDoS attack), the application should block subsequent requests to prevent resource exhaustion.
+*   **Implementation**:
+    *   In `src/lib/rateLimiter.ts`, introduce a mechanism to detect when the in-memory rate limiter is being hit with too many requests, indicating a potential attack.
+    *   Once an attack is detected, a &quot;circuit breaker&quot; state is triggered, and all subsequent requests are rejected with a 429 status.
+    *   The circuit breaker should automatically reset after a specified timeout to allow recovery.
+*   **Example Code (simplified - require a `CircuitBreaker` library or custom logic)**:
+
+    
+```typescript
+class CircuitBreaker {
+  private state: &quot;closed&quot; | &quot;open&quot; = &quot;closed&quot;;
+  private failureCount: number = 0;
+  private timeout: number = 60000; // 1 minute
+  private isCircuitOpenTimeout: number | null = null;
+
+  // This would be called when a request is rejected due to rate limiting or an error
+  public trip() {
+    this.failureCount += 1;
+    if (this.failureCount &gt;= 5) { // Adjust threshold as needed
+      this.state = &quot;open&quot;;
+      this.isCircuitOpenTimeout = setTimeout(() =&gt; this.reset(), this.timeout);
+    }
+  }
+
+  public reset() {
+    this.state = &quot;closed&quot;;
+    this.failureCount = 0;
+  }
+
+  public isOpen(): boolean {
+    return this.state === &quot;open&quot;;
+  }
+}
+
+// Inside initRateLimiter, after initializing the in-memory rate limiter:
+const circuitBreaker = new CircuitBreaker();
+
+fastify.addHook(&quot;onRequest&quot;, async (request, reply) =&gt; {
+  if (circuitBreaker.isOpen()) {
+    reply.code(429).send({ error: &quot;Too many requests; service temporarily unavailable.&quot; });
+    return;
+  }
+  // Existing rate limiting logic
+  const identifier = request.ip; // Or a unique identifier per user session
+  const remaining = await inMemoryRateLimiter.getRemaining(identifier);
+  if (remaining &lt;= 0) {
+    circuitBreaker.trip();
+    reply.code(429).send({ error: &quot;Too many requests; service temporarily unavailable.&quot; });
+    return;
+  }
+  await inMemoryRateLimiter.consume(identifier, 1);
+  // Continue processing the request
+});
+```
+
+*   **Tradeoffs**:
+    *   **Pros**:
+        *   **Prevents resource exhaustion**: Stops malicious or overzealous requests from overwhelming the server.
+        *   **Automated recovery**: The circuit breaker resets automatically, allowing service to resume.
+    *   **Cons**:
+        *   **False positives**: Normal users might be rejected if they exceed the in-memory limit due to temporary network issues or other factors.
+        *   **Complexity**: Adds significant complexity to the rate limiting logic.
+
+### Justification of Tradeoffs
+
+The proposed strategy balances availability, security, and resource management:
+
+*   **In-Memory Fallback** ensures that the application remains accessible even when Redis is down, which is critical for user experience. While it offers limited distributed protection, it provides a baseline defense against abuse.
+*   **Circuit Breaker** adds an extra layer of security, preventing the application from becoming unresponsive under attack. It introduces some complexity but is essential for maintaining system stability during high load or DDoS scenarios.
+*   The lower in-memory rate limit (200 requests/5 minutes) compared to Redis (1000 requests/5 minutes) is a deliberate tradeoff to ensure that the in-memory rate limiter doesn&#x27;t become a bottleneck itself, especially when the application is scaled horizontally.
+
+This approach provides a resilient, self-healing rate limiting mechanism that adapts to the availability of Redis.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Propose a resilient fallback strategy when Redis rate limiter is unavailable, and justify tradeoffs.          </p>
+          <p class="lt-p">
+Response: When the Redis rate limiter is unavailable, a resilient fallback strategy is essential to maintain application availability and user experience, even if it means slightly relaxed rate limiting. Here&#x27;s a proposed strategy, along with justifications for its trade-offs:
+
+### Proposed Fallback Strategy: In-Memory Rate Limiter with Graceful Degradation
+
+**1. Primary (Redis) Rate Limiter:**
+- **Mechanism:** Use `rate-limiter-flexible` (e.g., `window: fixedWindow`, `tokens: 5`, `time: 60 seconds`) configured to connect to Redis.
+- **Justification:** Redis provides a distributed and highly available rate-limiting solution. It ensures consistent rate limits across all instances of the application.
+- **Failure Condition:** If Redis is unavailable, the `rate-limiter-flexible` library will throw an error when attempting to use it.
+
+**2. Fallback (In-Memory) Rate Limiter:**
+- **Mechanism:** If Redis is unavailable, the application should gracefully switch to a simple in-memory rate limiter.
+- **Implementation:** Use `express-rate-limit` or a custom fixed-window counter within the request handler or middleware, configured with lower limits (e.g., 5 requests per 60 seconds per IP).
+- **Justification:** An in-memory limiter is quick to implement and sufficient for preventing brute-force attacks or extremely high traffic on a single instance. It has lower overhead since it doesn&#x27;t require a network call.
+
+**3. Graceful Degradation Logic:**
+- **Mechanism:** Implement a `try-catch` block around Redis rate limiter operations. If an error is caught, configure an in-memory rate limiter and use that for subsequent requests.
+- **Implementation:**
+  ```typescript
+  let rateLimiter: RateLimiter;
+  let isRedisAvailable = true;
+
+  // Initialize Redis rate limiter
+  try {
+    rateLimiter = new RateLimiter({
+      store: new RedisStore({
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT || &#x27;6379&#x27;),
+      }),
+      windowMs: 60 * 1000, // 1 minute
+      max: 5,
+      keyPrefix: &#x27;referral_rate_limit&#x27;,
+    });
+    isRedisAvailable = true;
+  } catch (error) {
+    console.warn(&quot;Redis rate limiter unavailable. Falling back to in-memory rate limiter.&quot;);
+    rateLimiter = new RateLimiter({
+      store: new InMemoryRateLimiter(),
+      windowMs: 60 * 1000, // 1 minute
+      max: 5,
+      keyPrefix: &#x27;referral_rate_limit&#x27;,
+    });
+    isRedisAvailable = false;
+  }
+
+  // Usage in POST /api/referrals
+  const result = await rateLimiter.consume(clientIp);
+  if (result.consumed) {
+    // Process referral
+  } else {
+    res.status(429).send(&quot;Too many requests, please try again later.&quot;);
+  }
+  ```
+- **File Path:** `src/lib/rateLimiter.ts`
+- **Justification:** This approach ensures that if Redis fails, the application continues to function, albeit with less strict rate limits. It also logs the Redis unavailability, alerting administrators.
+
+**4. Health Check and Re-connection:**
+- **Mechanism:** Implement a health check endpoint that verifies the Redis connection.
+- **Implementation:** A simple endpoint (`/api/health`) that attempts to ping Redis.
+- **Justification:** Proactive health checks allow for early detection of Redis issues. If Redis is restored, the application should automatically reinitialize the Redis rate limiter.
+- **Trade-off:** Implementing a robust reconnection strategy (e.g., exponential backoff) can be complex but ensures the application recovers quickly once Redis is available.
+
+---
+
+### Trade-offs Justification:
+
+| Strategy Component           | Benefit                                                                 | Trade-off                                                                 |
+|-----------------------------|-------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| **Redis as Primary**        | Distributed, consistent, high performance rate limiting.              | Single point of failure; availability depends on Redis health.           |
+| **In-Memory Fallback**      | Quick to implement, low overhead, immediate protection against DoS.   | Not shared between instances; potential for higher limits per instance.  |
+| **Graceful Degradation**    | Continuity of service during Redis failure.                            | Slightly relaxed rate limits, potential for increased load on single instance. |
+| **Health Check &amp; Reconnect**| Early detection of Redis issues; automatic recovery.                   | Adds complexity; potential for false positives if health check is unstable.|
+
+---
+
+### Example Implementation:
+
+The core logic for the Redis and in-memory rate limiter setup would be in `src/lib/rateLimiter.ts`. The `rate-limiter-flexible` library (`src/lib/rateLimiter.ts`) would be configured to use Redis, and `express-rate-limit` (`src/lib/rateLimiter.ts`) would serve as the in-memory alternative.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+1266                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+1105                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+847                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+911                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+1321                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+1662                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+86                </td>
+                <td>
+1050                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `AppError` class and error mapping logic implemented?          </p>
+          <p class="lt-p">
+Response: The `AppError` class and error mapping logic are implemented in the following files:
+
+### 1. `src/lib/errors.ts`
+This file defines the `AppError` class and maps specific error messages to corresponding HTTP status codes.
+
+- **`AppError` Class Definition**:
+  ```typescript
+  // src/lib/errors.ts
+  export default class AppError extends Error {
+    public readonly status: number;
+
+    public constructor(public readonly message: string, status = 500) {
+      super(message);
+      this.status = status;
+    }
+  }
+  ```
+  The `AppError` class extends the native JavaScript `Error` class and includes a `status` property to indicate the HTTP status code associated with the error.
+
+- **Error Mapping Logic**:
+  ```typescript
+  // src/lib/errors.ts
+  export const mapError = (error: Error): AppError =&gt; {
+    if (error.message.includes(&quot;duplicate key&quot;)) {
+      return new AppError(&quot;User with this email already exists.&quot;, 409);
+    } else if (error.message.includes(&quot;data too long&quot;)) {
+      return new AppError(&quot;Input exceeds maximum allowed length.&quot;, 400);
+    } else if (error.message.includes(&quot;invalid input&quot;)) {
+      return new AppError(&quot;Invalid input provided.&quot;, 400);
+    } else if (error.message.includes(&quot;not found&quot;)) {
+      return new AppError(&quot;Resource not found.&quot;, 404);
+    } else if (error.message.includes(&quot;unauthorized&quot;)) {
+      return new AppError(&quot;You are not authorized to perform this action.&quot;, 401);
+    } else if (error.message.includes(&quot;forbidden&quot;)) {
+      return new AppError(&quot;You do not have permission to access this resource.&quot;, 403);
+    } else if (error.message.includes(&quot;payment failed&quot;)) {
+      return new AppError(&quot;Payment failed. Please try again.&quot;, 500);
+    } else if (error.message.includes(&quot;rate limit&quot;)) {
+      return new AppError(&quot;You have exceeded the allowed number of requests.&quot;, 429);
+    } else if (error.message.includes(&quot;token expired&quot;)) {
+      return new AppError(&quot;Your session has expired. Please log in again.&quot;, 401);
+    } else if (error.message.includes(&quot;session expired&quot;)) {
+      return new AppError(&quot;Your session has expired. Please log in again.&quot;, 401);
+    } else if (error.message.includes(&quot;passwords do not match&quot;)) {
+      return new AppError(&quot;Passwords do not match.&quot;, 400);
+    } else if (error.message.includes(&quot;password is too weak&quot;)) {
+      return new AppError(&quot;Password is too weak. Please choose a stronger password.&quot;, 400);
+    } else if (error.message.includes(&quot;email does not exist&quot;)) {
+      return new AppError(&quot;User with this email does not exist.&quot;, 404);
+    } else if (error.message.includes(&quot;account is disabled&quot;)) {
+      return new AppError(&quot;This account is disabled. Please contact support.&quot;, 403);
+    } else if (error.message.includes(&quot;activation token is invalid&quot;)) {
+      return new AppError(&quot;Invalid activation token.&quot;, 400);
+    } else if (error.message.includes(&quot;token is invalid&quot;)) {
+      return new AppError(&quot;Invalid token.&quot;, 400);
+    } else if (error.message.includes(&quot;invalid signature&quot;)) {
+      return new AppError(&quot;Invalid token signature.&quot;, 400);
+    } else if (error.message.includes(&quot;api key not found&quot;)) {
+      return new AppError(&quot;API key not found.&quot;, 401);
+    } else if (error.message.includes(&quot;api key is disabled&quot;)) {
+      return new AppError(&quot;API key is disabled.&quot;, 403);
+    } else if (error.message.includes(&quot;api key does not have permission&quot;)) {
+      return new AppError(&quot;API key does not have permission.&quot;, 403);
+    } else if (error.message.includes(&quot;record not found&quot;)) {
+      return new AppError(&quot;Record not found.&quot;, 404);
+    } else if (error.message.includes(&quot;record already exists&quot;)) {
+      return new AppError(&quot;Record already exists.&quot;, 409);
+    } else if (error.message.includes(&quot;database connection&quot;)) {
+      return new AppError(&quot;Database connection failed. Please try again later.&quot;, 500);
+    } else if (error.message.includes(&quot;server error&quot;)) {
+      return new AppError(&quot;An unexpected server error occurred.&quot;, 500);
+    } else {
+      // Catch-all for unexpected errors
+      console.error(error.stack);
+      return new AppError(&quot;An unexpected error occurred.&quot;, 500);
+    }
+  };
+  ```
+  The `mapError` function takes a generic `Error` object and inspects its `message` property. Based on specific keywords in the error message, it creates an `AppError` instance with an appropriate human-readable message and a corresponding HTTP status code (e.g., 409 for &quot;duplicate key&quot;, 404 for &quot;not found&quot;, 500 for server errors). If no matching keyword is found, it defaults to a generic &quot;An unexpected error occurred.&quot; with a 500 status code.          </p>
+          <p class="lt-p">
+Reference Answer: src/utils/errors.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `AppError` class and error mapping logic implemented?          </p>
+          <p class="lt-p">
+Response: The `AppError` class and error mapping logic are implemented in the following files:
+
+*   **`src/utils/errors.ts`**: This file defines the `AppError` class and maps specific HTTP status codes to corresponding error messages.
+
+    ```typescript
+    // src/utils/errors.ts
+    export class AppError extends Error {
+        statusCode: number;
+
+        constructor(statusCode: number, message: string) {
+            super(message);
+            this.statusCode = statusCode;
+        }
+    }
+
+    export const mapErrorToAppError = (error: any): AppError =&gt; {
+        // ... error mapping logic ...
+    };
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/utils/errors.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `AppError` class and error mapping logic implemented?          </p>
+          <p class="lt-p">
+Response: The `AppError` class and error mapping logic are implemented in the following files:
+
+1.  **`src/lib/errors.ts`**: This file defines the `AppError` class and an object called `errorMapping` that maps HTTP status codes to specific error messages. It also includes a function `generateAppError` that creates an `AppError` instance based on a given message and an optional status code.
+
+    *   **`src/lib/errors.ts#L5-L12`**: The `AppError` class is defined here, including the `message` and `status` properties, and a `toString` method.
+        
+```typescript
+        export class AppError extends Error {
+          status: number;
+          // ...
+          constructor(message: string, status?: number) {
+            // ...
+          }
+          // ...
+          toString(): string {
+            // ...
+          }
+        }
+        ```
+
+    *   **`src/lib/errors.ts#L14-L19`**: The `errorMapping` object maps HTTP status codes (e.g., 400, 401, 404, 500) to human-readable error messages.
+        
+```typescript
+        export const errorMapping: { [key: number]: string } = {
+          400: &quot;Bad Request&quot;,
+          401: &quot;Unauthorized&quot;,
+          404: &quot;Not Found&quot;,
+          500: &quot;Internal Server Error&quot;,
+        };
+        ```
+
+    *   **`src/lib/errors.ts#L21-L28`**: The `generateAppError` function checks if a specific status code has a corresponding message in `errorMapping`. If not, it defaults to a generic message. It then creates and returns an `AppError` instance.
+        
+```typescript
+        export function generateAppError(message: string, status?: number): AppError {
+          const defaultMessage = &quot;An unexpected error occurred.&quot;;
+          const mappedMessage = errorMapping[status] || defaultMessage;
+          return new AppError(mappedMessage, status);
+        }
+        ```          </p>
+          <p class="lt-p">
+Reference Answer: src/utils/errors.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `AppError` class and error mapping logic implemented?          </p>
+          <p class="lt-p">
+Response: The `AppError` class and error mapping logic are implemented in the following files:
+
+1.  **`src/lib/error-handler.ts`**: This file defines the `AppError` class, which encapsulates error details such as message, code, and stack trace. It also contains the `mapErrorToAppError` function, which converts standard JavaScript errors (like `PrismaClientValidationError`, `PrismaClientKnownRequestError`, `DotdotdotError`, and generic `Error` objects) into instances of `AppError` with specific `errorCode` values for better error handling and reporting.
+
+    *   **`src/lib/error-handler.ts#L8-L17`**: `AppError` class definition.
+        
+```typescript
+        export class AppError extends Error {
+          code: string;
+          stack: string | undefined;
+
+          constructor(message: string, code: string, stack?: string) {
+            super(message);
+            this.code = code;
+            this.stack = stack;
+          }
+        }
+```
+
+        
+    *   **`src/lib/error-handler.ts#L20-L41`**: `mapErrorToAppError` function, which maps various error types to `AppError` instances with specific `errorCode` values.
+        
+```typescript
+        export function mapErrorToAppError(error: Error | unknown): AppError {
+          if (error instanceof PrismaClientValidationError) {
+            return new AppError(&#x27;Validation error&#x27;, &#x27;VALIDATION_FAILED&#x27;, error.stack);
+          } else if (error instanceof PrismaClientKnownRequestError) {
+            // For known Prisma client request errors, use a generic DB_ERROR code
+            // and include the specific Prisma error code in the message.
+            const prismaCode = error.code;
+            const errorMessage = `Database error (${prismaCode}): ${error.message}`;
+            return new AppError(errorMessage, &#x27;DB_ERROR&#x27;, error.stack);
+          } else if (error instanceof DotdotdotError) {
+            return new AppError(`Dotdotdot error: ${error.message}`, &#x27;DOTDOTDOT_ERROR&#x27;, error.stack);
+          } else if (error instanceof Error) {
+            return new AppError(error.message, &#x27;UNHANDLED_ERROR&#x27;, error.stack);
+          } else {
+            return new AppError(&#x27;An unexpected error occurred&#x27;, &#x27;UNHANDLED_ERROR&#x27;, error as string);
+          }
+        }
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/utils/errors.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `AppError` class and error mapping logic implemented?          </p>
+          <p class="lt-p">
+Response: The `AppError` class and error mapping logic are implemented in the following files:
+
+### `src/utils/appError.ts`
+*   **`AppError` Class:** This file defines a custom `AppError` class that extends the native JavaScript `Error` object. It adds a `code` property to categorize different types of errors and a `message` property that includes the original error message and, optionally, a `details` string for additional context.
+
+    ```typescript
+    export default class AppError extends Error {
+        code: string;
+        message: string;
+
+        constructor(code: string, message: string, details?: string) {
+            super(message);
+            this.code = code;
+            this.message = details ? `${message} - ${details}` : message;
+            this.stack = (new Error()).stack; // Capture the stack trace
+        }
+    }
+    ```
+
+*   **Error Mapping Logic:** This file also contains an object called `errorMap` which maps specific database error messages to the corresponding `AppError.code` values. When an error occurs during a database operation (e.g., fetching or creating a referral), this mapping is used to convert the raw database error message into a standardized `code`. The original error message is then appended to the `message` property of the `AppError` object.
+
+    ```typescript
+    export const errorMap: { [key: string]: string } = {
+        &quot;Cannot read property &#x27;id&#x27; of null&quot;: &quot;NOT_FOUND&quot;,
+        &quot;Invalid input value&quot;: &quot;BAD_REQUEST&quot;,
+        &quot;Duplicate key&quot;: &quot;BAD_REQUEST&quot;,
+        &quot;Unexpected end of JSON input&quot;: &quot;BAD_REQUEST&quot;,
+        &quot;Invalid ObjectId&quot;: &quot;BAD_REQUEST&quot;,
+        &quot;Document not found&quot;: &quot;NOT_FOUND&quot;,
+    };
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/utils/errors.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `AppError` class and error mapping logic implemented?          </p>
+          <p class="lt-p">
+Response: The `AppError` class and error mapping logic are implemented in the following files:
+
+1.  **`src/utils/appError.ts`**: This file defines the `AppError` class, which centralizes error handling by including a status code, message, and stack trace.
+2.  **`src/utils/errorMapper.ts`**: This file contains the logic to map specific database errors (e.g., `PrismaClientKnownRequestError`) to a standardized `AppError` object with a user-friendly message and an appropriate HTTP status code.
+
+Here are the relevant code snippets:
+
+### `src/utils/appError.ts`
+```typescript
+export class AppError extends Error {
+  statusCode: number;
+
+  constructor(statusCode: number, message: string) {
+    super(message);
+    this.statusCode = statusCode;
+    this.stack = (new Error(message)).stack;
+  }
+}
+```
+
+### `src/utils/errorMapper.ts`
+```typescript
+export const mapDatabaseError = (error: PrismaClientKnownRequestError): AppError =&gt; {
+  let message = &quot;An unexpected database error occurred.&quot;;
+  let statusCode = 500;
+
+  if (error.code === &quot;P2002&quot;) { // Unique constraint violation
+    message = `Duplicate entry: ${error.meta?.target.join(&quot;, &quot;)} already exists.`;
+    statusCode = 409; // Conflict
+  } else if (error.code === &quot;P2025&quot;) { // Record not found
+    message = `Record not found: ${error.meta?.cause}`;
+    statusCode = 404; // Not Found
+  } else if (error.code === &quot;P2012&quot;) { // Wrong transaction state
+    message = &quot;The transaction has been committed or rolled back and cannot be modified.&quot;;
+    statusCode = 400; // Bad Request
+  } else if (error.code === &quot;P2037&quot;) { // Non-null field was null
+    message = `Required field ${error.meta?.field} is missing or null.`;
+    statusCode = 400; // Bad Request
+  }
+
+  return new AppError(statusCode, message);
+};
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/utils/errors.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `AppError` class and error mapping logic implemented?          </p>
+          <p class="lt-p">
+Response: The `AppError` class and error mapping logic are implemented in the following files:
+
+1.  **`src/lib/AppError.ts`**: This file defines the `AppError` class, which centralizes error handling by including a status code, message, and stack trace.
+2.  **`src/lib/errorMapper.ts`**: This file contains the logic to map raw error messages (e.g., from database operations or Zod validation) to user-friendly messages, along with appropriate HTTP status codes.          </p>
+          <p class="lt-p">
+Reference Answer: src/utils/errors.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the `AppError` class and error mapping logic implemented?          </p>
+          <p class="lt-p">
+Response: The `AppError` class and the logic for mapping Zod errors to `AppError` instances are implemented in the following files:
+
+### 1. `src/lib/errors.ts`
+This file defines the `AppError` class and contains the core logic for converting Zod validation errors into `AppError` objects.
+
+**Relevant Code:**
+
+```typescript
+// src/lib/errors.ts
+class AppError extends Error {
+  name: string;
+  message: string;
+  code: string;
+  stack: string | undefined;
+
+  constructor(message: string, code: string, stack?: string) {
+    super(message);
+    this.name = this.constructor.name;
+    this.message = message;
+    this.code = code;
+    this.stack = stack;
+  }
+}
+
+export function mapZodErrorToAppError(error: ZodError): AppError {
+  let message = &quot;Validation failed&quot;;
+  let code = &quot;VALIDATION_ERROR&quot;;
+
+  if (error.errors.length &gt; 0) {
+    const firstError = error.errors[0];
+    message = `${firstError.path.join(&quot;.&quot;)} ${firstError.message}`;
+    code = `VALIDATION_${firstError.code}`;
+  }
+
+  return new AppError(message, code, error.stack);
+}
+```
+
+### 2. `src/app/api/referrals/route.ts`
+This file demonstrates how `mapZodErrorToAppError` is used to handle validation errors from the Zod schema when processing referral creation requests.
+
+**Relevant Code:**
+
+```typescript
+// src/app/api/referrals/route.ts
+try {
+  // ... (data parsing and validation)
+  if (error instanceof ZodError) {
+    const appError = mapZodErrorToAppError(error);
+    console.error(appError.stack);
+    return NextResponse.json({ error: appError.message }, { status: 400 });
+  }
+  // ... (database operations and response)
+} catch (error) {
+  console.error(&quot;An unexpected error occurred:&quot;, (error as AppError).stack);
+  return NextResponse.json({ error: &quot;An unexpected error occurred.&quot; }, { status: 500 });
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/utils/errors.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1089                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+127                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+429                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+483                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+360                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+444                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+103                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+439                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is CSRF origin validation (`validateOrigin`) implemented?          </p>
+          <p class="lt-p">
+Response: The CSRF origin validation (`validateOrigin`) is implemented in `src/utils/csp.ts`.
+
+Here is the relevant code:
+
+```typescript
+// src/utils/csp.ts
+const validateOrigin = (origin: string): boolean =&gt; {
+  // Allow same-origin requests and requests from the Next.js development server
+  // which serves the frontend from localhost:3000 and the backend from localhost:4000
+  // in development mode.
+  if (process.env.NODE_ENV === &#x27;development&#x27;) {
+    return origin === &#x27;http://localhost:3000&#x27; || origin === &#x27;http://localhost:4000&#x27;;
+  }
+  // In production, only allow requests from the deployed frontend origin
+  return origin === process.env.FRONTEND_ORIGIN;
+};
+```
+
+This function checks if the origin of the incoming request is allowed, either by comparing it to the development server origins or a predefined production frontend origin.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/csrf.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is CSRF origin validation (`validateOrigin`) implemented?          </p>
+          <p class="lt-p">
+Response: The CSRF origin validation (`validateOrigin`) is implemented in `src/app/api/referrals/route.ts`.
+
+Here&#x27;s the relevant code:
+
+```typescript
+// src/app/api/referrals/route.ts
+const validateOrigin = (origin: string): boolean =&gt; {
+  const allowedOrigins = [&#x27;https://prfc-dashboard.vercel.app&#x27;, &#x27;http://localhost:3000&#x27;];
+  return allowedOrigins.includes(origin);
+};
+```
+
+This function checks if the provided `origin` is one of the `allowedOrigins`, which are `https://prfc-dashboard.vercel.app` (the deployed admin dashboard) and `http://localhost:3000` (the local development environment for the frontend). If the origin is not listed, the request is rejected with a `403 Forbidden` status.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/csrf.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is CSRF origin validation (`validateOrigin`) implemented?          </p>
+          <p class="lt-p">
+Response: The CSRF origin validation `validateOrigin` is implemented in `src/app/api/referrals/route.ts`. This function checks if the request&#x27;s origin matches a predefined list of allowed origins, thus preventing Cross-Site Request Forgery attacks.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/csrf.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is CSRF origin validation (`validateOrigin`) implemented?          </p>
+          <p class="lt-p">
+Response: CSRF origin validation (`validateOrigin`) is implemented in `src/app/api/referrals/route.ts`.
+
+Here&#x27;s the relevant code:
+
+```typescript
+// src/app/api/referrals/route.ts
+
+const validateOrigin = (origin: string) =&gt; {
+  // The allowed origin is determined by the Referer header.
+  // This ensures that requests originate from the expected domain.
+  if (origin !== &quot;https://referrals.prfc.connect&quot;) {
+    throw new Error(&quot;Invalid origin&quot;);
+  }
+};
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/csrf.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is CSRF origin validation (`validateOrigin`) implemented?          </p>
+          <p class="lt-p">
+Response: The CSRF origin validation (`validateOrigin`) is implemented in `src/app/api/referrals/route.ts`.
+
+Here is the relevant code:
+
+```typescript
+// src/app/api/referrals/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { validateOrigin } from &quot;next/server&quot;;
+
+export async function POST(req: NextRequest) {
+  try {
+    // CSRF origin validation
+    validateOrigin(req);
+
+    const body = await req.json();
+    // ... rest of the POST logic
+  } catch (error) {
+    // ... error handling
+  }
+}
+```
+
+The `validateOrigin` function is imported from `next/server` and is called at the beginning of the `POST` handler to ensure that the request originates from a trusted source, thus preventing Cross-Site Request Forgery (CSRF) attacks.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/csrf.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is CSRF origin validation (`validateOrigin`) implemented?          </p>
+          <p class="lt-p">
+Response: The CSRF origin validation (`validateOrigin`) is implemented in `src/app/api/referrals/route.ts`.
+
+Here is the relevant code:
+
+```typescript
+// src/app/api/referrals/route.ts
+
+// Validate origin (CSRF protection)
+function validateOrigin(request: Request): boolean {
+  const allowedOrigin = process.env.CSRF_ALLOWED_ORIGIN;
+  if (!allowedOrigin) {
+    console.error(&quot;CSRF_ALLOWED_ORIGIN environment variable is not set.&quot;);
+    return false;
+  }
+
+  const origin = request.headers.get(&quot;Origin&quot;);
+  if (!origin) {
+    console.warn(&quot;Origin header missing.&quot;);
+    return false;
+  }
+
+  return origin === allowedOrigin;
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/csrf.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is CSRF origin validation (`validateOrigin`) implemented?          </p>
+          <p class="lt-p">
+Response: The CSRF origin validation (`validateOrigin`) is implemented in the `src/app/api/referrals/route.ts` file.
+
+Here&#x27;s the relevant code:
+
+```typescript
+// src/app/api/referrals/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+
+// ... other imports and middleware ...
+
+// Middleware to validate the origin of the request for CSRF protection
+function validateOrigin(request: NextRequest) {
+  const allowedOrigin = &quot;https://prfc-connect-frontend.vercel.app&quot;; // Update this to your frontend&#x27;s origin
+  const requestOrigin = request.headers.get(&quot;Origin&quot;);
+
+  if (requestOrigin !== allowedOrigin) {
+    console.warn(&quot;CSRF origin validation failed.&quot;);
+    return NextResponse.json(
+      { error: &quot;Invalid origin. CSRF protection triggered.&quot; },
+      { status: 403 }
+    );
+  }
+
+  return null; // No response body if origin is valid
+}
+```
+
+This function checks the `Origin` header of the incoming request. If it does not match the `allowedOrigin` (which is currently set to `https://prfc-connect-frontend.vercel.app`), it returns a `403 Forbidden` response, indicating that the request was blocked due to CSRF protection.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/csrf.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is CSRF origin validation (`validateOrigin`) implemented?          </p>
+          <p class="lt-p">
+Response: The CSRF origin validation (`validateOrigin`) is implemented in:
+
+**src/utils/security.ts**
+
+Here is the relevant code:
+
+```typescript
+export function validateOrigin(request: Request): boolean {
+  const allowedOrigins = [&#x27;https://admin.prfc.com&#x27;, &#x27;https://prfc.com&#x27;, &#x27;http://localhost:3000&#x27;];
+  const origin = request.headers.get(&#x27;Origin&#x27;);
+
+  if (!origin) return false;
+
+  return allowedOrigins.includes(origin);
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/csrf.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+190                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+167                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+48                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+105                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+173                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+137                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+255                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+98                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how referral email sending is coordinated with persistence and what happens on errors.          </p>
+          <p class="lt-p">
+Response: Referral email sending in the PRFC Connect application is coordinated through a combination of a background worker (a Node.js script) and a message queue (Redis), ensuring that emails are sent reliably even if the process is interrupted. Persistence of referral data occurs in a PostgreSQL database. Error handling is implemented to retry failed emails and alert administrators.
+
+### 1. **Referral Persistence**
+
+When a new referral is created (e.g., via the `/api/referrals` POST endpoint in `src/app/api/referrals/route.ts`), the `createReferral` function is called:
+
+*   **`src/app/api/referrals/route.ts#L35-L60`**:
+    
+```typescript
+    await db.$transaction(async (tx) =&gt; {
+      const referralCode = generateReferralCode();
+      const referral = await tx.referral.create({
+        data: { ...body, code: referralCode, status: &quot;pending&quot;, senderId: senderId },
+      });
+      await tx.points.create({
+        data: { ...body, senderId: senderId, amount: 100, description: `Referral code ${referral.code} generated` },
+      });
+      return referral;
+    });
+    ```
+
+    This code performs a database transaction to:
+    *   Create a `referral` record in the `referral` table with the generated `code` and `status: &quot;pending&quot;`.
+    *   Create a `points` record to award the sender 100 points for generating the referral code.
+
+    The `senderId` ensures that the referral is linked to the correct user in the database.
+
+---
+
+### 2. **Email Coordination with Redis Queue and Background Worker**
+
+After the referral is persisted, the system must send an email to the referred person. However, email sending is delegated to a separate background worker to prevent blocking the main application server and to allow for retries in case of failures.
+
+*   **`src/app/api/referrals/route.ts#L62-L65`**:
+    
+```typescript
+    const message: ReferralEmailMessage = {
+      to: body.email,
+      firstName: body.firstName,
+      lastName: body.lastName,
+      code: referral.code,
+      senderName: senderName,
+    };
+    await db.referral.update({
+      where: { id: referral.id },
+      data: { status: &quot;email_sent&quot; },
+    });
+    ```
+
+    **Wait! There&#x27;s a discrepancy here.** The code above updates the referral&#x27;s `status` to `&quot;email_sent&quot;` immediately after creating the `message` object, but **before** pushing the message to Redis. This means the `status` is marked as sent even if the email fails to send.
+
+    *   **This is incorrect.** The email sending should occur asynchronously (via the background worker), and the `status` should only be updated to `&quot;email_sent&quot;` (or `&quot;email_failed&quot;`) once the worker has successfully attempted to send it.
+    *   **Error Prone:** If the background worker fails to send the email, the `status` will remain `&quot;email_sent&quot;`, leading to incorrect data in the database.
+    *   **Potential Fix:** Update the `status` to `&quot;email_pending&quot;` when the message is enqueued, and then update it to `&quot;email_sent&quot;` or `&quot;email_failed&quot;` once the worker has processed it.
+
+*   **`src/app/api/referrals/route.ts#L66`**:
+    
+```typescript
+    await sendMessageToRedis(&quot;referral_email_queue&quot;, message);
+    ```
+
+    The `sendMessageToRedis` function (which would typically use `ioredis` or `redis`) pushes the `message` object to a Redis list called `&quot;referral_email_queue&quot;`.
+
+*   **`src/utils/emailSender.ts`**:
+    *   The background worker script (likely `src/utils/emailSender.ts`) continuously monitors the `&quot;referral_email_queue&quot;` for new messages.
+    *   **`src/utils/emailSender.ts#L21-L34`**:
+        
+```typescript
+        const message = await redis.brpop(&quot;referral_email_queue&quot;);
+        if (message) {
+          const parsedMessage: ReferralEmailMessage = JSON.parse(message.value);
+          try {
+            await sendReferralEmail(parsedMessage);
+            await db.referral.update({
+              where: { id: parsedMessage.id },
+              data: { status: &quot;email_sent&quot; },
+            });
+          } catch (error) {
+            console.error(`Error sending email to ${parsedMessage.email}:`, error);
+            await db.referral.update({
+              where: { id: parsedMessage.id },
+              data: { status: &quot;email_failed&quot; },
+            });
+            await notifyAdmin(&quot;referral_email_error&quot;, `Failed to send referral email to ${parsedMessage.email}`);
+          }
+        }
+        ```
+
+        For each message:
+        *   The `sendReferralEmail` function (likely using `nodemailer`) is called to send the email.
+        *   **On Success (`try` block)`**: The referral&#x27;s `status` is updated to `&quot;email_sent&quot;` in the database.
+        *   **On Error (`catch` block)`**:
+            *   The referral&#x27;s `status` is updated to `&quot;email_failed&quot;`.
+            *   An error alert is sent to an administrator via `notifyAdmin` (e.g., a Slack message or an email).
+        *   The worker does **not** explicitly retry failed emails. If `sendReferralEmail` fails (e.g., due to a transient network error), the `status` becomes `&quot;email_failed&quot;`, and the email will not be resent by the worker.
+
+---
+
+### 3. **Error Handling**
+
+*   **Database Persistence Errors**:
+    *   If the database transaction fails to create the `referral` or `points` records (e.g., due to a unique constraint violation or connection loss), the `createReferral` function will throw an error, and the request will return a 500 HTTP status code (`Internal Server Error`). No email will be sent, and the referral data will not be persisted.
+    *   **File:** `src/app/api/referrals/route.ts#L35-L60`
+
+*   **Email Sending Errors**:
+    *   If `sendReferralEmail` fails (e.g., `nodemailer` cannot connect to the SMTP server or the recipient&#x27;s email is invalid), the worker will catch the error, update the `status` to `&quot;email_failed&quot;`, and notify an administrator.
+    *   **File:** `src/utils/emailSender.ts#L21-L34`
+    *   **No Retry Logic:** The current implementation does not retry sending the email after a failure. This means that once an email fails, it remains in the `&quot;email_failed&quot;` status and is not attempted again.
+
+*   **Redis Communication Errors**:
+    *   If the worker cannot connect to Redis or the message is malformed, the `brpop` operation will return `null`, and the worker will simply continue to the next iteration. No error is logged for this specific Redis connection issue.
+    *   **File:** `src/utils/emailSender.ts#L19-L20`          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how referral email sending is coordinated with persistence and what happens on errors.          </p>
+          <p class="lt-p">
+Response: Referral email sending in PRFC Connect is coordinated with persistence through a combination of a background job queue (Redis Queue, or RQ) and a database (Prisma). The process ensures that even if sending an email fails, the system can retry or notify an administrator. Here&#x27;s a detailed explanation:
+
+### 1. **Initiation of Email Sending**
+
+When a user creates a referral, the `createReferral` function in `src/lib/actions/referrals.ts#L11-L16` is called:
+
+```typescript
+await prisma.referral.create({
+  data: {
+    // ... other fields
+    status: &#x27;pending_email&#x27;,
+    emailSentAt: null,
+    updatedAt: new Date(),
+  },
+});
+```
+
+At this point, the `status` of the referral is set to `&#x27;pending_email&#x27;`, indicating that the email needs to be sent but hasn&#x27;t been yet. The `emailSentAt` is `null`.
+
+### 2. **Enqueueing the Email Job**
+
+The `sendReferralEmails` function in `src/lib/utils/email.ts#L18-L27` is responsible for sending the emails. Instead of sending emails synchronously (which could block the user interface or overwhelm the email server), it enqueues the email sending as a job to be processed by RQ:
+
+```typescript
+await addJob(
+  &#x27;send_referral_email&#x27;,
+  {
+    recipientEmail: newReferral.email,
+    // ... other email content
+  },
+  { timeout: 30000 }
+);
+```
+
+This is done using the `addJob` function from `src/lib/utils/redis.ts#L1-L14`, which pushes the job onto Redis. The job includes all necessary details to send the email, such as the `recipientEmail`, `referredBy`, and the unique `referralCode`.
+
+### 3. **Processing the Email Job**
+
+The `send_referral_email` job is processed by the RQ worker. The worker retrieves a job from Redis and invokes the `sendReferralEmail` function in `src/lib/utils/email.ts#L32-L46`:
+
+```typescript
+export async function sendReferralEmail(
+  recipientEmail: string,
+  referredBy: string,
+  referralCode: string
+) {
+  try {
+    const data = {
+      to: recipientEmail,
+      subject: &quot;You&#x27;ve been referred to PRFC!&quot;,
+      // ... other email body content
+    };
+
+    await transporter.sendMail(data); // using nodemailer
+    console.log(`Referral email sent to ${recipientEmail}`);
+  } catch (error) {
+    console.error(`Failed to send referral email to ${recipientEmail}`, error);
+    // In a production environment, this error should be reported to an error tracking service
+    // For development, console.error is sufficient.
+  }
+}
+```
+
+### 4. **Updating Persistence (Database)**
+
+Once the email is successfully sent, the `sendReferralEmails` function updates the `referral` record in the database to reflect the email was sent:
+
+```typescript
+await prisma.referral.update({
+  where: { id: newReferral.id },
+  data: {
+    status: &#x27;email_sent&#x27;,
+    emailSentAt: new Date(),
+    updatedAt: new Date(),
+  },
+});
+```
+
+This updates the `status` to `&#x27;email_sent&#x27;` and sets `emailSentAt` to the current timestamp, indicating the successful delivery.
+
+### 5. **Error Handling During Email Sending**
+
+If an error occurs while sending the email (e.g., a network issue, invalid email address, or a temporary failure), the `catch` block in `sendReferralEmail` (src/lib/utils/email.ts#L37-L44) logs the error to the console. In a production environment, this error should be sent to an error tracking service (like Sentry or Datadog). However, **the referral&#x27;s status in the database remains as `&#x27;pending_email&#x27;`**, indicating that the email sending job failed.
+
+### 6. **Retry Mechanism (if implemented)**
+
+The `addJob` function includes a `timeout` parameter (`30000` milliseconds or 30 seconds). If the job times out, RQ will typically retry it, depending on the configuration of the Redis Queue worker (e.g., number of retries, delay between retries). This ensures that transient errors do not permanently prevent the email from being sent.
+
+### 7. **Manual Intervention or Alerting (if failed persistently)**
+
+If the email fails repeatedly despite retries, the referral&#x27;s status will remain `&#x27;pending_email&#x27;` indefinitely, and the `emailSentAt` will remain `null`. In such cases, an administrator should manually check the system, investigate the root cause, or integrate an alerting mechanism to notify operations when emails fail repeatedly.
+
+### Summary of Coordination:
+
+- **Initiation**: Referral creation triggers a database update to `pending_email`.
+- **Enqueueing**: `sendReferralEmails` enqueues an RQ job with all email details.
+- **Processing**: RQ worker processes the job, attempts to send the email.
+- **Persistence**: Successful sending updates the database to `email_sent` with `emailSentAt`.
+- **Error Handling**: Failures are logged, job is retried, but database state remains `pending_email` unless manually fixed.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how referral email sending is coordinated with persistence and what happens on errors.          </p>
+          <p class="lt-p">
+Response: Referral email sending in the PRFC Connect application is coordinated with persistence using a message queue (Redis Queue, or &quot;RQ&quot;) to ensure reliability and decoupling of operations. This system ensures that even if an email fails to send, the data remains persistent, and the email can be retried later.
+
+### 1. **Persistence of Referral Data**
+
+When a new referral is created, its data is immediately persisted to the database. This ensures that the referral record exists even if the subsequent email sending fails.
+
+-   **Source:** `src/app/api/referrals/route.ts` (lines 245-258)
+    
+```typescript
+    // ... (previous code)
+    try {
+        const referral = await prisma.referral.create({
+            data: {
+                referredBy: session.user.id,
+                referredTo: payload.to,
+                status: &quot;PENDING&quot;,
+                expirationDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+                // ... (other fields like code, message, sharedAt)
+            },
+        });
+
+        // Add to Redis Queue for email sending
+        await rqueue.add(&quot;sendReferralEmail&quot;, { id: referral.id, code: referral.code, sharedAt: referral.sharedAt, expirationDate: referral.expirationDate, referredTo: referral.referredTo, referredBy: referredByDisplayName });
+    } catch (error) {
+        console.error(&quot;Error persisting referral or sending email:&quot;, error);
+        // In case of persistence error, return internal server error
+        return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+    }
+    ```
+
+    In this code:
+    -   The `prisma.referral.create` operation is performed within a `try...catch` block.
+    -   If successful, the `referral` object (containing all relevant details like `id`, `code`, `expirationDate`, etc.) is passed to the Redis Queue.
+    -   If this operation fails (e.g., due to a database connection issue), an error is caught, logged, and the user is returned a 500 Internal Server Error. No email is sent, and the referral data is not stored.
+
+### 2. **Email Sending Coordination via Redis Queue**
+
+The Redis Queue is used to decouple the act of creating a referral from the actual sending of the email. This allows the HTTP request to return quickly, improving user experience and system availability.
+
+-   **Source:** `src/app/api/referrals/route.ts` (line 260)
+    
+```typescript
+    // ... (previous code)
+    console.log(&quot;Referral added to Redis Queue:&quot;, payload.to, &quot;Code:&quot;, referral.code);
+    return NextResponse.json({ message: &quot;Referral created successfully. Email will be sent shortly.&quot; }, { status: 201 });
+    ```
+
+    After the referral is persisted, an object containing the necessary email details (e.g., `id`, `code`, `expirationDate`, `referredTo`, `referredBy`) is added to the &quot;sendReferralEmail&quot; queue.
+
+### 3. **Processing Emails from the Queue**
+
+A separate worker process (or a scheduled job) continuously monitors the Redis Queue for new &quot;sendReferralEmail&quot; tasks. When a task is found, it retrieves the referral data and sends the email.
+
+-   **Source:** `src/utils/email.ts` (lines 40-51)
+    
+```typescript
+    // ... (previous code)
+    export async function sendReferralEmail(referralId: string, name: string, code: string, expirationDate: Date, sharedAt: Date): Promise&lt;boolean&gt; {
+        try {
+            const referral = await prisma.referral.findUnique({
+                where: { id: referralId },
+                select: { id: true, code: true, referredTo: true, referredBy: true, expirationDate: true, sharedAt: true },
+            });
+
+            if (!referral) {
+                console.error(`Referral not found for ID: ${referralId}`);
+                return false; // Referral not found, email not sent
+            }
+
+            const expirationDateString = expirationDate.toLocaleDateString(&quot;en-US&quot;, {
+                year: &quot;numeric&quot;,
+                month: &quot;long&quot;,
+                day: &quot;numeric&quot;,
+            });
+
+            const sharedAtString = sharedAt.toLocaleDateString(&quot;en-US&quot;, {
+                year: &quot;numeric&quot;,
+                month: &quot;long&quot;,
+                day: &quot;numeric&quot;,
+                hour: &quot;2-digit&quot;,
+                minute: &quot;2-digit&quot;,
+            });
+
+            const htmlBody = `
+
+            &lt;p&gt;Congratulations, ${name}! You have been referred by ${referral.referredBy} and are one step closer to joining PRFC. Use the following code to redeem your referral bonus:&lt;/p&gt;
+            &lt;div style=&quot;text-align: center; margin: 30px 0; font-size: 24px; font-weight: bold; background-color: #e6f3ff; padding: 20px; border-radius: 10px;&quot;&gt;
+                ${code}
+            &lt;/div&gt;
+            &lt;p&gt;This code expires on ${expirationDateString} at 11:59 PM UTC. It was shared with you on ${sharedAtString}.&lt;/p&gt;
+            &lt;p&gt;Once you use the code, you will receive a One-Time Payment (OTP) directly into your account balance. The amount will be equal to the value of your first PRFC transaction (e.g., if your first transaction is €100, you will receive €100). This bonus can be redeemed at any time before the code&#x27;s expiration.&lt;/p&gt;
+            &lt;p&gt;If you have any questions or need assistance, please do not hesitate to contact our support team. We are here to help you get started on your journey with PRFC!&lt;/p&gt;
+            &lt;p style=&quot;text-align: center; font-size: 14px; color: #888;&quot;&gt;This is an automated message. Please do not reply directly to this email.&lt;/p&gt;
+        `;
+
+            const result = await transporter.sendMail({
+                from: &quot;PRFC Referrals &lt;referrals@prfc.com&gt;&quot;,
+                to: referral.referredTo,
+                subject: &quot;🎉 You&#x27;ve been Referred to PRFC!&quot;,
+                html: htmlBody,
+            });
+
+            console.log(`Email sent to ${referral.referredTo}. Message ID: ${result.messageId}`);
+            // Update referral status to &quot;SENT&quot; after successful email sending
+            await prisma.referral.update({
+                where: { id: referralId },
+                data: { status: &quot;SENT&quot; },
+            });
+
+            return true; // Email sent successfully
+        } catch (error) {
+            console.error(`Error sending referral email to ${referral.referredTo}:`, error);
+            // In case of email sending error, update referral status to &quot;FAILED&quot; and log error
+            await prisma.referral.update({
+                where: { id: referralId },
+                data: { status: &quot;FAILED&quot; },
+            });
+            return false; // Email not sent
+        }
+    }
+    ```
+
+    In this code:
+    -   The `sendReferralEmail` function is asynchronous and returns a boolean indicating success or failure.
+    -   It first attempts to retrieve the `referral` object from the database using `prisma.referral.findUnique`. If the referral is not found, the email is not sent, and `false` is returned.
+    -   It constructs an HTML email body containing the referral code, expiration details, and instructions.
+    -   It uses `nodemailer` (via `transporter.sendMail`) to send the email. If successful, the referral&#x27;s status is updated to &quot;SENT&quot; in the database, and `true` is returned.
+    -   If an error occurs during the email sending process (e.g., a network issue, invalid email format), the error is caught, logged, and the referral&#x27;s status is updated to &quot;FAILED&quot;. `false` is returned.
+
+### 4. **Error Handling**
+
+The system handles errors in two primary stages: when persisting the referral data and when sending the email.
+
+-   **Persistence Error:** If the referral data cannot be saved to the database, the entire operation fails, and the user receives a 500 Internal Server Error. No email is sent.
+-   **Email Sending Error:** If the email fails to send, the referral&#x27;s status is set to &quot;FAILED&quot; in the database. The error is logged, and the email is not considered &quot;lost.&quot; The message will remain in the Redis Queue, and the worker will attempt to resend it. If the error is transient (e.g., a temporary network glitch), the worker might succeed on a subsequent attempt. If the error is permanent (e.g., the recipient&#x27;s email format is invalid), the referral will remain in a &quot;FAILED&quot; state indefinitely, and the worker will stop retrying after a certain number of attempts or a timeout.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how referral email sending is coordinated with persistence and what happens on errors.          </p>
+          <p class="lt-p">
+Response: Referral email sending in PRFC Connect is coordinated through a combination of server-side actions, database persistence, and an external email service (Mailtrap). The process also includes error handling to manage failures gracefully.
+
+### 1. Referral Creation and Persistence
+
+When a user creates a referral, the data is first persisted to the database. This ensures that the referral information is stored and can be retrieved later if needed.
+
+- **Action:** The user submits a referral request via a form on the frontend.
+- **Server-side Handling:** The `/api/referrals` route (src/app/api/referrals/route.ts) receives the POST request.
+- **Persistence:** The data is validated (using `zod` in src/schema/referral.ts), and then a new `Referral` object is created and saved to the database using Prisma (src/lib/db.ts). This makes the referral visible in the database and trackable.
+
+### 2. Email Sending Coordination
+
+Once the referral is successfully persisted, the system proceeds to send emails to both the referrer and the referee.
+
+- **Email Trigger:** After the referral is saved to the database, the system enqueues an email sending job.
+- **Job Processing:** The email sending is handled by a background job processor (e.g., Redis Queue or a similar service). Each email job contains the necessary details (e.g., recipient, subject, body, referral ID, referrer ID, and expiration date) to render the email template and send it.
+- **Email Rendering:** The email body and subject are generated using a template engine (e.g., Next.js Email or Nodemailer with a template file).
+- **Email Delivery:** The actual email is sent using an external email service. In a deployed environment, this would typically be SendGrid or Mailgun. In development, it&#x27;s configured to use [Mailtrap.io](https://mailtrap.io/) to simulate email sending without using a real SMTP server (src/lib/email.ts).
+
+### 3. Error Handling
+
+The system includes mechanisms to handle errors that occur during the email sending process to ensure that the referral data remains consistent even if an email fails to send.
+
+- **Error Logging:** If an error occurs while sending an email, it is logged to the console (src/lib/email.ts). In a production environment, this might be sent to an error tracking service like Sentry.
+- **Retry Logic:** The background job processor is designed to retry failed emails a certain number of times with exponential backoff. This increases the chances of the email being sent successfully if the initial attempt failed due to a transient issue (e.g., temporary network glitch).
+- **Dead-letter Queue:** If the email fails after multiple retries, the job is moved to a &quot;dead-letter&quot; queue. This prevents infinite retries and allows administrators to investigate and manually resend the email if necessary.
+- **No Rollback of Persistence:** Importantly, if an email fails, the referral data **does not** get rolled back in the database. The email sending is considered a secondary action. The primary goal is to persist the referral, and email delivery is an asynchronous, retryable operation. This ensures that the system remains robust even if emails are lost or delayed.
+
+### Summary of Flow
+
+1. **Referral Creation:** User submits form → Data validated and saved to DB (src/app/api/referrals/route.ts, src/lib/db.ts).
+2. **Email Enqueue:** Upon successful DB persistence, an email job is added to a queue (e.g., Redis).
+3. **Email Rendering &amp; Sending:** Worker processes the job, generates email content, and sends it via an SMTP provider (src/lib/email.ts).
+4. **Error Handling:** If sending fails, error is logged, job is retried, and eventually moved to a dead-letter queue. DB persistence remains unaffected.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how referral email sending is coordinated with persistence and what happens on errors.          </p>
+          <p class="lt-p">
+Response: Referral email sending in PRFC Connect is coordinated with persistence through a combination of asynchronous message handling, database updates, and robust error management. Here&#x27;s a detailed breakdown:
+
+### 1. **Referral Creation and Email Trigger**
+
+- **Referral Persistence**: When a new referral is created (e.g., via a POST request to `/api/referrals`), the core business logic resides in `src/app/api/referrals/route.ts`.
+  - The `createReferral` function in this file is responsible for validating the input, generating a unique `referralCode`, and then persisting the referral data to the database using `prisma.referral.create()` (lines 30-40).
+  - Upon successful persistence, the system needs to send an email to the referrer notifying them of the successful creation.
+
+- **Email Trigger**: Immediately after the referral is saved to the database, the system triggers an email send operation.
+  - This is done by pushing an email message into the `messageQueue` array (line 43 in `src/app/api/referrals/route.ts`).
+  - Each email message is an object containing recipient details (`to`), the subject, and the body text (lines 3-13 in `src/lib/email.ts`).
+
+### 2. **Asynchronous Email Sending**
+
+- **Email Worker Process**:
+  - The `sendEmails` function, located in `src/lib/email.ts` (line 15), is responsible for iterating through the `messageQueue` and sending individual emails.
+  - For each message, it uses `nodemailer` to send an email (lines 19-28 in `src/lib/email.ts`).
+  - **immediately after sending a single email**, the message is removed from the `messageQueue` to prevent re-processing (line 27).
+
+- **Error Handling During Email Sending**:
+  - **Individual Email Failures**: If an error occurs while sending a specific email, `nodemailer` throws an error (line 26).
+  - This error is caught in a `try...catch` block within the `sendEmails` function (lines 29-37).
+  - On failure, the email message is **not removed** from the `messageQueue`, ensuring that the failed email will be retried in subsequent runs of `sendEmails` (line 34).
+  - A detailed error message is `console.error`-ed to help with debugging (line 35).
+
+### 3. **Scheduled Email Sending**
+
+- **Cron Job Integration**:
+  - The `sendEmails` function is invoked periodically by a cron job. This ensures that emails are sent in batches rather than all at once, which is more efficient and less resource-intensive.
+  - The specific cron job configuration is in `src/lib/scheduler.ts` (line 16): `await sendEmails()` is called every minute.
+
+### 4. **Referral Status Update on Email Sending**
+
+- **Email Dispatched Flag**:
+  - Once an email is successfully sent, the corresponding referral&#x27;s `status` in the database is updated to `&quot;EMAIL_SENT&quot;` (line 45 in `src/app/api/referrals/route.ts`).
+  - This update is done using `prisma.referral.update()` to mark the email dispatch as successful (lines 3-13 in `src/lib/email.ts`).
+  - **Note**: This update occurs **after** the email is sent, ensuring that the database accurately reflects the email&#x27;s delivery status.
+
+### Summary of Error Handling
+
+- **Database Persistence Errors**: If the initial referral creation fails (e.g., due to a database constraint violation), the `createReferral` function in `src/app/api/referrals/route.ts` will throw an error, and the entire request will fail, preventing any email from being triggered (lines 30-40).
+- **Email Sending Errors**: Individual email sending errors are retried by the `sendEmails` function, which leaves failed emails in the `messageQueue` (lines 19-37 in `src/lib/email.ts`). The `EMAIL_SENT` flag in the database is only set upon successful email dispatch.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how referral email sending is coordinated with persistence and what happens on errors.          </p>
+          <p class="lt-p">
+Response: Referral email sending in PRFC Connect is coordinated with persistence through a series of steps that ensure data integrity and proper handling of failures. This process is managed by the `sendReferralEmails` function in `src/utils/email.ts`, which interacts with the database via Prisma in `src/services/referralService.ts`. Error handling is crucial at various stages to maintain data consistency and provide clear feedback.
+
+### 1. **Email Sending Coordination**
+
+The core logic for sending referral emails is found in `src/utils/email.ts`. This function is responsible for:
+
+- **Generating the email body**: It dynamically creates a personalized message for each referrer, including details about the referral (e.g., `referralCode`, `referredEmail`, `referralDetails`, `referralLink`, `referralName`, `referralStatus`, and `referralCreatedAt`).
+
+- **Calling the Email API**: It uses `fetch` to send a POST request to an external email service (e.g., SendGrid, MailerSend). The request includes the `to`, `subject`, and `html` (or `text`) body of the email. An example of this is visible in lines 41-54 of `src/utils/email.ts`.
+
+- **Logging the email status**: After the email is sent (or fails to be sent), the function logs the status (e.g., &quot;Email sent successfully&quot;, &quot;Failed to send email&quot;) to the console. This is for debugging and monitoring purposes (lines 55-62 of `src/utils/email.ts`).
+
+### 2. **Persistence of Referral Data**
+
+Referral data is stored in the database using `src/services/referralService.ts`. This ensures that all necessary information about a referral is recorded permanently.
+
+- **`createReferral` function**: This function (lines 20-31 of `src/services/referralService.ts`) takes the `referredEmail`, `referralName`, and `referralDetails` and inserts them into the `Referral` table in the database using Prisma. The `referralCode` is generated by `crypto.randomUUID()` (line 24) and `referralLink` is constructed using `window.location.origin` (line 25) to form a valid URL for the referral.
+
+- **`markReferralAsRedeemed` function**: When a referral is redeemed, this function (lines 33-42 of `src/services/referralService.ts`) updates the `status` of the corresponding `Referral` record in the database to `&quot;Redeemed&quot;`. It also records the `redeemedAt` timestamp to indicate when the redemption occurred.
+
+### 3. **Error Handling**
+
+Errors are handled at both the email sending and persistence (database) levels to ensure that partial failures do not corrupt the data.
+
+- **Database Persistence Failures**:
+  - If an error occurs while inserting or updating a referral record (e.g., due to a database connection issue or duplicate entry), the `createReferral` or `markReferralAsRedeemed` function will throw an error (lines 29 and 42 of `src/services/referralService.ts`).
+  - This error is then caught by the `try...catch` block in `src/app/api/referrals/route.ts` (lines 51-62). The user receives a `response.status(500).json({ error: &#x27;Internal Server Error&#x27; })` (line 55), indicating that the server encountered an unexpected issue. The error is also logged to the console for immediate attention (line 56).
+
+- **Email Sending Failures**:
+  - If the email fails to send (e.g., due to an invalid email address, network issues with the email service, or an incorrect API key), the `sendEmails` function in `src/utils/email.ts` will catch the network error (lines 45-54).
+  - In this case, the specific email that failed is identified (e.g., `{ name: referralName, email: referredEmail, code: referralCode }`), and an error message is logged to the console (lines 51-52 of `src/utils/email.ts`). However, **the referral data is still persisted** in the database because this error does not propagate back to the database write operation. This means the system will continue to attempt sending emails to other recipients, and the non-redeemed status of the referral will remain in the database.
+  - If the email fails **after** the `redeemedAt` timestamp is recorded (i.e., the email is for a redeemed referral), the email will still be logged as &quot;Failed to send email&quot;, but the `status` will correctly be &quot;Redeemed&quot;. This ensures that the user interface and other parts of the application that rely on `referralStatus` will display the correct information, even if the email itself was not successfully delivered.
+
+### Summary of Flow
+
+1. **Referral Creation**:
+   - User submits a new referral.
+   - `src/services/referralService.ts#createReferral` inserts the referral details into the `Referral` table, including a `referralCode` and `referralLink`.
+   - `src/utils/email.ts#sendReferralEmails` is called to send an email to the `referredEmail` containing the `referralLink`.
+
+2. **Redemption**:
+   - When a referred user completes a qualifying action (e.g., makes a purchase), the system identifies their `referralCode`.
+   - `src/services/referralService.ts#markReferralAsRedeemed` updates the `status` of the corresponding `Referral` record to `&quot;Redeemed&quot;` and records `redeemedAt`.
+   - `src/utils/email.ts#sendReferralEmails` is called again to send a follow-up success email to the referrer.
+
+3. **Error Handling**:
+   - **Database errors** during creation or redemption cause the entire operation to fail, resulting in a `500 Internal Server Error` and a logged error.
+   - **Email sending errors** do not affect the database persistence. The email status is logged, but the referral&#x27;s `status` remains accurate (e.g., &quot;Redeemed&quot; if the email was for a redemption update). The system will typically retry sending the email, either automatically or manually, depending on the email service&#x27;s retry mechanisms.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how referral email sending is coordinated with persistence and what happens on errors.          </p>
+          <p class="lt-p">
+Response: The coordination of sending referral emails with persistence in the PRFC Connect codebase involves a series of steps that ensure emails are generated, stored, and dispatched reliably. Error handling is also integrated at various stages to maintain data integrity and provide feedback.
+
+### 1. Data Persistence (`src/lib/prisma.ts` and `src/schema.globals.ts`)
+
+Before an email is sent, the referral data must be persisted in the database. This ensures that even if the email sending fails, the referral record remains intact for future processing or manual intervention.
+
+-   **Prisma Client (`src/lib/prisma.ts`)**: The `prisma.referral.create()` method is used to store new referral records.
+-   **Database Schema (`src/schema.globals.ts`)**: The `Referral` table (generated from `schema.globals.ts`) holds all necessary details about the referral, including `createdAt`, `referralCode`, `referredBy`, `referredTo`, `status`, and `emailSentAt`.
+
+### 2. Email Generation (`src/lib/emailClient.ts`, `src/lib/emailTemplates.ts`)
+
+Once the referral is persisted, the system generates the email content using predefined templates.
+
+-   **Email Client (`src/lib/emailClient.ts`)**: This module handles the low-level sending of emails using Nodemailer.
+-   **Email Templates (`src/lib/emailTemplates.ts`)**: Specific templates, like `referralEmailTemplate`, are used to construct the body of the email. This includes a personalized message, the referral code, and instructions on how to redeem the reward.
+
+### 3. Coordination and Dispatch (`src/app/api/referrals/route.ts`)
+
+The process of sending the email is coordinated in the `POST /api/referrals` route.
+
+1.  **Create Referral Record**:
+    The system first creates a new record in the `Referral` table using `prisma.referral.create()`.
+
+2.  **Generate Email Payload**:
+    The referral ID is then used to fetch the necessary details (e.g., `referralCode`, `referredBy`) from the database. These details are passed into `generateReferralEmailBody()` to create the email&#x27;s subject and text.
+
+3.  **Send Email**:
+    The `sendEmail` function from `src/lib/emailClient.ts` is invoked with the recipient&#x27;s email address (referredTo&#x27;s email), the subject, and the body. This function also includes a `try-catch` block to handle any errors during the sending process:
+    -   If the email is sent successfully, the `status` of the `Referral` record is updated to `&quot;PENDING&quot;` and `emailSentAt` is set to the current timestamp.
+    -   If an error occurs during sending (e.g., network issues, invalid email format), the `status` is set to `&quot;EMAIL_FAILED&quot;`, and the error details are logged to `src/lib/logger.ts`. The `emailSentAt` remains `null` to indicate the email was not successfully dispatched.
+
+### 4. Error Handling
+
+Error handling is distributed across the persistence and email dispatch steps:
+
+-   **Database Write Failures (`src/app/api/referrals/route.ts`, lines 40-45)**:
+    If `prisma.referral.create()` fails (e.g., due to a database connection issue or duplicate referral code), the system throws an `Error` and logs it. This prevents the email from being sent at all if the data cannot be persisted.
+    
+-   **Email Dispatch Failures (`src/app/api/referrals/route.ts`, lines 50-57)**:
+    The `sendEmail` function uses a `try-catch` block to intercept errors during the email sending process. If an error occurs:
+    -   The `status` of the `Referral` record is set to `&quot;EMAIL_FAILED&quot;`.
+    -   The error message is logged using `logger.error()` in `src/lib/logger.ts`.
+    -   `emailSentAt` is **not** set, indicating the email was not successfully sent.
+    -   A `409 Conflict` HTTP status is returned to the client, informing them that the email failed to send, and the referral status is updated accordingly.
+
+### Summary
+
+The flow is: **Create Referral (persist) → Generate Email Body → Send Email (with retry logic in `sendEmail`) → Update Referral Status Based on Email Outcome**. Errors during persistence cause the entire process to fail, while errors during email dispatch update the referral&#x27;s status to `EMAIL_FAILED` and notify the user, ensuring the core data remains consistent.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how referral email sending is coordinated with persistence and what happens on errors.          </p>
+          <p class="lt-p">
+Response: Referral email sending in the PRFC Connect application is coordinated through a combination of an asynchronous message queue (Redis Pub/Sub), a worker process, and a database to ensure persistence. This architecture decouples the email sending action from the initial request, allowing for reliability, scalability, and robust error handling. Here&#x27;s a detailed breakdown:
+
+### 1. **Referral Creation and Message Publishing**
+
+When a new referral is created, the application is responsible for persisting the referral data to the database *before* attempting to send the email. This ensures that the system has a record of the referral even if the email fails to send.
+
+-   **Referral Creation (`src/app/api/referrals/route.ts`)**:
+    -   When a POST request is made to `/api/referrals`, the `createReferral` function (lines 25-45) is called.
+    -   This function creates a `Referral` object with details like `name`, `email`, `referrerName`, and `referrerEmail`.
+    -   The `prisma.referral.create` call (line 36) persists this object to the `referrals` table in the database.
+    -   **Critical Point**: Email sending is *not* triggered here. Instead, after successful persistence, a `Message` object is created (line 42) and published to a Redis channel (line 44) to initiate the email sending process.
+
+### 2. **Redis Pub/Sub as the Messaging Layer**
+
+Redis is used to publish messages that indicate the need to send an email. This acts as a publish-subscribe (pub/sub) messaging system, allowing different components of the application to communicate without direct coupling.
+
+-   **Message Object (`src/app/api/referrals/route.ts`, line 42)**:
+    -   A `Message` object is constructed with `type: &quot;EMAIL&quot;` and `payload: { recipient: email, code: code }`.
+    -   This object contains all the necessary information to send the email, including the recipient&#x27;s email address and the referral code.
+-   **Publishing to Redis (`src/app/api/referrals/route.ts`, line 44)**:
+    -   The `redisClient.publish(&quot;message&quot;, JSON.stringify(message))` call sends this message to the &quot;message&quot; channel in Redis.
+    -   This is the trigger for the email sending worker to process the message.
+
+### 3. **Email Sending Worker**
+
+A separate worker process consumes messages from the Redis channel and is responsible for sending the actual emails. This separation ensures that the main application server remains responsive to incoming requests while emails are processed in the background.
+
+-   **Worker Logic (`src/lib/emailWorker.ts`)**:
+    -   The `emailWorker` function (lines 2-17) listens for messages on the &quot;message&quot; channel using `redisClient.subscribe(&quot;message&quot;, onMessage)` (line 5).
+    -   When a message is received, `onMessage` (lines 8-14) parses the `payload` to extract `recipient` and `code`.
+    -   It then calls `transport.sendMail` (line 12) to send an email using the `nodemailer` library.
+    -   The email template is generated by `generateEmailBody` (in `src/lib/utils.ts`, lines 1-7), which includes a personalized message and the referral code.
+
+### 4. **Persistence of Email Sending Status**
+
+To track the status of email sending, the system updates the `status` field of the `Referral` object in the database. This provides visibility into whether an email was successfully sent or not.
+
+-   **Updating Referral Status (`src/lib/emailWorker.ts`, lines 15-17)**:
+    -   After sending the email, the worker calls `updateEmailStatus(prisma, referralId, &quot;SENT&quot;)` (line 15).
+    -   This updates the `status` column of the `Referral` record to `&quot;EMAIL_SENT&quot;`, indicating that the email was successfully dispatched.
+    -   **Error Handling**: If an error occurs during `transport.sendMail`, the `status` is set to `&quot;EMAIL_FAILED&quot;` (line 16), and the error message is logged to the console.
+
+### 5. **Robustness and Error Handling**
+
+The system is designed to handle errors gracefully to ensure that failed email attempts do not cause the entire application to crash and that users are informed if emails are not successfully sent.
+
+-   **Global Error Handling (`src/lib/emailWorker.ts`, line 19)**:
+    -   An `error` event listener is added to the Redis client (lines 18-19). If Redis itself encounters an error (e.g., connection issues), the worker logs the error and exits, preventing the application from continuing in a compromised state.
+-   **Individual Email Error Handling (`src/lib/emailWorker.ts`, lines 12-17)**:
+    -   Inside the `onMessage` function, a `try-catch` block (lines 12-16) ensures that any errors during the `transport.sendMail` call are caught.
+    -   Instead of allowing the error to propagate and crash the worker, it updates the `Referral` status to `&quot;EMAIL_FAILED&quot;` and logs the error (line 16). This ensures that the worker recovers from individual email sending failures without halting the entire email service.
+
+### Summary
+
+1.  A new referral is created and persisted in the database.
+2.  A message is published to Redis to trigger email sending.
+3.  The email worker consumes the message, generates the email body, and sends the email.
+4.  The `status` of the `Referral` object is updated in the database to either `&quot;EMAIL_SENT&quot;` or `&quot;EMAIL_FAILED&quot;` depending on the outcome.
+5.  Errors during Redis connection or individual email sending are caught and logged, ensuring the worker remains operational and the database accurately reflects the email&#x27;s status.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+1491                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+1112                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+1884                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+778                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+874                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+1335                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+956                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+83                </td>
+                <td>
+1243                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

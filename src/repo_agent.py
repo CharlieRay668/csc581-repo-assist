@@ -5,26 +5,33 @@ from google.genai import types
 from src.tool_gateway import ToolGateway
 from src.agent_orchestrator import AgentOrchestrator
 from src.session_manager import SessionManager
+from src.model_backend import ModelBackend, create_backend
 
 
 class RepoAgent:
 
-    def __init__(self, gateway, api_key=None, model="gemini-2.5-flash", session=None):
+    def __init__(self, gateway, api_key=None, model="gemini-2.5-flash", session=None,
+                 backend: ModelBackend | None = None, backend_type: str = "gemini",
+                 **backend_kwargs):
         self.gateway = gateway
         self.model = model
         self.session = session
 
-        api_key = api_key or os.environ.get('GEMINI_API_KEY')
-        if not api_key:
-            raise ValueError("GEMINI_API_KEY environment variable or api_key parameter required")
+        # Build backend if not provided
+        if backend is not None:
+            self._backend = backend
+        else:
+            self._backend = create_backend(
+                backend_type,
+                model=model,
+                api_key=api_key,
+                **backend_kwargs,
+            )
 
-        self.client = genai.Client(api_key=api_key)
-        self.tools = self._define_tools()
         self._orchestrator = AgentOrchestrator(
             gateway=gateway,
             session=session,
-            api_key=api_key,
-            model=model,
+            backend=self._backend,
         )
 
     def _define_tools(self):

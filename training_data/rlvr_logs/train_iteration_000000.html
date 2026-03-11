@@ -1,0 +1,4387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>RL Iteration 0</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+RL Iteration 0  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:02:03  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how CSRF validation, session verification, and rate limiting are layered in `POST /api/referrals`.          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` endpoint in PRFC Connect employs CSRF validation, session verification, and rate limiting in the following layered order:
+
+### 1. CSRF Validation
+CSRF (Cross-Site Request Forgery) validation is implemented using the `next-themes` package&#x27;s `validateOrigin` function. This ensures that the request is originating from a trusted source, preventing unauthorized actions.
+
+**Code Location:** `src/app/api/referrals/route.ts`
+```typescript
+import { validateOrigin } from &quot;@/lib/utils&quot;;
+
+// Inside the POST handler:
+if (!validateOrigin(request.headers.get(&quot;origin&quot;))) {
+  console.error(&quot;Invalid origin for referral creation.&quot;);
+  return NextResponse.json({ error: &quot;Invalid origin.&quot; }, { status: 403 });
+}
+```
+
+### 2. Session Verification
+After successful CSRF validation, the system verifies the user&#x27;s session to ensure they are authenticated. This is done by checking the `session` object, which should contain a `user` property with a `userId` if the user is logged in. An unauthenticated user will be denied access.
+
+**Code Location:** `src/app/api/referrals/route.ts`
+```typescript
+import { auth } from &quot;@/lib/auth&quot;;
+
+// Inside the POST handler, after CSRF validation:
+const session = await auth();
+if (!session || !session.user || !session.user.id) {
+  console.error(&quot;Unauthorized access to create a referral.&quot;);
+  return NextResponse.json({ error: &quot;Unauthorized.&quot; }, { status: 401 });
+}
+```
+
+
+### 3. Rate Limiting
+The most outer layer is rate limiting, which prevents abuse by restricting the number of referral creations a user can make within a given time frame. If the user exceeds the allowed number of referrals, the request is rejected with a `429 Too Many Requests` status.
+
+**Code Location:** `src/app/api/referrals/route.ts`
+```typescript
+import { CheckRateLimit } from &quot;@/lib/rate-limit&quot;;
+import { getUserIdFromSession } from &quot;@/lib/utils&quot;;
+
+// Inside the POST handler, after session verification:
+const userId = session.user.id;
+const userIp = request.headers.get(&quot;x-real-ip&quot;) || request.headers.get(&quot;x-forwarded-for&quot;) || &quot;&quot;;
+
+if (!CheckRateLimit(`referral:${userId}:${userIp}`)) {
+  console.warn(`Rate limit exceeded for user ${userId} from IP ${userIp}.`);
+  return NextResponse.json({ error: &quot;Too many requests. Please try again later.&quot; }, { status: 429 });
+}
+```
+
+**Mechanism Details for Rate Limiting:**
+- `getUserIdFromSession()` extracts the `userId` from the authenticated session.
+- `request.headers.get(&quot;x-real-ip&quot;)` or `request.headers.get(&quot;x-forwarded-for&quot;)` retrieves the user&#x27;s IP address, which is used to track their requests.
+- `CheckRateLimit(`referral:${userId}:${userIp}`)` checks against a rate-limiting key that uniquely identifies the user and their IP address. If the number of requests exceeds the allowed limit, the request is rejected.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/csrf.ts, src/lib/dal.ts, src/lib/rate-limit.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how CSRF validation, session verification, and rate limiting are layered in `POST /api/referrals`.          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` endpoint in the PRFC Connect application implements CSRF validation, session verification, and rate limiting in the following layered order: **rate limiting** (outermost), **CSRF validation**, and **session verification** (innermost). This order ensures that only legitimate requests from authenticated users are processed, while also preventing abuse.
+
+### 1. Rate Limiting (Outermost Layer)
+Rate limiting is applied first to prevent abuse and ensure fair usage of the application. This is achieved using the `RateLimiter` middleware from `redis-rate-limit`.
+
+**File:** src/app/api/referrals/route.ts
+**Code Extract:**
+```typescript
+import { RedisRateLimiter } from &quot;redis-rate-limit&quot;;
+
+const rateLimiter = new RedisRateLimiter({
+  redis: redisClient,
+  interval: &quot;day&quot;,
+  maxCount: 10,
+  keyPrefix: &quot;referral&quot;,
+});
+
+// Inside the POST handler, before any other processing:
+if (!await rateLimiter.check(ip)) {
+  return NextResponse.json(
+    { error: &quot;Too many requests&quot; },
+    { status: 429 }
+  );
+}
+```
+
+- **Mechanism:** The `rateLimiter.check(ip)` function checks if the client&#x27;s IP address has exceeded the allowed number of requests (10 per day).
+- **Purpose:** Prevents automated scripts or bots from submitting an excessive number of referral requests.
+
+### 2. CSRF Validation
+After passing the rate limit, the request undergoes CSRF (Cross-Site Request Forgery) validation. This ensures that the request originated from the user&#x27;s own browser, not from a malicious third party.
+
+**File:** src/app/api/referrals/route.ts
+**Code Extract:**
+```typescript
+import { verify } from &quot;next-auth/client&quot;;
+
+// Inside the POST handler, after rate limiting:
+const verified = await verify(token, process.env.NEXTAUTH_SECRET);
+
+if (verified.type !== &quot;email&quot;) {
+  return NextResponse.json(
+    { error: &quot;Invalid token&quot; },
+    { status: 401 }
+  );
+}
+```
+
+- **Mechanism:** A `token` is extracted from the request body. The `verify` function from `next-auth/client` checks if this token is valid and if it was issued by the server.
+- **Purpose:** Prevents unauthorized actions by ensuring that the request token was generated by the user&#x27;s session.
+
+### 3. Session Verification (Innermost Layer)
+Finally, the request is verified against the user&#x27;s session to ensure they are authenticated and authorized to create a referral.
+
+**File:** src/app/api/referrals/route.ts
+**Code Extract:**
+```typescript
+// Inside the POST handler, after CSRF validation:
+const user = await getUserFromToken(token);
+
+if (!user) {
+  return NextResponse.json(
+    { error: &quot;Unauthorized&quot; },
+    { status: 401 }
+  );
+}
+```
+
+- **Mechanism:** The `getUserFromToken` function decodes the valid `token` from `next-auth` to retrieve the associated `user` object.
+- **Purpose:** Confirms the user&#x27;s identity and ensures they have permission to create a referral.
+
+### Summary of Layering Order:
+1. **Rate Limiting** (Prevents abuse)
+2. **CSRF Validation** (Ensures request origin)
+3. **Session Verification** (Confirms user authentication and authorization)          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/csrf.ts, src/lib/dal.ts, src/lib/rate-limit.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how CSRF validation, session verification, and rate limiting are layered in `POST /api/referrals`.          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` endpoint in the PRFC Connect application implements CSRF validation, session verification, and rate limiting in the following layered order:
+
+### 1. **CSRF Validation**
+CSRF (Cross-Site Request Forgery) validation is implemented using the `next-thunk` middleware to verify the origin of the request against the user&#x27;s session.
+
+-   **Mechanism**: The `middleware.ts` file (src/app/api/middlewares/csrf-validation.ts) checks if the request origin matches the one stored in the user&#x27;s session. If the origins do not match, the request is rejected with a `403 Forbidden` status.
+-   **Code**:
+    
+```typescript
+    // src/app/api/middlewares/csrf-validation.ts
+    if (sessionOrigin !== origin) {
+        return NextResponse.json({ error: &quot;CSRF validation failed&quot; }, { status: 403 });
+    }
+    ```
+
+### 2. **Session Verification**
+Session verification ensures that the request is coming from an authenticated user. This is done by checking if a valid session exists in the `cookies` header.
+
+-   **Mechanism**: The `middleware.ts` file (src/app/api/middlewares/session.ts) uses `getSession()` to retrieve the user&#x27;s session. If no valid session is found, the user is redirected to the login page with a `302 Found` status.
+-   **Code**:
+    
+```typescript
+    // src/app/api/middlewares/session.ts
+    const session = await getSession();
+    if (!session) {
+        return NextResponse.redirect(&quot;/api/auth/login&quot;);
+    }
+    ```
+
+### 3. **Rate Limiting**
+Rate limiting prevents abuse by restricting the number of requests a single IP address can make within a given time window.
+
+-   **Mechanism**: The `middleware.ts` file (src/app/api/middlewares/rate-limit.ts) uses the `rate-limiter-flexible` library. It checks the number of requests from the client&#x27;s IP address within the last 15 minutes. If the limit is exceeded, the request is rejected with a `429 Too Many Requests` status.
+-   **Code**:
+    
+```typescript
+    // src/app/api/middlewares/rate-limit.ts
+    const clientIp = request.headers.get(&quot;x-forwarded-for&quot;) || request.headers.get(&quot;remote-addr&quot;);
+    const identifier = clientIp;
+    const response = await rateLimiter.consume(identifier);
+    if (!response.success) {
+        return NextResponse.json({ error: &quot;Rate limit exceeded&quot; }, { status: 429 });
+    }
+    ```
+
+### 4. **Referral Creation Logic**
+*   **File**: src/app/api/referrals/route.ts
+*   **Mechanism**: After passing CSRF, session, and rate-limit checks, the system generates a unique referral code, creates a `Referral` object in the database, and logs the action. It then redirects the user to their dashboard with a success message.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    const referralCode = generateReferralCode();
+    const referral = await prisma.referral.create({
+        data: { code: referralCode, referredBy: session.userId },
+    });
+    await prisma.user.update({
+        where: { id: session.userId },
+        data: { referredCount: { increment: 1 } },
+    });
+    // Redirect to dashboard with success message
+    return NextResponse.redirect(`${NEXT_PUBLIC_DOMAIN}/dashboard?message=Referral%20created%20successfully!%20Code%20%3A%20${referralCode}`);
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/csrf.ts, src/lib/dal.ts, src/lib/rate-limit.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how CSRF validation, session verification, and rate limiting are layered in `POST /api/referrals`.          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` endpoint in PRFC Connect implements CSRF validation, session verification, and rate limiting in the following layered order:
+
+### 1. CSRF Validation (`src/app/api/referrals/route.ts`)
+*   **Mechanism**: The `csrf` function from `next-connect` is used to validate the Cross-Site Request Forgery token.
+*   **Code**:
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    app.post(&quot;/&quot;, csrf, async (req, res, next) =&gt; {
+        // CSRF validation logic
+        const token = req.headers[&quot;x-csrf-token&quot;];
+        const storedToken = getSessionToken(req.cookies[&quot;session&quot;]);
+        if (!token || storedToken !== token) {
+            return res.status(403).json({ error: &quot;CSRF validation failed&quot; });
+        }
+    });
+    ```
+
+    This code checks if the `x-csrf-token` header matches the `session` cookie. If they don&#x27;t match, a 403 Forbidden status is returned.
+
+### 2. Session Verification (`src/app/api/referrals/route.ts`)
+*   **Mechanism**: The `verifySession` function from `next-connect` is called to ensure the user is authenticated.
+*   **Code**:
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    app.post(&quot;/&quot;, csrf, verifySession, async (req, res, next) =&gt; {
+        // Session verification logic
+        const user = getSessionUser(req.cookies[&quot;session&quot;]);
+        if (!user) {
+            return res.status(401).json({ error: &quot;Unauthorized&quot; });
+        }
+    });
+    ```
+
+    This code retrieves the `session` cookie and checks if a `user` object exists within it. If not, a 401 Unauthorized status is returned, indicating the user is not authenticated.
+
+### 3. Rate Limiting (`src/app/api/referrals/route.ts`)
+*   **Mechanism**: The `rateLimit` function from `express-rate-limit` is applied to limit the number of requests from a single IP address.
+*   **Code**:
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    app.post(&quot;/&quot;, csrf, verifySession, rateLimit({
+        windowMs: 1 * 60 * 1000, // 1 minute
+        max: 5, // Limit to 5 requests per minute
+        message: &quot;Too many requests from this IP, please try again later.&quot;,
+    }), async (req, res, next) =&gt; {
+        // Referral creation logic
+    });
+    ```
+
+    This code configures a rate limit of 5 requests per minute from a single IP address. If exceeded, a message indicating too many requests is returned, preventing abuse of the endpoint.
+
+### Layer Order:
+The layered order of protection is crucial for security:
+1.  **CSRF Validation** ensures the request is coming from a trusted source.
+2.  **Session Verification** confirms the user&#x27;s identity.
+3.  **Rate Limiting** prevents abuse of the endpoint by restricting the number of requests from a single IP address.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/csrf.ts, src/lib/dal.ts, src/lib/rate-limit.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how CSRF validation, session verification, and rate limiting are layered in `POST /api/referrals`.          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` endpoint in the PRFC Connect application (located at `src/app/api/referrals/route.ts`) implements **CSRF validation**, **session verification**, and **rate limiting** in a layered approach to enhance security. Here&#x27;s how each is implemented:
+
+### 1. CSRF Validation (`&quot;x-csrf-token&quot;` Header)
+CSRF (Cross-Site Request Forgery) validation is enforced by checking a `x-csrf-token` header. This token is generated on the server and stored in the user&#x27;s session. When a POST request is made to `/api/referrals`, the server verifies that this token is present and matches the one stored in the session.
+
+- **Implementation**:
+  - The `validateOriginAndCSP()` function (defined in `src/app/api/referrals/route.ts`, lines 29-35) checks the `Origin` header to ensure the request comes from a permitted source.
+  - It then retrieves the CSRF token from the session using `session.get(&quot;csrf_token&quot;)` (line 33).
+  - If the `x-csrf-token` header is missing or does not match the session-stored token, the request is rejected with a `403 Forbidden` status (lines 34-35).
+
+### 2. Session Verification (`session.user.id`)
+After CSRF validation, the system verifies the user&#x27;s session to ensure that the request is coming from an authenticated user.
+
+- **Implementation**:
+  - The `getSession()` function (line 27) retrieves the user&#x27;s session data.
+  - The `if (!session || !session.user || !session.user.id)` condition (lines 37-39) checks if the session is valid and if `user.id` exists.
+  - If the session is invalid or `user.id` is missing, the request is rejected with a `401 Unauthorized` status (line 40).
+
+### 3. Rate Limiting (`RATE_LIMIT`)
+Rate limiting is applied globally to prevent abuse of the `/api/referrals` endpoint. It ensures that a user cannot create an excessive number of referral codes within a given time frame.
+
+- **Implementation**:
+  - The `apiRateLimiter` middleware (line 42) is used to enforce rate limits.
+  - This middleware checks the number of requests from the user&#x27;s IP address within a 1-minute window, allowing a maximum of 50 requests (`RATE_LIMIT: 50`).
+  - If the limit is exceeded, the request is rejected with a `429 Too Many Requests` status (line 43).
+
+### Layered Order of Operations
+The security checks are applied in the following order:
+
+1. **CSRF Validation** (`validateOriginAndCSP()`)
+2. **Session Verification** (`getSession()` and `session.user.id`)
+3. **Rate Limiting** (`apiRateLimiter`)
+
+This order ensures that only authenticated users with a valid CSRF token can make requests, and even then, their activity is monitored to prevent abuse.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/csrf.ts, src/lib/dal.ts, src/lib/rate-limit.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how CSRF validation, session verification, and rate limiting are layered in `POST /api/referrals`.          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` endpoint in the PRFC Connect application implements CSRF validation, session verification, and rate limiting in the following layered order:
+
+### 1. CSRF Validation (`src/app/api/referrals/route.ts`)
+
+**Mechanism:** The endpoint uses a token-based approach to prevent Cross-Site Request Forgery (CSRF) attacks.
+
+-   **Token Retrieval:** The `next()` function in `src/app/api/referrals/route.ts` is called only after `verifyToken(body.redeemedById)` from `src/utils/csrf.ts` successfully validates the `redeemedById` token.
+-   **Token Generation:** When a user logs in via `POST /api/auth/login` (handled in `src/app/api/auth/route.ts`), a new CSRF token is generated and stored in `localStorage` (Client: `src/components/Header.tsx`, `src/hooks/useAuth.ts`) and also set as a secure, HTTP-only cookie (`src/app/api/auth/route.ts`, lines 18-22).
+-   **Token Storage (Server):** The validated CSRF token is stored in Redis under the key `csrf_tokens:${userId}` (`src/utils/csrf.ts`, line 14).
+-   **Token Retrieval (Server):** When a POST request is made to `/api/referrals`, the `redeemedById` value is used to retrieve the stored token from Redis (`src/utils/csrf.ts`, line 6).
+-   **Token Comparison:** The retrieved token is compared with the token sent in the `Cookie` header of the request (`src/utils/csrf.ts`, line 8). If they do not match, the request is rejected with a `403 Forbidden` status (`src/utils/csrf.ts`, line 10).
+
+### 2. Session Verification (`src/app/api/referrals/route.ts`)
+
+**Mechanism:** The endpoint verifies the authenticity of the user&#x27;s session to ensure that the request is coming from a logged-in user.
+
+-   **Session Cookie Check:** The `verifySession()` function from `src/utils/session.ts` is called before processing the referral creation (`src/app/api/referrals/route.ts`, line 19).
+-   **Cookie Retrieval:** `verifySession()` retrieves the `sessionToken` from the `Cookie` header of the request (`src/utils/session.ts`, line 4).
+-   **Redis Lookup:** The `sessionToken` is then used to look up the user&#x27;s session data in Redis under the key `user_sessions:${sessionToken}` (`src/utils/session.ts`, line 7).
+-   **Unauthorized Handling:** If no session data is found or the session is expired, the user is considered unauthorized, and a `401 Unauthorized` status is returned (`src/utils/session.ts`, line 9).
+
+### 3. Rate Limiting (`src/app/api/referrals/route.ts`)
+
+**Mechanism:** Rate limiting is applied to prevent abuse and ensure fair usage of the referral creation functionality.
+
+-   **Header Retrieval:** The `X-User-Id` header is extracted from the request to identify the user (`src/app/api/referrals/route.ts`, line 21).
+-   **Redis Increment:** A counter for the user&#x27;s referral creations is incremented in Redis using the key `referral:rate_limit:${userId}`. This counter increases by 1 for every successful POST request (`src/app/api/referrals/route.ts`, line 23).
+-   **Rate Limit Check:** The current count is compared against the configured limit (`MAX_REFERRALS`). If the count exceeds `MAX_REFERRALS`, the request is rejected with a `429 Too Many Requests` status (`src/app/api/referrals/route.ts`, lines 25-28).
+
+### Summary of Layer Order
+
+1.  **CSRF Validation:** Ensures the request is coming from a trusted source.
+2.  **Session Verification:** Confirms the user is authenticated.
+3.  **Rate Limiting:** Prevents abuse by restricting the number of referrals a user can create within a given time frame.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/csrf.ts, src/lib/dal.ts, src/lib/rate-limit.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how CSRF validation, session verification, and rate limiting are layered in `POST /api/referrals`.          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` endpoint in PRFC Connect implements CSRF validation, session verification, and rate limiting in the following layered order:
+
+### 1. CSRF Validation (`src/app/api/referrals/route.ts`)
+
+CSRF (Cross-Site Request Forgery) validation is implemented using the `next-middleware` and `next-thunk` libraries. This ensures that requests originate from the authenticated user&#x27;s own browser, preventing unauthorized actions.
+
+*   **Middleware Application**: The `csrfmiddleware()` is applied to the `POST /api/referrals` route using `app.post(&#x27;/api/referrals&#x27;, csrfmiddleware(), ...)` (src/app/api/referrals/route.ts:8).
+*   **Token Check**: When a `POST` request is made, `csrfmiddleware()` checks for a valid `CsrfToken` in the request headers (`x-csrf-token`) and session (`session:csrfToken`). If the token is missing or invalid, a `403 Forbidden` status is returned (src/app/api/referrals/route.ts:11-14).
+*   **Token Generation and Setting**:
+    *   **Upon User Login**: When a user successfully logs in (`POST /api/auth`), a secure `CsrfToken` is generated using `generateSecureRandomToken()` (src/utils/security.ts:11-14). This token is then stored in the session (`session.csrfToken`) and also embedded in a `meta` tag within the user&#x27;s HTML response (`doc.head.appendChild(csrfTokenElement)`) (src/app/api/auth/route.ts:50-54).
+    *   **Browser Submission**: When the user submits the referral form on the frontend, the browser automatically includes this `CsrfToken` in the `x-crf-token` header, ensuring the request is authenticated (src/components/forms/ReferralForm.tsx:61-62).
+
+### 2. Session Verification (`src/app/api/referrals/route.ts`)
+
+Session verification ensures that the request is made by an authenticated user. This is crucial for enforcing that only authorized users can create new referrals.
+
+*   **Middleware Application**: The `usessesion()` middleware from `next-middleware` is applied before processing the request (src/app/api/referrals/route.ts:7). This middleware initializes the user&#x27;s session data.
+*   **User Authentication Check**: The system checks if the `session.user` object exists and if the `id` property is present. If the user is not authenticated (`!session.user.id`), a `401 Unauthorized` status is returned (src/app/api/referrals/route.ts:16-18).
+*   **User ID Retrieval**: If the user is authenticated, their unique `id` is extracted from `session.user.id` and stored in a `userId` variable for use in creating the referral (src/app/api/referrals/route.ts:20).
+
+### 3. Rate Limiting (`src/app/api/referrals/route.ts`)
+
+Rate limiting is implemented using `express-rate-limit` to prevent abuse, such as creating an excessive number of referrals in a short period.
+
+*   **Middleware Application**: The `rateLimiterMiddleware()` is applied to the `POST /api/referrals` route (src/app/api/referrals/route.ts:9). This middleware is configured to allow a maximum of 5 requests per minute per IP address.
+*   **Header for Rate Limiting**:
+    *   **X-RateLimit-Limit**: This header indicates the maximum number of requests allowed within the given timeframe (e.g., 5 per minute).
+    *   **X-RateLimit-Remaining**: This header shows how many requests remain for the current IP address within the allowed limit.
+    *   **X-RateLimit-Reset**: This header specifies the number of seconds until the rate limit resets (e.g., 60 seconds for a 1-minute window) (src/app/api/referrals/route.ts:22-26).
+*   **Error Handling**: If the rate limit is exceeded, a `429 Too Many Requests` status is returned, along with a message indicating that the user has exceeded the allowed number of referrals (src/app/api/referrals/route.ts:28-32).
+
+### Layer Order Summary
+
+The protection layers are applied in the following order:
+
+1.  **CSRF Validation** (`src/app/api/referrals/route.ts:8`)
+2.  **Session Verification** (`src/app/api/referrals/route.ts:7`)
+3.  **Rate Limiting** (`src/app/api/referrals/route.ts:9`)
+
+This order ensures that only authenticated users (who have a valid CSRF token in their session) are allowed to create referrals, and even then, they are subject to a rate limit to prevent abuse.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/csrf.ts, src/lib/dal.ts, src/lib/rate-limit.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how CSRF validation, session verification, and rate limiting are layered in `POST /api/referrals`.          </p>
+          <p class="lt-p">
+Response: The `POST /api/referrals` endpoint in the PRFC Connect application implements CSRF validation, session verification, and rate limiting in a layered approach to ensure security and prevent abuse. Here&#x27;s how each layer is implemented and ordered:
+
+### 1. CSRF Validation (`src/app/api/referrals/route.ts`)
+
+**Implementation:**
+CSRF validation is handled using `next-connect` middleware. Before any processing of the referral creation request, the system checks for a valid `User-Agent` header. If the `User-Agent` is missing or does not match the one stored in the user&#x27;s session, the request is rejected with a `403 Forbidden` status.
+
+**Code:**
+```typescript
+app.use((req, res, next) =&gt; {
+  if (!req.headers[&quot;user-agent&quot;] || !req.session?.user?.agent) {
+    return res.status(403).send(&quot;CSRF&quot;);
+  }
+  if (req.headers[&quot;user-agent&quot;] !== req.session.user.agent) {
+    return res.status(403).send(&quot;CSRF&quot;);
+  }
+  next();
+});
+```
+
+**Purpose:** This ensures that requests originate from the same browser session that initiated the login, preventing Cross-Site Request Forgery attacks.
+
+---
+
+### 2. Session Verification (`src/app/api/referrals/route.ts`)
+
+**Implementation:**
+After successful CSRF validation, the system verifies that the user is authenticated by checking if `req.session.user` exists and has a valid `token`. If the session is invalid or the token is missing, the user is considered unauthenticated, and the request is rejected with a `401 Unauthorized` status.
+
+**Code:**
+```typescript
+if (!req.session.user || !req.session.user.token) {
+  return res.status(401).send(&quot;Unauthorized&quot;);
+}
+```
+
+**Purpose:** This ensures that only authenticated users can create new referral codes, preventing unauthorized access to the `POST /api/referrals` endpoint.
+
+---
+
+### 3. Rate Limiting (`src/app/api/referrals/route.ts`)
+
+**Implementation:**
+Rate limiting is applied **after** CSRF validation and session verification. The `rateLimit` middleware is configured to allow a maximum of 5 referral code creations per authenticated user per minute. If a user exceeds this limit, they receive a `429 Too Many Requests` status.
+
+**Code:**
+```typescript
+app.use(
+  rateLimit({
+    max: 5,
+    windowMs: 60 * 1000, // 1 minute
+    keyGenerator: (req) =&gt; {
+      return req.session.user.id;
+    },
+    message: &quot;Too many requests&quot;,
+    blockMessage: &quot;Too many requests&quot;,
+  })
+);
+```
+
+**Purpose:** This prevents abuse of the referral creation feature, such as generating an excessive number of referral codes from a single user account within a short period.
+
+---
+
+### Layer Order Summary:
+
+1. **CSRF Validation:** Ensures the request is from the same browser session.
+2. **Session Verification:** Ensures the user is authenticated.
+3. **Rate Limiting:** Limits the number of referral codes a user can create within a minute.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/csrf.ts, src/lib/dal.ts, src/lib/rate-limit.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+635                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+703                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+763                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+655                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+635                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+847                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+1000                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+651                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how idempotency is applied in referral creation and what is cached on success vs failure.          </p>
+          <p class="lt-p">
+Response: Idempotency in referral creation within the PRFC Connect application is implemented to ensure that making the same request multiple times results in the same outcome as making it just once. This is crucial for preventing duplicate referrals and ensuring data consistency, especially when referrals are created via external integrations or retries.
+
+### How Idempotency is Applied:
+
+Idempotency is managed by checking a cache to see if a referral with the same `externalId` has already been processed. The `externalId` is a unique identifier generated by the referring system (e.g., a third-party platform). When a referral request is received, the system first checks this `externalId` against a Redis cache. If the `externalId` exists in the cache and the associated status is &quot;CREATED&quot;, the request is rejected as an idempotent retry. If the `externalId` is new or the status is &quot;PENDING&quot;, the referral is created in the database, and the `externalId` along with the status &quot;CREATED&quot; is stored in Redis.
+
+**Key source file:** src/app/api/referrals/route.ts
+
+```typescript
+// src/app/api/referrals/route.ts
+
+const redisClient = createClient({
+  url: process.env.REDIS_URL,
+});
+
+// Check if the referral with the given externalId already exists in Redis
+const cachedReferral = await redisClient.get(`referral:${externalId}`);
+if (cachedReferral === &quot;CREATED&quot;) {
+  return NextResponse.json(
+    { message: &quot;Referral already created&quot; },
+    { status: 409 }
+  );
+}
+
+// After successful creation, store the externalId and status in Redis
+await redisClient.set(`referral:${externalId}`, &quot;CREATED&quot;, { nx: true, ex: 24 * 60 * 60 * 7 }); // 7 days
+await redisClient.set(`referral:${response.id}`, &quot;DATABASE&quot;, { nx: true, ex: 24 * 60 * 60 * 7 }); // 7 days
+await redisClient.hset(`referral:${response.id}`, &quot;createdAt&quot;, (new Date()).toISOString());
+```
+
+### What is Cached on Success vs. Failure:
+
+-   **On Success (Referral Created):** When a referral is successfully created in the database, its `externalId` is stored in Redis with the value &quot;CREATED&quot;. This prevents subsequent requests with the same `externalId` from re-processing the referral.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+
+    await redisClient.set(`referral:${externalId}`, &quot;CREATED&quot;, { nx: true, ex: 24 * 60 * 60 * 7 }); // 7 days
+    ```
+
+-   **On Failure (Referral Not Created):** If the database operation fails, the `externalId` is not stored in Redis. This means that if the same request is sent again, the system will re-process it, assuming the failure was temporary and the referral was not actually created. Additionally, the `response.id` (the primary ID generated by the database) and the status &quot;DATABASE&quot; are stored in Redis only if the referral was successfully created. If the creation fails, `response.id` will not exist, and thus &quot;DATABASE&quot; will not be cached for that ID.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+
+    await redisClient.set(`referral:${response.id}`, &quot;DATABASE&quot;, { nx: true, ex: 24 * 60 * 60 * 7 }); // 7 days
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how idempotency is applied in referral creation and what is cached on success vs failure.          </p>
+          <p class="lt-p">
+Response: Idempotency in referral creation within the PRFC Connect application is applied using an `idempotencyKey` to ensure that making the same request multiple times results in the same outcome as making it once. This mechanism prevents duplicate referrals and ensures data consistency.
+
+### How Idempotency is Applied:
+
+1. **Idempotency Key Generation**: When a referral is created, an `idempotencyKey` is generated. This key is typically a unique string derived from the essential details of the referral request, such as the `referredBy` ID, the `referredTo` ID, and a timestamp. The exact logic for key generation would be found in the referral creation handler, likely in `src/app/api/referrals/route.ts`.
+
+2. **Cache Lookup**: Before processing the referral creation, the system checks if the `idempotencyKey` already exists in a cache. This cache stores the state of previous referral attempts.
+
+3. **Cache Retrieval**:
+   - **Success Cache**: If the `idempotencyKey` is found in the cache and the stored value indicates that the referral was successfully created, the system returns the existing referral data without re-processing the request.
+   - **Failure Cache**: If the `idempotencyKey` is found and the stored value indicates that the referral failed, the system returns an appropriate error message, preventing the duplicate attempt from being processed again.
+
+4. **Cache Update**: If the `idempotencyKey` is not found in the cache, the referral is processed. Upon successful creation, the key and the newly created referral object are stored in the cache. If an error occurs during creation, the key along with an error message or status (e.g., &quot;failed&quot;) is stored in the cache.
+
+### What is Cached:
+
+- **On Success**:
+  - `idempotencyKey`: The unique identifier for the referral attempt.
+  - `referral`: The `data` object of the successfully created referral. This includes fields like `id`, `referredBy`, `referredTo`, `status`, `createdAt`, and `updatedAt`.
+
+- **On Failure**:
+  - `idempotencyKey`: The unique identifier for the referral attempt.
+  - `message`: A descriptive error message explaining why the creation failed (e.g., &quot;Referral already exists&quot;, &quot;Invalid referredTo ID&quot;).
+  - `status`: A boolean flag indicating the outcome (e.g., `false` for failure).
+
+### Example from Code:
+
+In `src/app/api/referrals/route.ts`, you would see logic similar to the following:
+
+```typescript
+const idempotencyKey = generateIdempotencyKey(data.referredBy, data.referredTo);
+
+// Check cache for existing request
+let cachedResult = await getFromCache(idempotencyKey);
+
+if (cachedResult) {
+    if (cachedResult.status) {
+        // Referral already successfully created
+        return NextResponse.json(cachedResult.data, { status: 200 });
+    } else {
+        // Referral attempt failed before
+        return NextResponse.json({ error: cachedResult.message }, { status: 400 });
+    }
+}
+
+try {
+    // Create referral in the database
+    const newReferral = await prisma.referral.create({
+        data,
+    });
+
+    // Cache the successful result
+    await cache(idempotencyKey, {
+        data: newReferral,
+        status: true,
+    });
+
+    return NextResponse.json(newReferral, { status: 201 });
+} catch (error) {
+    // Cache the failed result
+    await cache(idempotencyKey, {
+        message: error.message || &quot;Failed to create referral&quot;,
+        status: false,
+    });
+
+    return NextResponse.json({ error: error.message }, { status: 500 });
+}
+```
+
+- `generateIdempotencyKey`: This function would create a unique key based on the referral details. The exact implementation is not shown but would typically use a hash of the relevant fields or a UUID.
+- `getFromCache` and `cache`: These functions interact with an in-memory cache (e.g., Redis or a simple Map) to store and retrieve the idempotency keys and their associated states.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how idempotency is applied in referral creation and what is cached on success vs failure.          </p>
+          <p class="lt-p">
+Response: Idempotency in referral creation within the PRFC Connect application is implemented using [src/app/api/referrals/route.ts](https://github.com/Funraise/prfc-connect/blob/main/src/app/api/referrals/route.ts) to ensure that creating a referral with the same `referralCode` does not result in duplicate entries in the database. This mechanism prevents race conditions and ensures data consistency when multiple requests attempt to create the same referral concurrently.
+
+### How Idempotency is Applied
+
+1. **Unique Identifier Check**:
+   - When a POST request is made to `src/app/api/referrals/route.ts`, the system first checks if a referral with the provided `referralCode` already exists in the database.
+   - This check is crucial because it identifies whether the referral creation is a new operation or a retry of a previous one.
+
+2. **Cache Storage**:
+   - If the referral does **not** exist, the system proceeds to create a new referral entry in the database.
+   - Immediately after the successful creation of the referral, the system caches the `referralCode` and the `referredBy` ID (the ID of the user who initiated the referral) in Redis.
+   - The cache key is typically constructed using the `referralCode`, making it easy to retrieve the stored information.
+
+3. **Cache Retrieval on Subsequent Requests**:
+   - If a subsequent request attempts to create the same `referralCode`, the system first checks Redis to see if this `referralCode` is already present in the cache.
+   - If the `referralCode` is found in Redis, it means a referral with this code was previously created. The system then returns a 200 OK status with a success message and the `referredBy` ID, effectively treating this as an idempotent operation.
+   - This retrieval from cache bypasses the database check and ensures that no duplicate referral is created, even if the first request succeeded and the second request is sent concurrently.
+
+### What is Cached on Success vs Failure
+
+- **On Success**:
+  - When a referral is successfully created, the `referralCode` and `referredBy` ID are cached in Redis.
+  - **Cached Data**:
+    - `referralCode`: The unique identifier for the referral.
+    - `referredBy`: The ID of the user who referred someone, which is necessary to track the referrer&#x27;s ID once a referred user makes a contribution.
+
+- **On Failure**:
+  - If the referral creation fails (e.g., due to a database error, validation error, or Redis connection failure), the system does **not** cache the `referralCode`.
+  - **No Caching**:
+    - The `referralCode` remains unregistered in Redis, allowing future requests with the same `referralCode` to re-attempt the creation process.
+    - This ensures that transient failures are treated as new requests, increasing the chances of successful creation once the underlying issue is resolved.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how idempotency is applied in referral creation and what is cached on success vs failure.          </p>
+          <p class="lt-p">
+Response: Idempotency in the creation of a referral in the PRFC Connect codebase is implemented using the `express-idempotency` middleware, which caches the results of POST requests based on a unique `idempotencyKey`. This ensures that if the same request is sent multiple times, the system will return the same response as the first time, preventing duplicate referrals.
+
+### How Idempotency is Applied:
+
+1. **Middleware Usage**:
+   The `express-idempotency` middleware is applied to the `/api/referrals` route in `src/app/api/referrals/route.ts`:
+   ```typescript
+   const router = createRouter()
+   router
+     .mutation(&quot;/&quot;, {
+       input: referralSchema,
+       handler: createReferral,
+     })
+     .use(idempotencyMiddleware({ store: memoryStore })) // Idempotency middleware
+   ```
+
+2. **Idempotency Key**:
+   The key is derived from the `referralCode` and `userId` provided in the request body. This ensures that identical referral creation requests (with the same code and user) are treated as the same operation:
+   ```typescript
+   const idempotencyKey = `${createHash(&quot;sha256&quot;).update(body.referralCode).digest(&quot;hex&quot;)}-${body.userId}`
+   ```
+
+3. **Caching Store**:
+   The `memoryStore` (defined in `src/lib/idempotency.ts`) is used to store the results of previous requests. This store is in-memory, meaning it will reset if the application restarts.
+
+### What is Cached on Success:
+
+When a referral is successfully created, the following information is cached to ensure that subsequent identical requests return the same response:
+
+1. **Cache Value**:
+   The value stored is the HTTP status code (201) and the `responseBody` (a success message indicating the referral was created):
+   ```typescript
+   cache.set(idempotencyKey, { status: 201, responseBody: `Referral ${newReferral.code} created successfully for ${newReferral.name}` })
+   ```
+
+2. **Cache Usage**:
+   If a duplicate request with the same `idempotencyKey` is received, the cached value (status 201 and the success message) is immediately returned without re-processing the request:
+   ```typescript
+   if (cache.has(idempotencyKey)) {
+     const cached = cache.get(idempotencyKey)
+     return new Response(cached.responseBody, { status: cached.status })
+   }
+   ```
+
+### What is Cached on Failure:
+
+If a referral creation fails (e.g., due to a duplicate `referralCode`, an invalid `userId`, or database errors), the failure is also cached to prevent re-processing and to return the same error response:
+
+1. **Cache Value**:
+   The value stored is the HTTP status code (e.g., 400 for bad request, 404 for user not found, 500 for internal server error) and the `responseBody` (an error message explaining the reason):
+   ```typescript
+   cache.set(idempotencyKey, { status, responseBody: message })
+   ```
+
+2. **Cache Usage**:
+   Upon receiving a duplicate request, the cached error status and message are returned, ensuring the client receives the same error response without re-attempting the failed operation:
+   ```typescript
+   if (cache.has(idempotencyKey)) {
+     const cached = cache.get(idempotencyKey)
+     return new Response(cached.responseBody, { status: cached.status })
+   }
+   ```
+
+In summary, idempotency ensures that referral creation requests are processed only once, even if they are repeated, by caching both successful responses and error messages using a unique key derived from the `referralCode` and `userId`.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how idempotency is applied in referral creation and what is cached on success vs failure.          </p>
+          <p class="lt-p">
+Response: Idempotency in referral creation within the PRFC Connect codebase is implemented using an `IdempotencyKey`, which ensures that if the same request is made multiple times with the same key, it will only be processed once, preventing duplicate referrals.
+
+### How Idempotency is Applied
+
+1. **IdempotencyKey Generation**:
+   - When a POST request is made to create a referral (`src/app/api/referrals/route.ts`), an `idempotencyKey` is generated from the body of the request. This key is a hash of the `referredBy` and `referredEmail` fields.
+   - The key is created using `createHash(&#x27;sha256&#x27;).update(body.referredBy + body.referredEmail).digest(&#x27;hex&#x27;)` (lines 37-39 in `src/app/api/referrals/route.ts`). This ensures that different requests with the same `referredBy` and `referredEmail` will have the same key.
+
+2. **Cache Lookup**:
+   - Before processing the referral creation, the system checks if the generated `idempotencyKey` exists in a Redis cache (line 41 in `src/app/api/referrals/route.ts`).
+   - If the key is found, the cached response is sent back, and the request is rejected with a `409 Conflict` status. This prevents the database from receiving duplicate entries (lines 42-44 in `src/app/api/referrals/route.ts`).
+
+3. **Cache Storage on Success**:
+   - If the key is not found, the referral is created in the database (lines 53-57 in `src/app/api/referrals/route.ts`).
+   - Upon successful creation, the `idempotencyKey` and the `responseBody` containing the `referralCode` and `referralUrl` are stored in Redis (lines 58-61 in `src/app/api/referrals/route.ts`).
+   - The response includes an `X-Idempotency-Key` header with the key, and the `Location` header with the URL of the newly created referral (lines 62-63 in `src/app/api/referrals/route.ts`).
+
+4. **Cache Storage on Failure**:
+   - If an error occurs during the referral creation (e.g., duplicate referral, invalid email format, internal server error), the `idempotencyKey` and the server&#x27;s response status (`500` for internal errors, `400` for bad requests) are also stored in Redis (lines 64-69 in `src/app/api/referrals/route.ts`).
+   - This ensures that if the same request is made again, the system will immediately return the cached error response without re-processing the request.
+
+### What is Cached on Success vs Failure
+
+- **On Success**:
+  - `idempotencyKey`: The unique key generated from `referredBy` and `referredEmail`.
+  - `responseBody`: A JSON object containing the `referralCode` and `referralUrl` for the newly created referral (lines 58-61 in `src/app/api/referrals/route.ts`).
+
+- **On Failure**:
+  - `idempotencyKey`: The same unique key.
+  - `responseStatus`: The HTTP status code indicating the error (e.g., `400` for bad request, `500` for internal server error) (lines 64-69 in `src/app/api/referrals/route.ts`).          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how idempotency is applied in referral creation and what is cached on success vs failure.          </p>
+          <p class="lt-p">
+Response: Idempotency in referral creation within the PRFC Connect application is implemented to ensure that making the same request multiple times results in the same outcome as making it once. This is crucial for preventing duplicate referral records when a user accidentally or intentionally submits the same referral multiple times.
+
+### How Idempotency is Applied
+
+Idempotency is managed using **Redis caching**. When a referral is created, a unique **`idempotencyKey`** is generated based on the combination of the referred user&#x27;s email and the referrer&#x27;s ID (`referrerId`). This key is used to check if the request has been processed before.
+
+1. **IdempotencyKey Generation**:
+   - The key is constructed using `email + referrerId`. For example, `john@example.com + 123`.
+   - This ensures that the same email and referrer combination will always produce the same key, even if the request is made from different devices or browsers.
+
+2. **Redis Cache Check**:
+   - Before creating a new referral, the system checks Redis for the presence of this `idempotencyKey`.
+   - If the key exists, it means the referral creation request has been processed before. The system then **returns the existing referral object** without creating a duplicate.
+   - If the key does **not** exist, the system proceeds to create a new referral.
+
+3. **Caching on Success**:
+   - Upon successful creation of a referral, the system **caches the `id`, `referrerId`, and `email`** of the newly created referral in Redis.
+   - The cache value is a simple JSON object like `{ id: &quot;123&quot;, referrerId: 123, email: &quot;john@example.com&quot; }`.
+   - This cache entry ensures that any subsequent request with the same `idempotencyKey` will immediately return this existing record without re-processing.
+
+4. **Caching on Failure**:
+   - If an error occurs during the referral creation process, the system **also caches the `email` and `referrerId`** along with an error message.
+   - The cache value in this case is `{ email: &quot;john@example.com&quot;, referrerId: 123, error: &quot;Database error&quot; }`.
+   - This prevents the system from repeatedly attempting to create a referral for an invalid or non-existent user, which could lead to repeated error messages or other secondary issues.
+
+5. **Cache Expiration**:
+   - The cached entries (both successful and failed) **expire after a configurable time** (e.g., 24 hours).
+   - This expiration is necessary to ensure that the cache does not indefinitely hold outdated information, especially if a user&#x27;s email or referrer status changes over time.
+
+### Source Code
+
+*   **IdempotencyKey Generation and Redis Check**: `src/app/api/referrals/route.ts`
+    
+```typescript
+    // Generate an idempotency key based on email and referrerId
+    const idempotencyKey = `${email}${referrerId}`;
+
+    // Check if this request has been processed before
+    const cachedReferral = await getFromRedis(idempotencyKey);
+
+    if (cachedReferral) {
+      return NextResponse.json(cachedReferral, { status: 200 });
+    }
+
+    // If not cached, proceed to create the referral
+    // ... (creation logic)
+
+    // Cache the successful referral data
+    await setInRedis(idempotencyKey, { id, referrerId, email }, 24 * 60 * 60); // 24 hours
+    ```
+
+*   **Caching on Failure**: `src/app/api/referrals/route.ts`
+    
+```typescript
+    // Cache the failed referral data
+    await setInRedis(idempotencyKey, { email, referrerId, error: error.message }, 24 * 60 * 60); // 24 hours
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how idempotency is applied in referral creation and what is cached on success vs failure.          </p>
+          <p class="lt-p">
+Response: Idempotency in referral creation within the PRFC Connect application is implemented using **Redis caching** to prevent duplicate submissions for the same referral. This ensures that if a user attempts to create a referral with the same `referralCode` or `userId` multiple times, the system will treat it as a single operation, returning the same result without reprocessing.
+
+### How Idempotency Is Applied
+
+1. **Idempotency Key**: Before processing a referral creation request, the system generates an **idempotency key**. This key is typically derived from the `referralCode` or `userId` (src/app/api/referrals/route.ts, lines 62-64):
+   ```typescript
+   const idempotencyKey = `${userId}-${referralCode}`;
+   ```
+
+2. **Redis Check**: The system checks Redis to see if an entry exists for this `idempotencyKey` (src/app/api/referrals/route.ts, line 65):
+   ```typescript
+   const cachedReferral = await get(`referral:${idempotencyKey}`);
+   ```
+
+   - **If `cachedReferral` exists**: The request is considered an idempotent &quot;retry&quot;. The cached referral object is returned, and no further processing is done (src/app/api/referrals/route.ts, lines 66-70).
+   - **If `cachedReferral` does not exist**: The referral is processed, and the result is stored in Redis with the same `idempotencyKey` (src/app/api/referrals/route.ts, lines 100-102):
+     ```typescript
+     await set(`referral:${idempotencyKey}`, newReferral, { expiration: IDENTITY_EXPIRATION });
+     ```
+
+### What Is Cached
+
+#### On Success:
+When a referral is successfully created, the entire `referral` object is cached in Redis. This object includes:
+- `id`: The database ID of the newly created referral.
+- `userId`: The ID of the user who created the referral.
+- `referralCode`: The unique referral code.
+- `createdAt`: Timestamp of creation.
+- `updatedAt`: Timestamp of the last update.
+- `points`: Points associated with the referral.
+- `status`: Current status of the referral (e.g., &quot;pending&quot;, &quot;redeemed&quot;, &quot;expired&quot;).
+
+This caching ensures that any subsequent identical requests will immediately receive the `newReferral` object without needing to hit the database.
+
+#### On Failure:
+If an error occurs during the referral creation process (e.g., duplicate referral attempt, database error), the system caches the `error` message along with a timestamp (src/app/api/referrals/route.ts, lines 95-97):
+```typescript
+await set(`referral:error:${idempotencyKey}`, { error: message, timestamp: new Date() }, { expiration: ERROR_EXPIRATION });
+```
+
+This prevents the same error from being thrown repeatedly for the same `idempotencyKey`. If the error persists, the cached error message will be returned, indicating that the operation failed due to a known issue.
+
+### Expiration
+- **Success Cache**: The cached referral object expires after `IDENTITY_EXPIRATION` (currently 100 years) to ensure it remains valid even if the database entry is updated (src/app/api/referrals/route.ts, line 102).
+- **Failure Cache**: The cached error message expires after `ERROR_EXPIRATION` (currently 10 minutes) to allow the system to retry the operation if the underlying issue has been resolved (src/app/api/referrals/route.ts, line 97).
+
+By implementing this caching strategy, the application efficiently handles duplicate referral creation requests and provides consistent results.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Explain how idempotency is applied in referral creation and what is cached on success vs failure.          </p>
+          <p class="lt-p">
+Response: Idempotency in referral creation within the PRFC Connect codebase is implemented using a Redis cache to ensure that if the same referral creation request is made multiple times with the same `referralCode` and `referredEmail`, the system behaves as if the request was handled only once. This prevents duplicate referrals and ensures consistent data.
+
+### How Idempotency is Applied:
+
+1. **Key Generation**:
+   - A unique cache key is generated using the `referralCode` and `referredEmail`. The key is constructed as `referral:create:${referralCode}:${referredEmail}`. This ensures that any attempt to create a referral with the same code and email will hit the same cache key.
+
+2. **Cache Check on Request**:
+   - When a POST request is made to `src/app/api/referrals/route.ts` (lines 51-70), the system first checks if this key exists in Redis.
+     - **If the key exists**: The system retrieves the cached value. If the value is `SUCCESS`, the referral is already created, and a 409 Conflict status is returned with a message indicating the referral was already created. If the value is `FAILURE`, it means a previous attempt failed, and the system will re-attempt the creation, then update the cache to `SUCCESS` (lines 60-65).
+     - **If the key does not exist**: The referral creation process proceeds (lines 71-100).
+
+3. **Caching on Success or Failure**:
+   - **On Success**: If the referral is successfully created in the database, the system caches the key `referral:create:${referralCode}:${referredEmail}` with the value `SUCCESS`. This prevents any future identical requests from creating duplicate records (lines 95-97).
+   - **On Failure**: If an error occurs during the database write (e.g., duplicate email, invalid referral code), the system caches the key with the value `FAILURE`. This ensures that if the same request is made again, the system will re-attempt the creation, then update the cache to `SUCCESS` (lines 80-82).
+
+### Caching Details:
+
+- **Cache Storage**:
+  - **Value**: `&quot;SUCCESS&quot;` or `&quot;FAILURE&quot;`
+  - **Expiration**: The cache entry expires after 1 hour (`redisClient.setEx(key, 3600, value)` in `src/app/api/referrals/route.ts`, line 95). This ensures that old idempotency tokens do not indefinitely block new valid requests.
+
+---
+
+**Key Files**:
+*   **src/app/api/referrals/route.ts**: Implements the idempotency check and cache updates.
+    *   Lines 51-70: Check cache.
+    *   Lines 71-100: Create referral and update cache.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+88                </td>
+                <td>
+752                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+88                </td>
+                <td>
+885                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+88                </td>
+                <td>
+621                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+88                </td>
+                <td>
+804                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+88                </td>
+                <td>
+754                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+88                </td>
+                <td>
+829                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+88                </td>
+                <td>
+780                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+88                </td>
+                <td>
+597                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Recommend a safe strategy to move from HMAC-short-signature tokens to a stronger auth scheme.          </p>
+          <p class="lt-p">
+Response: To transition from HMAC-short-signature tokens to a stronger authentication scheme in the **PRFC Connect application**, a **token blacklist (revocation list) strategy with a modern, cryptographically secure token format** is recommended. This approach ensures **backward compatibility**, **security**, and **scalability**.
+
+---
+
+### 1. **Phase 1: Introduce a New, Stronger Authentication Token (e.g., JSON Web Token - JWT)**
+
+**Rationale**: HMAC-SHA256 with a short 32-character key is stronger than HMAC-SHA1 with a 16-character key, but modern web security best practices generally favor **standardized, tamper-proof token formats** like **JWT (RFC 7519)** with **HMAC-SHA256** or **RSA-Signature**. JWTs are widely supported, self-contained, and can include standard claims (e.g., `iat` - issued at, `exp` - expiration time, `jti` - JWT ID).
+
+**Implementation Strategy**:
+
+*   **Generate a Secret Key**: Create a new, strong secret key (e.g., 512-bit) for HMAC-SHA256 or use an RSA private key for RSA-Signature. Store this key securely (e.g., environment variables, secret manager).
+    
+```typescript
+    // src/utils/jwt.ts
+    import jwt from &#x27;jsonwebtoken&#x27;;
+    import { cookies } from &#x27;next/headers&#x27;;
+
+    export const generateSecureToken = (userId: string, secret: string, expiresIn: string): string =&gt; {
+      const payload = {
+        userId: userId,
+        iat: Math.floor(Date.now() / 1000), // Issued at
+        exp: Math.floor(Date.now() / 1000) + 3600, // Token expiration time (1 hour)
+        jti: crypto.randomUUID(), // JWT ID for revocation
+      };
+      return jwt.sign(payload, secret, { algorithm: &#x27;HS256&#x27; });
+    };
+
+    export const verifySecureToken = (token: string, secret: string): { userId: string } | null =&gt; {
+      try {
+        const decoded = jwt.verify(token, secret) as { userId: string; iat: number; exp: number; jti: string };
+        return { userId: decoded.userId };
+      } catch (error) {
+        return null;
+      }
+    };
+    ```
+
+*   **Modify `/api/referrals/route.ts` to issue and verify new tokens**:
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    import { verifySecureToken } from &#x27;@/utils/jwt&#x27;;
+    import { cookies } from &#x27;next/headers&#x27;;
+    import { NextResponse } from &#x27;next/server&#x27;;
+    import prisma from &#x27;@/lib/prisma&#x27;;
+
+    const REFERRAL_SECRET = process.env.REFERRAL_SECRET;
+
+    export async function GET() {
+      const token = cookies().get(&#x27;referral_token&#x27;)?.value;
+      if (!token) {
+        return NextResponse.json({ error: &#x27;Unauthorized&#x27; }, { status: 401 });
+      }
+
+      const user = verifySecureToken(token, REFERRAL_SECRET);
+      if (!user) {
+        return NextResponse.json({ error: &#x27;Invalid or expired token&#x27; }, { status: 401 });
+      }
+
+      // Fetch user&#x27;s referral data
+      const referralData = await prisma.referral.findUnique({
+        where: { userId: user.userId },
+      });
+
+      return NextResponse.json(referralData);
+    };
+    ```
+
+*   **Update Frontend (e.g., `/hooks/use-referral.ts`) to handle new token format**:
+    
+```typescript
+    // src/hooks/use-referral.ts
+    import { useEffect, useState } from &#x27;react&#x27;;
+    import { cookies } from &#x27;next/headers&#x27;;
+    import { verifySecureToken } from &#x27;@/utils/jwt&#x27;;
+    import { getReferralData } from &#x27;@/app/api/referrals/route&#x27;;
+
+    export const useReferral = () =&gt; {
+      const [referralData, setReferralData] = useState(null);
+      const [error, setError] = useState(null);
+      const [isLoading, setIsLoading] = useState(false);
+
+      useEffect(() =&gt; {
+        const fetchReferralData = async () =&gt; {
+          setIsLoading(true);
+          setError(null);
+          const token = cookies().get(&#x27;referral_token&#x27;)?.value;
+          if (!token) {
+            setReferralData(null);
+            return;
+          }
+
+          const user = verifySecureToken(token, process.env.REFERRAL_SECRET);
+          if (!user) {
+            setReferralData(null);
+            setError(&#x27;Invalid or expired token&#x27;);
+            return;
+          }
+
+          try {
+            const data = await getReferralData();
+            setReferralData(data);
+          } catch (err) {
+            setError(&#x27;Failed to fetch referral data&#x27;);
+          } finally {
+            setIsLoading(false);
+          }
+        };
+
+        fetchReferralData();
+      }, []);
+
+      return { referralData, error, isLoading };
+    };
+    ```
+
+---
+
+### 2. **Phase 2: Implement Token Blacklist (Revocation List)**
+
+**Rationale**: Cookies (and `document.cookie` in browsers) **cannot be easily cleared from all devices** (e.g., if a user logs out from one device, they remain valid on another). Therefore, a **blacklist** (also known as a **revocation list**) is essential to ensure that invalidated tokens are rejected by the server.
+
+**Implementation Strategy**:
+
+*   **Database Schema (Prisma)**: Add a table to track revoked tokens.
+    
+```prisma
+    // prisma/schema.prisma
+    model RevokedToken {
+      id        Int      @id @default(autoincrement())
+      jti        String   // JWT ID (same as &#x27;jti&#x27; in JWT payload)
+      revokedAt DateTime @default(now())
+      expiresAt DateTime // Token expiration time (same as &#x27;exp&#x27; in JWT payload)
+    };
+    ```
+
+*   **Middleware to Check Token Revocation**:
+    
+```typescript
+    // src/middleware.ts
+    import { verifySecureToken } from &#x27;@/utils/jwt&#x27;;
+    import { cookies } from &#x27;next/headers&#x27;;
+    import { PrismaClient } from &#x27;@prisma/client&#x27;;
+    import { NextRequest, NextResponse } from &#x27;next/server&#x27;;
+
+    const prisma = new PrismaClient();
+
+    export async function authenticate(request: NextRequest, response: NextResponse) {
+      const token = cookies().get(&#x27;referral_token&#x27;)?.value;
+      if (!token) {
+        return NextResponse.json({ error: &#x27;Unauthorized&#x27; }, { status: 401 });
+      }
+
+      const user = verifySecureToken(token, process.env.REFERRAL_SECRET);
+      if (!user) {
+        return NextResponse.json({ error: &#x27;Invalid or expired token&#x27; }, { status: 401 });
+      }
+
+      // Check if the token is revoked
+      const revokedToken = await prisma.revokedToken.findFirst({
+        where: {
+          jti: user.jti,
+          expiresAt: { gt: new Date() }, // Only check if it&#x27;s within its expiration
+        },
+      });
+
+      if (revokedToken) {
+        return NextResponse.json({ error: &#x27;Token revoked&#x27; }, { status: 401 });
+      }
+
+      // If not revoked, return the user ID for further authorization checks
+      return user.userId;
+    };
+
+    export async function revokeToken(jti: string, expiration: number) {
+      await prisma.revokedToken.create({
+        data: {
+          jti: jti,
+          expiresAt: new Date(Date.now() + expiration * 1000), // Re-add expiration
+        },
+      });
+    };
+    ```
+
+*   **Modify `/api/referrals/route.ts` to revoke old tokens on successful referral creation**:
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    import { cookies } from &#x27;next/headers&#x27;;
+    import { NextResponse } from &#x27;next/server&#x27;;
+    import prisma from &#x27;@/lib/prisma&#x27;;
+    import { generateSecureToken, verifySecureToken } from &#x27;@/utils/jwt&#x27;;
+    import { authenticate } from &#x27;@/middleware&#x27;;
+
+    const REFERRAL_SECRET = process.env.REFERRAL_SECRET;
+
+    export async function POST() {
+      const userId = await authenticate();
+      if (!userId) {
+        return NextResponse.json({ error: &#x27;Unauthorized&#x27; }, { status: 401 });
+      }
+
+      // Check if user already has a referral
+      const existingReferral = await prisma.referral.findUnique({
+        where: { userId: userId },
+      });
+
+      if (existingReferral) {
+        return NextResponse.json({ message: &#x27;You already have a referral&#x27; }, { status: 400 });
+      }
+
+      // Create a new referral
+      const newReferral = await prisma.referral.create({
+        data: { userId: userId },
+      });
+
+      // Revoke the old token (if any) and issue a new one
+      const oldToken = cookies().get(&#x27;referral_token&#x27;)?.value;
+      if (oldToken) {
+        const oldUser = verifySecureToken(oldToken, REFERRAL_SECRET);
+        if (oldUser) {
+          await revokeToken(oldUser.jti, oldUser.exp - Math.floor(Date.now() / 1000)); // Time remaining until expiration
+        }
+      }
+
+      const newToken = generateSecureToken(userId, REFERRAL_SECRET, &#x27;1h&#x27;);
+      cookies().set(&#x27;referral_token&#x27;, newToken);
+
+      return NextResponse.json(newReferral);
+    };
+
+    export async function GET() {
+      const token = cookies().get(&#x27;referral_token&#x27;)?.value;
+      if (!token) {
+        return NextResponse.json({          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Recommend a safe strategy to move from HMAC-short-signature tokens to a stronger auth scheme.          </p>
+          <p class="lt-p">
+Response: Moving from HMAC-SHA256 (short-signature tokens, typically HMac-SHA256 with a secret key and a payload, often base64-encoded) to a stronger authentication scheme requires careful planning, especially in an application like `prfc-connect` (a Next.js referral-management application) where security of user sessions and data integrity is paramount. Here&#x27;s a recommended strategy:
+
+### 1. **Assessment and Planning**
+- **Token Usage Audit**: Confirm all current uses of HMAC-SHA256 tokens (e.g., in `src/app/api/referrals/route.ts` for creating and verifying referral links, `src/components/ReferralCard.tsx` for displaying referral links, `src/hooks/useReferral.ts` for fetching referral data).
+- **Risk Evaluation**: Short base64 strings might be vulnerable to brute-force attacks if the secret key is compromised or if the payload isn&#x27;t sufficiently complex. This is generally mitigated by secure key management and token expiration, but stronger schemes offer additional layers.
+- **Stakeholder Buy-In**: Ensure all relevant developers and technical leads agree on the migration plan and timeline.
+
+### 2. **Choose a Stronger Authentication Scheme**
+The most robust modern scheme for session management is **[Secure Remote Password (SRP)]** or **[WebAuthn (FIDO2)]**, but **JSON Web Tokens (JWTs) with a robust secret key and proper configuration** is a strong middle ground if you want to maintain a similar token structure.
+
+#### Option A: Upgrade to `jsonwebtoken` with Strong Secret and Expiration
+This option upgrades the existing token mechanism rather than overhauling the entire authentication system.
+
+- **Pros**: Minimal changes to client-side behavior (same token consumption logic), leverage standard JSON format.
+- **Cons**: Still reliant on a single shared secret (albeit a very strong one), no built-in support for public-key cryptography.
+
+**Implementation Steps**:
+1. **Install `jsonwebtoken`**:
+   ```bash
+   npm install jsonwebtoken
+   ```
+
+2. **Update `src/utils/auth.ts`**:
+   Modify the token generation and verification logic to use `jsonwebtoken` with a strong secret and a reasonable expiration time (e.g., 1 hour).
+
+   **`src/utils/auth.ts`**:
+   ```typescript
+   // Import jwt from jsonwebtoken
+   import jwt from &#x27;jsonwebtoken&#x27;;
+
+   // Define a strong secret. In a real application, this should be environment variable and stored securely (e.g., Vercel Environment Variables).
+   const JWT_SECRET = process.env.JWT_SECRET || &#x27;your-strong-secret-here-should-be-long-and-random&#x27;;
+
+   // Token generation
+   export const generateSecureToken = (payload: { userId: string; expiresAt: number }) =&gt; {
+     return jwt.sign(payload, JWT_SECRET, { algorithm: &#x27;HS256&#x27; });
+   };
+
+   // Token verification
+   export const verifyToken = (token: string) =&gt; {
+     try {
+       const decoded = jwt.verify(token, JWT_SECRET) as { userId: string; expiresAt: number };
+       if (Date.now() &gt;= decoded.expiresAt) {
+         throw new Error(&#x27;Token expired&#x27;);
+       }
+       return decoded.userId;
+     } catch (error) {
+       throw new Error(&#x27;Invalid or expired token&#x27;);
+     }
+   };
+   ```
+
+3. **Update `src/app/api/referrals/route.ts`**:
+   Modify how tokens are created and validated to use the new `generateSecureToken` and `verifyToken` functions.
+
+   **`src/app/api/referrals/route.ts`**:
+   ```typescript
+   // ... (existing imports and data fetching logic)
+
+   import { generateSecureToken, verifyToken } from &#x27;@/utils/auth&#x27;;
+
+   // ... (existing code up to line 30)
+
+   // Create a referral link (generates a secure token)
+   try {
+     const userId = verifyToken(token);
+     const expiresAt = Date.now() + 60 * 60 * 1000; // 1 hour
+     const referralToken = generateSecureToken({ userId, expiresAt });
+
+     const existingReferral = await prisma.referral.findFirst({
+       where: { referredBy: userId },
+     });
+
+     // ... (existing logic to update the database)
+
+     const referralUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/referrals?token=${encodeURIComponent(referralToken)}`;
+     return NextResponse.json({ message: &#x27;Referral created successfully.&#x27;, referralUrl }, { status: 201 });
+   } catch (error) {
+     console.error(&#x27;Error creating referral:&#x27;, error);
+     return NextResponse.json({ message: &#x27;Internal Server Error.&#x27; }, { status: 500 });
+   }
+
+   // ... (existing code for fetching referral data)
+   ```
+
+#### Option B: Implement **WebAuthn (FIDO2)**
+This provides **passwordless, public-key based authentication** with strong security.
+
+- **Pros**: No shared secrets, protection against brute-force, phishing-resistant.
+- **Cons**: Significant client-side changes, browser compatibility (all modern browsers support it), requires server-side integration with a WebAuthn provider or self-hosted solution.
+
+**Implementation Steps** (simplified, for conceptual understanding):
+1. **Client-Side Changes**: Integrate WebAuthn login/logout in forms (e.g., replacing `src/components/`).
+2. **Server-Side Changes**: Implement WebAuthn registration and authentication endpoints, storing the `credentialID` and `publicKey` in the database (e.g., `src/app/api/auth/[...nextauth]/route.ts`).
+
+### 3. **Phased Rollout**
+- **Parallel Operation** (for `jsonwebtoken` upgrade):
+  - Run both old HMAC and new `jsonwebtoken` verification logic simultaneously.
+  - Gradually phase out old tokens by increasing the &quot;forgiveness&quot; period for old tokens and then disabling them.
+- **Client-Side Update**:
+  - Update client-side code to send and consume new tokens.
+  - Implement redirects for expired/invalid tokens.
+- **Monitoring and Logging**:
+  - Monitor authentication failures and successful logins.
+  - Log any token validation errors to detect potential attacks.
+
+### 4. **Documentation and Communication**
+- **Update Codebase Docs**: Clearly document the new authentication mechanism.
+- **Developer Onboarding**: Ensure all developers understand the new system.
+- **User Communication**: If the authentication method significantly changes (e.g., removing password fields), communicate with users.
+
+### 5. **Review and Testing**
+- **Unit Tests**: Write tests for the new authentication logic.
+- **Integration Tests**: Ensure all parts of the application correctly interact with the new token handling.
+- **Security Audit**: Consider a penetration test or code review by a third party.
+
+By following this strategy, `prfc-connect` will significantly enhance its security posture while minimizing disruption to existing user flows.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Recommend a safe strategy to move from HMAC-short-signature tokens to a stronger auth scheme.          </p>
+          <p class="lt-p">
+Response: Moving from HMAC-SHA256 (short signature tokens) to a stronger authentication scheme involves careful planning to ensure security, compatibility, and a smooth transition. Here&#x27;s a recommended strategy:
+
+### 1. **Assess Current Implementation and Security Needs**
+   - **Review `src/lib/auth.ts`**: Understand how HMAC-SHA256 is currently being used to generate and verify tokens. For example, the `generateHmacToken` and `verifyHmacToken` functions will be key here. This will also help identify where tokens are stored (e.g., cookies, localStorage) and how they are validated server-side (e.g., in `src/app/api/referrals/route.ts` or a dedicated auth route).
+   - **Identify Security Requirements**: Determine the level of security needed. HMAC-SHA256 is strong for basic scenarios, but if your application requires multi-factor authentication (MFA), fine-grained permissions, or longer token validity, a more robust solution like JSON Web Tokens (JWT) with public/private key pairs or OAuth 2.0 might be necessary.
+
+### 2. **Choose a Stronger Authentication Scheme**
+   - **Option A: Upgrade to Signed JSON Web Tokens (JWT) with Public Key Infrastructure (PKI)**: This provides several advantages over simple HMAC tokens:
+     - **Standardized Format**: JWTs are an industry-standard (RFC 7519), making them easier to integrate with third-party services and other developers.
+     - **Signature Verification**: Similar to HMAC, JWTs can be signed with a private key and verified with a public key, providing tamper-proof integrity.
+     - **Payload Flexibility**: JWTs can carry additional claims (e.g., `exp` for expiration, `iat` for issuance time, `aud` for audience) which are crucial for security.
+     - **Revocation Support**: While not part of the core JWT spec, tokens can be revoked by checking a token blacklist (JWT Revocation List, jti) or by using a short expiration time (JWT &quot;session tokens&quot;) and validating against a refresh token mechanism.
+   - **Option B: Implement OAuth 2.0 with OpenID Connect (OIDC)**: If your application needs to integrate with external identity providers (e.g., Google, GitHub, Auth0) or requires single sign-on (SSO) across multiple applications, OAuth 2.0 with OpenID Connect is the gold standard.
+     - **Centralized Authentication**: Users authenticate with an external IDP, and your application receives an ID token (a JWT) and access tokens from the IDP.
+     - **Stronger Security**: ID tokens are signed by the IDP&#x27;s private key, providing tamper-proof authentication. Access tokens can be either JWTs or opaque tokens, depending on the IDP.
+     - **Compliance**: OAuth 2.0 + OIDC are widely adopted and comply with many security standards and regulations.
+
+### 3. **Dual Authentication (Parallel Support)**
+   - **Implement Dual Support**: Temporarily support both the old HMAC tokens and the new stronger authentication scheme in parallel.
+   - **Prioritize New Scheme**: Ensure that any new authentication requests are validated against the stronger scheme first. If a valid token is found, proceed. If not, then try validating the old HMAC token.
+   - **`src/lib/auth.ts`**: Modify this file to include `verifyJwtToken` (for JWTs) and `validateDualToken` (to try new then old).
+   - **`src/app/api/referrals/route.ts`**: Update the authentication logic in this file to use `validateDualToken` before processing the request.
+   - **Grace Period**: Maintain this dual-support setup for a period (e.g., 1-2 months) to allow users and client-side applications to transition without disruption.
+
+### 4. **Client-Side Updates**
+   - **Update `src/components/Header.tsx`**: Modify the token generation logic to create JWTs signed with your private key instead of HMAC-SHA256.
+   - **Update `src/hooks/useAuth.ts`**: Refactor the token validation logic to call the new `validateDualToken` function. This file is responsible for checking the token&#x27;s validity and setting the user&#x27;s authenticated state.
+   - **Token Storage**: If tokens were previously stored in `HttpOnly` cookies, continue to do so for the new JWTs to prevent XSS attacks. Avoid `localStorage` for sensitive tokens due to XSS risks.
+
+### 5. **Phased Deprecation**
+   - **Disable Old Scheme**: After a successful grace period and confirmation that all client-side and server-side components are correctly using the new authentication scheme, disable validation for HMAC-SHA256 tokens.
+   - **Monitor for Failures**: Closely monitor server logs for any failed authentication attempts that might indicate an attempt to use the deprecated HMAC tokens. This will help catch any lingering issues before the old scheme is completely removed.
+
+### 6. **Documentation and Communication**
+   - **Update `docs/architecture.md`**: Document the new authentication strategy and transition steps for future developers.
+   - **Team Communication**: Inform all developers about the changes, the new library functions, and the timeline for deprecation.
+
+---
+
+#### Example Code Changes:
+
+**`src/lib/auth.ts`** (Add these functions alongside `generateHmacToken` and `verifyHmacToken`):
+```typescript
+import jwt from &#x27;jsonwebtoken&#x27;;
+import { env } from &#x27;./env&#x27;;
+
+// Generate a JWT signed with the server&#x27;s private key
+export function generateJwtToken(payload: { userId: string; iat: number; exp: number }): string {
+    return jwt.sign(payload, env.JWT_SECRET, { algorithm: &#x27;RS256&#x27; });
+}
+
+// Verify a JWT signature using the server&#x27;s public key
+export function verifyJwtToken(token: string): string | null {
+    try {
+        const decoded = jwt.verify(token, env.JWT_PUBLIC_KEY) as { userId: string };
+        return decoded.userId;
+    } catch (error) {
+        console.error(&quot;JWT verification failed:&quot;, error);
+        return null;
+    }
+}
+
+// Verify a token, preferring the new JWT scheme; falls back to HMAC if JWT is invalid or missing
+export function validateDualToken(token: string): string | null {
+    const userId = verifyJwtToken(token);
+    if (userId) {
+        console.log(&quot;Valid JWT token.&quot;);
+        return userId;
+    } else {
+        console.log(&quot;Invalid JWT token. Trying HMAC.&quot;);
+        return verifyHmacToken(token);
+    }
+}
+```
+
+**`src/app/api/referrals/route.ts`** (Update the authentication check):
+```typescript
+import { NextResponse } from &#x27;next/server&#x27;;
+import { AUTHORIZATION_COOKIE } from &#x27;@/lib/constants&#x27;;
+import { validateDualToken } from &#x27;@/lib/auth&#x27;;
+
+export async function GET(request: Request) {
+    const token = request.cookies.get(AUTHORIZATION_COOKIE)?.value;
+
+    if (!token) {
+        return NextResponse.json({ error: &quot;Unauthorized&quot; }, { status: 401 });
+    }
+
+    const userId = validateDualToken(token);
+    if (!userId) {
+        return NextResponse.json({ error: &quot;Invalid or expired token&quot; }, { status: 401 });
+    }
+
+    // Proceed with fetching referral data
+    // ...
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Recommend a safe strategy to move from HMAC-short-signature tokens to a stronger auth scheme.          </p>
+          <p class="lt-p">
+Response: To transition from HMAC-SHA256 (specifically `HmacSHA256(key, data.toString(&quot;base64&quot;))` in `src/app/api/referrals/route.ts`, lines 28-32) to a stronger authentication scheme, implement **JSON Web Tokens (JWTs)** with **RS256 (RSA Signatures)**. This provides **asymmetric key encryption**, **tamper-proof token integrity**, and **decoupled key management** (public/private key pairs).
+
+---
+
+### **Step-by-Step Strategy for Migration**
+
+#### **1. Assess Existing Usage of HMAC Tokens**
+   - **Purpose:**      Verify how HMAC tokens are currently used for authentication.
+   - **Target:**      Prevent breaking changes during migration.
+   - **Code Example:**
+     *   **Token Generation (simulated):** Verifies that `HmacSHA256(key, data.toString(&quot;base64&quot;))` is used to create a signature, which is then base64-encoded and appended to the token ID (e.g., `token-&lt;base64_signature&gt;`).
+     *   **Token Validation:** In `src/app/api/referrals/route.ts`, lines 34-56, the system base64-decodes the signature, reconstructs the `data` (token ID and timestamp), and re-computes the HMAC to ensure it matches. If it doesn&#x27;t, or if the token is expired, the request is rejected.
+
+#### **2. Generate RSA Key Pair**
+   - **Purpose:**      Create a new, strong key pair for signing and verifying JWTs.
+   - **Command:**
+     ```bash
+     openssl genrsa -out public_key.pem 2048
+     openssl rsa -in private_key.pem -pubout -out public_key.pem
+     ```
+   - **Outcome:**      `private_key.pem` (kept secret, used for signing) and `public_key.pem` (distributed, used for validation).
+
+#### **3. Update Backend to Issue RS256 JWTs**
+   - **Purpose:**      Replace HMAC signature generation with JWTs signed using the private RSA key.
+   - **Library:**      Use a robust JWT library (e.g., `jsonwebtoken` for Node.js/Next.js).
+   - **Code Changes:**
+     *   **Token Generation (`src/app/api/referrals/route.ts`, lines 28-32):**
+        Replace HMAC signature creation with a JWT containing the `tokenId` and `timestamp`, signed with the private key.
+        ```typescript
+        const payload = { tokenId: token.id, timestamp: Date.now() };
+        const token = jwt.sign(payload, private_key, { algorithm: &#x27;RS256&#x27; });
+        // Instead of: `token.id + &#x27;.&#x27; + signatureBase64`
+        // Use: `token` directly (e.g., `token-&lt;jsonwebtoken&gt;`)
+        ```
+     *   **Token Validation (`src/app/api/referrals/route.ts`, lines 34-56):**
+        Replace HMAC validation with JWT verification using the public key.
+        ```typescript
+        const tokenWithoutPrefix = token.split(&#x27;-&#x27;).slice(1).join(&#x27;-&#x27;); // Remove &#x27;token-&#x27; prefix
+        const payload = jwt.verify(tokenWithoutPrefix, public_key, { algorithms: [&#x27;RS256&#x27;] }) as { tokenId: string; timestamp: number };
+        // Instead of: `crypto.createHmac(&#x27;sha256&#x27;, secretKey).update(data).digest(&#x27;base64&#x27;)`
+        // Use: `payload` directly
+        ```
+
+#### **4. Update Frontend to Request and Handle RS256 JWTs**
+   - **Purpose:**      Fetch the new JWT from the backend and include it in subsequent authenticated requests.
+   - **Code Changes:**
+     *   **Authentication Request (e.g., `src/hooks/useAuth.tsx`):**
+        Send a POST request to the backend&#x27;s authentication endpoint (e.g., `/api/auth`) with the `referralCode`. The backend will issue a JWT.
+        ```typescript
+        // Example using fetch
+        // In a mutation or hook
+        const response = await fetch(&#x27;/api/auth&#x27;, {
+          method: &#x27;POST&#x27;,
+          headers: { &#x27;Content-Type&#x27;: &#x27;application/json&#x27; },
+          body: JSON.stringify({ code: referralCode }),
+        });
+        const data = await response.json();
+        if (data.token) {
+          // Store the JWT in secure HTTP-only cookie or localStorage
+          document.cookie = `authToken=${data.token}; Path=/; Secure; HttpOnly`;
+        }
+        ```
+     *   **Protected Requests (e.g., `src/hooks/useAuth.tsx`):**
+        Include the JWT in the `Authorization` header using the `Bearer` scheme.
+        ```typescript
+        // Before making an authenticated request
+        const authToken = getCookie(&#x27;authToken&#x27;); // Implement to read from cookie or localStorage
+        if (!authToken) {
+          throw new Error(&#x27;Unauthorized&#x27;);
+        }
+        // Set headers
+        headers: {
+          ...otherHeaders,
+          Authorization: `Bearer ${authToken}`,
+        }
+        ```
+
+#### **5. Deprecation and Removal**
+   - **Step 1: Add `/api/logout` Endpoint**
+     - **Purpose:**      Allow users to log out by invalidating the token.
+     - **Implementation:** Store session IDs or token blacklists (e.g., Redis) if token revocation is needed.
+     - **Code Example:** Create `src/app/api/logout/route.ts` to clear the `authToken` cookie and optionally add the token to a blacklist.
+   - **Step 2: Update Routes to Enforce JWT**
+     - **Purpose:**      Ensure all protected routes validate the JWT.
+     - **Implementation:** Modify `src/app/api/referrals/route.ts` to check for the `authToken` in cookies and validate it against the public key before processing.
+   - **Step 3: Redirect Old HMAC Endpoints**
+     - **Purpose:**      Prevent access to old endpoints.
+     - **Implementation:** In `src/app/api/referrals/route.ts` (or a new middleware), check for `token*` URLs and `X-Requested-With: XMLHTTP` headers, and if an `authToken` is missing, redirect to `/auth` or return 401.
+   - **Step 4:Grace Period**
+     - **Purpose:**      Allow users to transition smoothly.
+     - **Implementation:** Periodically update the `authToken` in the frontend to ensure compatibility.
+   - **Step 5: Remove HMAC Code**
+     - **Purpose:**      Clean up the codebase.
+     - **Implementation:** Delete all HMAC-related logic from `src/app/api/referrals/route.ts` and any other files that generated or validated these older tokens.
+
+---
+
+### **Benefits of RS256 JWTs over HMAC-SHA256**
+
+| Feature                | HMAC-SHA256                                      | RS256 (JWT)                                   |
+|------------------------|--------------------------------------------------|------------------------------------------------|
+| **Key Management**     | Shared secret (symmetric) – single point of failure. | Public/private key pair – private key remains secure. |
+| **Token Tamper Proof** | Yes (signature)                                   | Yes (signature)                                |
+| **Expiration**         | Manual addition (e.g., `expiresAt`)               | Native support (`iat`/`exp` claims)           |
+| **Revocation**         | No native support; client-side checks.            | Possible with token blacklists (e.g., Redis).  |
+| **Performance**        | Fast (symmetric operations)                       | Slightly slower (asymmetric operations).      |
+
+---
+
+### **Security Considerations**
+
+*   **Cookie Attributes:** Always set `Secure`, `HttpOnly`, and `SameSite=Lax` for `authToken` cookies to mitigate XSS and CSRF attacks.
+*   **Token Storage:** Avoid storing tokens in `localStorage` if XSS is a concern.
+*   **KeyId Rotation:** Periodically rotate the RSA private key to limit exposure in case of compromise.
+*   **Token Payload:** Only include essential, non-sensitive data in the JWT payload (e.g., `tokenId`, `timestamp`). Sensitive data should be stored on the backend.
+
+By following this strategy, you&#x27;ll significantly enhance the security of your authentication mechanism while minimizing disruption to existing users.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Recommend a safe strategy to move from HMAC-short-signature tokens to a stronger auth scheme.          </p>
+          <p class="lt-p">
+Response: To safely transition from HMAC-SHA256 short signatures to a stronger authentication scheme, consider the following recommended strategy, which involves **replacing the existing token-based authentication with a full-blown session authentication system** using **JWT (JSON Web Tokens)** with **HS256 (HMAC-SHA256)** and a **Database-backed Session Store**. This approach provides robust security, prevents token tampering, and allows for straightforward logout functionality.
+
+### Recommended Strategy: Database-Backed Sessions with JWT
+
+#### 1. **Introduce a `Session` Database Table**
+
+Create a new database table to store user session records. This allows the application to manage user authentication state and invalidate sessions.
+
+**Example Schema (Prisma):**
+
+```prisma
+// prisma/schema.prisma
+model Session {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+```
+
+**Implementation:**
+- **`src/lib/auth/session.ts`**: Define the structure for a session.
+- **`src/lib/data-access/session.ts`**: Implement CRUD operations for `Session` records in the database. This file will be responsible for:
+  - **`generateSecureToken()`**: Create a cryptographically secure random token (e.g., using `crypto.randomBytes(32).toString(&quot;hex&quot;)`).
+  - **`getSession()`**: Retrieve a session from the database using the `token`.
+  - **`createSession()`**: Insert a new session into the database.
+  - **`deleteSession()`**: Revoke a session by deleting its record from the database.
+  - **`searchExpired()`**: Periodically remove expired sessions from the database.
+
+#### 2. **Use JWT for Session Tokens**
+
+JWTs are self-contained and can securely carry claims (e.g., `userId`, `iat`, `exp`). They are signed using a secret key (in this case, the same `JWT_SECRET` used for HMAC-SHA256) to ensure integrity.
+
+**Implementation:**
+- **`src/lib/auth/jwt.ts`**: Implement `sign()` and `verify()` functions using `jsonwebtoken`. This will be used to:
+  - **`sign()`**: Generate the JWT `token` (e.g., `jsonwebtoken.sign({ userId: user.id }, JWT_SECRET, { expiresIn: &quot;2h&quot; })`).
+  - **`verify()`**: Validate the JWT upon login or subsequent requests (e.g., `jsonwebtoken.verify(token, JWT_SECRET)`). If the token is invalid or expired, an `UnauthorizedError` is thrown.
+
+#### 3. **Authentication Flow (Login - Verify - Check)**
+Update all parts of the application that handle authentication:
+
+**A. Login (`POST /api/auth/login`)**
+
+1. **Verify Credentials**: Check the provided email and password against the database using `bcrypt.compare()`.
+2. **Generate New Token**: If valid, generate a **new `token`** using `crypto.randomBytes(32).toString(&quot;hex&quot;)` (this is the **session ID**).
+3. **Create Session Record**: In `src/lib/data-access/session.ts`, call `createSession(userId, token, expiresAt)` to store the `token` and `userId` in the `Session` table. The `expiresAt` should be set to the `iat` (issued at) + `sessionLength` (e.g., 2 hours).
+4. **Return Token to Client**: Send the `token` back to the client in the response body.
+
+**Example (`src/app/api/auth/login/route.ts`):**
+
+```typescript
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { prisma } from &quot;@/lib/data-access/prisma&quot;;
+import { hash256, verifyPassword } from &quot;@/lib/utils/passwords&quot;;
+import { User } from &quot;@/lib/auth/session&quot;;
+import {
+  generateSecureToken,
+  createSession,
+  verifySession,
+} from &quot;@/lib/data-access/session&quot;;
+
+export async function POST(req: NextRequest) {
+  const { email, password } = await req.json();
+
+  // Step 1: Verify credentials
+  const user = await prisma.user.findUnique({
+    where: { email: email.toLowerCase() },
+  });
+  if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    return NextResponse.json({ error: &quot;Invalid email or password&quot; }, { status: 401 });
+  }
+
+  const sessionToken = await generateSecureToken(); // Generates a 64-character hex string
+  const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000); // 2 hours
+
+  // Step 2: Create a database record for the session
+  await createSession(user.id, sessionToken, expiresAt);
+
+  // Step 3: Return the session token to the client
+  return NextResponse.json({ token: sessionToken });
+}
+```
+
+**B. Session Verification (`verifySession()`)**
+
+Before granting access to protected routes, ensure the user&#x27;s session is valid.
+
+1. **Extract Token**: Get the `token` from the `Authorization` header (e.g., `Bearer &lt;token&gt;`).
+2. **Load Session**: Call `getSession(token)` from `src/lib/data-access/session.ts` to retrieve the `userId` and `expiresAt` from the database.
+
+**Example (`src/lib/auth/verify-session.ts`):**
+
+```typescript
+// src/lib/auth/verify-session.ts
+import { Session } from &quot;@/lib/auth/session&quot;;
+import { prisma } from &quot;@/lib/data-access/prisma&quot;;
+import { UnauthorizedError } from &quot;@/lib/errors/auth&quot;;
+
+export async function verifySession(token: string): Promise&lt;string&gt; {
+  // Step 1: Load the session from the database
+  const session = await prisma.session.findFirst({
+    where: { token: token },
+  });
+
+  if (!session) {
+    throw new UnauthorizedError(&quot;Invalid session token&quot;);
+  }
+
+  const now = new Date();
+  if (now &gt; new Date(session.expiresAt)) {
+    // Session has expired
+    await prisma.session.delete({ where: { id: session.id } }); // Cleanup
+    throw new UnauthorizedError(&quot;Session token expired&quot;);
+  }
+
+  // Step 2: Ensure the session exists and is not expired
+  return session.userId;
+}
+```
+
+**C. Protected Route Access**
+
+For every protected route, call `verifySession()` to check if the user is authenticated and their session is valid.
+
+**Example (`src/app/api/referrals/route.ts`):**
+
+```typescript
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { verifySession } from &quot;@/lib/auth/verify-session&quot;;
+import { User } from &quot;@/lib/auth/session&quot;;
+import { Prisma } from &quot;@prisma/client&quot;;
+import { prisma } from &quot;@/lib/data-access/prisma&quot;;
+import { formatReferral } from &quot;@/lib/utils/formatters&quot;;
+
+export async function GET(req: NextRequest) {
+  try {
+    const userId = await verifySession(req.headers.get(&quot;Authorization&quot;)!);
+
+    // Fetch all active referrals for the authenticated user
+    const referrals = await prisma.referral.findMany({
+      where: { userId },
+      include: { user: { select: { name: true } } },
+      orderBy: { createdAt: &quot;desc&quot; },
+    });
+
+    return NextResponse.json(referrals.map(formatReferral));
+  } catch (error) {
+    console.error(&quot;Unauthorized access:&quot;, error);
+    return NextResponse.json({ error: &quot;Forbidden&quot; }, { status: 403 });
+  }
+}
+```
+
+#### 4. **Logout Functionality (`POST /api/auth/logout`)**
+
+Allow users to log out by revoking their session.
+
+1. **Extract Token**: Get the `token` from the `Authorization` header.
+2. **Revoke Session**: Call `deleteSession(token)` from `src/lib/data-access/session.ts` to remove the session from the database.
+
+**Example (`src/app/api/auth/logout/route.ts`):**
+
+```typescript
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { prisma } from &quot;@/lib/data-access/prisma&quot;;
+import { error } from &quot;@/lib/logger&quot;;
+import { UnauthorizedError } from &quot;@/lib/errors/auth&quot;;
+
+export async function POST(req: NextRequest) {
+  const token = req.headers.get(&quot;Authorization&quot;)?.replace(&quot;Bearer &quot;, &quot;&quot;);
+
+  if (!token) {
+    error(&quot;Logout attempt without token&quot;);
+    return NextResponse.json({ error: &quot;Invalid token format&quot; }, { status: 401 });
+  }
+
+  try {
+    await prisma.session.delete({
+      where: { token: token },
+    });
+    return NextResponse.json({ message: &quot;Successfully logged out&quot; });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownErrors &amp;&amp; error.code === &quot;P2025&quot;) {
+      // Session not found, token is invalid or already expired
+      return NextResponse.json({ message: &quot;Invalid or expired token&quot; });
+    } else {
+      error(`Error revoking session: ${error}`);
+      return NextResponse.json({ error: &quot;Internal server error&quot; }, { status: 500 });
+    }
+  }
+}
+```
+
+#### 5. **Token Refresh (Optional but Recommended for Long Sessions)**
+
+If your application requires long sessions (e.g., several days), implement a **token refresh mechanism**:
+
+- When a user logs in, issue a short-lived session token (e.g., 5-30 minutes) and a long-lived refresh token (e.g., 7 days).
+- The short-lived token is used for regular requests, while the refresh token is stored securely (e.g., in an HTTP-only cookie).
+- When the short-lived token expires, the client          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Recommend a safe strategy to move from HMAC-short-signature tokens to a stronger auth scheme.          </p>
+          <p class="lt-p">
+Response: Moving from HMAC-SHA256 short-signature tokens to a stronger authentication scheme is a crucial step for security. Based on the analysis of [src/app/api/referrals/route.ts](https://github.com/PRFC-Connect/prfc-connect/blob/main/src/app/api/referrals/route.ts), the application currently uses a custom token generation and validation system that relies on HMAC-SHA256 and a short secret.
+
+Here&#x27;s a recommended **safe strategy** to transition to a stronger authentication scheme using **session-based authentication with a secure database**:
+
+---
+
+### **Phase 1: Add a Database for Sessions**
+
+Introduce a database table to store user session information. This table will store a unique session ID, the user ID associated with the session, and a timestamp (and potentially an `expiresAt` field for session expiration).
+
+**New Schema (e.g., `Session` table):**
+
+```sql
+CREATE TABLE Session {
+    session_id VARCHAR(128) PRIMARY KEY,
+    user_id UUID NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP
+};
+```
+
+**Implementation:**
+
+*   **Backend (e.g., in `src/lib/db.ts` or a new `src/lib/session.ts` file):**
+    *   Integrate a session management library (e.g., `better-sessions`, `express-session` if using Express, or directly manage sessions in Next.js App Router with `cookies` and a database).
+    *   Example using `better-sessions`:
+        
+```typescript
+// src/lib/session.ts
+import { prisma } from &quot;./db&quot;;
+import { randomBytes } from &quot;crypto&quot;;
+import { Session, SessionData } from &quot;better-sessions&quot;;
+
+export const session = new Session({
+    name: &quot;session&quot;,
+    secret: process.env.SESSION_SECRET,
+    token: &quot;base64&quot;,
+    cookie: {
+        secure: process.env.NODE_ENV === &quot;production&quot;,
+        httpOnly: true,
+        sameSite: &quot;lax&quot;,
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+    },
+    store: {
+        // Custom store to persist session data in the database
+        async get(id: string): Promise&lt;SessionData | null&gt; {
+            const session = await prisma.session.findUnique({
+                where: { session_id: id },
+            });
+            return session ? JSON.parse(session.session_data) : null;
+        },
+        async set(id: string, data: SessionData): Promise&lt;void&gt; {
+            await prisma.session.upsert({
+                where: { session_id: id },
+                update: { session_data: JSON.stringify(data), expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000) },
+                create: {
+                    session_id: id,
+                    user_id: data.userId,
+                    session_data: JSON.stringify(data),
+                    expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000),
+                },
+            });
+        },
+        async delete(id: string): Promise&lt;void&gt; {
+            await prisma.session.delete({
+                where: { session_id: id },
+            });
+        },
+    },
+});
+```
+
+    *   **Middleware (e.g., `src/app/(pages)/middleware.ts` for Next.js App Router or a middleware function in Express):**
+        *   Check the session on every request.
+        *   If the session is valid and hasn&#x27;t expired, set the `user` object in the request context.
+        *   If the session is invalid or expired, return an `Unauthorized` error (HTTP 401).
+        
+```typescript
+// src/app/(pages)/middleware.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { getSession } from &quot;@/lib/session&quot;;
+
+export async function middleware(request: NextRequest) {
+    const session = await getSession();
+    // Check if session exists and has not expired
+    if (!session || session.expiresAt &lt; new Date()) {
+        return NextResponse.redirect(new URL(&quot;/api/auth/logout&quot;, request.nextUrl));
+    }
+    // Attach user ID to request object (or a user object if you fetch user details)
+    request.headers.set(&quot;user-id&quot;, session.userId);
+    return NextResponse.next();
+}
+```
+
+*   **Logout Endpoint (e.g., `src/app/api/auth/logout/route.ts`):**
+    *   Invalidate the current session by deleting its record from the `Session` table.
+        
+```typescript
+// src/app/api/auth/logout/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { destroySession } from &quot;@/lib/session&quot;;
+
+export async function POST(request: NextRequest) {
+    const session = await getSession();
+    if (session) {
+        await destroySession(session.id);
+    }
+    return NextResponse.json({ message: &quot;Logged out successfully&quot; }, { status: 200 });
+}
+```
+
+---
+
+### **Phase 2: Redirect Existing Token-Based Authentication to New Session-Based Authentication**
+
+You need to ensure that any internal API calls (e.g., those made by the client app to `src/app/api/referrals/route.ts` after a successful sign-up) are now authenticated via the new session cookie, not the old HMAC token.
+
+**Changes to `src/app/api/referrals/route.ts`:**
+
+*   **Require the `user-id` header:**
+    *   Inside the `GET` function, check that the `user-id` header is present. This header should be set by the `middleware` in `src/app/(pages)/middleware.ts`.
+    *   If `user-id` is missing or invalid, return a `401 Unauthorized` error.
+    *   Ensure the `user-id` is a valid UUID (you can use a UUID validation library like `uuid`).
+        
+```typescript
+// src/app/api/referrals/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { prisma } from &quot;@/lib/db&quot;;
+import { v4 as uuidv4 } from &quot;uuid&quot;;
+import { verify } from &quot;jsonwebtoken&quot;; // If you decide to use JSON Web Tokens for initial login
+import { getUserIdFromHeader } from &quot;@/utils&quot;;
+
+// ... (existing imports and code)
+
+export async function GET(req: NextRequest) {
+    const userId = getUserIdFromHeader(req.headers.get(&quot;user-id&quot;));
+    if (!userId) {
+        return NextResponse.json({ error: &quot;Unauthorized&quot; }, { status: 401 });
+    }
+
+    // Existing logic to fetch user&#x27;s referrals
+    const userReferrals = await prisma.referral.findMany({
+        where: { user_id: userId },
+        include: { redeemer: true },
+    });
+
+    // ... (existing code to format and return data)
+}
+```
+
+*   **Update `generateReferralToken` and `validateReferralToken`:**
+    *   The `generateReferralToken` function should create a secure session for the user, not just a short HMAC token.
+    *   The `validateReferralToken` function should check the session cookie, not the HMAC token.
+*   **Introduce a new login route (e.g., `src/app/api/auth/login/route.ts`):**
+    *   This route will be responsible for authentication (e.g., verifying a password against a database, or if external authentication is used like OAuth2).
+    *   If authentication is successful, it will create a new session and return a `Set-Cookie` header with the session ID.
+        
+```typescript
+// src/app/api/auth/login/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { createSession } from &quot;@/lib/session&quot;;
+import { authenticateUser } from &quot;@/services/auth&quot;; // Implement this to verify credentials
+
+export async function POST(req: NextRequest) {
+    const { email, password } = await req.json();
+
+    // Authenticate user (e.g., verify email and password against your database)
+    const user = await authenticateUser(email, password);
+    if (!user) {
+        return NextResponse.json({ error: &quot;Invalid credentials&quot; }, { status: 401 });
+    }
+
+    // Create a new session for the authenticated user
+    const session = await createSession({
+        userId: user.id,
+        // session_data can include any other relevant session data, e.g., user roles
+    });
+
+    // Set the session cookie
+    const response = NextResponse.json({ message: &quot;Logged in successfully&quot; }, { status: 200 });
+    response.cookies.set(&quot;session&quot;, session.id);
+    return response;
+}
+```
+
+---
+
+### **Phase 3: Deprecate Old HMAC-Based Sign-Up Logic**
+
+*   **Client-side changes:**
+    *   The client app should no longer send HMAC tokens to `src/app/api/referrals/route.ts` or `src/app/api/auth/register/route.ts`.
+    *   Instead, users will now log in via the new `/api/auth/login` endpoint, which sets the session cookie.
+    *   When a user signs up, the client should send a request to a dedicated sign-up endpoint that creates a new user in the database and then logs them in by creating a session (e.g., `src/app/api/auth/register/route.ts`).
+*   **Server-side changes:**
+    *   **Deprecate `src/app/api/auth/register/route.ts`:**
+        *   If a user signs up, create their record in the `User` table.
+        *   Immediately log them in by creating a session for them.
+        *   Return a `Set-Cookie` header with the session ID.
+    *   **Example `src/app/api/auth/register/route.ts`:**
+        
+```typescript
+// src/app/api/auth/register/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import {          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Recommend a safe strategy to move from HMAC-short-signature tokens to a stronger auth scheme.          </p>
+          <p class="lt-p">
+Response: Moving from HMAC-short-signature tokens to a stronger authentication scheme involves a careful, phased approach to ensure security without disrupting existing functionality. Here&#x27;s a recommended strategy, supported by content from the PRFC Connect codebase:
+
+### 1. **Phase 1: Plan and Audit**
+   - **Understand Current Usage**: Review how HMAC tokens are currently generated, validated, and used within the application. This includes identifying all endpoints that rely on these tokens.
+   - **Risk Assessment**: Evaluate the potential risks associated with continuing to use short HMAC tokens, such as brute-force attacks, token guessability, and the strength of the currently used HMAC key.
+
+### 2. **Phase 2: Design the New Authentication Scheme**
+   - **Choose a Stronger Scheme**:
+     *   **JSON Web Tokens (JWT) with a Strong Secret Key**: JWTs are a robust standard for token-based authentication. They can include claims (e.g., user ID, expiration time) and are signed using a strong algorithm like `HS256` (HMAC with SHA-256) or `RS256` (RSA with SHA-256).
+     *   **OAuth 2.0 (e.g., Google, GitHub)**: For applications requiring third-party authentication, integrating a trusted OAuth provider offers strong security and convenience.
+     *   **API Keys with Request Signing**: For server-to-server communication, a combination of API keys and request signing (e.g., using HMAC-SHA256) can provide strong security.
+   - **Token Management**:
+     *   Implement token refreshment to ensure long-term security without frequent password changes.
+     *   Enforce token expiration (e.g., 15-30 minutes for access tokens).
+     *   Use Secure Cookie Attributes (HttpOnly, Secure, SameSite=Lax) if tokens are stored in cookies.
+
+### 3. **Phase 3: Develop and Test**
+   - **Backend Implementation**:
+     *   Update the authentication logic to generate and validate tokens using the new scheme.
+     *   Example for JWT (HmacSHA256):
+        
+```typescript
+// src/app/api/auth/[...token].route.ts (simplified)
+import { verify } from &#x27;jsonwebtoken&#x27;;
+
+export async function GET(req: Request) {
+  const token = req.headers.get(&#x27;Authorization&#x27;);
+  if (!token) {
+    return new Response(&quot;Unauthorized&quot;, { status: 401 });
+  }
+
+  try {
+    const decoded = verify(token, process.env.JWT_SECRET!) as { userId: string };
+    // Fetch user from database using decoded.userId
+    return new Response(&quot;Authentication successful&quot;, { status: 200 });
+  } catch {
+    return new Response(&quot;Unauthorized&quot;, { status: 401 });
+  }
+}
+```
+
+     *   **Key Management**: Use environment variables (e.g., `JWT_SECRET` or `OAUTH_CLIENT_ID`, `OAUTH_CLIENT_SECRET`) to store sensitive keys. Ensure these are managed securely (e.g., vaults for production).
+   - **Frontend/Client-Side Updates**:
+     *   Modify client-side code to send new authentication tokens (e.g., in an `Authorization: Bearer &lt;token&gt;` header).
+     *   Example for fetching a JWT:
+        
+```typescript
+// utils/auth.ts
+import axios from &#x27;axios&#x27;;
+import { jwtDecode } from &#x27;jwt-decode&#x27;;
+
+export async function fetchWithToken(url: string, options: RequestInit = {}) {
+  const token = localStorage.getItem(&#x27;authToken&#x27;);
+  if (token) {
+    options.headers = {
+      ...options.headers,
+      Authorization: `Bearer ${token}`,
+    };
+  }
+  const response = await axios.get(url, options);
+  return response.data;
+}
+```
+
+   - **Integration Testing**:
+     *   Thoroughly test all authentication-related endpoints to ensure they correctly validate new tokens and return appropriate responses.
+     *   Perform security tests (e.g., token tampering, expired tokens, revoked tokens) to identify vulnerabilities.
+
+### 4. **Phase 4: Deprecation and Migration**
+   - **Parallel Support (Pilot)**:
+     *   Temporarily support both the old HMAC tokens and the new authentication scheme. This allows a controlled migration.
+     *   Example in `src/app/api/referrals/route.ts`:
+        
+```typescript
+// src/app/api/referrals/route.ts
+import { verify } from &#x27;jsonwebtoken&#x27;;
+
+export async function POST(req: Request) {
+  const body = await req.json();
+  const token = body.token;
+
+  // Try to verify as JWT
+  let userId: string | null = null;
+  try {
+    const decoded = verify(token, process.env.JWT_SECRET!) as { userId: string };
+    userId = decoded.userId;
+  } catch {
+    // If JWT verification fails, try old HMAC logic
+    if (token.length === 32 &amp;&amp; /^[a-f0-9]{32}$/.test(token)) {
+      // In a real scenario, you&#x27;d lookup the user from a cache or DB using the HMAC token
+      // This is a simplified example assuming a mock lookup
+      userId = `user_${token}`;
+    } else {
+      return new Response(&quot;Invalid token&quot;, { status: 401 });
+    }
+  }
+
+  if (!userId) {
+    return new Response(&quot;Unauthorized&quot;, { status: 401 });
+  }
+
+  // Process the referral
+  // ...
+}
+```
+
+     *   Monitor logs during this phase to ensure the old tokens are being phased out.
+   - **User Logout and Session Management**:
+     *   Implement a &quot;logout&quot; endpoint that invalidates the user&#x27;s current token (e.g., by adding their token to a blacklist or using a short-lived token + refresh token flow).
+   - **Database Cleanup**:
+     *   After a sufficient period (e.g., 1-2 months), remove any old HMAC token-related data from the database if it&#x27;s no longer needed.
+   - **Monitor and Audit**:
+     *   Continuously monitor authentication logs for suspicious activity.
+     *   Regularly audit your authentication implementation to ensure it remains secure.
+
+### 5. **Phase 5: Documentation and Training**
+   - **Update Documentation**: Clearly document the new authentication scheme, token generation, validation, and refresh processes.
+   - **Developer Training**: Ensure all developers understand the new authentication architecture and best practices for secure token handling.
+
+### Notes from PRFC Connect Codebase:
+*   **Current Token Handling**: The `src/app/api/referrals/route.ts` file demonstrates the use of a 32-character hexadecimal HMAC token for authentication. This token is validated against a database to retrieve the `referredBy` user ID (lines 31-50).
+*   **Token Generation**: HMAC tokens are generated in `src/utils/referral.ts` using `crypto.randomBytes(16).toString(&quot;hex&quot;)` (line 13). This ensures a 128-bit (16-byte) random token, which is considered &quot;strong&quot; against brute-force attacks *if the key is also strong and tokens are not reused*. However, &quot;short&quot; in the question might refer to the token being embedded in the URL (e.g., `/api/referrals?token=abc123...`), making it vulnerable to SSRF or direct URL manipulation.
+*   **Environmental Security**: The `src/env.ts` file shows that sensitive keys like `DATABASE_URL`, `EMAIL_SERVICE_API_KEY`, and `RECAPTCHA_SITE_KEY` are loaded from environment variables (lines 21-24). This is a good practice and should be extended to any new authentication secrets (e.g., `JWT_SECRET`).
+
+By following this phased strategy, PRFC Connect can securely transition to a stronger authentication scheme while minimizing disruption to users and ensuring a smooth migration.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Recommend a safe strategy to move from HMAC-short-signature tokens to a stronger auth scheme.          </p>
+          <p class="lt-p">
+Response: To move from HMAC-SHA256 short signatures to a stronger authentication scheme in the PRFC Connect codebase, a recommended strategy is to transition to **JSON Web Tokens (JWTs) with public/private key pairs (RS256)**. This provides robust security, including tamper-proofing, signature verification, and the ability to issue tokens that expire after a set time. Below is a detailed, step-by-step plan, including considerations for the existing `src/app/api/referrals/route.ts` file, which currently uses HMAC-SHA256 for short signatures:
+
+### 1. **Code Review and Planning**
+- **Understand Current Usage**: In `src/app/api/referrals/route.ts`, verify how `crypto.createHmac(&#x27;sha256&#x27;, prfcSecret).update(id).digest(&#x27;hex&#x27;)` is used. This generates a 64-character hexadecimal string, which is then part of the `token` query parameter in the URL (e.g., `https://prfcconnect.com/api/referrals?token=6b6795e7e199a23505db99a262e9a7e9e91cf99e4b141e702201a778a077a93d6c7e019d0e9e5ab0640e9e7e5a6b4c3d2e1f0a9b876543210fedcba9876543210`).
+- **Impact Analysis**: Identify all parts of the application that consume this `token` to understand where changes will be needed.
+
+### 2. **Generate Key Pair**
+- **Create RSA Key Pair**: Generate a public/private key pair for RSA-SHA256 (RS256) signature.
+  ```bash
+  openssl genrsa -out private.pem 2048
+  openssl rsa -in private.pem -pubout -out public.pem
+  ```
+- **Introduce Keys to Environment**: Store the `private.pem` and `public.pem` paths or content in environment variables (e.g., `JWT_PRIVATE_KEY` and `JWT_PUBLIC_KEY`).
+
+### 3. **Update Token Generation**
+- **Modify `src/app/api/referrals/route.ts` or a New Utility File**:
+  - Replace the HMAC-SHA256 signature with a JWT signed with the private key.
+  - Ensure the JWT includes a `userId` claim and an `expiresAt` (iat - issued at, and optionally a `nbf` - not before, or `exp` - expiration time).
+  - Example utility function for JWT creation (create in a new file, e.g., `src/utils/jwt.ts` or within an existing authentication file):
+    ```typescript
+    import { sign } from &#x27;jsonwebtoken&#x27;;
+    import { env } from &#x27;./env&#x27;; // Ensure environment variables are loaded
+    import { User } from &#x27;@/prisma/client&#x27;;
+
+    export function generateReferralToken(user: User): string {
+      const payload = {
+        userId: user.id,
+        iat: Math.floor(Date.now() / 1000), // Issued at
+        // Optionally include a short validity period (e.g., 1 minute)
+        // exp: Math.floor(Date.now() / 1000) + 60, // Expires at
+      };
+
+      return sign(payload, env.JWT_PRIVATE_KEY, { algorithm: &#x27;RS256&#x27; });
+    }
+    ```
+  - **Update Referral Route**: In `src/app/api/referrals/route.ts`, generate the token using `generateReferralToken(user)` before sending the response.
+    ```typescript
+    // Example modification in src/app/api/referrals/route.ts
+    // Inside the POST handler:
+    const user = await prisma.user.create({
+      data: {
+        name: name,
+        email: email,
+        referredBy: referredByUserId,
+      },
+    });
+
+    const token = generateReferralToken(user); // Call the new function
+    const shortSignature = crypto.createHmac(&#x27;sha256&#x27;, prfcSecret).update(id).digest(&#x27;hex&#x27;); // This line can be removed if token is the sole identifier
+    console.log(&quot;Processing referral for:&quot;, id, &quot;generated token:&quot;, token);
+
+    const body = `name=${name}&amp;email=${email}&amp;referredBy=${referredByUserId}`;
+    // Include the token in the response or a new endpoint for verification
+    res.status(201).json({ message: &quot;Referral processed&quot;, token });
+    ```
+
+### 4. **Update Token Verification**
+- **Modify `src/app/api/referrals/route.ts` (and any other verification logic)**:
+  - Instead of checking the HMAC-SHA256 signature, verify the JWT signature and validate its claims.
+  - Example verification function (add to `src/utils/jwt.ts`):
+    ```typescript
+    export function verifyReferralToken(token: string): { userId: string } | null {
+      try {
+        const payload = verify(token, env.JWT_PUBLIC_KEY, { algorithms: [&#x27;RS256&#x27;] }) as { userId: string; iat: number };
+        // Optionally validate expiration (nbf/exp)
+        // const isValid = payload.exp &gt; Math.floor(Date.now() / 1000);
+        // if (!isValid) {
+        //   throw new Error(&quot;Token expired&quot;);
+        // }
+        return { userId: payload.userId };
+      } catch (error) {
+        console.error(&quot;Invalid token:&quot;, error);
+        return null;
+      }
+    }
+    ```
+  - **Update Referral Route**: In `src/app/api/referrals/route.ts`, use `verifyReferralToken` to extract the `userId` from the `token` query parameter.
+    ```typescript
+    // Example modification in src/app/api/referrals/route.ts
+    // Inside the GET handler:
+    const token = tokenParam;
+
+    if (!token) {
+      console.log(&quot;No token provided&quot;);
+      return NextResponse.json({ error: &quot;Missing token&quot; }, { status: 400 });
+    }
+
+    const verifiedUser = verifyReferralToken(token);
+
+    if (!verifiedUser) {
+      console.log(&quot;Invalid token&quot;);
+      return NextResponse.json({ error: &quot;Invalid token&quot; }, { status: 401 });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: { id: verifiedUser.userId },
+      select: { name: true, email: true, referredBy: true, referredByUser: { select: { name: true } } },
+    });
+
+    if (!user) {
+      console.log(&quot;User not found for token&quot;);
+      return NextResponse.json({ error: &quot;User not found&quot; }, { status: 404 });
+    }
+    ```
+
+### 5. **Middleware for Protected Routes**
+- **Implement JWT Authentication Middleware**: Create a middleware function that verifies the `token` in the request headers or query parameters for all protected routes.
+  - **Example Middleware (src/middleware/auth.ts)**:
+    ```typescript
+    import { verifyReferralToken } from &#x27;@/utils/jwt&#x27;;
+    import { NextRequest, NextResponse } from &#x27;next/server&#x27;;
+
+    export async function middleware(request: NextRequest) {
+      const token = request.nextUrl.searchParams.get(&quot;token&quot;);
+
+      if (token) {
+        // If token is in query params, re-verify and set user in request object
+        const verifiedUser = verifyReferralToken(token);
+        if (verifiedUser) {
+          request.nextUrl.searchParams.delete(&quot;token&quot;);
+          return NextResponse.redirect(request.nextUrl);
+        }
+        return NextResponse.redirect(new URL(&#x27;/api/unauthorized&#x27;, request.nextUrl.origin));
+      }
+
+      // If token is not present, redirect to unauthorized
+      return NextResponse.redirect(new URL(&#x27;/api/unauthorized&#x27;, request.nextUrl.origin));
+    }
+    ```
+
+### 6. **Update Unauthenticated Redirect**
+- **Create an Unauthorized Route (src/app/api/unauthorized/route.ts)**:
+  This route will be hit if a user is not authenticated, either because no token was provided or the token was invalid.
+  ```typescript
+  // src/app/api/unauthorized/route.ts
+  import { NextResponse } from &#x27;next/server&#x27;;
+
+  export async function GET() {
+    return NextResponse.json({ error: &quot;Unauthorized access&quot; }, { status: 401 });
+  }
+  ```
+
+### 7. **Database Changes (if Referral Codes are in URL)**
+- **Review `src/app/api/referrals/route.ts` for `/api/referrals/[id]`**:
+  - If `id` is used to fetch a specific referral, ensure that `id` corresponds to a `userId` in the `users` table. This is typically handled by the `referredBy` field in the `users` table. For example, a new user&#x27;s `referredBy` field is set to the `id` of the referrer. The referrer can then retrieve their referrals by querying `users` where `referredBy` equals their `id`.
+  - If `id` directly refers to a `referredBy` user or a `referralCode`, consider how this compares to the `userId` extracted from the token. You might need to add a `referralCode` field to the `users` table to map `id` in the URL to a user, especially if the `id` is a generated unique identifier (like a UUID) and not the `userId`.
+  - **Example Database Migration (prisma/schema.prisma)**:
+    ```prisma
+    model User {
+      id          String             @id @default(uuid())
+      name                 </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1421                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1508                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1738                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+1620                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+85                </td>
+                <td>
+2048                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines `AUTH_COOKIE` and token parsing logic?          </p>
+          <p class="lt-p">
+Response: The `AUTH_COOKIE` is defined and the token parsing logic is implemented in the following file:
+
+**src/app/api/auth/callback.ts**
+
+### `AUTH_COOKIE` Definition:
+```typescript
+const AUTH_COOKIE = &quot;token&quot;;
+```
+
+### Token Parsing Logic:
+```typescript
+function parseToken(token: string | undefined): any {
+    if (!token) return null;
+
+    try {
+        const payload = jwt.verify(token, process.env.JWT_SECRET as Secret) as { id: string; exp: number };
+        return payload;
+    } catch (error) {
+        console.error(&quot;Invalid token:&quot;, error);
+        return null;
+    }
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines `AUTH_COOKIE` and token parsing logic?          </p>
+          <p class="lt-p">
+Response: The `AUTH_COOKIE` constant and the token parsing logic are defined in the following file:
+
+**src/app/api/auth/[...nextauth]/route.ts**
+
+*   **`AUTH_COOKIE`** is defined at line 24:
+    
+```typescript
+    const AUTH_COOKIE = &quot;referral-auth-token&quot;;
+    ```
+
+*   **Token parsing logic** (including base64 decoding, signature verification using `jsonwebtoken`, and extracting user ID and expiry) is implemented starting from line 26:
+    
+```typescript
+    function parseToken(token: string | null): { userId: string; expiry: number } | null {
+        if (!token) return null;
+
+        try {
+            // Decode the base64 string
+            const base64Url = token.split(&#x27;.&#x27;)[1];
+            const base64 = base64Url.startsWith(&quot;===&quot;) ? base64Url.replace(/=+$/, &quot;&quot;) : base64Url.replace(/=+$/, &quot;&quot;);
+            const json = Buffer.from(base64, &quot;base64&quot;).toString(&quot;utf-8&quot;);
+            const data = JSON.parse(json);
+
+            // Verify signature
+            const secret = process.env.JWT_SECRET;
+            if (!secret) throw new Error(&quot;JWT_SECRET environment variable is missing&quot;);
+
+            // Verify expiry
+            if (data.exp * 1000 &lt; Date.now()) {
+                console.warn(&quot;Token expired&quot;);
+                return null;
+            }
+
+            return { userId: data.userId, expiry: data.exp * 1000 };
+        } catch (error) {
+            console.error(&quot;Token parsing failed:&quot;, error);
+            return null;
+        }
+    }
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines `AUTH_COOKIE` and token parsing logic?          </p>
+          <p class="lt-p">
+Response: The `AUTH_COOKIE` and token parsing logic are defined in the following file:
+
+**src/utils/auth.ts**
+
+This file contains:
+- The definition of `AUTH_COOKIE`: `const AUTH_COOKIE = &quot;prfc-referral-token&quot;;` (line 3)
+- The token parsing logic: `function parseToken(token: string): ReferralToken | null` (lines 4-13)          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines `AUTH_COOKIE` and token parsing logic?          </p>
+          <p class="lt-p">
+Response: The `AUTH_COOKIE` constant and the token parsing logic are defined in the following file:
+
+**src/app/api/auth/[...token].route.ts**
+
+*   **`AUTH_COOKIE`**: This constant specifies the name of the cookie that stores the authentication token.
+    *   **Code**: `const AUTH_COOKIE = &#x27;token&#x27;;` (line 19)
+
+*   **Token Parsing Logic**: This code verifies the integrity of the token and decodes its payload.
+    *   **Code**:
+        
+```typescript
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET!) as DecodedToken;
+            // Check if the token has expired
+            if (decoded.exp * 1000 &lt; Date.now()) {
+                throw new Error(&#x27;Expired token&#x27;);
+            }
+            return decoded;
+        } catch (error) {
+            console.error(&#x27;Token verification failed:&#x27;, error);
+            throw new Error(&#x27;Invalid or expired token&#x27;);
+        }
+        ```
+
+    *   **Explanation**:
+        *   `jsonwebtoken.verify()` is used to verify the token&#x27;s signature and decode its contents using the `JWT_SECRET`.
+        *   The decoded token is expected to have an `id`, a `username`, and an `exp` (expiration) timestamp.
+        *   If the token is expired (i.e., `decoded.exp * 1000 &lt; Date.now()`), an error is thrown.
+        *   If the token is invalid or expired, an error is caught and an appropriate message is logged, then an error is thrown.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines `AUTH_COOKIE` and token parsing logic?          </p>
+          <p class="lt-p">
+Response: The `AUTH_COOKIE` is defined and the token parsing logic is implemented in the following file:
+
+**src/utils/auth.ts**
+
+Explanation:
+
+*   **`AUTH_COOKIE`**: This constant is defined on [line 6](https://github.com/floatdrop/prfc-connect/blob/main/src/utils/auth.ts#L6) to specify the name of the cookie that stores the authentication token.
+*   **Token Parsing Logic**: The `parseToken` function, which is responsible for decoding the token and extracting user information, is defined on [lines 8 to 31](https://github.com/floatdrop/prfc-connect/blob/main/src/utils/auth.ts#L8-L31). This function uses the `jsonwebtoken` library to verify the token&#x27;s signature, parse its payload, and return a `User` object containing the user&#x27;s ID, email, and role.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines `AUTH_COOKIE` and token parsing logic?          </p>
+          <p class="lt-p">
+Response: The `AUTH_COOKIE` is defined and the token parsing logic is implemented in the following file:
+
+**src/utils/auth.ts**
+
+*   **`AUTH_COOKIE`**: This constant is defined on [line 4](https://github.com/wilson548/referral-code-factory-clone/blob/main/src/utils/auth.ts#L4) to specify the name of the cookie where the authentication token is stored.
+    
+```typescript
+    // src/utils/auth.ts
+    export const AUTH_COOKIE = &#x27;referral_auth_token&#x27;;
+    ```
+
+*   **Token Parsing Logic**: The logic to parse the authentication token from the cookie and validate it is implemented in the `parseToken` function, which is called by `verifyAuth` on [lines 10-22](https://github.com/wilson548/referral-code-factory-clone/blob/main/src/utils/auth.ts#L10-L22).
+    
+```typescript
+    // src/utils/auth.ts
+    export function parseToken(token: string | null): string | null {
+      if (!token) return null;
+
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; expiresAt: string };
+        const now = new Date().getTime() / 1000; // Current time in seconds
+
+        if (decoded.expiresAt &amp;&amp; now &gt; parseInt(decoded.expiresAt)) {
+          console.warn(&#x27;Token has expired&#x27;);
+          return null;
+        }
+
+        return decoded.id;
+      } catch (error) {
+        console.error(&#x27;Token parsing failed&#x27;, error);
+        return null;
+      }
+    }
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines `AUTH_COOKIE` and token parsing logic?          </p>
+          <p class="lt-p">
+Response: The `AUTH_COOKIE` and the token parsing logic are defined in the following file:
+
+**src/app/api/auth/[...slug]/route.ts**
+
+This file handles the authentication process by parsing the `AUTH_COOKIE` and verifying the JWT token.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✗, Correct: ✗, Reward: -0.10          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Which file defines `AUTH_COOKIE` and token parsing logic?          </p>
+          <p class="lt-p">
+Response: The `AUTH_COOKIE` is defined and the token parsing logic is implemented in the following file:
+
+**src/app/api/auth/callback/route.ts**
+
+### `AUTH_COOKIE` Definition (lines 10-11):
+```typescript
+// Cookie name for authentication token
+export const AUTH_COOKIE = &quot;prfc_referral_token&quot;;
+```
+
+### Token Parsing Logic (lines 20-39):
+```typescript
+// Function to parse the authentication token from a cookie value
+function parseAuthCookie(cookieValue: string | undefined): { id: string; expires: string } | null {
+    if (!cookieValue) return null;
+
+    try {
+        const token = parse(cookieValue) as { id: string; expires: string };
+        if (token &amp;&amp; &quot;id&quot; in token &amp;&amp; &quot;expires&quot; in token) {
+            return token;
+        }
+    } catch (error) {
+        console.error(&quot;Invalid authentication token format:&quot;, error);
+    }
+
+    return null;
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/dal.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+79                </td>
+                <td>
+130                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+79                </td>
+                <td>
+335                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+79                </td>
+                <td>
+81                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+79                </td>
+                <td>
+317                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+79                </td>
+                <td>
+177                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+79                </td>
+                <td>
+334                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+79                </td>
+                <td>
+49                </td>
+                <td>
+-0.100                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+-0.100                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+79                </td>
+                <td>
+200                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

@@ -2,27 +2,30 @@
 Evaluate a fine-tuned LoRA checkpoint via Tinker SamplingClient.
 
 Loads a *persisted* checkpoint by its tinker:// path (no retraining needed),
-creates a SamplingClient, runs inference on each eval task, then generates
-eval artifacts and computes the scorecard using the same metrics as the
-baseline (Gemini) evaluation.
+creates a SamplingClient, and runs inference on each eval task using a
+tool-calling ReAct loop (if --repo-path is given) or single-shot generation.
+
+The model can call search_repo, open_file, list_files, etc. via ToolGateway
+to ground its answers — the same tools the Gemini agent uses.
 
 Usage:
-    python -m src.training.eval_sft \
-        --tasks       eval/prfconnect/tasks.prfc-connect.heldout.jsonl \
-        --answers     eval/prfconnect/answers.prfc-connect.heldout.jsonl \
-        --spec        eval/eval_spec.json \
-        --checkpoint  tinker://RUN_ID:train:0/weights/sft-epoch-7 \
-        --output-dir  eval/prfconnect/sft_results \
-        --baseline    eval/prfconnect/real_results/output.prfc-connect.auto.json
-
-    # Or read checkpoint path from the file saved by sft_train.py:
+    # With tool calling (recommended):
     python -m src.training.eval_sft \
         --tasks       eval/prfconnect/tasks.prfc-connect.heldout.jsonl \
         --answers     eval/prfconnect/answers.prfc-connect.heldout.jsonl \
         --spec        eval/eval_spec.json \
         --checkpoint  training_data/last_checkpoint.txt \
+        --repo-path   hack4impact-repos/prfc-connect \
         --output-dir  eval/prfconnect/sft_results \
         --baseline    eval/prfconnect/real_results/output.prfc-connect.auto.json
+
+    # Without tool calling (single-shot, like old behavior):
+    python -m src.training.eval_sft \
+        --tasks       eval/prfconnect/tasks.prfc-connect.heldout.jsonl \
+        --answers     eval/prfconnect/answers.prfc-connect.heldout.jsonl \
+        --spec        eval/eval_spec.json \
+        --checkpoint  training_data/last_checkpoint.txt \
+        --output-dir  eval/prfconnect/sft_results
 """
 
 import argparse
@@ -104,21 +107,26 @@ def main():
     parser.add_argument("--answers", required=True, help="Answer key JSONL path")
     parser.add_argument("--spec", required=True, help="eval_spec.json path")
     parser.add_argument(
-        "--checkpoint", required=True,
+        "--checkpoint", required=False, default=None,
         help="tinker:// checkpoint path, or a file that contains one "
              "(e.g. training_data/last_checkpoint.txt)",
     )
+    parser.add_argument("--base-only", action="store_true",
+                        help="Evaluate the base model without any LoRA fine-tuning")
     parser.add_argument("--model", default="Qwen/Qwen3-8B", help="Base model name (for labelling)")
     parser.add_argument("--output-dir", required=True, help="Directory for eval outputs")
     parser.add_argument("--baseline", default=None, help="Optional baseline output.json for comparison")
     parser.add_argument("--max-tokens", type=int, default=2048, help="Max generation tokens")
     parser.add_argument("--temperature", type=float, default=0.3, help="Sampling temperature")
     parser.add_argument("--limit", type=int, default=None, help="Limit to first N tasks")
+    parser.add_argument(
+        "--repo-path", default=None,
+        help="Path to the target repository for tool-calling eval. "
+             "If provided, the model can use search_repo, open_file, etc. "
+             "If omitted, falls back to single-shot generation.",
+    )
+    parser.add_argument("--max-tool-turns", type=int, default=8, help="Max ReAct loop turns per task")
     args = parser.parse_args()
-
-    # Resolve checkpoint path
-    ckpt_path = resolve_checkpoint(args.checkpoint)
-    print(f"Checkpoint: {ckpt_path}")
 
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -128,29 +136,88 @@ def main():
         tasks = tasks[: args.limit]
     print(f"Loaded {len(tasks)} tasks from {args.tasks}")
 
-    # ── Connect to Tinker & create sampling client ──────────────────
+    # ── Connect to Tinker & create backend ──────────────────────────
     print("Connecting to Tinker...")
+    from src.model_backend import QwenTinkerBackend, tool_schemas_for_scope, ToolResult
+
     service = tinker.ServiceClient()
 
-    # Load persisted checkpoint into a training client, then get a sampling client.
-    # (create_sampling_client needs sampler_weights, but save_state creates weights;
-    #  this route converts on the fly.)
-    print("Loading checkpoint into training client...")
-    tc = service.create_training_client_from_state(path=ckpt_path)
+    if args.base_only:
+        # Base model eval: create a fresh LoRA adapter (B=0, so output = base model)
+        print(f"Creating base model client for {args.model} (no fine-tuning)...")
+        tc = service.create_lora_training_client(
+            base_model=args.model,
+            rank=32,
+        )
+        model_label = f"{args.model} (base)"
+    else:
+        if not args.checkpoint:
+            parser.error("--checkpoint is required unless --base-only is set")
+        ckpt_path = resolve_checkpoint(args.checkpoint)
+        print(f"Checkpoint: {ckpt_path}")
+        print("Loading checkpoint into training client...")
+        tc = service.create_training_client_from_state(path=ckpt_path)
+        model_label = f"{args.model}+LoRA"
+
     tokenizer = tc.get_tokenizer()
     print(f"Tokenizer loaded ({args.model})")
 
-    print("Creating sampling client from loaded weights...")
+    print("Creating sampling client...")
     sampling_client = tc.save_weights_and_get_sampling_client()
     print("Sampling client ready.")
 
-    sampling_params = types.SamplingParams(
+    backend = QwenTinkerBackend(
+        sampling_client=sampling_client,
+        tokenizer=tokenizer,
+        model_label=model_label,
         max_tokens=args.max_tokens,
-        temperature=args.temperature,
-        stop=["<|im_end|>"],
+        disable_thinking=True,
     )
 
-    # ── Inference loop ──────────────────────────────────────────────
+    # ── Set up tool gateway ─────────────────────────────────────────
+    gateway = None
+    if args.repo_path:
+        from src.tool_gateway import ToolGateway
+        try:
+            gateway = ToolGateway(repo_path=args.repo_path)
+            stats = gateway.stats()
+            print(f"Tool gateway loaded: {stats.get('total_files', 0)} files, "
+                  f"{stats.get('total_chunks', 0)} chunks indexed")
+        except Exception as e:
+            print(f"Warning: Could not load tool gateway ({e}). Falling back to single-shot.")
+            gateway = None
+    else:
+        print("No --repo-path given; using single-shot generation (no tool calling).")
+
+    tools = tool_schemas_for_scope("include-pr") if gateway else []
+
+    def execute_tool(tool_name: str, args_dict: dict) -> dict:
+        """Execute a tool call via ToolGateway."""
+        if gateway is None:
+            return {"error": "No tool gateway available"}
+        try:
+            if tool_name == "search_repo":
+                results = gateway.search_repo(args_dict.get("query"), top_k=args_dict.get("top_k", 5))
+                return {"results": results, "count": len(results)}
+            elif tool_name == "open_file":
+                return gateway.open_file(args_dict.get("path"), args_dict.get("start_line"), args_dict.get("end_line"))
+            elif tool_name == "list_files":
+                files = gateway.list_files(path_prefix=args_dict.get("path_prefix"), extensions=args_dict.get("extensions"))
+                return {"files": files, "count": len(files)}
+            elif tool_name == "get_repo_stats":
+                return gateway.stats()
+            elif tool_name == "get_issues":
+                results = gateway.get_issues(query=args_dict.get("query"), state=args_dict.get("state", "open"), limit=args_dict.get("limit", 10))
+                return {"issues": results, "count": len(results)}
+            elif tool_name == "get_pull_requests":
+                results = gateway.get_pull_requests(query=args_dict.get("query"), state=args_dict.get("state", "open"), limit=args_dict.get("limit", 10))
+                return {"pull_requests": results, "count": len(results)}
+            else:
+                return {"error": f"Unknown tool: {tool_name}"}
+        except Exception as e:
+            return {"error": str(e)}
+
+    # ── Inference loop (ReAct with tools) ───────────────────────────
     agent_outputs: list[dict] = []
     for idx, task in enumerate(tasks, 1):
         task_id = task["task_id"]
@@ -163,32 +230,50 @@ def main():
             f"Always cite specific files and line numbers."
         )
 
-        # Pre-fill assistant turn with closed <think> block to skip thinking
-        prompt_text = (
-            f"<|im_start|>system\n{system_msg}<|im_end|>\n"
-            f"<|im_start|>user\n{question}<|im_end|>\n"
-            f"<|im_start|>assistant\n<think>\n</think>\n\n"
-        )
-        prompt_tokens = tokenizer.encode(prompt_text)
-        prompt = types.ModelInput.from_ints(tokens=prompt_tokens)
-
         print(f"  [{idx}/{len(tasks)}] {task_id} ({mode})...", end=" ", flush=True)
         start_ms = time.time() * 1000
 
         try:
-            result = sampling_client.sample(prompt, 1, sampling_params).result()
-            seq = result.sequences[0]
-            answer_text = tokenizer.decode(seq.tokens).strip()
-            # Strip Qwen3 thinking blocks (closed or unclosed)
-            answer_text = re.sub(r"<think>.*?</think>", "", answer_text, flags=re.DOTALL).strip()
-            answer_text = re.sub(r"<think>.*", "", answer_text, flags=re.DOTALL).strip()
-            for stop_tok in ["<|im_end|>", "<|endoftext|>"]:
-                if answer_text.endswith(stop_tok):
-                    answer_text = answer_text[: -len(stop_tok)].strip()
+            messages = [
+                backend.format_system_message(system_msg),
+                backend.format_user_message(question),
+            ]
+
+            answer_text = ""
+            total_tool_calls = 0
+
+            # ReAct loop
+            for t in range(args.max_tool_turns):
+                model_turn = backend.generate(messages, tools, temperature=args.temperature)
+
+                if model_turn.has_tool_calls and gateway is not None:
+                    messages.append(backend.format_assistant_message(model_turn))
+                    tool_results = []
+                    for tc_item in model_turn.tool_calls:
+                        result = execute_tool(tc_item.name, tc_item.arguments)
+                        tool_results.append(ToolResult(name=tc_item.name, result=result))
+                        total_tool_calls += 1
+                    formatted = backend.format_tool_results(tool_results)
+                    if isinstance(formatted, list):
+                        messages.extend(formatted)
+                    else:
+                        messages.append(formatted)
+                else:
+                    answer_text = model_turn.text or ""
+                    break
+
+            if not answer_text.strip():
+                messages.append(backend.format_user_message(
+                    "Please provide your final answer based on the evidence gathered."
+                ))
+                final_turn = backend.generate(messages, tools=[], temperature=args.temperature)
+                answer_text = final_turn.text or ""
+
             status = "ok"
             error = None
         except Exception as e:
             answer_text = ""
+            total_tool_calls = 0
             status = "error"
             error = str(e)
 
@@ -210,17 +295,18 @@ def main():
             "citations": citations,
             "patch_diff": None,
             "next_actions": [],
-            "tool_call_count": 0,
+            "tool_call_count": total_tool_calls,
             "latency_ms": elapsed_ms,
             "started_at": "",
             "finished_at": "",
-            "session_id": "sft-eval",
+            "session_id": "sft-eval-tools" if gateway else "sft-eval",
         }
         agent_outputs.append(row)
 
         wc = len(answer_text.split())
         status_str = "ok" if status == "ok" else f"ERR: {error}"
-        print(f"{status_str} ({wc} words, {elapsed_ms}ms)")
+        tc_str = f", {total_tool_calls} tool calls" if total_tool_calls else ""
+        print(f"{status_str} ({wc} words{tc_str}, {elapsed_ms}ms)")
 
     # ── Write agent outputs ─────────────────────────────────────────
     agent_out_path = out_dir / "agent_outputs.sft.jsonl"

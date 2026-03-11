@@ -1,0 +1,4 @@
+  Saved checkpoint: sft-epoch-7 → tinker://d3738ee6-fa84-5aa0-a3f9-8aae59b50308:train:0/weights/sft-epoch-7
+
+  SFT training complete.
+Final checkpoint path: tinker://ee9cd87f-be8a-546c-b69d-8e2adc41c4ad:train:0/weights/sft-epoch-7

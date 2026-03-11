@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Running evaluation test 0</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+Running evaluation test 0  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:00:50  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map contact-group enrichment behavior from service logic to tests.          </p>
+          <p class="lt-p">
+Response: The behavior for contact-group enrichment in PRFC Connect is implemented in the service logic and then tested using unit tests. Here&#x27;s a map of how the enrichment behavior is defined and verified:
+
+### 1. **Service Logic (src/services/referral.ts)**
+
+The core logic for enriching contact groups is handled by the `enrichContactGroups` function within `src/services/referral.ts`.
+
+-   **`src/services/referral.ts#L190-L222`**: This function takes an array of referrals and an array of contact group members, then groups the contact information by `contactGroupHash`. It ensures that each referral object contains a `contactGroups` array with objects that have `hash`, `name`, and `emails`.
+
+### 2. **Unit Tests (test/services/referral.test.ts)**
+
+The `enrichContactGroups` function is thoroughly tested in `test/services/referral.test.ts` to ensure it correctly groups and enforces the structure of contact groups.
+
+-   **`test/services/referral.test.ts#L57-L80`**: These tests create various scenarios, including empty input arrays and arrays with different numbers of referrals and contact group members. They assert that the output correctly groups contact emails under the appropriate `contactGroupHash` and that all email addresses are included, even if the number of emails exceeds the number of referral fields.
+
+### Summary
+
+| Behavior Definition | Test Verification |
+|---------------------|-------------------|
+| Grouping emails by `contactGroupHash` | `test/services/referral.test.ts#L57-L80` (asserts correct `contactGroups` structure) |
+| Enforcing `emails`, `name`, and `hash` fields | `test/services/referral.test.ts#L57-L80` (asserts presence and correctness of fields) |
+| Handling edge cases (empty arrays, more emails than fields) | `test/services/referral.test.ts#L57-L80` (specific test cases for edge conditions) |          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/contact-group.ts, src/actions/contact-group.ts, src/services/contact-group.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+414                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `useMobile` hook implemented?          </p>
+          <p class="lt-p">
+Response: The `useMobile` hook is implemented in `src/hooks/useMobile.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/hooks/use-mobile.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+17                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the public home page implemented?          </p>
+          <p class="lt-p">
+Response: The public home page for the PRFC Connect application is implemented in the following file:
+
+**src/app/page.tsx**
+
+This file renders the main layout and components for the public-facing home page, including the navigation bar, featured content, and a section for referring friends.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/(public)/page.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+55                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Evaluate whether idempotency storage should be per-route/per-user/global; propose a schema and expiration policy.          </p>
+          <p class="lt-p">
+Response: ### Idempotency Storage Evaluation
+
+Idempotency is crucial for preventing duplicate submissions, especially in forms that trigger server-side mutations (e.g., creating a referral). The scope of idempotency storage (per-route, per-user, global) should be determined by the application&#x27;s mutation patterns and the likelihood of duplicate requests.
+
+#### Proposed Idempotency Storage Scope: Per-User and Per-Action (Route-Specific)
+
+For the PRFC Connect application, particularly for the `/api/referrals` route (src/app/api/referrals/route.ts), idempotency tokens should be stored **per-user and per-action**. This approach balances scope and efficiency, preventing duplicate submissions for the same user performing the same action (e.g., creating a referral with the same `referralCode`).
+
+#### Proposed Idempotency Token Schema
+
+The idempotency token should uniquely identify a request and its associated user, along with the specific action (e.g., `createReferral`).
+
+```typescript
+// src/utils/idempotency.ts
+export interface IdempotencyKey {
+  // A unique identifier generated by the client for the specific request.
+  client_id: string;
+  // The authenticated user&#x27;s ID. This ensures that different users can perform the same action
+  // and have their own separate idempotency.
+  user_id: string;
+  // A unique, non-semantic identifier for the action being performed. This differentiates
+  // between creating a referral, updating a referral, etc.
+  action: string;
+  // A timestamp indicating when the idempotency key was created.
+  createdAt: number;
+}
+```
+
+#### Proposed Expiration Policy
+
+Idempotency keys should have a **short expiration time** to balance resource usage and effectiveness. Old keys that have not been used are no longer relevant, and holding onto them indefinitely consumes memory.
+
+-   **Expiration Time**: 5 minutes.
+-   **Grace Period**: 10 minutes (keys expire after 5 minutes but can be retrieved for 10 minutes to allow late submission).
+
+This means that if a user attempts to submit the same form after 5 minutes, the key will no longer exist, and the request will be processed as a new one. However, if the duplicate request arrives within 10 minutes, the key will still be present, and the duplicate can be rejected.
+
+#### How to Implement
+
+1.  **Client-Side**: When the user submits the form (e.g., `handleSubmit` in `src/app/(user)/create-referral/page.tsx`), the client should generate a unique `client_id` (UUID) and include it in the request headers.
+    
+```typescript
+    // Example: Generating a UUID client-side (e.g., in a React component)
+    const client_id = uuidv4(); // Ensure a cryptographically secure UUID
+    const headers = {
+        &quot;Authorization&quot;: `Bearer ${token}`,
+        &quot;Idempotency-Key&quot;: client_id,
+        &quot;UserId&quot;: user.id,
+    };
+    ```
+
+2.  **Server-Side (`src/app/api/referrals/route.ts`)**: At the beginning of the POST handler, check if an `IdempotencyKey` exists for the given `client_id`, `user.id`, and action (`createReferral`). If it exists within the grace period, return the cached response. Otherwise, create a new key and store it.
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    // Inside the POST handler
+    if (idempotentResponse) {
+        return new NextResponse(idempotentResponse.body, {
+            status: idempotentResponse.status,
+            headers: idempotentResponse.headers,
+        });
+    }
+
+    // Otherwise, proceed with the mutation
+    // ... (createReferral logic) ...
+    // After successful mutation, store the idempotency key
+    const idempotencyKey: IdempotencyKey = {
+        client_id: client_id,
+        user_id: user.id,
+        action: &quot;createReferral&quot;,
+        createdAt: Date.now(),
+    };
+
+    await setIdempotencyKey(idempotencyKey);
+    ```
+
+3.  **Storage**: Use a fast, in-memory cache like Redis or `node-cache` to store and retrieve idempotency keys. Redis is recommended for distributed systems or if the application scales horizontally. For a single-node application, `node-cache` is lightweight and sufficient.
+    
+```bash
+// package.json (add to dependencies)
+&quot;node-cache&quot;: &quot;^9.0.0&quot;
+```
+
+```typescript
+    // src/utils/idempotency.ts
+    import { Cache } from &#x27;node-cache&#x27;;
+    const idempotencyCache = new Cache({ stdTTL: 300, useClones: false }); // 5 minutes
+
+    export async function setIdempotencyKey(key: IdempotencyKey): Promise&lt;void&gt; {
+        idempotencyCache.set(generateCacheKey(key), key);
+    }
+
+    export async function getIdempotencyKey(client_id: string, user_id: string, action: string): Promise&lt;{ body: any; status: number; headers: Headers } | null&gt; {
+        const cacheKey = generateCacheKey({ client_id, user_id, action });
+        const cachedKey = idempotencyCache.get(cacheKey);
+        if (!cachedKey) {
+            return null;
+        }
+
+        // Check if expired (createdAt + 5 minutes &gt; now) or grace period (createdAt + 10 minutes &lt; now)
+        if (Date.now() &gt; cachedKey.createdAt + 5 * 60 * 1000 || Date.now() &gt; cachedKey.createdAt + 10 * 60 * 1000) {
+            idempotencyCache.del(cacheKey);
+            return null;
+        }
+
+        // Return a mock response (in a real scenario, the body would be the newly created referral object)
+        const body = await prisma.referral.create({
+            data: {
+                referralCode,
+                // ... other fields
+            },
+            select: {
+                id: true,
+                referralCode: true,
+                // ... other fields to return
+            },
+        });
+
+        return {
+            body: JSON.stringify(body),
+            status: 201,
+            headers: new Headers({
+                &quot;Content-Type&quot;: &quot;application/json&quot;,
+            }),
+        };
+    }
+
+    function generateCacheKey(key: { client_id: string; user_id: string; action: string }): string {
+        return `${key.client_id}-${key.user_id}-${key.action}`;
+    }
+    ```
+
+#### Justification
+
+-   **Per-User**: Ensures that one user&#x27;s duplicate submissions don&#x27;t inadvertently affect or interfere with another user&#x27;s submissions.
+-   **Per-Action**: Differentiates between creating, updating, or deleting referrals, which are semantically distinct operations.
+-   **Short Expiration with Grace Period**: Minimizes memory footprint while still allowing for a small window to handle very late duplicate submissions that might otherwise be processed correctly if the key had already expired.
+
+This approach provides robust protection against duplicate submissions without over-restricting valid retries or consuming unnecessary resources.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+1493                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

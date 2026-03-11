@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "spec_name": "repo-assist-eval-v1",
+    "n_ratings": 100,
+    "n_results": 100,
+    "n_retrieval": 100
+  },
+  "quality": {
+    "rubric_mean_total": 3.65,
+    "pass_rate": 0.03,
+    "critical_error_rate": 0.37,
+    "by_criterion": {
+      "correctness": {
+        "mean": 0.07,
+        "count": 100
+      },
+      "grounding": {
+        "mean": 0.74,
+        "count": 100
+      },
+      "relevance": {
+        "mean": 1.47,
+        "count": 100
+      },
+      "clarity": {
+        "mean": 1.37,
+        "count": 100
+      }
+    },
+    "rubric_mean_total_ci": {
+      "mean": 3.65,
+      "ci_low": 3.42,
+      "ci_high": 3.87
+    },
+    "pass_rate_ci": {
+      "mean": 0.03,
+      "ci_low": 0.0,
+      "ci_high": 0.07
+    }
+  },
+  "grounding": {
+    "citation_precision": 0.0,
+    "substring_overlap_mean": 0.0,
+    "source_coverage": 0.11726384364820847
+  },
+  "retrieval": {
+    "p@3": 0.025,
+    "r@3": 0.02142857142857143,
+    "ndcg@3": 0.02,
+    "p@5": 0.027,
+    "r@5": 0.022857142857142857,
+    "ndcg@5": 0.02,
+    "p@10": 0.027,
+    "r@10": 0.022857142857142857,
+    "ndcg@10": 0.02
+  },
+  "task_success": {
+    "success_rate": 0.03,
+    "exact_match_rate": 0.03,
+    "unit_test_pass_rate": 0.384,
+    "pass@1": 0.03,
+    "pass@3": 0.03,
+    "pass@5": 0.03
+  },
+  "performance": {
+    "latency_ms": {
+      "mean": 33623.44,
+      "p50": 37707.5,
+      "p90": 62368.80000000003,
+      "p99": 82294.54000000007
+    },
+    "throughput_tasks_per_min": {
+      "mean": 3.56661
+    },
+    "cost_usd": {
+      "mean": 0.01322196,
+      "total": 1.322196
+    },
+    "completion_time_s": {
+      "mean": 33.62344,
+      "p90": 62.368800000000036
+    }
+  },
+  "agreement": {
+    "note": "No exactly-two-rater overlaps found."
+  },
+  "delta_vs_baseline": {
+    "meta.n_ratings": 0.0,
+    "meta.n_results": 0.0,
+    "meta.n_retrieval": 0.0,
+    "quality.rubric_mean_total": -2.19,
+    "quality.pass_rate": -0.5399999999999999,
+    "quality.critical_error_rate": 0.33999999999999997,
+    "quality.by_criterion.correctness.mean": -1.0,
+    "quality.by_criterion.correctness.count": 0.0,
+    "quality.by_criterion.grounding.mean": -0.71,
+    "quality.by_criterion.grounding.count": 0.0,
+    "quality.by_criterion.relevance.mean": -0.28,
+    "quality.by_criterion.relevance.count": 0.0,
+    "quality.by_criterion.clarity.mean": -0.19999999999999996,
+    "quality.by_criterion.clarity.count": 0.0,
+    "quality.rubric_mean_total_ci.mean": -2.19,
+    "quality.rubric_mean_total_ci.ci_low": -2.05,
+    "quality.rubric_mean_total_ci.ci_high": -2.33,
+    "quality.pass_rate_ci.mean": -0.5399999999999999,
+    "quality.pass_rate_ci.ci_low": -0.47,
+    "quality.pass_rate_ci.ci_high": -0.6000000000000001,
+    "grounding.citation_precision": -1.0,
+    "grounding.substring_overlap_mean": -0.194697,
+    "grounding.source_coverage": -0.28013029315960913,
+    "retrieval.p@3": -0.3233333333333333,
+    "retrieval.r@3": -0.5063333333333333,
+    "retrieval.ndcg@3": -0.4743204620793021,
+    "retrieval.p@5": -0.27849999999999997,
+    "retrieval.r@5": -0.541142857142857,
+    "retrieval.ndcg@5": -0.49116848239035416,
+    "retrieval.p@10": -0.26317857142857143,
+    "retrieval.r@10": -0.5773095238095237,
+    "retrieval.ndcg@10": -0.5053450098435005,
+    "task_success.success_rate": -0.42000000000000004,
+    "task_success.exact_match_rate": -0.33999999999999997,
+    "task_success.unit_test_pass_rate": -0.2975,
+    "task_success.pass@1": -0.42000000000000004,
+    "task_success.pass@3": -0.42000000000000004,
+    "task_success.pass@5": -0.42000000000000004,
+    "performance.latency_ms.mean": 12324.61,
+    "performance.latency_ms.p50": 22667.5,
+    "performance.latency_ms.p90": 25812.800000000025,
+    "performance.latency_ms.p99": -40996.65000000056,
+    "performance.throughput_tasks_per_min.mean": -2.0016,
+    "performance.cost_usd.mean": -0.0013594699999999998,
+    "performance.cost_usd.total": -0.13594700000000004,
+    "performance.completion_time_s.mean": 12.324610000000003,
+    "performance.completion_time_s.p90": 25.812800000000024
+  }
+}

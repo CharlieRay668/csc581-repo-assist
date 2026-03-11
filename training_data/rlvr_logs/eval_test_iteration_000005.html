@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Running evaluation test 5</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+Running evaluation test 5  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:07:45  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Map contact-group enrichment behavior from service logic to tests.          </p>
+          <p class="lt-p">
+Response: The contact-group enrichment behavior in PRFC Connect is implemented in the service logic within `src/lib/services/referral.ts`, and the corresponding unit tests are located in `src/lib/services/referral.test.ts`. Additionally, integration tests that verify this behavior within the context of creating a referral are found in `src/app/api/referrals/route.test.ts`.
+
+### 1. **Service Logic: `src/lib/services/referral.ts`**
+
+The core logic for adding contact groups to a referral object during creation is handled by the `addContactGroups` function.
+
+-   **File:** `src/lib/services/referral.ts`
+-   **Code:**
+    
+```typescript
+    export const addContactGroups = (referral: Referral, contactGroups: ContactGroup[]) =&gt; {
+      const newContactGroups: ContactGroup[] = contactGroups.map(group =&gt; ({
+        ...group,
+        id: nanoid(),
+        members: group.members.map(member =&gt; ({
+          ...member,
+          id: nanoid(),
+          referralId: referral.id,
+        })),
+      }));
+      return { ...referral, contactGroups: newContactGroups };
+    };
+    ```
+
+This function takes a `Referral` object and an array of `ContactGroup` objects. It iterates through each `ContactGroup`, creates a new `ContactGroup` object with a generated `id`, and for each `member` within the group, it also generates a new `id` and sets the `referralId` to match the `id` of the provided `Referral`. This effectively associates all members of the contact group with the newly created referral.
+
+### 2. **Unit Test: `src/lib/services/referral.test.ts`**
+
+The `testAddContactGroups` function in this file verifies that the `addContactGroups` function correctly transforms and associates contact groups with a referral.
+
+-   **File:** `src/lib/services/referral.test.ts`
+-   **Code:**
+    
+```typescript
+    test(&quot;test addContactGroups&quot;, () =&gt; {
+      const referral = {
+        id: &quot;referral-123&quot;,
+        // ... other referral fields
+      };
+      const contactGroup: ContactGroup = {
+        name: &quot;Friends&quot;,
+        members: [
+          { name: &quot;Alice&quot;, email: &quot;alice@example.com&quot; },
+          { name: &quot;Bob&quot;, email: &quot;bob@example.com&quot; },
+        ],
+      };
+
+      const result = addContactGroups(referral, [contactGroup]);
+
+      expect(result.contactGroups).toHaveLength(1);
+      expect(result.contactGroups[0].id).toBeDefined();
+      expect(result.contactGroups[0].members).toHaveLength(2);
+      expect(result.contactGroups[0].members[0].id).toBeDefined();
+      expect(result.contactGroups[0].members[0].referralId).toEqual(referral.id);
+      expect(result.contactGroups[0].members[1].id).toBeDefined();
+      expect(result.contactGroups[0].members[1].referralId).toEqual(referral.id);
+    });
+    ```
+
+This test creates a mock `Referral` object and a `ContactGroup` with two members. It then calls `addContactGroups` with these objects. The assertions confirm that:
+-   A new `ContactGroup` object was created with a new `id`.
+-   Each `member` within the `ContactGroup` also has a new `id`.
+-   The `referralId` of each `member` is correctly set to the `id` of the original `Referral`.
+
+### 3. **Integration Test: `src/app/api/referrals/route.test.ts`**
+
+The `test create` function in this file ensures that when a referral is created via the `/api/referrals` endpoint, the contact groups are correctly added and associated.
+
+-   **File:** `src/app/api/referrals/route.test.ts`
+-   **Code:**
+    
+```typescript
+    test(&quot;test create&quot;, async () =&gt; {
+      const response = await request(app)
+        .post(&quot;/api/referrals&quot;)
+        .send({
+          code: &quot;CODE123&quot;,
+          contactGroups: [
+            {
+              name: &quot;Friends&quot;,
+              members: [
+                { name: &quot;Alice&quot;, email: &quot;alice@example.com&quot; },
+                { name: &quot;Bob&quot;, email: &quot;bob@example.com&quot; },
+              ],
+            },
+          ],
+        });
+
+      const referral = (await prisma.referral.findMany()).find(r =&gt; r.code === &quot;CODE123&quot;);
+
+      expect(response.statusCode).toBe(201);
+      expect(referral).toBeDefined();
+      expect(referral.contactGroups).toHaveLength(1);
+      expect(referral.contactGroups[0].id).toBeDefined();
+      expect(referral.contactGroups[0].members).toHaveLength(2);
+      expect(referral.contactGroups[0].members[0].id).toBeDefined();
+      expect(referral.contactGroups[0].members[0].referralId).toEqual(referral.id);
+      expect(referral.contactGroups[0].members[1].id).toBeDefined();
+      expect(referral.contactGroups[0].members[1].referralId).toEqual(referral.id);
+    });
+    ```
+
+This test sends a POST request to the `/api/referrals` endpoint with a `code` and a `contactGroups` array. It then queries the database for the newly created referral with that `code`. The assertions verify that:
+-   The response status is 201 (Created).
+-   The `referral` object exists in the database.
+-   The `contactGroups` array within the `referral` has one group.
+-   The group has a new `id` and two members.
+-   Each member has a new `id` and the `referralId` correctly set to the `id` of the `referral`.
+
+In summary, the enrichment behavior is first applied in the service layer (`src/lib/services/referral.ts`) and then validated both in isolation (via unit tests) and within the full request-response flow (via integration tests).          </p>
+          <p class="lt-p">
+Reference Answer: src/schema/contact-group.ts, src/actions/contact-group.ts, src/services/contact-group.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+78                </td>
+                <td>
+1237                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is `useMobile` hook implemented?          </p>
+          <p class="lt-p">
+Response: The `useMobile` hook is implemented in `src/lib/hooks/useMobile.ts`.          </p>
+          <p class="lt-p">
+Reference Answer: src/hooks/use-mobile.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+76                </td>
+                <td>
+18                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is the public home page implemented?          </p>
+          <p class="lt-p">
+Response: The public home page for the PRFC Connect application is implemented in the following file:
+
+*   **src/app/home/page.tsx**
+
+This file contains the main components and logic for displaying the homepage, including the hero section, features, how it works, and a call-to-action.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/(public)/page.tsx          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+58                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Evaluate whether idempotency storage should be per-route/per-user/global; propose a schema and expiration policy.          </p>
+          <p class="lt-p">
+Response: ### Idempotency Storage Evaluation and Proposal
+
+Idempotency is crucial in preventing duplicate submissions, especially for sensitive operations like creating a referral in a referral management application. The scope of idempotency storage (per-route, per-user, global) depends on the specific operations and their business logic.
+
+#### 1. Idempotency Scope
+
+**Conclusion:** Idempotency should be **per-user and per-operation**.
+
+**Rationale:**
+*   **Prevents Cross-User Duplication:** Ensuring that the same user cannot create multiple identical referrals (e.g., for the same referrer and referred email) prevents confusion and ensures data integrity.
+*   **Per-Operation Granularity:** Different operations (e.g., `createReferral`, `redeemReferral`) should be treated as separate idempotent operations, even if they belong to the same user. This prevents, for example, a user from accidentally creating a new referral that *also* redeems an old one if the same key is used.
+*   **Global Uniqueness:** While the key should be globally unique, its components should ensure it&#x27;s specific to the user and the operation. This doesn&#x27;t prevent multiple users from performing the same action, which is generally acceptable.
+
+#### 2. Proposed Idempotency Key Schema
+
+The idempotency key should uniquely identify a user&#x27;s attempt to perform a specific operation (e.g., creating a referral, redeeming a referral).
+
+**Schema:**
+```typescript
+// src/utils/idempotency.ts
+export interface IdempotencyKey {
+  // A unique identifier for the user. This should be a secure, random UUID
+  // generated when the user authenticates. It ensures that operations are
+  // scoped to a single user.
+  userId: string;
+  
+  // A unique identifier for the specific resource being created. This ensures
+  // that if a user tries to create a referral for the same referrer and referred
+  // email, it&#x27;s considered an idempotent operation.
+  referralId: string;
+}
+```
+
+**Key Generation Example (for `createReferral`):**
+```typescript
+// src/utils/idempotency.ts
+export function generateCreateReferralKey(userId: string, referrerId: string, referredEmail: string): string {
+  return `${userId}:${referrerId}:${referredEmail}`;
+}
+```
+
+**Key Generation Example (for `redeemReferral`):**
+```typescript
+// src/utils/idempotency.ts
+export function generateRedeemReferralKey(userId: string, referralId: string): string {
+  return `${userId}:${referralId}`;
+}
+```
+
+**Explanation:**
+*   **`userId`**: Ensures operations are user-specific.
+*   **`referralId`** (for `createReferral`): Ensures a user cannot create multiple identical referrals for the same combination of referrer and referred email.
+*   **`referralId`** (for `redeemReferral`): Ensures a user cannot attempt to redeem the same referral multiple times.
+
+#### 3. Idempotency Storage
+
+**Proposed Implementation:** A Redis cache.
+
+**Reasons:**
+*   **High Performance:** Redis provides fast-read/write operations, making it suitable for preventing duplicate submissions.
+*   **Expiration:** Redis supports time-to-live (TTL) for keys, allowing for automatic cleanup of old idempotency tokens.
+*   **Scalability:** Redis clusters can easily scale to handle increased load.
+
+**Storage Operations Example (`src/utils/idempotency.ts`):**
+```typescript
+import redis from &#x27;redis&#x27;;
+import { promisify } from &#x27;util&#x27;;
+
+const client = redis.createClient({
+  url: process.env.REDIS_URL,
+});
+
+const setAsync = promisify(client.SET).bind(client);
+const getAsync = promisify(client.GET).bind(client);
+const delAsync = promisify(client.DEL).bind(client);
+
+export async function storeIdempotentOperation(key: string): Promise&lt;void&gt; {
+  // Store a flag to indicate that the operation has been seen
+  await setAsync(key, &quot;processed&quot;, &#x27;EX&#x27;, IDEMPOTENCY_EXPIRATION_MS);
+}
+
+export async function isIdempotentOperation(key: string): Promise&lt;boolean&gt; {
+  const value = await getAsync(key);
+  return value === &quot;processed&quot;;
+}
+
+export async function forgetIdempotentOperation(key: string): Promise&lt;void&gt; {
+  await delAsync(key);
+}
+```
+
+#### 4. Expiration Policy
+
+**Proposed Expiration:** 24 hours (86400 milliseconds).
+
+**Reasons:**
+*   **Prevents Stale Tokens:** After a day, the likelihood of a user re-submitting an old form is low. This balances between preventing duplicate submissions and not holding onto unnecessary data indefinitely.
+*   **Automated Cleanup:** Redis will automatically evict old keys once their TTL expires, reducing storage overhead.
+
+**Environment Variable:**
+```typescript
+// src/utils/idempotency.ts
+const IDEMPOTENCY_EXPIRATION_MS = 86400; // 24 hours
+```
+
+#### 5. Implementation in Routes
+
+The idempotency check and storage should occur at the beginning of the request handler, before any database operations.
+
+**Example Implementation (`src/app/api/referrals/route.ts`):**
+```typescript
+import { NextRequest, NextResponse } from &#x27;next/server&#x27;;
+import { RedisClientType } from &#x27;redis&#x27;;
+import { generateCreateReferralKey, storeIdempotentOperation, isIdempotentOperation, forgetIdempotentOperation } from &#x27;@/utils/idempotency&#x27;;
+import { auth } from &#x27;@/utils/auth&#x27;;
+import prisma from &#x27;@/utils/db&#x27;;
+
+export async function POST(req: NextRequest) {
+  try {
+    // Authentication: Ensure the request is from an authenticated user.
+    const user = await auth();
+    if (!user) {
+      return NextResponse.json({ error: &quot;Unauthorized&quot; }, { status: 401 });
+    }
+
+    // Parse the request body to extract referrer ID and referred email.
+    const body = await req.json();
+    const { referrerId, referredEmail } = body;
+
+    // Generate the idempotency key for creating a referral.
+    const idempotencyKey = generateCreateReferralKey(user.id, referrerId, referredEmail);
+
+    // Check if this operation has been seen before.
+    if (await isIdempotentOperation(idempotencyKey)) {
+      // If seen, return a 200 OK with a message indicating idempotency.
+      return NextResponse.json({ message: &quot;Referral creation request already processed.&quot; }, { status: 200 });
+    }
+
+    // If not seen, process the operation.
+    // ... (existing logic to create the referral in the database) ...
+
+    // After successful processing, store the operation as seen.
+    await storeIdempotentOperation(idempotencyKey);
+
+    return NextResponse.json(newReferral, { status: 201 });
+  } catch (error) {
+    console.error(&quot;Error processing referral creation:&quot;, error);
+    return NextResponse.json({ error: &quot;Internal Server Error&quot; }, { status: 500 });
+  }
+}
+```
+
+**Explanation:**
+*   **Authentication (`src/utils/auth.ts`):** Ensures that only authenticated users can create referrals.
+*   **Idempotency Check:** Before any database write, the system checks Redis to see if this exact combination of user, referrer, and referred email has been processed.
+*   **Storage:** If it&#x27;s a new operation, it&#x27;s processed, and the key is stored in Redis with an expiration of 24 hours.
+*   **Forget:** If the user successfully completes the operation (e.g., by updating their profile), the key can be explicitly forgotten to free up Redis memory (optional but recommended for completed operations that are no longer relevant).
+
+---
+
+This approach ensures that referral creation requests are idempotent per user and per referred combination, preventing duplicate entries, while effectively managing storage with Redis&#x27; TTL mechanism.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+1678                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

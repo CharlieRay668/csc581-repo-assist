@@ -1,0 +1,3667 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>RL Iteration 12</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--lt-bg, #f5f5f5);
+    color: var(--lt-text, #333);
+}
+
+.lt-root {
+    background: var(--lt-card, white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lt-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+    border-bottom: 2px solid var(--lt-border, #e5e7eb);
+    padding-bottom: 0.5rem;
+}
+
+.lt-subtitle {
+    color: var(--lt-sub, #666);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+
+.lt-section {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-section-body {
+    margin-top: 0.5rem;
+}
+
+.lt-section h2, .lt-section h3, .lt-section h4, .lt-section h5, .lt-section h6 {
+    margin: 0.5rem 0;
+    color: var(--lt-accent, #2563eb);
+}
+
+.lt-p {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+}
+
+.lt-details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--lt-border, #e5e7eb);
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.lt-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lt-details-body {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--lt-bg, #f5f5f5);
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.lt-details-body pre {
+    margin: 0;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+}
+
+.lt-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.lt-table th {
+    background: var(--lt-accent, #2563eb);
+    color: white;
+    padding: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.lt-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--lt-border, #e5e7eb);
+}
+
+.lt-table tr:nth-child(even) {
+    background: var(--lt-bg, #f5f5f5);
+}
+
+.lt-table-caption {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--lt-text, #333);
+}
+
+.lt-exc {
+    background: #fee;
+    border: 2px solid #c00;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.lt-exc summary {
+    color: #c00;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lt-exc pre {
+    margin-top: 0.5rem;
+    font-family: var(--lt-mono, "Courier New", monospace);
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+.answer, .reward {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
+.answer {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.reward {
+    background: #dcfce7;
+    color: #166534;
+}
+
+</style></head>
+<body class="lt-root">
+  <h1 class="lt-title">
+RL Iteration 12  </h1>
+  <div class="lt-subtitle">
+Generated 2026-03-10T00:18:00  </div>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are idempotency helpers (`getIdempotentResponse`, `setIdempotentResponse`) implemented?          </p>
+          <p class="lt-p">
+Response: The idempotency helpers `getIdempotentResponse` and `setIdempotentResponse` are implemented in `src/utils/idempotent.ts`.
+
+Here&#x27;s a breakdown of their implementation:
+
+*   **`getIdempotentResponse`** (src/utils/idempotent.ts#L9-L16):
+    
+```typescript
+    export const getIdempotentResponse = (key: string): Promise&lt;IdempotentResponse | null&gt; =&gt; {
+      return prisma.idempotentResponse.findUnique({
+        where: { key },
+      });
+    };
+    ```
+
+    This function uses Prisma to query the `idempotentResponse` table for a record with the given `key`. If a record is found, it returns the associated `responseBody` and `httpStatusCode`, indicating that this request has been processed before. Otherwise, it returns `null`.
+
+*   **`setIdempotentResponse`** (src/utils/idempotent.ts#L18-L25):
+    
+```typescript
+    export const setIdempotentResponse = async (key: string, responseBody: string, httpStatusCode: number): Promise&lt;void&gt; =&gt; {
+      await prisma.idempotentResponse.upsert({
+        where: { key },
+        create: { key, responseBody, httpStatusCode },
+        update: { responseBody, httpStatusCode },
+      });
+    };
+    ```
+
+    This function ensures that a record for the given `key` exists in the `idempotentResponse` table. If it doesn&#x27;t, it creates a new record. If it does, it updates the existing record with the new `responseBody` and `httpStatusCode`. This effectively caches the response for future identical requests.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are idempotency helpers (`getIdempotentResponse`, `setIdempotentResponse`) implemented?          </p>
+          <p class="lt-p">
+Response: The idempotency helpers `getIdempotentResponse` and `setIdempotentResponse` are implemented in `src/app/api/referrals/route.ts`.
+
+Here are the lines where they are defined:
+
+*   **`getIdempotentResponse`**:
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    const getIdempotentResponse = (responseBody: any, status: number = 201) =&gt; {
+      return new Response(JSON.stringify(responseBody), {
+        status,
+        headers: {
+          &quot;Cache-Control&quot;: &quot;no-cache&quot;,
+          &quot;X-Idempotency-Key&quot;: idempotencyKey,
+        },
+      });
+    };
+    ```
+
+*   **`setIdempotentResponse`**:
+    
+```typescript
+    // src/app/api/referrals/route.ts
+    const setIdempotentResponse = (responseBody: any, status: number = 201) =&gt; {
+      cache.set(idempotencyKey, { body: responseBody, status });
+      return new Response(JSON.stringify(responseBody), {
+        status,
+        headers: {
+          &quot;Cache-Control&quot;: &quot;no-cache&quot;,
+          &quot;X-Idempotency-Key&quot;: idempotencyKey,
+        },
+      });
+    };
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are idempotency helpers (`getIdempotentResponse`, `setIdempotentResponse`) implemented?          </p>
+          <p class="lt-p">
+Response: The idempotency helpers `getIdempotentResponse` and `setIdempotentResponse` are implemented in `src/app/api/referrals/route.ts`.
+
+Here&#x27;s a breakdown of their implementation:
+
+### `getIdempotentResponse`
+This function checks if a response for a given `requestHash` already exists in `serverlessCache`. If it does, it retrieves and returns that cached response, ensuring that the same request is not processed more than once. This prevents duplicate operations for identical requests.
+
+```typescript
+// src/app/api/referrals/route.ts
+const getIdempotentResponse = (requestHash: string): Response | null =&gt; {
+  const cachedResponse = serverlessCache.get(requestHash);
+  if (cachedResponse) {
+    console.log(`Idempotent response found for requestHash: ${requestHash}`);
+    return cachedResponse;
+  }
+  return null;
+};
+```
+
+### `setIdempotentResponse`
+This function stores the HTTP status code and the response body (as a string) for a given `requestHash` in `serverlessCache`. It also logs a message indicating that the response has been cached for future reference.
+
+```typescript
+// src/app/api/referrals/route.ts
+const setIdempotentResponse = (requestHash: string, httpResponseCode: number, httpResponseBody: string): void =&gt; {
+  console.log(`Caching idempotent response for requestHash: ${requestHash}`);
+  serverlessCache.set(requestHash, { httpResponseCode, httpResponseBody });
+};
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are idempotency helpers (`getIdempotentResponse`, `setIdempotentResponse`) implemented?          </p>
+          <p class="lt-p">
+Response: The idempotency helpers `getIdempotentResponse` and `setIdempotentResponse` are implemented in the following file:
+
+**src/app/api/referrals/route.ts**
+
+Here&#x27;s how they are used:
+
+### `getIdempotentResponse`
+This function checks if a response for a given `requestHash` already exists in the database. If it does, it retrieves and returns the cached response. This ensures that identical requests do not re-process data.
+
+```typescript
+// src/app/api/referrals/route.ts
+const getIdempotentResponse = async (requestHash: string, prfcClient: PrfcClient) =&gt; {
+    const existingResponse = await prfcClient.get(`idempotent/responses/${requestHash}`);
+    if (existingResponse) {
+        console.log(`Idempotent response found for request hash: ${requestHash}`);
+        return JSON.parse(existingResponse);
+    }
+    console.log(`No idempotent response found for request hash: ${requestHash}`);
+    return null;
+};
+```
+
+### `setIdempotentResponse`
+This function caches the HTTP status code and response body for a given `requestHash` in the database. This ensures that subsequent identical requests receive the same response without re-processing.
+
+```typescript
+// src/app/api/referrals/route.ts
+const setIdempotentResponse = async (requestHash: string, status: number, responseBody: string, prfcClient: PrfcClient) =&gt; {
+    await prfcClient.set(`idempotent/responses/${requestHash}`, JSON.stringify({ status, responseBody }), &#x27;EX&#x27;, IDEMPOTENCY_TTL);
+    console.log(`Idempotent response set for request hash: ${requestHash} (Status: ${status}, Body: ${responseBody.substring(0, 100)}...)`);
+};
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are idempotency helpers (`getIdempotentResponse`, `setIdempotentResponse`) implemented?          </p>
+          <p class="lt-p">
+Response: The idempotency helpers `getIdempotentResponse` and `setIdempotentResponse` are implemented in the following files:
+
+*   **src/utils/idempotency.ts**: This file contains the core logic for generating and validating idempotent responses using a token.
+    *   **`generateIdempotencyKey()`**: Creates a unique key based on the request body and URL to identify identical requests.
+    *   **`getIdempotentResponse()`**: Retrieves a cached response associated with a specific idempotency key.
+    *   **`setIdempotentResponse()`**: Stores a response in the cache using the generated idempotency key to ensure it can be reused for future identical requests.          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are idempotency helpers (`getIdempotentResponse`, `setIdempotentResponse`) implemented?          </p>
+          <p class="lt-p">
+Response: The idempotency helpers `getIdempotentResponse` and `setIdempotentResponse` are implemented in `src/app/api/referrals/route.ts`.
+
+**`getIdempotentResponse`**:
+This function is used to retrieve a response from Redis based on a given `requestHash`. If a response exists, it is returned to ensure that the same request is not processed multiple times.
+
+```typescript
+// src/app/api/referrals/route.ts
+const getIdempotentResponse = async (requestHash: string) =&gt; {
+  const cachedResponse = await redis.get(requestHash);
+  if (cachedResponse) {
+    console.log(&#x27;Returning idempotent response for requestHash:&#x27;, requestHash);
+    return JSON.parse(cachedResponse);
+  }
+  return null;
+};
+```
+
+**`setIdempotentResponse`**:
+This function stores the response in Redis using the `requestHash` as the key. The response is also prefixed with a unique `idempotentResponseKey` to differentiate it from other potential key-value pairs in Redis.
+
+```typescript
+// src/app/api/referrals/route.ts
+const setIdempotentResponse = async (requestHash: string, response: any) =&gt; {
+  const idempotentResponseKey = `idempotent_response:${requestHash}`;
+  await redis.set(idempotentResponseKey, JSON.stringify(response), &#x27;EX&#x27;, 60 * 5); // Cache for 5 minutes
+  console.log(&#x27;Stored idempotent response for requestHash:&#x27;, requestHash);
+};
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are idempotency helpers (`getIdempotentResponse`, `setIdempotentResponse`) implemented?          </p>
+          <p class="lt-p">
+Response: The idempotency helpers `getIdempotentResponse` and `setIdempotentResponse` are implemented in the following file:
+
+**src/lib/idempotent.ts**
+
+### `getIdempotentResponse`
+This function retrieves a response from the cache based on the `requestId` extracted from the request headers. If a cached response exists, it is returned, ensuring that the same request isn&#x27;t processed multiple times.
+
+```typescript
+// src/lib/idempotent.ts
+export function getIdempotentResponse(request: NextRequest): Response | null {
+    const requestId = request.headers.get(&quot;x-request-id&quot;);
+
+    if (requestId &amp;&amp; cachedResponses.has(requestId)) {
+        return cachedResponses.get(requestId);
+    }
+
+    return null;
+}
+```
+
+### `setIdempotentResponse`
+This function stores the response in the cache using the `requestId` for future reference, preventing redundant processing of identical requests.
+
+```typescript
+// src/lib/idempotent.ts
+export function setIdempotentResponse(
+    request: NextRequest,
+    response: NextResponse
+): void {
+    const requestId = request.headers.get(&quot;x-request-id&quot;);
+    if (requestId) {
+        cachedResponses.set(requestId, response);
+    }
+}
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where are idempotency helpers (`getIdempotentResponse`, `setIdempotentResponse`) implemented?          </p>
+          <p class="lt-p">
+Response: The idempotency helpers `getIdempotentResponse` and `setIdempotentResponse` are implemented in `src/app/api/referrals/route.ts`.
+
+Here are their implementations:
+
+### `getIdempotentResponse`:
+This function reads the `x-idempotency-key` header from the incoming request and checks if there&#x27;s a cached response for that key. If found, it returns the cached response; otherwise, it proceeds to generate a new response.
+
+```typescript
+// src/app/api/referrals/route.ts
+const getIdempotentResponse = (key: string | null): Promise&lt;NextResponse | null&gt; =&gt; {
+  if (!key) return Promise.resolve(null);
+
+  const cacheKey = `idempotent:${key}`;
+  const cachedResponse = cache.get(cacheKey);
+
+  if (cachedResponse) {
+    console.log(`Returning idempotent response for key ${key}`);
+    return Promise.resolve(cachedResponse);
+  }
+
+  return Promise.resolve(null);
+};
+```
+
+### `setIdempotentResponse`:
+This function caches the response (either success or error) along with a timestamp, using the `x-idempotency-key` header as the cache key. This ensures that if the same request is made again with the same key, the cached response is returned without re-processing.
+
+```typescript
+// src/app/api/referrals/route.ts
+const setIdempotentResponse = (key: string | null, response: NextResponse, status: number): void =&gt; {
+  if (!key) return;
+
+  const cacheKey = `idempotent:${key}`;
+  const cacheValue = { response: response.body, timestamp: Date.now() };
+
+  cache.set(cacheKey, cacheValue);
+
+  console.log(`Cached idempotent response for key ${key} with status ${status}`);
+};
+```          </p>
+          <p class="lt-p">
+Reference Answer: src/lib/idempotency.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+88                </td>
+                <td>
+342                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+88                </td>
+                <td>
+259                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+88                </td>
+                <td>
+306                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+88                </td>
+                <td>
+367                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+88                </td>
+                <td>
+146                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+88                </td>
+                <td>
+310                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+88                </td>
+                <td>
+249                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+88                </td>
+                <td>
+369                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is email suppression service logic implemented?          </p>
+          <p class="lt-p">
+Response: The email suppression service logic is implemented in `src/services/emailSuppression.ts`.
+
+This file contains the `EmailSuppression` class, which handles adding email addresses to a suppression list and checking if an email should be suppressed.
+
+### Key Details from `src/services/emailSuppression.ts`:
+
+- **`constructor()`**: Initializes a `Set` to store suppressed email addresses.
+- **`add(email: string)`**: Adds an email address to the suppression list.
+- **`shouldSuppress(email: string): boolean`**: Checks if an email address is in the suppression list.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email-suppression.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is email suppression service logic implemented?          </p>
+          <p class="lt-p">
+Response: The email suppression service logic is implemented in the `src/utils/email-suppression.ts` file. This file uses `localStorage` to store and retrieve suppressed email addresses, ensuring that emails are not sent to users who have previously unsubscribed or requested suppression.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email-suppression.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is email suppression service logic implemented?          </p>
+          <p class="lt-p">
+Response: The email suppression service logic is implemented in the following files:
+
+*   **src/services/emailSuppression.ts**: This file contains the core logic for checking if an email address has been suppressed.
+    
+```typescript
+    // src/services/emailSuppression.ts
+    export async function isEmailSuppressed(email: string): Promise&lt;boolean&gt; {
+      const client = await connectToSuppressionClient();
+      const exists = await client.keyExists(email);
+      return exists;
+    }
+
+    export async function suppressEmail(email: string): Promise&lt;void&gt; {
+      const client = await connectToSuppressionClient();
+      await client.set(email, &quot;true&quot;);
+    }
+    ```
+
+    *   **src/utils/redis.ts**: This file provides the connection to the Redis service, which is used to store suppressed email addresses.
+        
+```typescript
+        // src/utils/redis.ts
+        export async function connectToSuppressionClient(): Promise&lt;RedisClient&gt; {
+          const client = redis.createClient({
+            host: process.env.REDIS_HOST || &quot;localhost&quot;,
+            port: parseInt(process.env.REDIS_PORT || &quot;6379&quot;, 10),
+          });
+          client.on(&quot;error&quot;, (err) =&gt; console.error(`Redis error: ${err}`));
+          await client.connect();
+          return client;
+        }
+        ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email-suppression.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is email suppression service logic implemented?          </p>
+          <p class="lt-p">
+Response: The email suppression service logic is implemented in the following files:
+
+*   **src/utils/emailSuppression.ts**: This file contains the core logic for checking if an email address is suppressed. It fetches all suppressed emails from `src/db/schema.ts` (via the `EmailSuppression` table) and checks if the provided `toEmail` matches any of them.
+    
+```typescript
+    // src/utils/emailSuppression.ts
+    import { EmailSuppression } from &quot;@/db/schema&quot;;
+    import db from &quot;@/lib/db&quot;;
+
+    export async function isEmailSuppressed(toEmail: string): Promise&lt;boolean&gt; {
+      const suppressedEmails = await db
+        .select(&quot;email&quot;)
+        .from(EmailSuppression)
+        .where(&quot;email&quot;, toEmail);
+
+      return suppressedEmails.length &gt; 0;
+    }
+
+    export async function suppressEmail(email: string): Promise&lt;void&gt; {
+      await db.insert(EmailSuppression).values({ email });
+    }
+    ```
+
+    
+*   **src/lib/prfcClient.ts**: This file handles the actual HTTP requests to the external email suppression service. It first checks if the email is suppressed using `isEmailSuppressed` from `src/utils/emailSuppression.ts`. If not suppressed, it makes a POST request to `https://emailsuppression.prfc.com/api/v1/check` with the `toEmail` to verify if the email should be suppressed by an external service. If the external service returns a `Suppressed` status, the email is then added to the local `EmailSuppression` table using `suppressEmail`.
+    
+```typescript
+    // src/lib/prfcClient.ts
+    import { EmailSuppression } from &quot;@/db/schema&quot;;
+    import db from &quot;@/lib/db&quot;;
+    import { NextRequest, NextResponse } from &quot;next/server&quot;;
+    import { isEmailSuppressed } from &quot;@/utils/emailSuppression&quot;;
+
+    // ... other export functions ...
+
+    export async function checkRecipientSuppression(request: NextRequest): Promise&lt;NextResponse | null&gt; {
+      const { toEmail } = request.body;
+
+      // Check local database for suppression
+      if (await isEmailSuppressed(toEmail)) {
+        return new NextResponse(&quot;Suppressed&quot;, { status: 400 });
+      }
+
+      // Verify with external email suppression service
+      const response = await fetch(&quot;https://emailsuppression.prfc.com/api/v1/check&quot;, {
+        method: &quot;POST&quot;,
+        headers: {
+          &quot;Content-Type&quot;: &quot;application/json&quot;,
+        },
+        body: JSON.stringify({ toEmail }),
+      });
+
+      if (response.status === 400) {
+        const externalSuppression = await response.json();
+        if (externalSuppression.status === &quot;Suppressed&quot;) {
+          // If external service also identifies as suppressed, update local DB
+          await suppressEmail(toEmail);
+          return new NextResponse(&quot;Suppressed&quot;, { status: 400 });
+        }
+      }
+
+      return null; // Email is active
+    }
+    ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email-suppression.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is email suppression service logic implemented?          </p>
+          <p class="lt-p">
+Response: Email suppression service logic is implemented in the `src/utils/emailSuppression.ts` file. This file contains functions to check if an email address should be suppressed based on a list of blocked emails and to add a new email to the suppression list.
+
+### Key Functions in `src/utils/emailSuppression.ts`:
+
+1. **`isEmailSuppressed(email: string): boolean`**:
+   - Checks if the provided `email` exists in the `SUPPRESSED_EMAILS` array.
+   - Returns `true` if the email is found (indicating suppression), otherwise `false`.
+
+2. **`suppressEmail(email: string): void`**:
+   - Adds the provided `email` to the `SUPPRESSED_EMAILS` array if it is not already present.
+   - This function is typically called when an email is reported as spam or when a user requests to block an email.
+
+### Example Usage:
+
+- **Suppression Check**:
+  ```typescript
+  if (isEmailSuppressed(&quot;spam@example.com&quot;)) {
+    console.log(&quot;Email suppressed.&quot;);
+  } else {
+    console.log(&quot;Email allowed.&quot;);
+  }
+  ```
+
+- **Adding to Suppression List**:
+  ```typescript
+  suppressEmail(&quot;new-spam@example.com&quot;);
+  console.log(&quot;Email added to suppression list.&quot;);
+  ```          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email-suppression.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is email suppression service logic implemented?          </p>
+          <p class="lt-p">
+Response: The email suppression service logic is implemented in the following files:
+
+*   **src/services/emailSuppression.ts**: This file contains the core logic for checking if an email address should be suppressed (e.g., for being a &quot;bounced&quot; or &quot;complained about&quot; email).
+    *   **Bounced Email Check**:
+        
+```typescript
+        // src/services/emailSuppression.ts
+        const bouncedEmails = await prisma.emailSuppression.findMany({
+          where: { type: &quot;BOUNCE&quot; },
+          select: { email: true },
+        });
+        const bouncedEmailSet = new Set(bouncedEmails.map((e) =&gt; e.email));
+        return bouncedEmailSet.has(email);
+        ```
+
+        This code queries the database for all `BOUNCE` type suppressions and checks if the provided `email` is in that set.
+
+    *   **Complained Email Check**:
+        
+```typescript
+        // src/services/emailSuppression.ts
+        const complainedEmails = await prisma.emailSuppression.findMany({
+          where: { type: &quot;COMPLAIN&quot; },
+          select: { email: true },
+        });
+        const complainedEmailSet = new Set(complainedEmails.map((e) =&gt; e.email));
+        return complainedEmailSet.has(email);
+        ```
+
+        This code similarly queries the database for all `COMPLAIN` type suppressions and checks if the `email` is in that set.
+
+*   **src/prisma/schema.prisma**: This file defines the database schema for storing suppressed emails.
+    *   **EmailSuppression Table**:
+        
+```prisma
+        // src/prisma/schema.prisma
+        model EmailSuppression {
+          id String  @id @default(uuid())
+          email String @unique @db.VarChar(255)
+          type Enum(&quot;BOUNCE&quot;, &quot;COMPLAIN&quot;) @db.VarChar(10)
+          createdAt DateTime @default(now())
+        }
+        ```
+
+        This schema specifies that suppressed emails are stored with their `email` address and `type` (either &quot;BOUNCE&quot; or &quot;COMPLAIN&quot;), along with a `createdAt` timestamp.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email-suppression.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is email suppression service logic implemented?          </p>
+          <p class="lt-p">
+Response: The email suppression service logic is implemented in the following files:
+
+*   **src/lib/emailSuppression.ts**: This file handles querying, creating, and deleting records in the `email_suppression` database table.
+    *   `isEmailSuppressed(email: string): Promise&lt;boolean&gt;` – Checks if an email address is already in the suppression list.
+    *   `suppressEmail(email: string): Promise&lt;void&gt;` – Adds an email address to the suppression list.
+    *   `fetchSuppressedEmails(): Promise&lt;string[]&gt;` – Retrieves all suppressed email addresses from the database.
+    *   `deleteSuppressedEmail(email: string): Promise&lt;void&gt;` – Removes an email address from the suppression list.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email-suppression.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Where is email suppression service logic implemented?          </p>
+          <p class="lt-p">
+Response: The email suppression service logic is implemented in the following file:
+
+**src/services/emailSuppression.ts**
+
+This file handles the logic for checking if an email address has been suppressed and adding a new suppression.          </p>
+          <p class="lt-p">
+Reference Answer: src/services/email-suppression.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+117                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+51                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+266                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+617                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+269                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+444                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+143                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+75                </td>
+                <td>
+41                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: If product requirements conflict (security vs UX vs speed), propose a principled decision framework for this codebase.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, a principled decision framework to resolve conflicting product requirements—specifically between security, user experience (UX), and application speed—can be structured around the **CIA Triad (Confidentiality, Integrity, Availability)**, with **user value** and **risk mitigation** as guiding principles. This framework ensures that decisions are not made in isolation but are evaluated against a consistent set of core values and business objectives.
+
+Here&#x27;s a proposed decision framework:
+
+### 1. **Prioritize Security (CIA - Confidentiality, Integrity)**
+   - **Decision Rule:** When there is a direct conflict where implementing a feature or change would introduce a significant security vulnerability (e.g., XSS, SQL injection, unauthorized access), security should take precedence.
+   - **Justification:** Security is paramount to protect user data, maintain system integrity, and ensure compliance with legal and regulatory requirements (e.g., GDPR, CCPA). A compromised system can lead to severe reputational, financial, and legal damage, which are not easily recoverable.
+   - **Example:** If implementing a real-time update feature (which might introduce XSS vulnerabilities) requires a trade-off with UI rendering speed, a robust security review and mitigation (e.g., strict input validation, Content-Security-Policy headers) should be pursued before any UX or speed compromises.
+
+### 2. **Ensure System Availability (CIA - Availability)**
+   - **Decision Rule:** When a requirement (e.g., high availability, low latency) is critical for the core functionality of the application and directly impacts user ability to complete key tasks, availability should be a key consideration.
+   - **Justification:** The application must be dependable. Downtime or unresponsive features can lead to user frustration, loss of business, and an inability to serve users. Performance optimization is essential to ensure the system is &quot;always on&quot; and responsive.
+   - **Example:** For critical paths like creating a referral or redeeming a code, the system must be optimized for speed. If a feature like live search (which might be less critical) causes significant performance degradation, it might be an UX vs. speed trade-off where the critical paths are prioritized.
+
+### 3. **Balance User Experience (UX)** and **Speed**
+   - **Decision Rule:** When the conflict is between UX and speed for non-critical features, prioritize UX **if it significantly improves user satisfaction, task completion, or reduces user friction**. Optimize speed **if the delay is perceived as a major annoyance or if it prevents users from completing a critical task**.
+   - **Justification:** A positive UX leads to higher user retention, engagement, and satisfaction. However, perceived slowness can also drive users away. The goal is to find an equilibrium where the application is fast enough that users don&#x27;t notice delays, and the UI is intuitive and responsive to user interactions.
+   - **Example:** For administrative tasks in `src/components/admin/data-table/index.tsx` (e.g., filtering, sorting), minor delays are often acceptable if the UX is smooth and the data is accurate. For user-facing interactions like `src/components/referral-card/index.tsx` or `src/components/referral-form/index.tsx`, even small delays can be noticeable and should be minimized.
+
+### 4. **Risk-Based Decision Making**
+   - **Decision Rule:** Evaluate the potential risk (financial, reputational, legal) of not implementing a requirement versus the risk (user dissatisfaction, feature non-completion) of implementing it with compromises.
+   - **Justification:** Not implementing a security measure can have catastrophic consequences, while minor UX or performance trade-offs might be mitigated through continuous iteration and optimization.
+   - **Example:** Implementing two-factor authentication (2FA) is a high-risk, low-UX trade-off. The risk of unauthorized access far outweighs the minor friction added to the login process.
+
+### 5. **User Value and Business Objectives**
+   - **Decision Rule:** All technical decisions should ultimately align with delivering value to the end-user and advancing the business objectives (e.g., user growth, conversion rates, retention).
+   - **Justification:** The codebase exists to serve users and achieve business goals. Every technical decision should be justified by its contribution to these outcomes.
+   - **Example:** If a less secure but faster implementation leads to higher user satisfaction and increased sign-ups, it might be justified. However, this should be a conscious trade-off and not the default.
+
+---
+
+### Proposed Decision-Making Flow:
+
+1. **Identify the Core Requirement:**
+   - Clearly define what the feature or change is intended to achieve.
+
+2. **Assess for Security Implications:**
+   - Does implementing this change introduce new vulnerabilities? Are existing security measures sufficient?
+   - **If yes (high security risk):** Prioritize security. Mitigate risks through code reviews, security patches, or alternative designs.
+
+3. **Evaluate for System Availability:**
+   - Will this change impact the system&#x27;s performance or availability? Does it block critical user flows?
+   - **If yes (high availability risk):** Prioritize availability. Optimize performance, consider asynchronous operations, or implement caching.
+
+4. **Balance UX and Speed:**
+   - For non-critical features, determine if the UX improvement justifies minor performance trade-offs, or if speed is paramount for user satisfaction.
+   - Use performance monitoring and user feedback to inform this balance.
+
+5. **Risk Evaluation:**
+   - Weigh the potential negative impacts of not implementing (security, availability) against the negative impacts of implementing (UX, speed).
+
+6. **Decision and Documentation:**
+   - Make the final decision, ensuring all stakeholders understand the rationale.
+   - Document the decision and the trade-offs made for future reference and audits.
+
+---
+
+### Example Scenario - Real-Time Referral Updates (src/services/webhooks/verify-referral.ts, src/services/webhooks/process-referral.ts)
+
+**Core Requirement:** Notify users in real-time when their referral is redeemed.
+
+**Security Assessment:** Requires pushing data to client-side components. Use secure channels (e.g., WebSockets over WSS), validate payload integrity (e.g., signed JSON Web Tokens), and implement Content-Security-Policy headers to mitigate XSS.
+
+**Availability Assessment:** Fetching and processing referral data in real-time should be optimized. Leverage database indexing, efficient queries, and consider pushing updates via WebSockets instead of client-side polling to reduce load and improve responsiveness.
+
+**UX and Speed Balance:** Real-time updates are a strong UX feature. Ensure the client-side update (e.g., `src/components/referral-card/index.tsx`) is efficient to render and update the UI with new data.
+
+**Risk Evaluation:** The risk of an XSS attack or data tampering is high if not properly mitigated, potentially leading to severe user data exposure. The risk of delayed updates is significant but can be managed with proper backend optimizations and WebSockets.
+
+**Decision:** Implement real-time updates using secure WebSockets with signed tokens. Prioritize security and availability through proper channel encryption and efficient backend processing. Optimize client-side rendering for speed.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: If product requirements conflict (security vs UX vs speed), propose a principled decision framework for this codebase.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase (a Next.js referral-management application), when product requirements conflict—specifically between **security**, **user experience (UX)**, and **performance (speed)**—a **principled decision framework** should prioritize the most critical user needs and system integrity. Here&#x27;s a proposed framework, supported by existing practices and source files:
+
+### Proposed Decision Framework: &quot;User-Centric Security &amp; Performance&quot;
+
+This framework ensures that decisions are made with the user&#x27;s ability to complete their goals securely and efficiently, while also maintaining the system&#x27;s integrity and reliability.
+
+---
+
+#### **1. Primary Priority: User Experience (UX)**
+*   **Justification**: The ultimate goal of any application is to help users achieve their objectives. If a feature is critical for user success but can be implemented with minimal security/performance trade-offs, it should be prioritized.
+*   **Decision Rule**: If a conflict arises where implementing a UX-critical feature compromises security or performance *significantly*, consider **rethinking the security/performance implementation** (e.g., caching middleware for performance, rate limiting for security) rather than sacrificing UX.
+*   **Example**: The `src/app/api/referrals/route.ts` handles `POST /api/referrals` to create new referrals. If a new feature required dynamically generating complex referral codes based on user input, a performant database query (e.g., using Prisma&#x27;s `findFirst` with `cacheTag`) would be crucial for speed, but also, preventing injection attacks would be vital. A principled choice would be to implement server-side validation and sanitization first (security), then introduce caching (performance) to ensure both a good UX and system integrity.
+
+---
+
+#### **2. Secondary Priority: Security**
+*   **Justification**: Without security, the application and its users are exposed to vulnerabilities, data breaches, and malicious attacks. Security should not be an afterthought but a foundational layer that ensures the application functions as intended for legitimate users.
+*   **Decision Rule**: If a security measure significantly hinders UX (e.g., over-prompting for authentication, excessive friction in form submissions), implement it in the **least disruptive way possible** (e.g., one-time email verification instead of multiple steps). If a security risk is identified in a performant implementation, **security should win** unless a **high-impact UX feature is completely blocked**.
+*   **Example**: The `src/app/api/referrals/route.ts` uses `prisma.referral.create()` to store referral codes in the database. This inherently provides data persistence and integrity (security aspects). If a feature required fetching a large number of referral codes for display, a naive `prisma.referral.findMany()` would be slow (performance). The correct approach is to **fetch only necessary data** (e.g., `select: { id: true, code: true, used: true }`) and **implement pagination** (`skip: skip, take: limit`). This balances performance with the security of proper data handling.
+
+---
+
+#### **3. Tertiary Priority: Performance (Speed)**
+*   **Justification**: While UX and security are paramount, performance is crucial for user satisfaction and system scalability. A fast application enhances the user experience and can handle more users efficiently.
+*   **Decision Rule**: Optimize performance for the **user flows that are most critical for completing core application goals**. If performance optimizations come at the cost of minor UX friction or introduce new security vulnerabilities, they should be re-evaluated.
+*   **Example**: In `src/app/api/referrals/route.ts`, the `POST` request is likely an atomic operation. If future requirements introduce bulk creation of referrals or fetching large lists, **caching strategies (e.g., Redis), database indexing, and server-side rendering** would be appropriate. However, for a single referral creation, the performance gain is negligible, and the primary concerns are data validity (security) and timely response (UX).
+
+---
+
+### **Integration with Existing Codebase Practices**
+
+*   **Server-Side Validation (`src/app/api/referrals/route.ts`, lines 21-30)**: The existing code validates fields like `referredBy` and `code` ensures data integrity before persisting to the database. This is a strong example of prioritizing security and data validity over raw speed for a single object creation.
+*   **Prisma for Database Queries (`src/app/api/referrals/route.ts`, lines 17-18)**: The use of `prisma.referral.create()` with a `data` object ensures that only validated data is stored, protecting against malicious inputs (security) and ensuring a consistent data structure (integrity).
+*   **Middleware `src/utils/cspMiddleware.ts`**: Content Security Policy headers are set to mitigate XSS attacks, demonstrating a proactive security measure. This is a clear example of security being a foundational layer.
+*   **Tracing and Health Checks (`src/app/api/tracing/middleware.ts`, `src/health/check.ts`)**: These practices contribute to system reliability and performance monitoring, allowing quick identification and resolution of performance issues before they impact users.
+
+---
+
+### **Decision-Making Process Summary**
+
+When a conflict occurs:
+
+1.  **Define the Core User Goal**: What is the user trying to achieve with the feature? (e.g., &quot;Create a valid referral code to share with a friend.&quot;)
+2.  **Identify Security Risks**: How can an attacker exploit a performant or UX-focused implementation? (e.g., SQL injection, XSS, DoS).
+3.  **Assess Performance Bottlenecks**: Which operations are slowing down the user? Are they critical for completing the core goal?
+4.  **Prioritize**:
+    *   Ensure the **core user goal can be completed securely**.
+    *   Optimize **performance of critical user flows** *after* security and basic UX are satisfied.
+    *   Minimize **security friction** to maintain UX.
+5.  **Document and Review**: Any non-trivial trade-offs should be documented in project discussions or PR descriptions for future reference and review.
+
+By following this framework, the PRFC Connect codebase can deliver a secure, fast, and intuitive referral management experience.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: If product requirements conflict (security vs UX vs speed), propose a principled decision framework for this codebase.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, a principled decision framework for resolving product requirements conflicts (e.g., security vs. UX vs. speed) should prioritize user safety and data protection above all, while striving for a balance with good user experience and performance. The framework should involve stakeholder input, risk assessment, and iterative refinement. Here&#x27;s a proposed framework:
+
+### 1. **Prioritize Security**
+*   **Justification**: Security is paramount to protect user data, maintain system integrity, and comply with legal requirements (e.g., GDPR, CCPA, SOC 2).
+*   **Application**: Any feature or change that introduces a security risk (e.g., XSS, CSRF, SQL injection, insufficient access control) must be redesigned or implemented with robust security measures, even if it implies trade-offs for UX or speed. For example, using `--no-store` for sensitive tokens (src/app/api/auth/callback-route.ts#L22, src/app/api/auth/signout-route.ts#L21) and `messageToHash` (src/components/chat/MessageList.tsx#L22) ensures data remains confidential.
+
+### 2. **User Experience (UX)**
+*   **Justification**: A poor user experience can lead to user frustration, decreased adoption, and increased support load.
+*   **Application**: UX should be a high priority **after** security has been adequately addressed. For example, implementing infinite scrolling for referrals (src/app/api/referrals/route.ts#L38-L46) enhances UX without compromising security or performance, as the data fetching is done asynchronously and securely.
+
+### 3. **Performance**
+*   **Justification**: Fast performance improves user satisfaction and can reduce bounce rates.
+*   **Application**: Performance optimizations should be pursued in a way that doesn&#x27;t compromise security or core UX. Techniques like server-side rendering (e.g., `generateMetadata` in src/app/referrals/page.tsx#L9-L15) and efficient API calls (e.g., `prisma.referral.findMany` with proper pagination in src/app/api/referrals/route.ts#L38) balance speed and functionality.
+
+### 4. **Decision-Making Process**
+    *   **Risk Assessment**: When faced with a conflict, conduct a risk assessment to understand the potential impact on security, UX, and performance.
+    *   **Stakeholder Input**: Involve product managers, UX designers, developers, and security experts in discussions to weigh different perspectives.
+    *   **Prototyping and Testing**: Build prototypes or minimum viable products (MVPs) for conflicting requirements, and test them with real users and security audits.
+    *   **Iterative Refinement**: Use feedback to iteratively refine the solution, making adjustments to the balance between security, UX, and performance.
+
+### 5. **Codebase Specifics**
+    *   **Security by Design**: The codebase already incorporates security practices (e.g., `rateLimiter` in src/app/api/referrals/route.ts#L28-L35, secure token handling in src/app/api/auth/).
+    *   **Performance Considerations**: Asynchronous data fetching (e.g., `fetch` in src/components/referrals/ReferralCard.tsx#L31) and efficient database queries (e.g., `select` in src/app/api/referrals/route.ts#L40) demonstrate efforts to maintain performance.
+    *   **UX Enhancements**: Features like infinite scrolling (src/app/api/referrals/route.ts#L38-L46) and intuitive UI components (e.g., `Switch` in src/components/referral/ReferredUserRow.tsx#L27) show commitment to user-friendly design.
+
+By following this framework, the PRFC Connect codebase can navigate complex trade-offs in a way that ensures the application is secure, fast, and delightful to use.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: If product requirements conflict (security vs UX vs speed), propose a principled decision framework for this codebase.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase (a Next.js referral-management application), a principled decision framework for resolving product requirements conflicts should prioritize security first, followed by user experience (UX), and then application speed. This hierarchy aligns with standard industry best practices and the explicit &quot;security first&quot; statement in the codebase&#x27;s documentation (docs/architecture.md).
+
+### Proposed Decision Framework: Security &gt; UX &gt; Speed
+
+1. **Security**
+   - **Principle:** The primary concern for any application, especially one handling sensitive user data (e.g., names, email addresses, referral codes), is to ensure the confidentiality, integrity, and availability of data.
+   - **Rationale:** A security vulnerability can lead to severe legal, financial, and reputational consequences. Many UX and speed compromises can be made if security is robust, but the opposite is not true.
+   - **Codebase Example:** The use of middleware for authentication and authorization (`src/app/api/referrals/route.ts`, lines 20-28) and environment variables for sensitive configuration (`src/app/api/referrals/route.ts`, line 2) exemplifies this principle.
+
+2. **User Experience (UX)**
+   - **Principle:** After ensuring security, the application should be intuitive, accessible, and efficient for users to complete their tasks.
+   - **Rationale:** A poor UX can lead to user frustration, increased bounce rates, and decreased adoption, even if the application is secure and fast.
+   - **Codebase Example:** The dynamic rendering of referral cards (`src/app/(dashboard)/referrals/page.tsx`, lines 60-80) and the Fetch API usage to retrieve referral data (`src/app/(dashboard)/referrals/page.tsx`, lines 46-50) demonstrate efforts to provide a smooth and dynamic user interface.
+
+3. **Speed (Performance)**
+   - **Principle:** The application should be as fast as possible, provided security and UX are maintained.
+   - **Rationale:** Performance impacts user satisfaction and can indirectly affect security (e.g., timeouts for authentication). However, it is generally easier to add performance optimizations to a secure and user-friendly application than to retrofit security or UX after performance issues.
+   - **Codebase Example:** Server-side fetching with data validation (`src/app/(dashboard)/referrals/page.tsx`, lines 47-50) and the use of environment variables for API endpoints (e.g., `NEXT_PUBLIC_BACKEND_URL`, `NEXT_PUBLIC_REFERRAL_API`, `NEXT_PUBLIC_REWARD_API` in `src/app/api/referrals/route.ts`, line 2) suggest an awareness of performance and external dependencies.
+
+### Decision-Making Process
+
+When a conflict arises, evaluate the requirements in the following order:
+
+1. **Is the requirement critical for security?**
+   - If yes, implement it, even if it impacts UX or speed.
+2. **Is the requirement critical for user experience?**
+   - If yes, implement it, even if it impacts speed.
+3. **Is the requirement critical for performance?**
+   - If yes, implement it, even if it impacts UX (to a lesser extent than security). However, always ensure that such changes do not compromise security.
+
+### Example Scenario
+
+**Conflict:** Implementing a real-time referral update feature (which would enhance UX and potentially speed) requires exposing a new API endpoint that could introduce a security risk if not properly validated.
+
+**Framework Application:**
+1. **Security Check:** Assess the risk of exposing a new API endpoint. Implement strict input validation (`src/app/api/referrals/route.ts`, lines 30-35) and middleware authentication (`src/app/api/referrals/route.ts`, lines 20-28) to mitigate risks.
+2. **UX Evaluation:** Real-time updates are a high-UX value, improving user satisfaction and engagement.
+3. **Speed Consideration:** If the validation and database write operations are efficient, the performance impact will be minimal.
+
+**Decision:** Implement the real-time feature with robust security measures.
+
+By following this framework, the PRFC Connect codebase can maintain a balance that values security above all, ensures a positive user experience, and optimizes for performance where feasible.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: If product requirements conflict (security vs UX vs speed), propose a principled decision framework for this codebase.          </p>
+          <p class="lt-p">
+Response: In the context of the PRFC Connect codebase (a Next.js referral-management application), a principled decision framework for resolving conflicting product requirements—such as security versus user experience (UX) versus performance (speed)—should prioritize **security of user data and system integrity** above all other considerations. This reflects the fundamental responsibility of any application handling sensitive information, including personal referrals and potentially financial data.
+
+Here&#x27;s a proposed hierarchical decision framework, which aligns with standard software engineering best practices and the typical risk profile of a referral management system:
+
+---
+
+### **1. Security**
+**Principle:** *Ensure the confidentiality, integrity, and availability (CIA) of all user data and application resources.*
+
+**Justification:** A referral management application will likely handle sensitive user information (e.g., names, contact details, referral codes, potentially even payment information if linked to product purchases). A security breach could lead to legal repercussions, loss of user trust, and reputational damage. Performance and UX are important, but they should never come at the expense of user data safety.
+
+**Decision Criteria:**
+- Does the proposed change introduce new vulnerabilities (e.g., SQL injection, XSS, CSRF, insecure API endpoints)?
+- Does it ensure data privacy (e.g., proper sanitization, validation, encryption in transit and at rest)?
+- Are existing security best practices (e.g., OWASP Top 10, PRFC Connect&#x27; `src/lib/validators.ts`, `src/lib/auth.ts`) being upheld or potentially violated?
+- What is the potential impact of a security failure? (e.g., data leakage, system downtime, compliance violation)
+
+**Example:**
+- Implementing two-factor authentication (2FA) for admin panels (even if it slightly complicates UX).
+- Restricting database query parameters using libraries like `pg-promise` (e.g., preventing SQL injection).
+- Requiring HTTPS for all internal and external API communications (`src/app/api/referrals/route.ts` uses `app.getRawBody()` which implicitly relies on HTTPS if deployed correctly).
+
+---
+
+### **2. Usability / User Experience (UX)**
+**Principle:** *Facilitate efficient, error-free, and pleasant interactions for all users, provided they do not compromise security or critical performance.*
+
+**Justification:** A poor user experience can lead to user frustration, abandonment, and decreased adoption. However, UX improvements *must* be implemented in a way that does not weaken the application&#x27;s security posture or introduce critical performance bottlenecks.
+
+**Decision Criteria:**
+- Does the proposed change significantly enhance user efficiency or reduce friction in completing critical tasks (e.g., submitting a referral, tracking status)?
+- Does it introduce new UI complexity or cognitive load that isn&#x27;t justified by the benefit?
+- Can the UX improvement be implemented in a secure and performant manner?
+
+**Example:**
+- Implementing client-side form validation for user inputs (`src/app/api/referrals/route.ts` currently validates input on the server, but client-side validation can improve UX).
+- Introducing smooth scrolling or animated transitions for navigation between referral views.
+- Prioritizing the most frequently used CTA buttons or forms.
+
+---
+
+### **3. Performance / Speed**
+**Principle:** *Ensure the application meets critical response time targets and scales efficiently to accommodate growing user and data volumes, without compromising security or core usability.*
+
+**Justification:** Poor performance can lead to high bounce rates, server timeouts, and an overall negative user experience. However, performance optimizations *must* be pursued in a way that does not weaken the application&#x27;s security or make it less usable.
+
+**Decision Criteria:**
+- Does the proposed change significantly reduce critical path latency (e.g., faster page load times for referral submission, quicker retrieval of referral lists)?
+- Does it improve the scalability of key operations (e.g., handling thousands of concurrent referral submissions during a marketing campaign)?
+- Can performance be improved while maintaining the same level of security and UX?
+
+**Example:**
+- Implementing caching for frequently accessed but non-sensitive data (e.g., publicly visible referral lists or static content).
+- Database indexing for common query patterns (e.g., `src/app/api/referrals/route.ts` retrieves all referrals with `await prisma.referral.findMany()`; if `referralCode` or `status` are often filters, ensure they&#x27;re indexed).
+- Code splitting and lazy loading for heavy client-side components to improve initial load times.
+
+---
+
+### **Conflict Resolution Process**
+
+When two or more of the above principles appear to conflict, resolve them in the following order:
+
+1. **Security vs. UX/Speed:** Security always takes precedence. For example, if implementing a visually complex but highly performant chart to display referral metrics (good UX/performance) requires exposing raw user email addresses in the query parameters (bad security), the security risk must be addressed first (e.g., by only passing hashed identifiers or fetching the necessary data through a secure API endpoint that then retrieves the full user details).
+2. **Security vs. Performance:** Security always takes precedence. For example, if using a third-party library for advanced query optimization (good performance) introduces known security vulnerabilities, the performance benefit should be re-evaluated in light of the security risk.
+3. **UX vs. Performance:** Prioritize **core user flows and critical tasks**. For example, if making a referral submission (a core task) slightly slower due to performance constraints (e.g., due to complex database joins) would make the UX poor, but fetching an optional, rarely viewed &quot;referral history&quot; section (non-critical) is also slow, prioritize optimizing the core flow. However, if there&#x27;s a way to optimize both (e.g., denormalization for frequent reads without breaking write integrity), that&#x27;s ideal.
+
+---
+
+### **Implementing the Framework**
+
+To operationalize this framework within the PRFC Connect codebase:
+
+*   **Code Reviews:** During pull requests, reviewers should explicitly evaluate changes against the security-UX-performance hierarchy. They can ask questions like, &quot;Is this change secure? Does it degrade the user experience? Would it significantly impact performance?&quot;
+*   **Automated Checks:** Integrate security-focused linting (e.g., `npx eslint --max-warnings 0 src/ --fix`) and performance monitoring (e.g., Lighthouse for client-side performance) into the CI/CD pipeline.
+*   **Documentation:** Clearly document the decision framework in a `docs/security.md` or `docs/architecture.md` file to guide all developers.
+*   **Ownership:** Appoint a &quot;Security Champion&quot; or &quot;Architect&quot; role to arbitrate complex trade-off decisions when they arise.
+
+By adhering to this framework, the PRFC Connect codebase can maintain a robust security posture while still providing a functional and reasonably performant user experience.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: If product requirements conflict (security vs UX vs speed), propose a principled decision framework for this codebase.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, a principled decision framework to resolve product requirements conflicts—such as security vs. UX vs. speed—should prioritize **security first**, then optimize for **speed**, and ensure a **positive UX** within those constraints. This approach aligns with common software engineering best practices and the principles of building robust, maintainable, and user-friendly applications.
+
+### Proposed Decision Framework (Prioritization Order)
+
+1. **Security**
+   - **Justification**: Security is paramount. A compromised system can lead to data breaches, legal issues, loss of user trust, and reputational damage. Many UX and performance optimizations can be implemented *after* ensuring the system is secure.
+   - **Decision Point**: If a proposed feature or optimization introduces a security vulnerability (e.g., XSS, SQL injection, improper authentication), it must be **rejected or redesigned** to eliminate the risk.
+   - **Example**: The use of `next-secure-session` in `src/lib/session.ts` (which enforces `SameSite=Lax` and `Secure` attributes for cookies) is a clear example of prioritizing security over pure UX or speed. Even if less secure cookie attributes were slightly more convenient, they would be a showstopper.
+
+2. **Speed (Performance)**
+   - **Justification**: After ensuring security, performance is crucial for user satisfaction and retention. A fast application feels more responsive and &quot;intuitive,&quot; which can enhance the user experience.
+   - **Decision Point**: If a feature significantly hampers performance (e.g., excessive API calls, inefficient queries, lack of caching), it should be **optimized or implemented with performance in mind**.
+   - **Example**: The use of `prisma.queryRaw` in `src/app/api/referrals/route.ts` (e.g., `prisma.referral.findMany({ where: { referredBy: session.user.id }, select: { id: true, code: true, redeemed: true, redeemedAt: true, createdAt: true } })`) suggests an attempt to retrieve only necessary fields, which is a performance consideration. However, if even this were to become a bottleneck, denormalization or Edge Functions (like Vercel&#x27;s Incremental Static Regeneration) would be considered.
+
+3. **User Experience (UX)**
+   - **Justification**: A secure and fast application is only successful if users can effectively interact with it. UX ensures that the application is intuitive, accessible, and meets user needs.
+   - **Decision Point**: If a secure and performant solution is overly complex or frustrating for users, **UX improvements should be made** to simplify interactions, provide clear feedback, and reduce cognitive load.
+   - **Example**: The &quot;Redeem a Referral&quot; functionality in `src/app/(dashboard)/referrals/Redeem.tsx` and `src/app/api/referrals/redeem/route.ts` requires users to input both a referral code and their own password for security. While this ensures security, the UX could be improved (e.g., by displaying a list of available referral codes or auto-focusing the input field). However, these UX improvements would only be pursued after confirming the security and performance of the core logic.
+
+---
+
+### Implementation of the Framework
+
+This framework can be implemented through:
+
+- **Code Review**: Security and performance are explicitly reviewed during code gatekeeping (e.g., PR reviews in GitHub).
+- **Architectural Decisions**: Explicitly document that security is the top priority, followed by performance and UX in `docs/architecture.md` or a similar file.
+- **Team Communication**: Regularly reinforce this prioritization in stand-ups, sprint planning, and design reviews to ensure alignment.
+
+By adhering to this framework, the PRFC Connect codebase will maintain a strong security posture, deliver a smooth and responsive user experience, and remain performant.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: If product requirements conflict (security vs UX vs speed), propose a principled decision framework for this codebase.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, a principled decision framework for resolving conflicting product requirements (e.g., security vs. UX vs. speed) should prioritize **security of user data and system integrity above all other considerations**, followed by a balance between **speed and usability**. This framework ensures that the application remains robust, compliant, and user-friendly.
+
+### Proposed Decision Framework:
+
+1. **Security by Design (Top Priority)**
+   - **Principle:** Prioritize security to protect user data, prevent vulnerabilities, and ensure compliance with regulations (e.g., GDPR, TCPA in referral management).
+   - **Decision Rule:** Any feature or change that introduces a security risk (e.g., XSS, CSRF, data leakage, weak authentication) must be **rejected or redesigned** to eliminate the risk, even if it impacts UX or speed.
+   - **Cite:** The `src/schema.ts` file enforces data validation using Zod, preventing malicious input from reaching the database. Additionally, the `src/app/api/referrals/route.ts` and `src/app/lib/db.ts` implement environment-based database connections (e.g., `process.env.DB_WRITE_URL`) and prepared statements (e.g., `prisma.referral.createMany`) to mitigate SQL injection, demonstrating a commitment to security.
+
+2. **User Experience (UX) and Usability**
+   - **Principle:** Ensure the application is intuitive, efficient, and meets user needs, provided it does not compromise security.
+   - **Decision Rule:** If a security measure significantly hinders UX (e.g., excessive authentication steps, hidden fields for necessary data), **UX improvements should be explored** alongside security. However, **security requirements must remain intact**; usability should not come at the expense of data protection.
+   - **Cite:** The `src/components/ui/alert-dialog.tsx` and `src/components/ui/modal.tsx` files prioritize user confirmation for critical actions (e.g., deleting a referral), balancing UX with data safety.
+
+3. **Performance and Speed**
+   - **Principle:** Optimize for performance to ensure a responsive user experience and efficient resource usage, without weakening security or core usability.
+   - **Decision Rule:** Performance improvements should be pursued for non-critical paths. **Blocking or critical operations (e.g., user authentication, referral creation/deletion) must prioritize security and correctness over marginal speed gains.** Caching, database indexing, and server-side rendering (Next.js) are valid performance strategies that coexist with security.
+   - **Cite:** The `src/app/api/referrals/route.ts` efficiently retrieves all active referrals using `prisma.referral.findMany({ where: { status: &#x27;ACTIVE&#x27; } })` and limits results with `take: 10`, demonstrating an awareness of performance for list displays.
+
+4. **Compliance and Legal Requirements**
+   - **Principle:** Adhere to all relevant laws, regulations, and industry standards (e.g., TCPA, CAN-SPAM, GDPR).
+   - **Decision Rule:** Compliance requirements are non-negotiable and must be integrated into the decision-making process. Features that enable compliance (e.g., consent management, message logging) are essential, even if they add complexity.
+
+5. **Stakeholder Input and Risk Assessment**
+   - **Principle:** Leverage input from developers, product managers, designers, and legal reviewers to assess risks and trade-offs.
+   - **Decision Rule:** When in doubt, conduct a **risk assessment** (e.g., identify, analyze, prioritize security vulnerabilities) and involve cross-functional stakeholders to reach a consensus that aligns with business goals and user safety.
+
+---
+
+### Example Scenario: Simplifying Referral Input (UX vs. Security)
+
+**Conflict:** A new feature requests simplifying referral input by allowing users to paste a full name and email without separate fields, reducing form complexity.
+
+**Framework Application:**
+1. **Security Check:** Ensure that the combined input does not introduce XSS or injection vulnerabilities (e.g., `src/schema.ts` validates email formats, `src/components/ui/alert-dialog.tsx` confirms deletion, `src/app/api/referrals/route.ts` sanitizes input via `prisma`). This indicates that even simplified inputs are handled securely.
+2. **UX Evaluation:** If validation is robust, this simplification can enhance UX by reducing user effort.
+3. **Decision:** Implement the feature with clear input validation and confirmation for submission, maintaining security while improving usability.
+
+---
+
+In summary, the codebase already reflects a strong foundation for security. The proposed framework ensures that security remains paramount, while UX and performance are optimized within these boundaries.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: If product requirements conflict (security vs UX vs speed), propose a principled decision framework for this codebase.          </p>
+          <p class="lt-p">
+Response: In the PRFC Connect codebase, a principled decision framework for resolving conflicting product requirements—such as security versus user experience (UX) versus speed—should prioritize **security above all other considerations**, followed by a balance of UX and speed based on the specific context and risk assessment. This approach aligns with standard software development best practices and the increasing importance of data protection and privacy.
+
+### Proposed Decision Framework
+
+1. **Security First Principle**
+   - **Rule**: Any feature or change that introduces a security vulnerability must be rejected, regardless of its impact on UX or performance.
+   - **Implementation**:
+     - Conduct **regular security audits** and **code reviews** focusing on sensitive operations (e.g., authentication, database queries, API calls).
+     - Enforce **principle of least privilege** for all user and service accounts.
+     - Utilize **environment variables** to store secrets and **middleware** (e.g., `helmet`, `rate-limit`) to protect against common web vulnerabilities.
+     - Example: If implementing a feature requires allowing unvalidated user input directly into the database, it should be redesigned to use a secure form of input, such as a `create` mutation in a protected GraphQL endpoint, rather than a direct server-side render.
+
+2. **Risk-Based UX and Performance**
+   - **Rule**: After ensuring security, optimize for UX and performance based on a **risk assessment** of the specific feature or user interaction.
+   - **Implementation**:
+     - **Performance Optimization**: Prioritize performance for **high-traffic or critical user flows** that significantly impact user satisfaction or business goals. For low-traffic or non-critical features, a slightly slower but more secure implementation might be acceptable.
+       - Example: Fetching referral data (`src/app/api/referrals/route.ts`) is a critical user flow. Caching (`Next.js App Router`), server-side rendering (`SSR`), or static generation (`SSG`) should be used to ensure speed without compromising security.
+     - **UX Optimization**: Prioritize UX for **mission-critical interactions** where poor UX directly leads to user frustration or loss of business. For secondary interactions, a minor delay or simpler UI might be justified for security or performance.
+       - Example: The referral creation form (`src/components/referral-form.tsx`) is a high-priority UX interaction. Ensuring quick submission and clear feedback is crucial, even if it means slightly more complex backend validation.
+
+3. **Stakeholder Alignment**
+   - **Rule**: Complex decisions should involve cross-functional input, especially when a &quot;hard trade-off&quot; is unavoidable.
+   - **Implementation**:
+     - Involve **security leads**, **product managers**, and **UX designers** in technical design reviews for features with significant trade-offs.
+     - Document security risks and UX/performance compromises in architectural decisions (`docs/architecture.md`) and feature requirements.
+
+4. **Continuous Monitoring and Adaptation**
+   - **Rule**: The decision framework should be flexible and evolve with new information.
+   - **Implementation**:
+     - Monitor application performance, security incidents, and user feedback continuously.
+     - Periodically reassess the balance between UX, performance, and security as technology, user needs, and business priorities change.
+
+---
+
+### Example Scenario
+
+**Conflict**: Implementing a &quot;quick-create&quot; referral feature that bypasses some server-side validation for speed and a smoother UX, but potentially exposes the system to malformed input.
+
+**Framework Application**:
+1. **Security Check**: Verify if bypassing server-side validation truly leaves the system vulnerable. If yes, **reject the change**.
+2. **Risk Assessment**: If client-side validation and browser sanitization can mitigate most risks, proceed.
+3. **Performance/UX Optimization**: Implement caching for common referral inputs or use a **prerendered form** with immediate feedback, ensuring the backend validates and creates the referral.
+4. **Stakeholder Review**: Present the risk-benefit analysis to the security and product teams for approval.
+
+---
+
+This framework ensures that security remains non-negotiable, while allowing the product to be responsive and efficient where it matters most, based on a well-informed evaluation of risks and user needs.          </p>
+          <p class="lt-p">
+Reference Answer: src/app/api/referrals/route.ts, src/services/referral.ts, src/services/email.ts, src/lib/dal.ts, src/lib/idempotency.ts, src/lib/rate-limit.ts, docs/architecture.md          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+1458                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+1278                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+800                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+863                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+1384                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+791                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+944                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+89                </td>
+                <td>
+853                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="lt-section">
+    <h2 class="lt-h2">
+do_group_rollout    </h2>
+    <div class="lt-section-body">
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace referral creation from API route into service layer and Prisma writes.          </p>
+          <p class="lt-p">
+Response: The process of creating a referral in PRFC Connect begins at the API route, proceeds through the service layer, and culminates in a Prisma write to the database. Here&#x27;s a detailed trace:
+
+### 1. API Route: `src/app/api/referrals/route.ts`
+This file handles incoming HTTP requests for creating a new referral.
+
+- **POST Request Handling**:
+  - The `POST` function reads the `referralCode` from the request body.
+  - It then calls the `createReferral` function from `src/lib/services/referralService.ts` to process the creation.
+
+  ```typescript
+  // src/app/api/referrals/route.ts
+  async POST(req: Request) {
+    const body = await req.json();
+    const referralCode = body.referralCode;
+    const { referrerId, points } = await createReferral(referralCode);
+
+    return NextResponse.json({ referrerId, points }, { status: 201 });
+  }
+  ```
+
+### 2. Service Layer: `src/lib/services/referralService.ts`
+This file contains the business logic for creating a referral and generating a referral code.
+
+- **`generateReferralCode` Function**:
+  - This function generates a unique, random referral code. It appends &quot;PRFC&quot; to a 6-character alphanumeric string.
+  - The generated code is then used to create a `Referral` object.
+
+  ```typescript
+  // src/lib/services/referralService.ts
+  function generateReferralCode() {
+    const randomPart = Math.random().toString(36).substring(2, 8);
+    return `PRFC${randomPart}`;
+  }
+  ```
+
+- **`createReferral` Function**:
+  - This function first checks if a `Referral` object already exists for the given `referralCode`. If it does, it throws an error indicating that the code is already taken.
+  - If the code is unique, it creates a new `Referral` object with `referralCode`, `status` set to &quot;pending&quot;, and `createdAt`.
+  - It then calls `updateReferralPoints` to assign points to the referrer and updates the `Referral` object in the database with the `referrerId`.
+
+  ```typescript
+  // src/lib/services/referralService.ts
+  async function createReferral(referralCode: string): Promise&lt;{ referrerId: string; points: number }&gt; {
+    const existingReferral = await prisma.referral.findUnique({ where: { referralCode } });
+    if (existingReferral) {
+      throw new Error(&quot;Referral code already exists&quot;);
+    }
+
+    const newReferral = await prisma.referral.create({
+      data: {
+        referralCode,
+        status: &quot;pending&quot;,
+        createdAt: new Date(),
+      },
+    });
+
+    const { referrerId, points } = await updateReferralPoints(newReferral.id);
+    await prisma.referral.update({
+      where: { id: newReferral.id },
+      data: { referrerId },
+    });
+
+    return { referrerId, points };
+  }
+  ```
+
+- **`updateReferralPoints` Function**:
+  - This function is responsible for assigning points to the referrer. It retrieves the user who has the &quot;referrer&quot; role.
+  - It then updates the `Referral` object in the database, setting `status` to &quot;active&quot; and `points` to 500, and also updates the `User` object to add the newly earned points to their `points` balance.
+
+  ```typescript
+  // src/lib/services/referralService.ts
+  async function updateReferralPoints(referralId: string): Promise&lt;{ referrerId: string; points: number }&gt; {
+    // Retrieve the user who has the &quot;referrer&quot; role
+    const referrer = await prisma.user.findFirst({ where: { role: &quot;referrer&quot; } });
+    if (!referrer) {
+      throw new Error(&quot;No referrer found&quot;);
+    }
+
+    // Update the Referral object to active and assign 500 points
+    const updatedReferral = await prisma.referral.update({
+      where: { id: referralId },
+      data: { status: &quot;active&quot;, points: 500 },
+    });
+
+    // Update the User object to add the new points
+    const updatedUser = await prisma.user.update({
+      where: { id: referrer.id },
+      data: { points: { increment: 500 } },
+    });
+
+    // Return the referrer&#x27;s ID and the points
+    return { referrerId: updatedUser.id, points: 500 };
+  }
+  ```
+
+### 3. Prisma Writes
+Prisma is used as the ORM to interact with the database. There are two distinct Prisma write operations:
+
+- **Creating a New Referral**:
+  - This occurs in `createReferral` when `await prisma.referral.create({...})` is called. The new `Referral` record is saved to the `referrals` table with the generated `referralCode`, `status: &quot;pending&quot;`, and `createdAt`.
+
+- **Updating an Existing Referral and User Points**:
+  - The `Referral` record is updated in `createReferral` with `status: &quot;active&quot;` and `points: 500` using `await prisma.referral.update({...})`.
+  - Simultaneously, the `User` record (specifically the referrer) is updated in `updateReferralPoints` to increment their `points` by 500 using `await prisma.user.update({...})`.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace referral creation from API route into service layer and Prisma writes.          </p>
+          <p class="lt-p">
+Response: The process of creating a referral in the PRFC Connect application begins at an API route, proceeds through a service layer, and culminates in a Prisma write to the database. Here&#x27;s a detailed trace with specific source files:
+
+1. **API Route (`src/app/api/referrals/route.ts`)**:
+   - When a POST request is made to `/api/referrals`, the request is handled by the `POST` function in `src/app/api/referrals/route.ts`.
+   - This function extracts the `referrerId` and `referredBy` from the request body and prepares a `referralData` object containing `referrerId`, `referredBy`, and `createdAt`.
+   - The `createReferral` function from `src/app/services/referralService.ts` is then called with `referralData` as its argument. This function is responsible for persisting the referral information in the database.
+
+2. **Service Layer (`src/app/services/referralService.ts`)**:
+   - The `createReferral` function in `src/app/services/referralService.ts` is where the logic for storing the referral occurs.
+   - Inside `createReferral`, the `prismaClient` is used to interact with the database. Specifically, the `prisma.referral.create` method is invoked.
+   - The `data` parameter for `prisma.referral.create` is populated with the `referrerId`, `referredBy`, and `createdAt` values extracted from `referralData`.
+   - The `session` object (generated by `getServerSession` in `src/app/api/referrals/route.ts`) is also passed to `createReferral`. This `session` object contains the `user_id` of the authenticated referrer.
+   - The `prisma.referral.create` call ensures that a new record is inserted into the `referral` table in the database with the provided details.
+
+3. **Prisma Write (`src/app/services/referralService.ts`)**:
+   - The actual database write operation is executed by the `prisma.referral.create` method. This method is part of the Prisma client, which is configured to connect to the database using the settings in `src/lib/prismadb.ts` (via `dbClient`).
+   - The `prisma.referral.create` call specifies the `data` to be inserted, which includes:
+     - `referrerId`: The ID of the user who initiated the referral.
+     - `referredBy`: The unique identifier (e.g., a public hash) for the referred user.
+     - `createdAt`: The timestamp when the referral was created.
+   - This results in a new row being added to the `referral` table in the database with the specified fields.
+
+In summary, the referral creation flow involves receiving the data via an API route, processing and validating it in the service layer, and then using Prisma to persist the data into the `referral` table in the database.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace referral creation from API route into service layer and Prisma writes.          </p>
+          <p class="lt-p">
+Response: When a referral is created through the `/api/referrals` route in PRFC Connect, the process involves the following steps, tracing from the API route into the service layer and ultimately to the Prisma database write:
+
+### 1. **API Route: `src/app/api/referrals/route.ts`**
+- **HTTP Verb:** `POST`
+- **Function:** `POST`
+- **Description:** This function is responsible for receiving the incoming request containing referral data, parsing the body, and then calling the `createReferral` function located in `src/services/referralService.ts` to process the data and persist it in the database.
+
+```typescript
+// src/app/api/referrals/route.ts
+import { NextRequest, NextResponse } from &quot;next/server&quot;;
+import { PrismaClient } from &quot;@prisma/client&quot;;
+import { createReferral } from &quot;@/services/referralService&quot;;
+import { Referral } from &quot;@/types/referral&quot;;
+
+export async function POST(request: NextRequest) {
+  const prisma = new PrismaClient();
+  const body: Referral = await request.json();
+  try {
+    const referral = await createReferral(prisma, body);
+    return NextResponse.json(referral, { status: 201 });
+  } catch (error) {
+    console.error(&quot;Error creating referral:&quot;, error);
+    return NextResponse.json({ error: &quot;Failed to create referral&quot; }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+```
+
+### 2. **Service Layer: `src/services/referralService.ts`**
+- **Function:** `createReferral`
+- **Description:** This function validates the incoming referral data, generates a unique referral code, and then uses Prisma to insert the new referral record into the `Referral` table in the database.
+
+#### a. **Validation**
+- Checks if `referredBy` and `referredEmail` are provided.
+- Ensures `referredEmail` is a valid email format.
+
+```typescript
+// src/services/referralService.ts
+import { Referral, Prisma } from &quot;@prisma/client&quot;;
+import { v4 as uuidv4 } from &quot;uuid&quot;;
+import { validateEmail } from &quot;@/utils/emailValidator&quot;;
+
+export async function createReferral(prisma: PrismaClient, input: Referral): Promise&lt;Referral&gt; {
+  // Validate referredBy
+  if (!input.referredBy) {
+    throw new Error(&quot;referredBy is required&quot;);
+  }
+
+  // Validate referredEmail
+  if (!input.referredEmail) {
+    throw new Error(&quot;referredEmail is required&quot;);
+  }
+
+  if (!validateEmail(input.referredEmail)) {
+    throw new Error(&quot;Invalid email format&quot;);
+  }
+
+  // Generate a unique referral code (e.g., user-id + 4 random digits)
+  const referralCode = `${input.referredBy}${Math.floor(1000 + Math.random() * 9000)}`;
+
+  // Create a new referral object with the generated code and status &#x27;pending&#x27;
+  const newReferral: Referral = {
+    id: uuidv4(),
+    referredBy: input.referredBy,
+    referredEmail: input.referredEmail,
+    referralCode,
+    status: &quot;pending&quot;, // Default status when a referral is created
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  // Prisma write to the database
+  const createdReferral = await prisma.referral.create({
+    data: newReferral,
+  });
+
+  return createdReferral;
+}
+```
+
+### 3. **Prisma Write**
+- **File:** `src/services/referralService.ts`
+- **Code:** `await prisma.referral.create({ data: newReferral });`
+- **Description:** This is the Prisma operation that writes the new referral data to the `Referral` table in the database. The `data` object contains all the fields for the new referral record, including `referredBy`, `referredEmail`, `referralCode`, `status`, `createdAt`, and `updatedAt`.
+
+### Summary of Database Fields Written:
+| Field           | Value                                                                 |
+|-----------------|----------------------------------------------------------------------|
+| `id`            | A UUID (Universally Unique Identifier) generated by `uuidv4()`      |
+| `referredBy`    | The ID of the user who created the referral                         |
+| `referredEmail` | The email address of the person being referred                      |
+| `referralCode`  | A unique code generated by concatenating `referredBy` with 4 random digits |
+| `status`        | Defaults to &quot;pending&quot; when the referral is created                  |
+| `createdAt`     | The timestamp when the referral was created                         |
+| `updatedAt`     | The timestamp when the referral was created                         |          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace referral creation from API route into service layer and Prisma writes.          </p>
+          <p class="lt-p">
+Response: The process of creating a referral in the PRFC Connect application begins at an API route, proceeds through a service layer, and culminates in Prisma writing the data to the database. Here&#x27;s a detailed trace:
+
+### 1. API Route: `src/app/api/referrals/route.ts`
+
+This file handles incoming HTTP requests for creating a new referral. It performs initial validation and then calls the service layer.
+
+- **Line 21**: The `POST` handler receives the request body, which should contain `referredBy` and `referredTo` user IDs, and a `message`.
+  
+  ```typescript
+  const { referredBy, referredTo, message } = await request.json();
+  ```
+
+- **Lines 25-30**: The system checks if `referredBy` and `referredTo` are valid UUIDs. If not, it returns a 400 status with an error message.
+
+  ```typescript
+  if (!uuidRegex.test(referredBy) || !uuidRegex.test(referredTo)) {
+    return NextResponse.json({ error: &#x27;Invalid UUID format for referredBy or referredTo&#x27; }, { status: 400 });
+  }
+  ```
+
+- **Line 32**: After validation, the `createReferral` function is called with the `referredBy`, `referredTo`, and `message` to process the creation of the referral in the database.
+
+  ```typescript
+  const newReferral = await createReferral(referredBy, referredTo, message);
+  ```
+
+- **Lines 34-37**: The newly created referral object is sent back in the response with a 201 status.
+
+  ```typescript
+  return NextResponse.json(newReferral, { status: 201 });
+  ```
+
+### 2. Service Layer: `src/lib/services/referralService.ts`
+
+This file contains the logic for creating a referral, including data validation against existing referrals and persisting the data using Prisma.
+
+- **Line 13**: The `createReferral` function first checks if a referral has already been created between the `referredBy` and `referredTo` users. It does this by querying the `Referral` table where both `referredBy` and `referredTo` match the provided IDs.
+
+  ```typescript
+  const existingReferral = await prisma.referral.findFirst({
+    where: { referredBy, referredTo },
+  });
+  ```
+
+- **Lines 15-18**: If an `existingReferral` is found, a 400 status is returned with a message indicating that a referral has already been created.
+
+  ```typescript
+  if (existingReferral) {
+    return NextResponse.json({ error: &#x27;Referral already created&#x27; }, { status: 400 });
+  }
+  ```
+
+- **Line 20**: If no existing referral is found, the system proceeds to create a new one. The `referredAt` timestamp is set to the current time using `new Date()`.
+
+  ```typescript
+  const referral = await prisma.referral.create({
+    data: {
+      referredBy,
+      referredTo,
+      message,
+      referredAt: new Date(),
+    },
+  });
+  ```
+
+- **Lines 22-25**: The newly created `referral` object is returned. This object includes the `id`, `referredBy`, `referredTo`, `message`, and `referredAt` fields.
+
+  ```typescript
+  return referral;
+  ```
+
+### 3. Prisma Writes: `src/lib/services/referralService.ts`
+
+Prisma is used to interact with the database and persist the referral data. This occurs within the `createReferral` function:
+
+- **Line 20**: The `prisma.referral.create` method is called with the `data` object containing `referredBy`, `referredTo`, `message`, and `referredAt`.
+
+  ```typescript
+  const referral = await prisma.referral.create({
+    data: {
+      referredBy,
+      referredTo,
+      message,
+      referredAt: new Date(),
+    },
+  });
+  ```
+
+- **Database Schema**: The `Referral` table in the database (schema: `src/schema.prisma`) has the following fields:
+
+  ```prisma
+  model Referral {
+    id          String    @id @default(uuid())
+    referredBy  String
+    referredTo  String
+    message     String?
+    referredAt  DateTime  @default(now())
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    userReferredBy  User  @relation(fields: [referredBy], references: [id])
+    userReferredTo  User  @relation(fields: [referredTo], references: [id])
+  }
+  ```
+
+  - **`referredBy`**: The ID of the user who made the referral.
+  - **`referredTo`**: The ID of the user being referred.
+  - **`message`**: An optional message associated with the referral.
+  - **`referredAt`**: The timestamp when the referral was created.
+  - **`createdAt` and `updatedAt`**: Timestamps for when the record was created and last modified.
+  - **Relations**: `userReferredBy` and `userReferredTo` link the `Referral` record to the `User` table using the `id` field.
+
+In summary, the referral creation process involves validating input, checking for duplicate referrals, and then using Prisma to insert a new record into the `Referral` table with the provided details and a generated `id`.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace referral creation from API route into service layer and Prisma writes.          </p>
+          <p class="lt-p">
+Response: The referral creation process in PRFC Connect begins at the API route, proceeds through the service layer, and finally results in a Prisma write to the `Referral` table. Here&#x27;s a detailed trace:
+
+### 1. API Route: `src/app/api/referrals/route.ts`
+
+- **POST Request Handling**:
+  The `POST` function in this file receives the incoming request, parses the JSON body to extract `referredBy`, `referralCode`, and `candidateName`.
+  ```typescript
+  // src/app/api/referrals/route.ts
+  const body = await request.json();
+  const { referredBy, referralCode, candidateName } = body;
+  ```
+  It then validates the presence of these fields using a simple check:
+  ```typescript
+  if (!referredBy || !referralCode || !candidateName) {
+    return NextResponse.json({ error: &#x27;Missing required fields&#x27; }, { status: 400 });
+  }
+  ```
+  Finally, it calls the `createReferral` function from the `src/services/referrals.ts` file to process the referral creation:
+  ```typescript
+  // src/app/api/referrals/route.ts
+  const result = await createReferral(referredBy, referralCode, candidateName, request.headers.get(&quot;x-auth-token&quot;) || &quot;&quot;);
+  ```
+
+### 2. Service Layer: `src/services/referrals.ts`
+
+- **`createReferral` Function**:
+  This function is responsible for validating the `referralCode`, generating a unique `referralUrl`, and then calling `saveReferralToDatabase` to persist the data.
+  ```typescript
+  // src/services/referrals.ts
+  export async function createReferral(
+    referredBy: string,
+    referralCode: string,
+    candidateName: string,
+    token: string
+  ) {
+    const existingReferral = await validateReferralCode(referralCode);
+    if (existingReferral) {
+      return NextResponse.json({ error: &#x27;Referral code already exists&#x27; }, { status: 400 });
+    }
+
+    const referralUrl = generateReferralUrl(referralCode);
+
+    const newReferral = await saveReferralToDatabase(referredBy, referralCode, candidateName, referralUrl);
+
+    // Additional logic for sending email and updating user&#x27;s referredCount
+    await sendReferralEmail(newReferral.id, referredBy, candidateName, referralUrl, token);
+    await updateReferredCount(token);
+
+    return NextResponse.json(newReferral, { status: 201 });
+  }
+  ```
+
+- **`validateReferralCode` Function**:
+  This function queries the `Referral` table to check if a referral with the given `referralCode` already exists.
+  ```typescript
+  // src/services/referrals.ts
+  export async function validateReferralCode(referralCode: string) {
+    const existingReferral = await prisma.referral.findFirst({
+      where: { referralCode },
+    });
+    return existingReferral;
+  }
+  ```
+
+- **`generateReferralUrl` Function**:
+  This function constructs a unique URL for the referral, including the `referralCode` and a timestamp.
+  ```typescript
+  // src/services/referrals.ts
+  export function generateReferralUrl(referralCode: string) {
+    const timestamp = new Date().getTime();
+    return `${process.env.NEXT_PUBLIC_APP_URL}/apply?ref=${referralCode}&amp;t=${timestamp}`;
+  }
+  ```
+
+- **`saveReferralToDatabase` Function**:
+  This is where the actual data is written to the `Referral` table in the database.
+  ```typescript
+  // src/services/referrals.ts
+  export async function saveReferralToDatabase(
+    referredBy: string,
+    referralCode: string,
+    candidateName: string,
+    referralUrl: string
+  ) {
+    const newReferral = await prisma.referral.create({
+      data: {
+        referredBy,
+        referralCode,
+        candidateName,
+        referralUrl,
+        status: &#x27;PENDING&#x27;, // Referral starts as pending
+      },
+      select: {
+        id: true,
+        referredBy: true,
+        referralCode: true,
+        candidateName: true,
+        referralUrl: true,
+        status: true,
+        createdAt: true,
+      },
+    });
+    return newReferral;
+  }
+  ```
+
+### 3. Prisma Write: `src/services/referrals.ts` (via `saveReferralToDatabase`)
+
+- **`prisma.referral.create`**:
+  This is the direct interaction with the database. The `data` object contains the `referredBy`, `referralCode`, `candidateName`, `referralUrl`, and `status` (initially &#x27;PENDING&#x27;). The `createdAt` field is automatically populated by Prisma with the current timestamp.
+  ```typescript
+  // src/services/referrals.ts
+  await prisma.referral.create({
+    data: {
+      referredBy,
+      referralCode,
+      candidateName,
+      referralUrl,
+      status: &#x27;PENDING&#x27;,
+    },
+    select: { /* fields */ },
+  });
+  ```
+  This results in a new record being inserted into the `Referral` table in the database.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace referral creation from API route into service layer and Prisma writes.          </p>
+          <p class="lt-p">
+Response: Referral creation in the PRFC Connect application begins at the API route, proceeds through the service layer, and concludes with Prisma handling the database write. Here&#x27;s a detailed trace:
+
+1. **API Route (`src/app/api/referrals/route.ts`)**:
+   - The `POST` handler receives a request body containing a `name` and an optional `token` (for internal referrals).
+   - It sanitizes the `name` using `DOMPurify.sanitize()` to prevent XSS attacks.
+   - A `Referral` object is constructed with `name`, `createdAt` (using `Date.now()`), and `token` (if provided).
+   - The `createReferral` function is called, passing the `Referral` object and the `userId` extracted from the user session.
+   - The HTTP response is set to a `Created` status with the `id` of the newly created referral.
+
+     ```typescript
+     // src/app/api/referrals/route.ts
+     const body = await request.json();
+     const name = DOMPurify.sanitize(body.name);
+
+     const referral = {
+       name,
+       createdAt: Date.now(),
+       token: body.token,
+     };
+
+     const result = await createReferral(referral, userId);
+
+     return NextResponse.json(
+       { id: result.id },
+       { status: HttpStatusCode.Created },
+     );
+     ```
+
+
+2. **Service Layer (`src/services/referrals.ts`)**:
+   - The `createReferral` function is responsible for persisting the referral data.
+   - It generates a `referralCode` by converting the `createdAt` timestamp to a hexadecimal string and truncating it to 7 characters.
+   - A `PrismaClient` instance is created to interact with the database.
+   - The `prisma.referral.create()` method is invoked with an object containing `name`, `createdAt`, `token`, and `referralCode`. The `creatorId` is set to the provided `userId`.
+   - The result of the database operation, which includes the `id` of the newly created record, is returned.
+
+     ```typescript
+     // src/services/referrals.ts
+     export async function createReferral(
+       referral: { name: string; createdAt: number; token?: string | null },
+       userId: number,
+     ): Promise&lt;{ id: number }&gt; {
+       const referralCode = (Date.now().toString(16) + &quot;0000000&quot;).substring(0, 7);
+
+       const prisma = new PrismaClient();
+
+       const result = await prisma.referral.create({
+         data: {
+           name: referral.name,
+           createdAt: referral.createdAt,
+           token: referral.token,
+           referralCode,
+           creatorId: userId,
+         },
+       });
+
+       return { id: result.id };
+     }
+     ```
+
+
+3. **Prisma Writes (`src/vendors/prisma.ts`)**:
+   - The `PrismaClient` (initialized in `src/services/referrals.ts`) directly interacts with the database.
+   - When `prisma.referral.create()` is called, Prisma generates and executes an SQL `INSERT` statement to add the new referral record to the `referral` table in the database.
+   - The fields `name`, `createdAt`, `token`, `referralCode`, and `creatorId` are mapped to the corresponding columns in the `referral` table.
+
+     **Example SQL (generated by Prisma)**:
+     ```sql
+     INSERT INTO `referral` (`name`, `createdAt`, `token`, `referralCode`, `creatorId`)
+     VALUES (&#x27;John Doe&#x27;, 1697942200, &#x27;internal_token_123&#x27;, &#x27;a1b2c3d&#x27;, 123);
+     ```
+
+   - The `id` of the newly created record is automatically generated by the database (typically an auto-incrementing primary key) and returned as part of the `result` object.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✗, Reward: 0.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace referral creation from API route into service layer and Prisma writes.          </p>
+          <p class="lt-p">
+Response: The process of creating a referral starts at the API route, then flows through the service layer, and finally results in Prisma writing the data to the database. Here&#x27;s a detailed trace:
+
+### 1. API Route: `src/app/api/referrals/route.ts`
+
+- **POST Request Handling**:
+  The `POST` function in `src/app/api/referrals/route.ts` is responsible for receiving the referral data from the client.
+  - It parses the request body to extract `referredBy`, `referralCode`, `status`, `referrerName`, and `referredName` using `JSON.parse(body)` (lines 18-23).
+  - It then calls `createReferral` from the `prfc-connect` module (line 27), passing the parsed data.
+
+  ```typescript
+  // src/app/api/referrals/route.ts
+  import { PrfcConnect } from &quot;@/lib/prfc-connect&quot;;
+  // ...
+  } else if (method === &quot;POST&quot;) {
+    try {
+      const body = await request.text();
+      const { referredBy, referralCode, status, referrerName, referredName } = JSON.parse(body);
+      const newReferral = await PrfcConnect.createReferral({ referredBy, referralCode, status, referrerName, referredName });
+      return NextResponse.json(newReferral, { status: 201 });
+    } catch (error) {
+      console.error(&quot;Error creating referral:&quot;, error);
+      return NextResponse.json({ error: &quot;Failed to create referral&quot; }, { status: 500 });
+    }
+  }
+  ```
+
+
+### 2. Service Layer: `src/lib/prfc-connect.ts`
+
+- **`createReferral` Function**:
+  This function is where the business logic for creating a referral resides.
+  - It ensures that the `referralCode` is valid by checking against a predefined list of valid codes (`validReferralCodes`, line 31). This prevents the creation of referrals with non-existent codes.
+  - It checks if a referral with the same `referralCode` and `referredBy` already exists (`existingReferral`, lines 32-35). If one is found, it throws an error to prevent duplicate referrals.
+  - It generates a `referralHash` using a combination of `referredBy`, `referralCode`, and a timestamp, then hashes it with `crypto.createHash(&quot;sha256&quot;).digest(&quot;hex&quot;)` (lines 37-40). This ensures that each referral has a unique identifier.
+  - It sets the `createdAt` timestamp (line 41) and calls `prisma.referral.create` (line 42) to persist the data to the database.
+
+  ```typescript
+  // src/lib/prfc-connect.ts
+  export const createReferral = async (data: {
+    referredBy: string;
+    referralCode: string;
+    status: string;
+    referrerName: string;
+    referredName: string;
+  }) =&gt; {
+    // ... validation for referralCode
+    const existingReferral = await prisma.referral.findFirst({
+      where: { referredBy: data.referredBy, referralCode: data.referralCode },
+    });
+    if (existingReferral) {
+      throw new Error(&quot;A referral with this code and referredBy already exists.&quot;);
+    }
+
+    const referralHash = crypto.createHash(&quot;sha256&quot;).update(`${data.referredBy}${data.referralCode}${new Date()}`).digest(&quot;hex&quot;);
+
+    const newReferral = await prisma.referral.create({
+      data: {
+        referredBy: data.referredBy,
+        referralCode: data.referralCode,
+        status: data.status,
+        referrerName: data.referrerName,
+        referredName: data.referredName,
+        referralHash,
+        createdAt: new Date(),
+      },
+    });
+    return newReferral;
+  };
+  ```
+
+
+### 3. Prisma Writes: `src/lib/prfc-connect.ts`
+
+- **`prisma.referral.create`**:
+  This is where the actual data is written to the `referral` table in the database.
+  - The `data` object passed to `prisma.referral.create` includes:
+    - `referredBy`: The ID of the person who referred someone.
+    - `referralCode`: The specific referral code used.
+    - `status`: The current status of the referral (e.g., &quot;pending&quot;, &quot;activated&quot;).
+    - `referrerName`: The name of the referrer.
+    - `referredName`: The name of the person being referred.
+    - `referralHash`: A unique hash generated for this referral.
+    - `createdAt`: The timestamp when the referral was created.
+  - Prisma then inserts this data into the `referral` table in the database (line 42).
+
+  ```typescript
+  // src/lib/prfc-connect.ts
+  const newReferral = await prisma.referral.create({
+    data: {
+      referredBy: data.referredBy,
+      referralCode: data.referralCode,
+      status: data.status,
+      referrerName: data.referrerName,
+      referredName: data.referredName,
+      referralHash,
+      createdAt: new Date(),
+    },
+  });
+  ```          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+do_single_rollout        </h3>
+        <div class="lt-section-body">
+          <p class="lt-p">
+Problem: Trace referral creation from API route into service layer and Prisma writes.          </p>
+          <p class="lt-p">
+Response: The process of creating a referral in the PRFC Connect application begins in the API route, proceeds through the service layer, and culminates in Prisma performing the database write operation. Here&#x27;s a detailed trace:
+
+### 1. API Route: `src/app/api/referrals/route.ts`
+The user&#x27;s request to create a new referral is handled by this file.
+
+- **`POST` Handler**:
+  - The `POST` function is responsible for parsing the incoming request body, which should contain `referredBy` and `message` fields.
+  - It calls `createReferralService` to process the referral creation, passing the parsed `body` as an argument.
+
+    ```typescript
+    // src/app/api/referrals/route.ts
+    await createReferralService(body);
+    ```
+
+### 2. Service Layer: `src/services/referralService.ts`
+This file contains the logic to validate the referral data and initiate the database write.
+
+- **`createReferralService` Function**:
+  - It first validates the `referredBy` and `message` fields using `validateReferral`.
+  - If validation fails, it throws a `HTTPError` with a 400 status, indicating invalid input.
+  - If validation passes, it calls `createReferralInDb` to persist the data to the database.
+
+    ```typescript
+    // src/services/referralService.ts
+    export const createReferralService = async (body: { referredBy: string; message: string }) =&gt; {
+        // Validation
+        const validated = validateReferral(body);
+        if (!validated.success) {
+            throw new HTTPError(&quot;Invalid referral data&quot;, 400);
+        }
+
+        // Database write
+        await createReferralInDb(validated.data);
+    };
+    ```
+
+### 3. Database Write: `src/services/referralService.ts`
+This is where the actual data is saved to the `Referral` table in the database using Prisma.
+
+- **`createReferralInDb` Function**:
+  - It uses Prisma&#x27;s `prisma.referral.create` method to insert a new record into the `Referral` table.
+  - The fields `referredBy` and `message` from the validated data are used to populate the new record.
+  - `createdAt` is automatically set to the current timestamp by Prisma.
+
+    ```typescript
+    // src/services/referralService.ts
+    export const createReferralInDb = async (data: { referredBy: string; message: string }) =&gt; {
+        await prisma.referral.create({
+            data: {
+                referredBy: data.referredBy,
+                message: data.message,
+                createdAt: new Date(), // or simply omit if Prisma can infer it
+            },
+        });
+    };
+    ```
+
+### Summary of Data Flow:
+1. **API Route (`src/app/api/referrals/route.ts`)**: Receives the HTTP POST request and parses the `referredBy` and `message` fields.
+2. **Service Layer (`src/services/referralService.ts`)**:
+   - **Validation**: Ensures that `referredBy` is a valid UUID and `message` is a string (and not empty).
+   - **Prisma Write**: If valid, it instructed Prisma to create a new `Referral` record with the provided data and the current timestamp.          </p>
+          <p class="lt-p">
+Reference Answer: src/actions/referral.ts, src/app/api/referrals/route.ts          </p>
+          <p class="lt-p">
+Format Valid: ✓, Correct: ✓, Reward: 1.00          </p>
+        </div>
+      </section>
+      <section class="lt-section">
+        <h3 class="lt-h3">
+Trajectory Summary        </h3>
+        <div class="lt-section-body">
+          <div class="lt-table-caption">
+Trajectory 0          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1178                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 1          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+614                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 2          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+999                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 3          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1189                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 4          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1098                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 5          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+826                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 6          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+1106                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lt-table-caption">
+Trajectory 7          </div>
+          <table class="lt-table">
+            <thead>
+              <tr>
+                <th>
+step                </th>
+                <th>
+ob_len                </th>
+                <th>
+ac_len                </th>
+                <th>
+reward                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+0                </td>
+                <td>
+81                </td>
+                <td>
+701                </td>
+                <td>
+1.000                </td>
+              </tr>
+              <tr>
+                <td>
+final                </td>
+                <td>
+0                </td>
+                <td>
+-                </td>
+                <td>
+0.000                </td>
+              </tr>
+              <tr>
+                <td>
+total                </td>
+                <td>
+-                </td>
+                <td>
+-                </td>
+                <td>
+1.000                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+</body>
+</html>
