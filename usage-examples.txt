@@ -1,0 +1,120 @@
+# Gemini models
+
+# Single question
+python -m src.cli hack4impact-repos/prfc-connect \
+  "Where is the POST /api/referrals handler implemented?" \
+  --mode locate --verbose
+
+# Interactive chat
+python -m src.cli hack4impact-repos/prfc-connect --chat --verbose
+
+# Tinker Qwen 
+
+# Single question
+python -m src.cli hack4impact-repos/prfc-connect \
+  "Where is the POST /api/referrals handler implemented?" \
+  --backend qwen \
+  --checkpoint training_data/last_checkpoint.txt \
+  --mode locate --verbose
+
+# Interactive chat
+python -m src.cli hack4impact-repos/prfc-connect --chat \
+  --backend qwen \
+  --checkpoint training_data/last_checkpoint.txt \
+  --verbose
+
+
+# Example run:
+
+((venv) ) charlieray@Mac csc581-repo-assist % python -m src.cli hack4impact-repos/prfc-connect --chat \
+  --backend qwen \
+  --checkpoint training_data/last_checkpoint.txt \
+  --verbose
+[Loading] repository at hack4impact-repos/prfc-connect ...
+[Session] Created session a7ab78d1b734
+[Backend] Qwen/Qwen3-8B+LoRA
+Repo Assist — Interactive Chat
+Repository : hack4impact-repos/prfc-connect
+Backend    : qwen (Qwen/Qwen3-8B+LoRA)
+Session    : a7ab78d1b734
+Mode       : explain  |  Scope: include-pr
+Type 'quit' or 'exit' to end. Type 'mode <name>' to switch modes.
+------------------------------------------------------------
+
+You: Where is authentication implemented?
+
+Assistant: [Router] Using backend Qwen/Qwen3-8B+LoRA for mode explain
+
+[Orchestrator] Turn 1
+  [Tool] search_repo({'query': 'authentication'})
+
+[Orchestrator] Turn 2
+  [Tool] search_repo({'query': 'verifySession'})
+
+[Orchestrator] Turn 3
+  [Tool] open_file({'path': 'src/lib/dal.ts', 'end_line': 97})
+
+[Orchestrator] Turn 4
+[Orchestrator] Final answer received.
+Authentication in the `prfc-connect` repository is implemented through a custom token-based system, primarily within the `src/lib/dal.ts` file. This system handles session verification, token validation, and generation.
+
+### Core Authentication Functions
+
+The `src/lib/dal.ts` file contains the following key functions:
+
+1.  **`getSecret()`**: This function retrieves the secret key used for HMAC signature generation and verification. In a production environment, it expects the `PRFC_PORTAL_SECRET` environment variable to be set, falling back to a development-only secret in non-production environments.
+    *   **File:** `src/lib/dal.ts`
+    *   **Lines:** 11-19
+
+2.  **`validateToken(token: string, secret: string): Session | null`**: This function is responsible for parsing and validating an authentication token. It verifies the HMAC signature, checks the token's expiry, and extracts the `ownerid` and `isAdmin` status.
+    *   **File:** `src/lib/dal.ts`
+    *   **Lines:** 24-42
+
+3.  **`verifySession(): Promise<Session>`**: This function attempts to verify the user's session by checking for the `prfc_auth` cookie. If the cookie is missing or the token is invalid/expired, it throws an `AppError` with an "UNAUTHORIZED" status.
+    *   **File:** `src/lib/dal.ts`
+    *   **Lines:** 47-59
+
+4.  **`getSession(): Promise<Session | null>`**: Similar to `verifySession`, but it returns `null` if no valid session is found instead of throwing an error. This allows for conditional rendering based on the user's authentication status.
+    *   **File:** `src/lib/dal.ts`
+    *   **Lines:** 61-69
+
+5.  **`requireAdmin(): Promise<Session>`**: This function first verifies the session using `verifySession()` and then checks if the authenticated user has administrative privileges. If not, it throws a `FORBIDDEN` error.
+    *   **File:** `src/lib/dal.ts`
+    *   **Lines:** 71-78
+
+6.  **`generateToken(ownerid: number, isAdmin: boolean): string`**: This function generates a new authentication token for a given `ownerid` and `isAdmin` status, using the HMAC-SHA256 algorithm with the secret key.
+    *   **File:** `src/lib/dal.ts`
+    *   **Lines:** 80-87
+
+### Authentication Flow
+
+The authentication flow is typically triggered by server-side actions (e.g., `createContactGroup`, `updateContactGroup` in `src/actions/contact-group.ts`) or API routes (e.g., `callbackPOST` in `src/app/api/auth/callback/route.ts`). Here's a simplified overview:
+
+1.  **User Authentication (e.g., login):** This would involve a third-party service or database lookup to establish the user's identity. Upon successful authentication, a session object containing `ownerid` and `isAdmin` information is created.
+
+2.  **Token Generation:** The `generateToken()` function is called to create an HMAC-signed token from this session object. This token is then stored in an HTTP-only, `prfc_auth` cookie by the server.
+    *   **Example:** `src/app/api/auth/logout/route.ts` (line 30) sets this cookie with an empty value, effectively logging the user out.
+
+3.  **Session Verification:** When a protected route or action is accessed, the `verifySession()` function is invoked. It reads the `prfc_auth` cookie from the incoming request.
+    *   **Example:** `src/actions/contact-group.ts` (line 72) calls `verifySession()` to ensure the user is authenticated before proceeding with group creation.
+
+4.  **Privilege Checks:** For actions requiring administrative access, `requireAdmin()` is called after `verifySession()`. This ensures the user is both authenticated and possesses the necessary permissions.
+    *   **Example:** `src/actions/contact-group.ts` (line 95) uses `requireAdmin()` to restrict group deletion to administrators.
+
+5.  **Logout:** Logging out involves invalidating the existing session token, typically by setting the `prfc_auth` cookie to an empty value and clearing any session data.
+    *   **Example:** `src/app/api/auth/logout/route.ts` (lines 27-30) handles this process.
+
+This implementation provides a robust, server-side rendered authentication system with token-based session management and clear separation of concerns for different user roles.
+
+Citations:
+  [1] test/actions/contact-group.test.ts:71-110
+  [2] test/actions/contact-group.test.ts:106-145
+  [3] test/api/referral-route.test.ts:1-40
+  [4] test/api/referral-route.test.ts:36-75
+  [5] docs/architecture.md:36-75
+  [6] test/mocks/index.ts:1-9
+  [7] test/mocks/dal.ts:1-16
+  [8] test/auth/auth-flow.test.ts:1-40
+  [9] test/auth/auth-flow.test.ts:141-180
+  [10] test/auth/auth-flow.test.ts:176-215
+  [11] src/lib/dal.ts:1-97
